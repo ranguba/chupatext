@@ -9,20 +9,23 @@
 #include <gio/gio.h>
 
 typedef struct ChupaSwitcher ChupaSwitcher;
+typedef struct ChupaModule ChupaModule;
+typedef int ChupaCallbackFunc(GInputStream *cabra, gpointer arg);
 
 int chupa_init(void *);
 int chupa_cleanup(void);
 ChupaSwitcher *chupa_switcher_new(GInputStream *cabra);
-int chupa_foreach(int (*func)(GInputStream *cabra, void *arg), void *arg);
+int chupa_foreach(ChupaSwitcher *chupar, ChupaCallbackFunc *func, gpointer arg);
 
-/* raw interface */
-GConverter *chupa_converter(void);
-GInputStream *chupa_begin(GInputStream*);
-void chupa_finish(GInputStream*);
+typedef struct ChupaExtractor ChupaExtractor;
+struct ChupaExtractor {
+    struct {
+        const char *main, *sub;
+    } content_type;
+    GInputStream *(*make_converter_input)(GInputStream *);
+    int (*foreach)(ChupaSwitcher *, GInputStream *, ChupaCallbackFunc *, gpointer);
+};
 
-typedef int chupa_callback_t(const char *str, size_t len, void *arg),
-int chupa_extract(chupa_t *chupar, chupa_callback_t *func, void *arg);
-int chupa_extract_start(chupa_t *chupar, chupa_callback_t *func, void *arg);
-int chupa_extract_wait(chupa_t *chupar);
+ChupaExtractor *chupa_extractor_new(ChupaSwitcher *chupar, const char *content_type);
 
 #endif
