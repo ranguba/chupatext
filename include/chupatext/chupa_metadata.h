@@ -2,7 +2,6 @@
 #define CHUPA_METADATA_H
 
 #include <glib.h>
-#include <gio.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS

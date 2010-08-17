@@ -13,10 +13,13 @@ EXTRA_DIST =		\
 
 INCLUDES =		\
 	-I$(srcdir)	\
-	-I$(top_srcdir)
+	-I$(top_srcdir) \
+	-I$(top_includedir) \
+	-I$(build_includedir)
 
 AM_CFLAGS = 				\
-	$(CHUPATEXT_CFLAGS)
+	$(CHUPATEXT_CFLAGS) \
+	$(GCUTTER_CFLAGS)
 
 AM_LDFLAGS =			\
 	-module			\
@@ -24,8 +27,9 @@ AM_LDFLAGS =			\
 	-avoid-version		\
 	-no-undefined
 
-LIBS =								\
-	$(top_builddir)/lib/libchupatext.la
+LIBS =					\
+	$(top_builddir)/lib/libchupatext.la \
+	$(GCUTTER_LIBS)
 
 test_metadata_la_SOURCES = test_metadata.c
 
