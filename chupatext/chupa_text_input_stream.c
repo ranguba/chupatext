@@ -41,11 +41,13 @@ set_property(GObject *object,
              GParamSpec *pspec)
 {
     ChupaTextInputStreamPrivate *priv;
+    GObject *obj;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_METADATA:
-        priv->metadata = CHUPA_METADATA(g_value_dup_object(value));
+        obj = g_value_dup_object(value);
+        priv->metadata = CHUPA_METADATA(obj);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -57,13 +59,24 @@ static void
 chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+    GParamSpec *spec;
 
+    spec = g_param_spec_object("metadata",
+                               "Metadata",
+                               "Metadata of the input stream",
+                               CHUPA_TYPE_METADATA,
+                               G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_METADATA, spec);
     g_type_class_add_private(gobject_class, sizeof(ChupaTextInputStreamPrivate));
 }
 
 ChupaTextInputStream *
 chupa_text_input_stream_new(ChupaMetadata *metadata, GInputStream *input)
 {
+    return g_object_new(CHUPA_TYPE_TEXT_INPUT_STREAM,
+                        "metadata", metadata,
+                        "base-stream", input,
+                        NULL);
 }
 
 ChupaMetadata *
