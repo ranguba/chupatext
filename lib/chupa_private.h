@@ -7,22 +7,13 @@
 #define CHUPA_PRIVATE_H
 
 #include <chupatext.h>
+#include <chupatext/module.h>
 
 typedef struct ChupaConverter ChupaConverter;
 typedef struct ChupaConverterClass ChupaConverterClass;
 
 struct ChupaConverter {
     const ChupaModule *module;
-};
-
-typedef struct {
-    ChupaCallbackFunc *func;
-    gpointer arg;
-} ChupaCallback;
-
-struct ChupaSwitcher {
-    GInputStream *source;
-    ChupaExtractor *ext;
 };
 
 #endif
