@@ -18,7 +18,8 @@
 export BASE_DIR="`dirname $0`"
 top_srcdir="$BASE_DIR/.."
 top_srcdir="`cd $top_srcdir; pwd`"
-builddir="${1-`pwd`}"
+testdir="${1-`pwd`}"
+builddir="`cd $testdir && cd .. && pwd`"
 
 if test x"$NO_MAKE" != x"yes"; then
     if which gmake > /dev/null; then
@@ -30,7 +31,7 @@ if test x"$NO_MAKE" != x"yes"; then
 fi
 
 if test -z "$CUTTER"; then
-    CUTTER="`${MAKE} -s -C "$builddir/test" echo-cutter`"
+    CUTTER="`${MAKE} -s -C "$testdir" echo-cutter`"
 fi
 
 CUTTER_ARGS=
@@ -50,7 +51,7 @@ CUTTER_ARGS="$CUTTER_ARGS -s $BASE_DIR --exclude-directory fixtures"
 if echo "$@" | grep -- --mode=analyze > /dev/null; then
     :
 else
-    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $builddir/log"
+    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $testdir/log"
 fi
 if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
@@ -77,4 +78,4 @@ export RUBYLIB
 export CHUPATEXT_CONFIGURATION_MODULE_DIR=$builddir/module/configuration/ruby/.libs
 export CHUPATEXT_CONFIG_DIR=$top_srcdir/test/fixtures/configuration
 
-$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$builddir/test"
+$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$testdir"
