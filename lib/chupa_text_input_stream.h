@@ -1,5 +1,5 @@
-#ifndef CHUPATEXT_TEXTINPUTSTREAM_H
-#define CHUPATEXT_TEXTINPUTSTREAM_H
+#ifndef CHUPA_TEXT_INPUT_STREAM_H
+#define CHUPA_TEXT_INPUT_STREAM_H
 
 #include <glib.h>
 #include <gio.h>
@@ -38,4 +38,4 @@ GHashTable *chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream);
 
 G_END_DECLS
 
-#endif  /* CHUPATEXT_TEXTINPUTSTREAM_H */
+#endif  /* CHUPA_TEXT_INPUT_STREAM_H */
