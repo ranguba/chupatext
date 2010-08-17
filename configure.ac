@@ -51,6 +51,22 @@ if test "$ac_glib_available" != "yes"; then
     AC_MSG_ERROR([no glib available])
 fi
 
+dnl **************************************************************
+dnl Check for Cutter
+dnl **************************************************************
+m4_ifdef([AC_CHECK_GCUTTER], [
+AC_CHECK_GCUTTER(>= 1.1.4)
+],
+[ac_cv_use_cutter="no"])
+
+AM_CONDITIONAL([WITH_CUTTER], [test "$ac_cv_use_cutter" != "no"])
+if test "$ac_cv_use_cutter" != "no"; then
+  AC_DEFINE(WITH_CUTTER, 1, [Define to 1 if you use Cutter])
+fi
+
+m4_ifdef([AC_CHECK_COVERAGE], [AC_CHECK_COVERAGE])
+GENHTML_OPTIONS="--title 'chupatext Code Coverage'"
+
 moduledir='$(pkglibdir)/module'
 AC_SUBST(moduledir)
 
@@ -68,6 +84,7 @@ AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION, ["$CHUPATEXT_VERSION"], [version])
 
 AC_CONFIG_FILES([Makefile
 		 lib/Makefile
+		 test/Makefile
 		 module/Makefile])
 AC_OUTPUT
 
