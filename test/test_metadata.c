@@ -22,7 +22,8 @@
 #include <gcutter.h>
 
 void test_new (void);
-void test_inspect (void);
+void test_get_first_value (void);
+void test_get_values (void);
 
 static ChupaMetadata *metadata;
 
