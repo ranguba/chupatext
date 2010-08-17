@@ -34,7 +34,9 @@ AM_LDFLAGS =			\
 
 LIBS =					\
 	$(top_builddir)/chupatext/libchupatext.la \
-	$(GCUTTER_LIBS)
+	$(GCUTTER_LIBS) \
+	$(GLIB_LIBS) \
+	$(EMPTY)
 
 test_metadata_la_SOURCES = test_metadata.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
