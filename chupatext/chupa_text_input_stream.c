@@ -102,7 +102,8 @@ chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
                                "Metadata",
                                "Metadata of the input stream",
                                CHUPA_TYPE_METADATA,
-                               G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                               G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_METADATA, spec);
     g_type_class_add_private(gobject_class, sizeof(ChupaTextInputStreamPrivate));
 }
