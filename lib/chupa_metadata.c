@@ -91,6 +91,20 @@ chupa_metadata_new(void)
                         NULL);
 }
 
+void
+chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar *value)
+{
+    ChupaMetadataPrivate *priv;
+    GList *values, *new_values;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    values = g_hash_table_lookup(priv->data, key);
+    new_values = (GList *)g_list_append(values, g_strdup(value));
+    if (!values) {
+        g_hash_table_insert(priv->data, g_strdup(key), new_values);
+    }
+}
+
 const gchar *
 chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key)
 {
@@ -103,6 +117,16 @@ chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key)
         return NULL;
     }
     return values->data;
+}
+
+GList *
+chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key)
+{
+    ChupaMetadataPrivate *priv;
+    GList *values;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    return g_hash_table_lookup(priv->data, key);
 }
 
 /*

@@ -46,6 +46,28 @@ test_new (void)
     cut_assert_equal_string(NULL, chupa_metadata_get_first_value(metadata, "content-type"));
 }
 
+void
+test_get_first_value (void)
+{
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, "content-type", "text/plain");
+    cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, "content-type"));
+}
+
+void
+test_get_values (void)
+{
+    GList *values;
+
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, "content-type", "text/plain");
+    chupa_metadata_add_value(metadata, "content-type", "text/html");
+    values = chupa_metadata_get_values(metadata, "content-type");
+    cut_assert_equal_int(2, g_list_length(values));
+    cut_assert_equal_string("text/plain", values->data);
+    cut_assert_equal_string("text/html", values->next->data);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
