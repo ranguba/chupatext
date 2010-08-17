@@ -18,6 +18,7 @@
 export BASE_DIR="`dirname $0`"
 top_srcdir="$BASE_DIR/.."
 top_srcdir="`cd $top_srcdir; pwd`"
+builddir="${1-`pwd`}"
 
 if test x"$NO_MAKE" != x"yes"; then
     if which gmake > /dev/null; then
@@ -25,20 +26,20 @@ if test x"$NO_MAKE" != x"yes"; then
     else
 	MAKE=${MAKE:-"make"}
     fi
-    $MAKE > /dev/null || exit 1
+    $MAKE -C "$builddir" > /dev/null || exit 1
 fi
 
 if test -z "$CUTTER"; then
-    CUTTER="`${MAKE} -s echo-cutter`"
+    CUTTER="`${MAKE} -s -C "$builddir/test" echo-cutter`"
 fi
 
 CUTTER_ARGS=
 CUTTER_WRAPPER=
 if test x"$CUTTER_DEBUG" = x"yes"; then
-    CUTTER_WRAPPER="${LIBTOOL-../libtool} --mode=execute gdb --args"
+    CUTTER_WRAPPER="${LIBTOOL-$builddir/libtool} --mode=execute gdb --args"
     CUTTER_ARGS="--keep-opening-modules"
 elif test x"$CUTTER_CHECK_LEAK" = x"yes"; then
-    CUTTER_WRAPPER="${LIBTOOL-../libtool} --mode=execute valgrind "
+    CUTTER_WRAPPER="${LIBTOOL-$builddir/libtool} --mode=execute valgrind "
     CUTTER_WRAPPER="$CUTTER_WRAPPER --leak-check=full --show-reachable=yes -v"
     CUTTER_ARGS="--keep-opening-modules"
 fi
@@ -49,7 +50,7 @@ CUTTER_ARGS="$CUTTER_ARGS -s $BASE_DIR --exclude-directory fixtures"
 if echo "$@" | grep -- --mode=analyze > /dev/null; then
     :
 else
-    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory log"
+    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $builddir/log"
 fi
 if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
@@ -73,7 +74,7 @@ fi
 RUBYLIB=$CHUPATEXT_RUBYLIB:$RUBYLIB
 export CHUPATEXT_RUBYLIB
 export RUBYLIB
-export CHUPATEXT_CONFIGURATION_MODULE_DIR=$top_srcdir/module/configuration/ruby/.libs
+export CHUPATEXT_CONFIGURATION_MODULE_DIR=$builddir/module/configuration/ruby/.libs
 export CHUPATEXT_CONFIG_DIR=$top_srcdir/test/fixtures/configuration
 
-$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" .
+$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$builddir/test"
