@@ -35,6 +35,20 @@ chupa_text_input_stream_init(ChupaTextInputStream *stream)
 }
 
 static void
+dispose(GObject *object)
+{
+    ChupaTextInputStreamPrivate *priv;
+
+    priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(object);
+    if (priv->metadata) {
+        g_object_unref(priv->metadata);
+        priv->metadata = NULL;
+    }
+
+    G_OBJECT_CLASS(chupa_text_input_stream_parent_class)->dispose(object);
+}
+
+static void
 set_property(GObject *object,
              guint prop_id,
              const GValue *value,
@@ -56,10 +70,33 @@ set_property(GObject *object,
 }
 
 static void
+get_property(GObject *object,
+             guint prop_id,
+             GValue *value,
+             GParamSpec *pspec)
+{
+    ChupaTextInputStreamPrivate *priv;
+
+    priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_METADATA:
+        g_value_set_object(value, priv->metadata);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GParamSpec *spec;
+
+    gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
 
     spec = g_param_spec_object("metadata",
                                "Metadata",
@@ -85,5 +122,8 @@ chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream)
     ChupaTextInputStreamPrivate *priv;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
+    if (!priv->metadata) {
+        priv->metadata = chupa_metadata_new();
+    }
     return priv->metadata;
 }
