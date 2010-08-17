@@ -5,8 +5,8 @@ AC_INIT()
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
 
-AC_CONFIG_SRCDIR([include/chupatext.h])
-AM_CONFIG_HEADER([include/chupatext/config.h])
+AC_CONFIG_SRCDIR([chupatext.h])
+AM_CONFIG_HEADER([chupatext/config.h])
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -70,8 +70,8 @@ GENHTML_OPTIONS="--title 'chupatext Code Coverage'"
 moduledir='$(pkglibdir)/module'
 AC_SUBST(moduledir)
 
-AC_SUBST(build_includedir, '$(top_build_prefix)include')
-AC_SUBST(top_includedir, '$(top_srcdir)/include')
+AC_SUBST(build_includedir, '$(top_build_prefix)')
+AC_SUBST(top_includedir, '$(top_srcdir)')
 
 CHUPATEXT_MAJOR=`echo $CHUPATEXT_VERSION | sed '[s/[-.].*//]'`
 CHUPATEXT_MINOR=`echo $CHUPATEXT_VERSION | sed '[s/^[^-.]*\.//;s/[-.].*//]'`
@@ -83,7 +83,7 @@ AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION_MICRO, [$CHUPATEXT_MICRO], [micro])
 AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION, ["$CHUPATEXT_VERSION"], [version])
 
 AC_CONFIG_FILES([Makefile
-		 lib/Makefile
+		 chupatext/Makefile
 		 test/Makefile
 		 module/Makefile])
 AC_OUTPUT

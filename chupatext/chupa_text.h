@@ -36,8 +36,6 @@ struct ChupaTextClass
                   GInputStream *input);
 };
 
-int chupa_init(void *);
-int chupa_cleanup(void);
 GType chupa_text_get_type(void) G_GNUC_CONST;
 ChupaText *chupa_text_new(GInputStream *source);
 int chupa_text_foreach(ChupaText *chupar, GCallback *func, gpointer arg);

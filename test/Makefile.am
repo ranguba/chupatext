@@ -28,7 +28,7 @@ AM_LDFLAGS =			\
 	-no-undefined
 
 LIBS =					\
-	$(top_builddir)/lib/libchupatext.la \
+	$(top_builddir)/chupatext/libchupatext.la \
 	$(GCUTTER_LIBS)
 
 test_metadata_la_SOURCES = test_metadata.c
