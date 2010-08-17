@@ -1,19 +1,11 @@
-SUBDIRS =		\
-	lib		\
-	fixtures	\
-	core		\
-	client		\
-	libmilter	\
-	server		\
-	manager		\
-	tool
+SUBDIRS =
 
 if WITH_CUTTER
 TESTS = run-test.sh
 TESTS_ENVIRONMENT = NO_MAKE=yes CUTTER="$(CUTTER)"
 
 noinst_LTLIBRARIES =			\
-	suite-chupatext-test.la
+	test_metadata.la
 endif
 
 EXTRA_DIST =		\
@@ -33,9 +25,9 @@ AM_LDFLAGS =			\
 	-no-undefined
 
 LIBS =								\
-	$(top_builddir)/milter/manager/libchupatext.la
+	$(top_builddir)/lib/libchupatext.la
 
-suite_chupatext_test_la_SOURCES = suite-chupatext-test.c
+test_metadata_la_SOURCES = test_metadata.c
 
 echo-cutter:
 	@echo $(CUTTER)
