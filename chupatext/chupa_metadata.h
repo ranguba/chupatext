@@ -36,6 +36,7 @@ ChupaMetadata *chupa_metadata_new(void);
 void chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar *value);
 const gchar *chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key);
 GList *chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key);
+guint chupa_metadata_size(ChupaMetadata *metadata);
 
 G_END_DECLS
 

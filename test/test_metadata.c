@@ -44,6 +44,7 @@ void
 test_new (void)
 {
     metadata = chupa_metadata_new();
+    cut_assert_equal_int(0, chupa_metadata_size(metadata));
     cut_assert_equal_string(NULL, chupa_metadata_get_first_value(metadata, "content-type"));
 }
 

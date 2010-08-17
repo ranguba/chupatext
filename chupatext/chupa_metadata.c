@@ -129,6 +129,15 @@ chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key)
     return g_hash_table_lookup(priv->data, key);
 }
 
+guint
+chupa_metadata_size(ChupaMetadata *metadata)
+{
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    return g_hash_table_size(priv->data);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
