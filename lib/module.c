@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "../../config.h"
+#  include "chupatext/config.h"
 #endif /* HAVE_CONFIG_H */
 
 #include <stdlib.h>
@@ -313,7 +313,7 @@ chupa_module_load_module(const gchar *base_dir, const gchar *name)
         ChupaModulePrivate *priv;
         gchar *mod_name;
 
-        module = g_object_new(MILTER_TYPE_MANAGER_MODULE, NULL);
+        module = g_object_new(CHUPA_TYPE_MODULE, NULL);
         priv = CHUPA_MODULE_GET_PRIVATE(module);
         priv->mod_path = g_strdup(mod_path);
 

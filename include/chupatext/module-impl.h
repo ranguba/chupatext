@@ -24,7 +24,7 @@
 
 G_BEGIN_DECLS
 
-#include <chupa-module.h>
+#include <chupatext/module.h>
 
 typedef GList   *(*ChupaModuleInitFunc)(GTypeModule *module);
 typedef void     (*ChupaModuleExitFunc)(void);
