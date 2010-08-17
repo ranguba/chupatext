@@ -1,9 +1,15 @@
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/*
+ *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ */
+
 #ifndef CHUPA_TEXT_INPUT_STREAM_H
 #define CHUPA_TEXT_INPUT_STREAM_H
 
 #include <glib.h>
-#include <gio.h>
 #include <glib-object.h>
+#include <gio/gio.h>
+#include "chupatext/chupa_metadata.h"
 
 G_BEGIN_DECLS
 
@@ -33,8 +39,8 @@ struct _ChupaTextInputStreamClass
 };
 
 GType        chupa_text_input_stream_get_type(void) G_GNUC_CONST;
-ChupaTextInputStream *chupa_text_input_stream_new(GHashTable *metadata, GInputStream *input);
-GHashTable *chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream);
+ChupaTextInputStream *chupa_text_input_stream_new(ChupaMetadata *metadata, GInputStream *input);
+ChupaMetadata *chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream);
 
 G_END_DECLS
 
