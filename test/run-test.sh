@@ -16,8 +16,8 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 export BASE_DIR="`dirname $0`"
-top_dir="$BASE_DIR/.."
-top_dir="`cd $top_dir; pwd`"
+top_srcdir="$BASE_DIR/.."
+top_srcdir="`cd $top_srcdir; pwd`"
 
 if test x"$NO_MAKE" != x"yes"; then
     if which gmake > /dev/null; then
@@ -25,20 +25,20 @@ if test x"$NO_MAKE" != x"yes"; then
     else
 	MAKE=${MAKE:-"make"}
     fi
-    $MAKE -C $top_dir/ > /dev/null || exit 1
+    $MAKE > /dev/null || exit 1
 fi
 
 if test -z "$CUTTER"; then
-    CUTTER="`make -s -C $BASE_DIR echo-cutter`"
+    CUTTER="`${MAKE} -s echo-cutter`"
 fi
 
 CUTTER_ARGS=
 CUTTER_WRAPPER=
 if test x"$CUTTER_DEBUG" = x"yes"; then
-    CUTTER_WRAPPER="$top_dir/libtool --mode=execute gdb --args"
+    CUTTER_WRAPPER="${LIBTOOL-../libtool} --mode=execute gdb --args"
     CUTTER_ARGS="--keep-opening-modules"
 elif test x"$CUTTER_CHECK_LEAK" = x"yes"; then
-    CUTTER_WRAPPER="$top_dir/libtool --mode=execute valgrind "
+    CUTTER_WRAPPER="${LIBTOOL-../libtool} --mode=execute valgrind "
     CUTTER_WRAPPER="$CUTTER_WRAPPER --leak-check=full --show-reachable=yes -v"
     CUTTER_ARGS="--keep-opening-modules"
 fi
@@ -49,13 +49,13 @@ CUTTER_ARGS="$CUTTER_ARGS -s $BASE_DIR --exclude-directory fixtures"
 if echo "$@" | grep -- --mode=analyze > /dev/null; then
     :
 else
-    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $top_dir/log"
+    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory log"
 fi
 if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
-ruby_dir=$top_dir/binding/ruby
+ruby_dir=$top_srcdir/binding/ruby
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/lib
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/src/toolkit/.libs
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/src/manager/.libs
@@ -73,7 +73,7 @@ fi
 RUBYLIB=$CHUPATEXT_RUBYLIB:$RUBYLIB
 export CHUPATEXT_RUBYLIB
 export RUBYLIB
-export CHUPATEXT_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
-export CHUPATEXT_CONFIG_DIR=$top_dir/test/fixtures/configuration
+export CHUPATEXT_CONFIGURATION_MODULE_DIR=$top_srcdir/module/configuration/ruby/.libs
+export CHUPATEXT_CONFIG_DIR=$top_srcdir/test/fixtures/configuration
 
-$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" $BASE_DIR
+$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" .
