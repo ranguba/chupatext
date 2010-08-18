@@ -28,10 +28,12 @@ void
 test_new (void)
 {
     ChupaMetadata *meta;
-    stream = chupa_text_input_stream_new(NULL, NULL);
+    GInputStream *memstream = g_memory_input_stream_new();
+    stream = chupa_text_input_stream_new(NULL, memstream);
     meta = chupa_text_input_stream_get_metadata(stream);
     cut_assert_not_null(meta);
     cut_assert_equal_int(0, chupa_metadata_size(meta));
+    cut_assert_equal_pointer(memstream, g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream)));
 }
 
 /*
