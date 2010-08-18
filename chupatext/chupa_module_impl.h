@@ -17,14 +17,14 @@
  *
  */
 
-#ifndef CHUPATEXT_MODULE_IMPL_H__
-#define CHUPATEXT_MODULE_IMPL_H__
+#ifndef CHUPA_MODULE_IMPL_H
+#define CHUPA_MODULE_IMPL_H
 
 #include <glib-object.h>
 
 G_BEGIN_DECLS
 
-#include <chupatext/module.h>
+#include "chupatext/chupa_module.h"
 
 typedef GList   *(*ChupaModuleInitFunc)(GTypeModule *module);
 typedef void     (*ChupaModuleExitFunc)(void);
@@ -41,7 +41,7 @@ GObject *CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_
 
 G_END_DECLS
 
-#endif /* CHUPATEXT_MODULE_IMPL_H__ */
+#endif /* CHUPA_MODULE_IMPL_H */
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

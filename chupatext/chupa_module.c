@@ -26,8 +26,8 @@
 
 #include <gmodule.h>
 
-#include "chupatext/module.h"
-#include "chupatext/module-impl.h"
+#include "chupatext/chupa_module.h"
+#include "chupatext/chupa_module_impl.h"
 
 #define CHUPA_MODULE_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE(obj, \

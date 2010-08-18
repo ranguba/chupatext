@@ -3,8 +3,8 @@
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  */
 
-#ifndef CHUPATEXT_MODULE_H__
-#define CHUPATEXT_MODULE_H__
+#ifndef CHUPA_MODULE_H
+#define CHUPA_MODULE_H
 
 #include <glib-object.h>
 
@@ -49,7 +49,7 @@ void         chupa_module_unload(ChupaModule *module);
 
 G_END_DECLS
 
-#endif /* CHUPATEXT_MODULE_H__ */
+#endif /* CHUPA_MODULE_H */
 
 /*
 vi:nowrap:ai:expandtab:sw=4

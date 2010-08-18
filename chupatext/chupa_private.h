@@ -7,7 +7,7 @@
 #define CHUPA_PRIVATE_H
 
 #include <chupatext.h>
-#include <chupatext/module.h>
+#include <chupatext/chupa_module.h>
 
 typedef struct ChupaConverter ChupaConverter;
 typedef struct ChupaConverterClass ChupaConverterClass;
