@@ -36,6 +36,17 @@ test_new (void)
     cut_assert_equal_pointer(memstream, g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream)));
 }
 
+void
+test_new_with_metadata (void)
+{
+    ChupaMetadata *meta = chupa_metadata_new();
+    GInputStream *memstream = g_memory_input_stream_new();
+    stream = chupa_text_input_stream_new(meta, memstream);
+    cut_assert_equal_pointer(meta, chupa_text_input_stream_get_metadata(stream));
+    cut_assert_equal_int(0, chupa_metadata_size(meta));
+    cut_assert_equal_pointer(memstream, g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream)));
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
