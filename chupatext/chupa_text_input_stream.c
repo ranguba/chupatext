@@ -34,6 +34,21 @@ chupa_text_input_stream_init(ChupaTextInputStream *stream)
     priv->metadata = NULL;
 }
 
+static GObject *
+constructor(GType type, guint n_props, GObjectConstructParam *props)
+{
+    GObjectClass *klass = G_OBJECT_CLASS(chupa_text_input_stream_parent_class);
+    GObject *object = klass->constructor(type, n_props, props);
+    ChupaTextInputStream *stream = CHUPA_TEXT_INPUT_STREAM(object);
+    ChupaTextInputStreamPrivate *priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
+
+    if (!priv->metadata) {
+        priv->metadata = chupa_metadata_new();
+    }
+
+    return object;
+}
+
 static void
 dispose(GObject *object)
 {
@@ -44,8 +59,6 @@ dispose(GObject *object)
         g_object_unref(priv->metadata);
         priv->metadata = NULL;
     }
-
-    G_OBJECT_CLASS(chupa_text_input_stream_parent_class)->dispose(object);
 }
 
 static void
@@ -94,6 +107,7 @@ chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GParamSpec *spec;
 
+    gobject_class->constructor  = constructor;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
@@ -123,8 +137,5 @@ chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream)
     ChupaTextInputStreamPrivate *priv;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    if (!priv->metadata) {
-        priv->metadata = chupa_metadata_new();
-    }
     return priv->metadata;
 }
