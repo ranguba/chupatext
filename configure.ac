@@ -8,7 +8,10 @@ AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_SRCDIR([chupatext.h])
 AM_CONFIG_HEADER([chupatext/config.h])
 
-AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
+version_h="${srcdir}/chupatext/version.h"
+VERSION=`sed '[/#define CHUPA_VERSION_STRING /!d;s///;s/"//g]' $version_h`
+
+AM_INIT_AUTOMAKE($PACKAGE_NAME, $VERSION)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_ENABLE_SHARED(yes)
@@ -72,15 +75,6 @@ AC_SUBST(moduledir)
 
 AC_SUBST(build_includedir, '$(top_build_prefix)')
 AC_SUBST(top_includedir, '$(top_srcdir)')
-
-CHUPATEXT_MAJOR=`echo $CHUPATEXT_VERSION | sed '[s/[-.].*//]'`
-CHUPATEXT_MINOR=`echo $CHUPATEXT_VERSION | sed '[s/^[^-.]*\.//;s/[-.].*//]'`
-CHUPATEXT_MICRO=`echo $CHUPATEXT_VERSION | sed '[s/^[^-.]*\.[^-.]*\.//;s/[-.].*//]'`
-AC_SUBST(CHUPATEXT_MAJOR)AC_SUBST(CHUPATEXT_MINOR)AC_SUBST(CHUPATEXT_MICRO)
-AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION_MAJOR, [$CHUPATEXT_MAJOR], [major])
-AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION_MINOR, [$CHUPATEXT_MINOR], [minor])
-AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION_MICRO, [$CHUPATEXT_MICRO], [micro])
-AC_DEFINE_UNQUOTED(CHUPATEXT_VERSION, ["$CHUPATEXT_VERSION"], [version])
 
 AC_CONFIG_FILES([Makefile
 		 chupatext/Makefile

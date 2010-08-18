@@ -5,3 +5,4 @@ config.h.in
 /tmp
 /config
 /m4
+chupatext/version.h
