@@ -59,6 +59,8 @@ dispose(GObject *object)
         g_object_unref(priv->metadata);
         priv->metadata = NULL;
     }
+
+    G_OBJECT_CLASS(chupa_text_input_stream_parent_class)->dispose(object);
 }
 
 static void
