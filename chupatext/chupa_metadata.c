@@ -146,6 +146,39 @@ chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key)
     return g_hash_table_lookup(priv->data, key);
 }
 
+static void
+list_copy(gpointer value, gpointer user_data)
+{
+    GList **dest = user_data;
+    *dest = g_list_append(*dest, g_strdup(value));
+}
+
+static void
+metadata_update_func(gpointer key, gpointer value, gpointer user_data)
+{
+    GHashTable *dest = user_data;
+    GList *l1 = g_hash_table_lookup(dest, key), *l2 = value;
+
+    if (g_hash_table_lookup_extended(dest, key, &key, &value)) {
+        g_hash_table_steal(dest, key);
+    }
+    else {
+        key = g_strdup(key);
+    }
+    g_list_foreach(l2, list_copy, &l1);
+    g_hash_table_insert(dest, key, l1);
+}
+
+void
+chupa_metadata_update(ChupaMetadata *metadata, ChupaMetadata *update)
+{
+    ChupaMetadataPrivate *priv1, *priv2;
+
+    priv1 = CHUPA_METADATA_GET_PRIVATE(metadata);
+    priv2 = CHUPA_METADATA_GET_PRIVATE(update);
+    g_hash_table_foreach(priv2->data, metadata_update_func, priv1->data);
+}
+
 guint
 chupa_metadata_size(ChupaMetadata *metadata)
 {

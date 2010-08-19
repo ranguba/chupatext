@@ -37,6 +37,7 @@ void chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const g
 void chupa_metadata_replace_value(ChupaMetadata *metadata, const gchar *key, const gchar *value);
 const gchar *chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key);
 GList *chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key);
+void chupa_metadata_update(ChupaMetadata *metadata, ChupaMetadata *update);
 guint chupa_metadata_size(ChupaMetadata *metadata);
 
 G_END_DECLS
