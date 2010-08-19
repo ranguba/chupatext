@@ -32,8 +32,8 @@ test_new (void)
     stream = chupa_text_input_stream_new(NULL, memstream);
     meta = chupa_text_input_stream_get_metadata(stream);
     cut_assert_not_null(meta);
-    cut_assert_equal_int(0, chupa_metadata_size(meta));
-    cut_assert_equal_pointer(memstream, g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream)));
+    cut_assert_equal_int(1, chupa_metadata_size(meta));
+    cut_assert_not_null(chupa_metadata_get_first_value(meta, "mime-type"));
 }
 
 void
@@ -43,8 +43,7 @@ test_new_with_metadata (void)
     GInputStream *memstream = g_memory_input_stream_new();
     stream = chupa_text_input_stream_new(meta, memstream);
     gcut_assert_equal_object(meta, chupa_text_input_stream_get_metadata(stream));
-    cut_assert_equal_uint(0, chupa_metadata_size(meta));
-    gcut_assert_equal_object(memstream, g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream)));
+    cut_assert_equal_uint(1, chupa_metadata_size(meta));
 }
 
 /*
