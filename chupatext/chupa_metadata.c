@@ -95,14 +95,21 @@ void
 chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar *value)
 {
     ChupaMetadataPrivate *priv;
-    GList *values, *new_values;
+    GList *values = NULL;
+    gboolean existing;
+    gpointer keyptr = (gpointer)key, valptr;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    values = g_hash_table_lookup(priv->data, key);
-    new_values = (GList *)g_list_append(values, g_strdup(value));
-    if (!values) {
-        g_hash_table_insert(priv->data, g_strdup(key), new_values);
+    if (g_hash_table_lookup_extended(priv->data, key, &keyptr, &valptr)) {
+        g_hash_table_steal(priv->data, keyptr);
+        key = keyptr;
+        values = valptr;
     }
+    else {
+        key = g_strdup(key);
+    }
+    values = g_list_append(values, g_strdup(value));
+    g_hash_table_insert(priv->data, (gpointer)key, values);
 }
 
 const gchar *
