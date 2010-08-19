@@ -70,6 +70,21 @@ test_get_values (void)
     cut_assert_equal_string("text/html", values->next->data);
 }
 
+void
+test_replace_value (void)
+{
+    const gchar *key = "content-type";
+    GList *values;
+
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, key, "text/plain");
+    cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, key));
+    chupa_metadata_replace_value(metadata, key, "text/html");
+    values = chupa_metadata_get_values(metadata, key);
+    cut_assert_equal_int(1, g_list_length(values));
+    cut_assert_equal_string("text/html", values->data);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

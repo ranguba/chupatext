@@ -112,6 +112,16 @@ chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar 
     g_hash_table_insert(priv->data, (gpointer)key, values);
 }
 
+void
+chupa_metadata_replace_value(ChupaMetadata *metadata, const gchar *key, const gchar *value)
+{
+    ChupaMetadataPrivate *priv;
+    GList *values, *new_values;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    g_hash_table_replace(priv->data, g_strdup(key), g_list_append(NULL, g_strdup(value)));
+}
+
 const gchar *
 chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key)
 {
