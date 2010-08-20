@@ -18,7 +18,7 @@ struct _ChupaDecomposerPrivate
 };
 #endif
 
-G_DEFINE_TYPE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT)
 
 enum {
     PROP_0,
@@ -40,11 +40,4 @@ chupa_decomposer_class_init(ChupaDecomposerClass *klass)
 #ifdef USE_CHUPA_DECOMPOSER_PRIVATE
     g_type_class_add_private(gobject_class, sizeof(ChupaDecomposerPrivate));
 #endif
-}
-
-ChupaDecomposer *
-chupa_decomposer_new(void)
-{
-    return g_object_new(CHUPA_TYPE_DECOMPOSER,
-                        NULL);
 }
