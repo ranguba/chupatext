@@ -60,3 +60,35 @@ chupa_text_new(void)
                           NULL);
     return chupar;
 }
+
+void
+chupa_text_decomposed(ChupaText *chupar, ChupaTextInputStream *stream)
+{
+    g_signal_emit_by_name(chupar, chupa_text_signal_decomposed, stream);
+}
+
+void
+chupa_text_feed(ChupaText *chupar, GInputStream *stream)
+{
+    const char *mime_type = NULL;
+    ChupaMetadata *meta;
+    ChupaTextInputStream *ti;
+    GType type;
+
+    ti = chupa_text_input_stream_new(NULL, stream);
+    meta = chupa_text_input_stream_get_metadata(ti);
+    mime_type = chupa_metadata_get_first_value(meta, "mime-type");
+
+    if (!mime_type) {
+        g_error("can't determin mime-type\n");
+    }
+    else if (type = chupa_decomposer_search(mime_type)) {
+        GObject *dec = g_object_new(type, NULL);
+        chupa_decomposer_feed(dec, chupar, ti);
+        g_object_unref(dec);
+    }
+    else {
+        g_warning("unknown mime-type %s\n", mime_type);
+    }
+    g_object_unref(G_OBJECT(ti));
+}

@@ -41,3 +41,10 @@ chupa_decomposer_class_init(ChupaDecomposerClass *klass)
     g_type_class_add_private(gobject_class, sizeof(ChupaDecomposerPrivate));
 #endif
 }
+
+void
+chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStream *stream)
+{
+    g_return_if_fail(CHUPA_IS_DECOMPOSER(dec));
+    (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, stream);
+}
