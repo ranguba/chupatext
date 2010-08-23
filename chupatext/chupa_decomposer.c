@@ -14,13 +14,7 @@
 
 static GHashTable *decomp_modules = NULL;
 
-static void
-module_list_free(gpointer arg)
-{
-    GList *modules = arg;
-    g_list_foreach(modules, (GFunc)g_object_unref, NULL);
-    g_list_free(modules);
-}
+#define module_list_free (GDestroyNotify)g_list_free
 
 static void
 decomp_modules_init(void)
@@ -74,24 +68,24 @@ chupa_decomposer_load_modules(void)
 }
 
 void
-chupa_decomposer_register(const gchar *mime_type, ChupaDecomposerClass *klass)
+chupa_decomposer_register(const gchar *mime_type, GType type)
 {
     gpointer key = (gpointer)mime_type, val = NULL;
 
     if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
         g_hash_table_steal(decomp_modules, key);
     }
-    val = g_list_prepend((GList *)val, klass);
+    val = g_list_prepend((GList *)val, (gpointer)type);
     g_hash_table_insert(decomp_modules, key, val);
 }
 
 void
-chupa_decomposer_unregister(const gchar *mime_type, ChupaDecomposerClass *klass)
+chupa_decomposer_unregister(const gchar *mime_type, GType type)
 {
     gpointer key = (gpointer)mime_type, val = NULL;
 
     if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
-        val = g_list_remove((GList *)val, klass);
+        val = g_list_remove((GList *)val, (gpointer)type);
         if (val) {
             g_hash_table_steal(decomp_modules, key);
             g_hash_table_insert(decomp_modules, key, val);
@@ -105,8 +99,7 @@ chupa_decomposer_unregister(const gchar *mime_type, ChupaDecomposerClass *klass)
 ChupaDecomposerClass *
 chupa_decomposer_search(GInputStream *stream)
 {
-    ChupaDecomposerClass *decomp_class = NULL;
-    GType type;
+    GList *type_list = NULL;
     ChupaTextInputStream *tis = chupa_text_input_stream_new(NULL, stream);
     ChupaMetadata *meta = chupa_text_input_stream_get_metadata(tis);
     const gchar *mime_type = chupa_metadata_get_first_value(meta, "mime-type");
@@ -114,17 +107,18 @@ chupa_decomposer_search(GInputStream *stream)
     gpointer key, value;
 
     if (g_hash_table_lookup_extended(decomp_modules, mime_type, &key, &value)) {
-        decomp_class = CHUPA_DECOMPOSER_CLASS(value);
+        type_list = (GList *)value;
     }
     else if ((slash = strchr((const char *)mime_type, '/')) != NULL) {
         GString *tmp_type = g_string_new_len(mime_type, slash + 1 - mime_type);
         g_string_append_c(tmp_type, '*');
-        if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value) &&
-            CHUPA_IS_DECOMPOSER_CLASS(value)) {
-            decomp_class = CHUPA_DECOMPOSER_CLASS(value);
+        if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value)) {
+            type_list = (GList *)value;
         }
         g_string_free(tmp_type, TRUE);
     }
 
-    return decomp_class;
+    return type_list ?
+        CHUPA_DECOMPOSER_CLASS(g_type_class_ref((GType)type_list->data)) :
+        NULL;
 }

@@ -46,8 +46,8 @@ ChupaDecomposerClass *chupa_decomposer_search(GInputStream *stream);
 void         chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStream *stream);
 
 void chupa_decomposer_load_modules(void);
-void chupa_decomposer_register(const gchar *mime_type, ChupaDecomposerClass *klass);
-void chupa_decomposer_unregister(const gchar *mime_type, ChupaDecomposerClass *klass);
+void chupa_decomposer_register(const gchar *mime_type, GType type);
+void chupa_decomposer_unregister(const gchar *mime_type, GType type);
 
 G_END_DECLS
 
