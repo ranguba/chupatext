@@ -103,11 +103,12 @@ chupa_decomposer_unregister(const gchar *mime_type, ChupaDecomposerClass *klass)
 }
 
 ChupaDecomposerClass *
-chupa_decomposer_search(ChupaTextInputStream *stream)
+chupa_decomposer_search(GInputStream *stream)
 {
     ChupaDecomposerClass *decomp_class = NULL;
     GType type;
-    ChupaMetadata *meta = chupa_text_input_stream_get_metadata(stream);
+    ChupaTextInputStream *tis = chupa_text_input_stream_new(NULL, stream);
+    ChupaMetadata *meta = chupa_text_input_stream_get_metadata(tis);
     const gchar *mime_type = chupa_metadata_get_first_value(meta, "mime-type");
     const gchar *slash;
     gpointer key, value;
