@@ -5,11 +5,29 @@
 
 #include "chupatext/chupa_decomposer.h"
 #include <glib.h>
+#include <string.h>
 
 #define CHUPA_DECOMPOSER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE(obj, \
                                  CHUPA_TYPE_DECOMPOSER_OBJECT, \
                                  ChupaDecomposerPrivate))
+
+static GHashTable *decomp_modules = NULL;
+
+static void
+module_list_free(gpointer arg)
+{
+    GList *modules = arg;
+    g_list_foreach(modules, (GFunc)g_object_unref, NULL);
+    g_list_free(modules);
+}
+
+static void
+decomp_modules_init(void)
+{
+    decomp_modules = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                           NULL, module_list_free);
+}
 
 #ifdef USE_CHUPA_DECOMPOSER_PRIVATE
 typedef struct _ChupaDecomposerPrivate  ChupaDecomposerPrivate;
@@ -18,7 +36,8 @@ struct _ChupaDecomposerPrivate
 };
 #endif
 
-G_DEFINE_ABSTRACT_TYPE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT,
+                                 decomp_modules_init())
 
 enum {
     PROP_0,
@@ -47,4 +66,64 @@ chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStrea
 {
     g_return_if_fail(CHUPA_IS_DECOMPOSER(dec));
     (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, stream);
+}
+
+void
+chupa_decomposer_load_modules(void)
+{
+}
+
+void
+chupa_decomposer_register_module(const gchar *mime_type, ChupaDecomposerClass *klass)
+{
+    gpointer key = (gpointer)mime_type, val = NULL;
+
+    if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
+        g_hash_table_steal(decomp_modules, key);
+    }
+    val = g_list_prepend((GList *)val, klass);
+    g_hash_table_insert(decomp_modules, key, val);
+}
+
+void
+chupa_decomposer_unregister_module(const gchar *mime_type, ChupaDecomposerClass *klass)
+{
+    gpointer key = (gpointer)mime_type, val = NULL;
+
+    if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
+        val = g_list_remove((GList *)val, klass);
+        if (val) {
+            g_hash_table_steal(decomp_modules, key);
+            g_hash_table_insert(decomp_modules, key, val);
+        }
+        else {
+            g_hash_table_remove(decomp_modules, key);
+        }
+    }
+}
+
+ChupaDecomposerClass *
+chupa_decomposer_search(ChupaTextInputStream *stream)
+{
+    ChupaDecomposerClass *decomp_class = NULL;
+    GType type;
+    ChupaMetadata *meta = chupa_text_input_stream_get_metadata(stream);
+    const gchar *mime_type = chupa_metadata_get_first_value(meta, "mime-type");
+    const gchar *slash;
+    gpointer key, value;
+
+    if (g_hash_table_lookup_extended(decomp_modules, mime_type, &key, &value)) {
+        decomp_class = CHUPA_DECOMPOSER_CLASS(value);
+    }
+    else if ((slash = strchr((const char *)mime_type, '/')) != NULL) {
+        GString *tmp_type = g_string_new_len(mime_type, slash + 1 - mime_type);
+        g_string_append_c(tmp_type, '*');
+        if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value) &&
+            CHUPA_IS_DECOMPOSER_CLASS(value)) {
+            decomp_class = CHUPA_DECOMPOSER_CLASS(value);
+        }
+        g_string_free(tmp_type, TRUE);
+    }
+
+    return decomp_class;
 }
