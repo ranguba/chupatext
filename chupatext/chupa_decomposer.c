@@ -74,7 +74,7 @@ chupa_decomposer_load_modules(void)
 }
 
 void
-chupa_decomposer_register_module(const gchar *mime_type, ChupaDecomposerClass *klass)
+chupa_decomposer_register(const gchar *mime_type, ChupaDecomposerClass *klass)
 {
     gpointer key = (gpointer)mime_type, val = NULL;
 
@@ -86,7 +86,7 @@ chupa_decomposer_register_module(const gchar *mime_type, ChupaDecomposerClass *k
 }
 
 void
-chupa_decomposer_unregister_module(const gchar *mime_type, ChupaDecomposerClass *klass)
+chupa_decomposer_unregister(const gchar *mime_type, ChupaDecomposerClass *klass)
 {
     gpointer key = (gpointer)mime_type, val = NULL;
 
