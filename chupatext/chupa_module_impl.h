@@ -31,14 +31,6 @@ typedef void     (*ChupaModuleExitFunc)(void);
 typedef GObject *(*ChupaModuleInstantiateFunc)(const gchar *first_property,
                                                va_list      var_args);
 
-#define CHUPA_MODULE_IMPL_INIT           chupa_module_impl_init
-#define CHUPA_MODULE_IMPL_EXIT           chupa_module_impl_exit
-#define CHUPA_MODULE_IMPL_INSTANTIATE    chupa_module_impl_instantiate
-
-GList   *CHUPA_MODULE_IMPL_INIT(GTypeModule *module);
-void     CHUPA_MODULE_IMPL_EXIT(void);
-GObject *CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_args);
-
 G_END_DECLS
 
 #endif /* CHUPA_MODULE_IMPL_H */
