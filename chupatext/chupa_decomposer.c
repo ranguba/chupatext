@@ -4,6 +4,7 @@
  */
 
 #include "chupatext/chupa_decomposer.h"
+#include "chupatext/text_decomposer.h"
 #include <glib.h>
 #include <string.h>
 
@@ -62,9 +63,12 @@ chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStrea
     (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, stream);
 }
 
+static const char text_plain[] = "text/plain";
+
 void
 chupa_decomposer_load_modules(void)
 {
+    chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER);
 }
 
 void

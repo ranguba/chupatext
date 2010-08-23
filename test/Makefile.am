@@ -8,6 +8,7 @@ TESTS_ENVIRONMENT = NO_MAKE=yes CUTTER="$(CUTTER)"
 noinst_LTLIBRARIES =			\
 	test_metadata.la \
 	test_text_input_stream.la \
+	test_decomposer.la \
 	$(EMPTY)
 endif
 
@@ -40,6 +41,7 @@ LIBS =					\
 
 test_metadata_la_SOURCES = test_metadata.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
+test_decomposer_la_SOURCES = test_decomposer.c
 
 echo-cutter:
 	@echo $(CUTTER)
