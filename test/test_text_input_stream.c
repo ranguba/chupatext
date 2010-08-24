@@ -8,6 +8,7 @@
 #include <gcutter.h>
 
 void test_new (void);
+void test_new_with_metadata (void);
 
 static ChupaTextInputStream *stream;
 
