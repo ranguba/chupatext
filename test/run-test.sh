@@ -17,9 +17,13 @@
 
 export BASE_DIR="`dirname $0`"
 top_srcdir="$BASE_DIR/.."
-top_srcdir="`cd $top_srcdir; pwd`"
-testdir="${1-`pwd`}"
-builddir="`cd $testdir && cd .. && pwd`"
+eval testdir='"${'$#'-.}"'
+case "$testdir" in
+    */. | */.. ) builddir="$testdir/..";;
+    */* ) builddir=`expr "$testdir" : '\(.*\)/.*'`;;
+    *) builddir="`cd $testdir && cd .. && pwd`";;
+esac
+shift
 
 if test x"$NO_MAKE" != x"yes"; then
     if which gmake > /dev/null; then
