@@ -42,7 +42,7 @@ struct _ChupaDecomposerClass
 
 GType        chupa_decomposer_get_type(void) G_GNUC_CONST;
 
-ChupaDecomposerClass *chupa_decomposer_search(GInputStream *stream);
+ChupaDecomposerClass *chupa_decomposer_search(const gchar *mime_type);
 void         chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStream *stream);
 
 void chupa_decomposer_load_modules(void);

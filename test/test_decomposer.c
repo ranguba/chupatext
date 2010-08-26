@@ -28,13 +28,9 @@ teardown(void)
 }
 
 void
-test_new(void)
+test_search(void)
 {
-    static const char plain_text[] = "plain text\n";
-    GInputStream *mem = g_memory_input_stream_new_from_data(plain_text, strlen(plain_text), NULL);
-
-    source = mem;
-    decomp_class = chupa_decomposer_search(mem);
+    decomp_class = chupa_decomposer_search("text/plain");
     cut_assert_not_null(decomp_class);
     cut_assert_equal_uint(CHUPA_TYPE_TEXT_DECOMPOSER, G_TYPE_FROM_CLASS(decomp_class));
 }
