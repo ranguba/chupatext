@@ -30,12 +30,12 @@ enum {
 };
 
 static const char *
-guess_mime_type(GInputStream **stream, gboolean *uncertain)
+guess_mime_type(GInputStream *stream, gboolean *uncertain)
 {
     const char *mime_type;
 
-    if (G_IS_FILE_INPUT_STREAM(*stream)) {
-        GFileInfo *info = g_file_input_stream_query_info(G_FILE_INPUT_STREAM(*stream),
+    if (G_IS_FILE_INPUT_STREAM(stream)) {
+        GFileInfo *info = g_file_input_stream_query_info(G_FILE_INPUT_STREAM(stream),
                                                          G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
                                                          NULL, NULL);
         mime_type = g_content_type_get_mime_type(g_file_info_get_content_type(info));
@@ -44,12 +44,8 @@ guess_mime_type(GInputStream **stream, gboolean *uncertain)
     else {
         gsize len;
         const char *buf;
-        GBufferedInputStream *buffered;
+        GBufferedInputStream *buffered = G_BUFFERED_INPUT_STREAM(stream);
 
-        if (!G_IS_BUFFERED_INPUT_STREAM(*stream)) {
-            *stream = g_buffered_input_stream_new_sized(*stream, peek_buffer_size);
-        }
-        buffered = (GBufferedInputStream *)*stream;
         g_buffered_input_stream_fill(buffered, peek_buffer_size, NULL, NULL);
         buf = g_buffered_input_stream_peek_buffer(buffered, &len);
         mime_type = g_content_type_get_mime_type(g_content_type_guess(NULL, buf, len, uncertain));
@@ -66,30 +62,19 @@ chupa_text_input_stream_init(ChupaTextInputStream *stream)
     priv->metadata = NULL;
 }
 
-static GObject *
-constructor(GType type, guint n_props, GObjectConstructParam *props)
+static void
+constructed(GObject *object)
 {
-    GObjectClass *klass = G_OBJECT_CLASS(chupa_text_input_stream_parent_class);
-    GObject *object = klass->constructor(type, n_props, props);
     ChupaTextInputStream *stream = CHUPA_TEXT_INPUT_STREAM(object);
     ChupaTextInputStreamPrivate *priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    GInputStream *base, *new_base;
     const gchar *mime_type;
 
     if (!priv->metadata) {
         priv->metadata = chupa_metadata_new();
     }
 
-    base = g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream));
-    new_base = base;
-    mime_type = guess_mime_type(&new_base, NULL);
-    if (new_base != base) {
-        g_object_unref(base);
-        g_object_set(G_OBJECT(stream), "base-stream", new_base, NULL);
-    }
+    mime_type = guess_mime_type(G_INPUT_STREAM(stream), NULL);
     chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);
-
-    return object;
 }
 
 static void
@@ -152,7 +137,7 @@ chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GParamSpec *spec;
 
-    gobject_class->constructor  = constructor;
+    gobject_class->constructed  = constructed;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
