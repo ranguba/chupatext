@@ -8,21 +8,21 @@
 
 #include <gcutter.h>
 
-static ChupaDecomposerClass *decomp_class;
+static ChupaDecomposer *decomp;
 static GInputStream *source;
 
 void
 setup(void)
 {
     chupa_decomposer_load_modules();
-    decomp_class = NULL;
+    decomp = NULL;
 }
 
 void
 teardown(void)
 {
-    if (decomp_class)
-        g_type_class_unref(decomp_class);
+    if (decomp)
+        g_object_unref(decomp);
     if (source)
         g_object_unref(source);
 }
@@ -30,7 +30,7 @@ teardown(void)
 void
 test_search(void)
 {
-    decomp_class = chupa_decomposer_search("text/plain");
-    cut_assert_not_null(decomp_class);
-    cut_assert_equal_uint(CHUPA_TYPE_TEXT_DECOMPOSER, G_TYPE_FROM_CLASS(decomp_class));
+    decomp = chupa_decomposer_search("text/plain");
+    cut_assert_not_null(decomp);
+    cut_assert_not_null(CHUPA_TEXT_DECOMPOSER(decomp));
 }

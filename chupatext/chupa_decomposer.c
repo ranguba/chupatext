@@ -100,7 +100,7 @@ chupa_decomposer_unregister(const gchar *mime_type, GType type)
     }
 }
 
-ChupaDecomposerClass *
+ChupaDecomposer *
 chupa_decomposer_search(const gchar *mime_type)
 {
     GList *type_list = NULL;
@@ -119,7 +119,8 @@ chupa_decomposer_search(const gchar *mime_type)
         g_string_free(tmp_type, TRUE);
     }
 
-    return type_list ?
-        CHUPA_DECOMPOSER_CLASS(g_type_class_ref((GType)type_list->data)) :
-        NULL;
+    if (!type_list) {
+        return NULL;
+    }
+    return CHUPA_DECOMPOSER(g_object_new((GType)type_list->data, NULL));
 }

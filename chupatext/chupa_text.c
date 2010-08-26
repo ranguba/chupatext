@@ -4,6 +4,7 @@
  */
 
 #include "chupatext/chupa_text.h"
+#include "chupatext/chupa_decomposer.h"
 
 G_DEFINE_TYPE(ChupaText, chupa_text, G_TYPE_OBJECT)
 
@@ -72,7 +73,7 @@ chupa_text_feed(ChupaText *chupar, GInputStream *stream)
 {
     const char *mime_type = NULL;
     ChupaTextInputStream *ti;
-    GType type;
+    ChupaDecomposer *dec;
 
     ti = chupa_text_input_stream_new(NULL, stream);
     mime_type = chupa_text_input_stream_get_mime_type(ti);
@@ -80,8 +81,7 @@ chupa_text_feed(ChupaText *chupar, GInputStream *stream)
     if (!mime_type) {
         g_error("can't determin mime-type\n");
     }
-    else if (type = chupa_decomposer_search(mime_type)) {
-        GObject *dec = g_object_new(type, NULL);
+    else if (dec = chupa_decomposer_search(mime_type)) {
         chupa_decomposer_feed(dec, chupar, ti);
         g_object_unref(dec);
     }
