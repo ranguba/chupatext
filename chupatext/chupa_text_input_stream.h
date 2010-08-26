@@ -30,12 +30,12 @@ typedef struct _ChupaTextInputStreamClass ChupaTextInputStreamClass;
 
 struct _ChupaTextInputStream
 {
-    GFilterInputStream object;
+    GDataInputStream object;
 };
 
 struct _ChupaTextInputStreamClass
 {
-    GFilterInputStreamClass parent_class;
+    GDataInputStreamClass parent_class;
 };
 
 GType        chupa_text_input_stream_get_type(void) G_GNUC_CONST;
