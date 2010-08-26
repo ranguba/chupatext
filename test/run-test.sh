@@ -23,7 +23,6 @@ case "$testdir" in
     */* ) builddir=`expr "$testdir" : '\(.*\)/.*'`;;
     *) builddir="`cd $testdir && cd .. && pwd`";;
 esac
-shift
 
 if test x"$NO_MAKE" != x"yes"; then
     if which gmake > /dev/null; then
