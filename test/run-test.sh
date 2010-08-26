@@ -17,7 +17,8 @@
 
 export BASE_DIR="`dirname $0`"
 top_srcdir="$BASE_DIR/.."
-eval testdir='"${'$#'-.}"'
+testdir=.
+test $# = 0 || eval testdir='"${'$#'-.}"'
 case "$testdir" in
     */. | */.. ) builddir="$testdir/..";;
     */* ) builddir=`expr "$testdir" : '\(.*\)/.*'`;;
