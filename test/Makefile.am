@@ -7,6 +7,7 @@ TESTS_ENVIRONMENT = NO_MAKE=yes CUTTER="$(CUTTER)"
 
 noinst_LTLIBRARIES =			\
 	test_metadata.la \
+	test_text.la \
 	test_text_input_stream.la \
 	test_decomposer.la \
 	test_restrict_input_stream.la \
@@ -41,6 +42,7 @@ LIBS =					\
 	$(EMPTY)
 
 test_metadata_la_SOURCES = test_metadata.c
+test_text_la_SOURCES = test_text.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
 test_decomposer_la_SOURCES = test_decomposer.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
