@@ -15,7 +15,7 @@ chupa_text_decomposer_init(ChupaTextDecomposer *text_decomposer)
 static void
 chupa_text_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStream *stream)
 {
-    chupa_text_feed(text, G_INPUT_STREAM(stream));
+    chupa_text_decomposed(text, stream);
 }
 
 static void
