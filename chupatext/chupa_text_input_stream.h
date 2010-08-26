@@ -41,6 +41,7 @@ struct _ChupaTextInputStreamClass
 GType        chupa_text_input_stream_get_type(void) G_GNUC_CONST;
 ChupaTextInputStream *chupa_text_input_stream_new(ChupaMetadata *metadata, GInputStream *input);
 ChupaMetadata *chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream);
+const gchar *chupa_text_input_stream_get_mime_type(ChupaTextInputStream *stream);
 
 G_END_DECLS
 

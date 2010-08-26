@@ -71,13 +71,11 @@ void
 chupa_text_feed(ChupaText *chupar, GInputStream *stream)
 {
     const char *mime_type = NULL;
-    ChupaMetadata *meta;
     ChupaTextInputStream *ti;
     GType type;
 
     ti = chupa_text_input_stream_new(NULL, stream);
-    meta = chupa_text_input_stream_get_metadata(ti);
-    mime_type = chupa_metadata_get_first_value(meta, "mime-type");
+    mime_type = chupa_text_input_stream_get_mime_type(ti);
 
     if (!mime_type) {
         g_error("can't determin mime-type\n");

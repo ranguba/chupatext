@@ -176,3 +176,10 @@ chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream)
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
     return priv->metadata;
 }
+
+const gchar *
+chupa_text_input_stream_get_mime_type(ChupaTextInputStream *stream)
+{
+    ChupaMetadata *meta = chupa_text_input_stream_get_metadata(stream);
+    return chupa_metadata_get_first_value(meta, "mime-type");
+}
