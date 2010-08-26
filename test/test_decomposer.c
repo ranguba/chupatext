@@ -22,7 +22,7 @@ void
 teardown(void)
 {
     if (decomp_class)
-        g_object_unref(decomp_class);
+        g_type_class_unref(decomp_class);
     if (source)
         g_object_unref(source);
 }
