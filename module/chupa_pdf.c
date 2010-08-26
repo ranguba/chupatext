@@ -40,57 +40,55 @@ chupa_pdf_decomposer_init(ChupaPDFDecomposer *pdf_decomposer)
 }
 
 static void
-chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInputStream *stream)
+chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInputStream *stream)
 {
     PopplerDocument *doc;
     GError **error = NULL;
-    gchar *tempfile = save_to_tempfile(stream, error);
     GMemoryInputStream *mem = NULL;
-    const gsize bufsize = 16*1024;
-    gsize len = 0;
     gssize count;
-    char *buffer, *tmp;
+    gchar buffer[16*1024];
+    const gsize bufsize = sizeof(buffer);
+    GString *str = g_string_sized_new(sizeof(buffer));
     GInputStream *inp = G_INPUT_STREAM(stream);
     ChupaMetadata *meta = chupa_text_input_stream_get_metadata(stream);
     int n, i;
 
-    if (!(buffer = g_malloc(bufsize))) {
-        return;
-    }
-    while ((count = g_input_stream_read(stream, buffer + len, bufsize, NULL, NULL)) == bufsize) {
-        len += bufsize;
-        if (!(tmp = g_realloc(buffer, len + bufsize))) {
-            g_free(buffer);
-            return;
-        }
-        buffer = tmp;
+    while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, NULL)) > 0) {
+        g_string_append_len(str, buffer, count);
+        if (count < bufsize) break;
     }
     if (count < 0) {
-        g_free(buffer);
+        g_string_free(str, TRUE);
         return;
     }
-    len += count;
-    doc = poppler_document_new_from_data(buffer, len, NULL, NULL);
+    doc = poppler_document_new_from_data(str->str, str->len, NULL, NULL);
     if (!doc) {
-        g_free(buffer);
+        g_string_free(str, TRUE);
         return;
     }
     n = poppler_document_get_n_pages(doc);
     for (i = 0; i < n; ++i) {
         PopplerPage *page = poppler_document_get_page(doc, i);
+#if POPPLER_CHECK_VERSION(0, 14, 0)
         char *text = poppler_page_get_text(page);
+#else
+        PopplerRectangle rectangle = {0, 0, 0, 0};
+        poppler_page_get_size (page, &rectangle.x2, &rectangle.y2);
+        char *text = poppler_page_get_text(page, POPPLER_SELECTION_GLYPH, &rectangle);
+#endif
         if (mem) {
             g_memory_input_stream_add_data(mem, "\f", 1, NULL);
             g_memory_input_stream_add_data(mem, text, -1, g_free);
         }
         else {
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
-            chupa_text_decomposed(text, chupa_text_input_stream_new(meta, inp));
+            chupa_text_decomposed(chupar, chupa_text_input_stream_new(meta, inp));
             mem = (GMemoryInputStream *)inp;
         }
         g_object_unref(page);
     }
     g_object_unref(doc);
+    g_string_free(str, TRUE);
     g_object_unref(mem);
 }
 
