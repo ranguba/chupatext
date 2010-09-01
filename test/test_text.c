@@ -39,9 +39,6 @@ text_decomposed(gpointer obj, gpointer arg, gpointer udata)
     gsize length;
 
     read_data = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
-#if 0
-    g_main_loop_quit(main_loop);
-#endif
 }
 
 void
