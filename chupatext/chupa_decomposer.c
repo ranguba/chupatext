@@ -69,6 +69,7 @@ void
 chupa_decomposer_load_modules(void)
 {
     chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER);
+    chupa_module_load_modules(chupa_module_path());
 }
 
 void

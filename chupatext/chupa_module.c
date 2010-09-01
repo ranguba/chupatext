@@ -28,6 +28,9 @@
 
 #include "chupatext/chupa_module.h"
 #include "chupatext/chupa_module_impl.h"
+#if !defined G_PLATFORM_WIN32 && defined HAVE_DLFCN_H
+#include <dlfcn.h>
+#endif
 
 #define CHUPA_MODULE_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE(obj, \
@@ -239,7 +242,7 @@ chupa_module_find(GList *modules, const gchar *name)
 
 GObject *
 chupa_module_instantiate(ChupaModule *module,
-                        const gchar *first_property, va_list var_args)
+                         const gchar *first_property, va_list var_args)
 {
     GObject *object = NULL;
     ChupaModulePrivate *priv;
@@ -408,6 +411,57 @@ chupa_module_unload(ChupaModule *module)
     } else {
         g_object_unref(module);
     }
+}
+
+#ifdef G_PLATFORM_WIN32
+
+#ifdef DLL_EXPORT
+static HMODULE chupa_dll = NULL;
+
+BOOL WINAPI
+DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+  if (fdwReason == DLL_PROCESS_ATTACH)
+      chupa_dll = hinstDLL;
+
+  return TRUE;
+}
+#else
+#define chupa_dll NULL
+#endif
+
+#define get_package_dir() g_win32_get_package_installation_directory_of_module(chupa_dll)
+
+#else
+static gchar *
+get_package_dir(void)
+{
+#if defined HAVE_DLFCN_H
+    Dl_info dli;
+    if (dladdr((gpointer)get_package_dir, &dli)) {
+        return g_strdup(dli.dli_fname);
+    }
+#endif
+    return NULL;
+}
+#endif
+
+gchar *
+chupa_module_path(void)
+{
+    const gchar *path = g_getenv("CHUPA_MODULE_PATH");
+    if (!path && !g_path_is_absolute(path = CHUPA_MODULE_PATH)) {
+        gchar *base_dir;
+#if defined G_OS_WIN32
+        base_dir = g_win32_get_package_installation_directory_of_module(chupa_dll);
+#elif defined HAVE_DLFCN_H
+        base_dir = get_package_dir();
+#endif
+        if (base_dir) {
+            return g_build_filename(base_dir, path, NULL);
+        }
+    }
+    return g_strdup(path);
 }
 
 /*
