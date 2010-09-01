@@ -23,6 +23,8 @@ chupa_release_date(void)
     return CHUPA_RELEASE_DATE;
 }
 
-#define STRINGIZE(x) #x
-#define STRINGIZE2(x) STRINGIZE(x)
-const char chupa_ident[] = "$Ident: ChupaText " CHUPA_VERSION_STRING "-" STRINGIZE2(CHUPA_COMMITS) " $";
+#define STRINGIFY_ARG(x) #x
+#define STRINGIFY(x) STRINGIFY_ARG(x)
+const char chupa_ident[] = "$Ident: ChupaText "
+    CHUPA_VERSION_STRING "-" STRINGIFY(CHUPA_COMMITS)
+    " $";
