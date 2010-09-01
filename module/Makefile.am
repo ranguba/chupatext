@@ -1,6 +1,12 @@
-lib_LTLIBRARIES = lib_chupa_tar.la
+EMPTY =
 
-lib_chupa_tar_la_SOURCES = chupa_tar.c
+module_LTLIBRARIES = \
+	chupa_tar.la \
+	$(EMPTY)
 
-AM_CFLAGS = $(GLIB_CFLAGS)
+chupa_tar_la_SOURCES = chupa_tar.c
+chupa_tar_la_LDFLAGS = -module
+chupa_tar_la_CPPFLAGS = $(GLIB_CFLAGS)
+chupa_tar_la_LIBADD = $(GLIB_LIBS)
+
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
