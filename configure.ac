@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT()
+AC_INIT(chupatext, 0)
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
