@@ -3,9 +3,13 @@
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  */
 
-#include "chupatext.h"
+#include <chupatext/chupa_decomposer.h>
+#include <chupatext/chupa_module.h>
+#include <chupatext/chupa_restrict_input_stream.h>
 #include <glib.h>
 #include <tar.h>
+
+#define TAR_PAGE_SIZE 512
 
 struct tar_header {
     guchar name[100];		/* NUL-terminated if NUL fits */
@@ -26,60 +30,113 @@ struct tar_header {
     guchar prefix[155];		/* NUL-terminated if NUL fits */
 };
 
+union tar_buffer {
+    struct tar_header bytes;
+    unsigned int uints[TAR_PAGE_SIZE / sizeof(unsigned int)];
+};
+
+G_STATIC_ASSERT(sizeof(union tar_buffer) == TAR_PAGE_SIZE);
+
 #define roomof(count, unit) (((count) + (unit) - 1) / (unit))
 #define roundup(count, unit) (roomof(count, unit) * (unit))
 
-static int
-chupa_tar_foreach(ChupaSwitcher *chupar, GInputStream *input, ChupaCallbackFunc *func, void *arg)
-{
-    struct tar_header header;
-    gssize size;
-    guchar name[sizeof(header.name) + sizeof(header.prefix) + 2];
+#define CHUPA_TYPE_TAR_DECOMPOSER            chupa_tar_decomposer_get_type()
+#define CHUPA_TAR_DECOMPOSER(obj)            \
+  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_TAR_DECOMPOSER, ChupaTARDecomposer)
+#define CHUPA_TAR_DECOMPOSER_CLASS(klass)    \
+  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_TAR_DECOMPOSER, ChupaTARDecomposerClass)
+#define CHUPA_IS_TAR_DECOMPOSER(obj)         \
+  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_TAR_DECOMPOSER)
+#define CHUPA_IS_TAR_DECOMPOSER_CLASS(klass) \
+  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_TAR_DECOMPOSER)
+#define CHUPA_TAR_DECOMPOSER_GET_CLASS(obj)  \
+  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_TAR_DECOMPOSER, ChupaTARDecomposerClass)
 
-    while ((size = g_input_stream_read(input, &header, sizeof(header), 0, 0)) > 0) {
-        guchar *p;
+typedef struct _ChupaTARDecomposer ChupaTARDecomposer;
+typedef struct _ChupaTARDecomposerClass ChupaTARDecomposerClass;
+
+struct _ChupaTARDecomposer
+{
+    ChupaDecomposer object;
+};
+
+struct _ChupaTARDecomposerClass
+{
+    ChupaDecomposerClass parent_class;
+};
+
+G_DEFINE_TYPE(ChupaTARDecomposer, chupa_tar_decomposer, CHUPA_TYPE_DECOMPOSER)
+
+static void
+chupa_tar_decomposer_init(ChupaTARDecomposer *dec)
+{
+}
+
+static gboolean
+is_null_page(const unsigned int *up, gsize size)
+{
+    gsize i = size / sizeof(*up);
+
+    while (--i > 0) {
+        if (*up++) {
+            return FALSE;
+        }
+    }
+    i = size % sizeof(*up);
+    if (i > 0) {
+        const unsigned char *cp = (const unsigned char *)up;
+        while (--i > 0) {
+            if (*cp++) {
+                return FALSE;
+            }
+        }
+    }
+    return TRUE;
+}
+
+static void
+chupa_tar_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInputStream *stream)
+{
+    union tar_buffer header;
+    gssize size;
+    guchar name[sizeof(header.bytes.name) + sizeof(header.bytes.prefix) + 2];
+    GInputStream *input = G_INPUT_STREAM(stream);
+
+    while ((size = g_input_stream_read(input, &header, sizeof(header), 0, 0)) > 0 &&
+           !is_null_page(header.uints, size)) {
         if (size < sizeof(header)) {
             g_warning("garbage in tar file\n");
             break;
         }
-        if (memcmp(header.magic, TMAGIC, TMAGLEN) != 0) {
+        if (memcmp(header.bytes.magic, TMAGIC, TMAGLEN) != 0) {
             g_warning("bad magic\n");
             break;
         }
-        size = strtoul(header.size);
-        if (header.typeflag[0] == REGTYPE || header.typeflag[0] == AREGTYPE) {
+        size = strtoul(header.bytes.size);
+        if (header.bytes.typeflag[0] == REGTYPE || header.bytes.typeflag[0] == AREGTYPE) {
             /* regular file only */
             GInputStream *part;
-            ChupaSwitcher *subchupar;
-            int ret;
-            p = name;
-            if (header.prefix[0]) {
-                p += strlcpy(p, header.prefix, sizeof(header.prefix));
+            guchar *p = name;
+            if (header.bytes.prefix[0]) {
+                p += strlcpy(p, header.bytes.prefix, sizeof(header.bytes.prefix));
                 *p++ = '/';
             }
-            p += g_strlcpy(p, header.name, sizeof(header.name));
-            /* TODO: make delimited stream */
-            part = g_memory_input_stream_new();
-            subchupar = chupa_switcher_new(part);
-            ret = chupa_foreach(subchupar, func, arg);
+            p += g_strlcpy(p, header.bytes.name, sizeof(header.bytes.name));
+            part = chupa_restrict_input_stream_new(input, size);
+            chupa_text_feed(chupar, part);
+            chupa_restrict_input_stream_skip_to_end(part);
             g_object_unref(part);
-            g_free(subchupar);
-            if (ret) break;
+            g_input_stream_skip(input, (gsize)size % TAR_PAGE_SIZE, NULL, NULL);
         }
-        g_input_stream_skip(input, roundup((gsize)size, 512), NULL, NULL);
+        else {
+            g_input_stream_skip(input, roundup((gsize)size, TAR_PAGE_SIZE), NULL, NULL);
+        }
     }
-    return 0;
 }
 
-static const ChupaExtractor
-chupa_tar_extactor = {
-    {"application", "x-tar"},
-    NULL,
-    chupa_tar_foreach,
-};
-
-void
-chupa_module_tar_init(void)
+static void
+chupa_tar_decomposer_class_init(ChupaTARDecomposerClass *klass)
 {
-    chupa_regsiter_extactor(&chupa_tar_extactor);
+    ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
+    super->feed = chupa_tar_decomposer_feed;
 }
