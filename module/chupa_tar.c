@@ -40,7 +40,7 @@ G_STATIC_ASSERT(sizeof(union tar_buffer) == TAR_PAGE_SIZE);
 #define roomof(count, unit) (((count) + (unit) - 1) / (unit))
 #define roundup(count, unit) (roomof(count, unit) * (unit))
 
-#define CHUPA_TYPE_TAR_DECOMPOSER            chupa_tar_decomposer_get_type()
+#define CHUPA_TYPE_TAR_DECOMPOSER            chupa_type_tar_decomposer
 #define CHUPA_TAR_DECOMPOSER(obj)            \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_TAR_DECOMPOSER, ChupaTARDecomposer)
 #define CHUPA_TAR_DECOMPOSER_CLASS(klass)    \
@@ -65,12 +65,7 @@ struct _ChupaTARDecomposerClass
     ChupaDecomposerClass parent_class;
 };
 
-G_DEFINE_TYPE(ChupaTARDecomposer, chupa_tar_decomposer, CHUPA_TYPE_DECOMPOSER)
-
-static void
-chupa_tar_decomposer_init(ChupaTARDecomposer *dec)
-{
-}
+static GType chupa_type_tar_decomposer = 0;
 
 static gboolean
 is_null_page(const unsigned int *up, gsize size)
@@ -139,4 +134,53 @@ chupa_tar_decomposer_class_init(ChupaTARDecomposerClass *klass)
 {
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
     super->feed = chupa_tar_decomposer_feed;
+}
+
+static GType
+register_type(GTypeModule *type_module)
+{
+    static const GTypeInfo info = {
+        sizeof(ChupaTARDecomposerClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) chupa_tar_decomposer_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof(ChupaTARDecomposer),
+        0,
+        (GInstanceInitFunc) NULL,
+    };
+
+    return chupa_type_tar_decomposer =
+        g_type_module_register_type(type_module,
+                                    G_TYPE_OBJECT,
+                                    "ChupaTARDecomposer",
+                                    &info, 0);
+}
+
+G_MODULE_EXPORT GList *
+CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
+{
+    GType type = register_type(type_module);
+    GList *registered_types = NULL;
+
+    if (type) {
+        chupa_decomposer_register("application/x-tar", type);
+        registered_types =
+            g_list_prepend(registered_types,
+                           (gchar *)g_type_name(type));
+    }
+
+    return registered_types;
+}
+
+G_MODULE_EXPORT void
+CHUPA_MODULE_IMPL_EXIT(void)
+{
+}
+
+G_MODULE_EXPORT GObject *
+CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_args)
+{
+    return NULL;
 }
