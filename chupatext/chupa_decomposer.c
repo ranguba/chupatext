@@ -4,6 +4,7 @@
  */
 
 #include "chupatext/chupa_decomposer.h"
+#include "chupatext/chupa_module.h"
 #include "chupatext/text_decomposer.h"
 #include <glib.h>
 #include <string.h>
@@ -68,8 +69,12 @@ static const char text_plain[] = "text/plain";
 void
 chupa_decomposer_load_modules(void)
 {
+    gchar *base_dir;
+
     chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER);
-    chupa_module_load_modules(chupa_module_path());
+    base_dir = chupa_module_path();
+    chupa_module_load_modules(base_dir);
+    g_free(base_dir);
 }
 
 void
