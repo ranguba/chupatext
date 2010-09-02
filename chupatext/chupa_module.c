@@ -51,6 +51,8 @@ struct _ChupaModulePrivate
 
 G_DEFINE_TYPE(ChupaModule, chupa_module, G_TYPE_TYPE_MODULE)
 
+static const char chupa_module_prefix[] = "chupa_";
+
 static void     finalize(GObject     *object);
 static gboolean load(GTypeModule *module);
 static void     unload(GTypeModule *module);
@@ -314,22 +316,13 @@ chupa_module_load_module(const gchar *base_dir, const gchar *name)
 
     if (g_file_test(mod_path, G_FILE_TEST_EXISTS)) {
         ChupaModulePrivate *priv;
-        gchar *mod_name;
 
-        module = g_object_new(CHUPA_TYPE_MODULE, NULL);
+        module = chupa_module_new(name, NULL, NULL, NULL);
         priv = CHUPA_MODULE_GET_PRIVATE(module);
-        priv->mod_path = g_strdup(mod_path);
-
-        mod_name = g_strdup(name);
-        if (g_str_has_suffix(mod_name, "."G_MODULE_SUFFIX)) {
-            guint last_index;
-            last_index = strlen(mod_name) - strlen("."G_MODULE_SUFFIX);
-            mod_name[last_index] = '\0';
-        }
-        g_type_module_set_name(G_TYPE_MODULE(module), mod_name);
-        g_free(mod_name);
+        priv->mod_path = mod_path;
+    } else {
+        g_free(mod_path);
     }
-    g_free(mod_path);
 
     return module;
 }
@@ -355,6 +348,12 @@ chupa_module_load_modules_unique(const gchar *base_dir,
         return exist_modules;
 
     while ((entry = g_dir_read_name(dir))) {
+        if (!g_str_has_prefix(entry, chupa_module_prefix))
+            continue;
+        if (!g_str_has_suffix(entry, "."G_MODULE_SUFFIX))
+            continue;
+        if (chupa_module_find(exist_modules, entry))
+            continue;
         sorted_entries = g_slist_prepend(sorted_entries, g_strdup(entry));
     }
     sorted_entries = g_slist_sort(sorted_entries, (GCompareFunc)strcmp);
@@ -368,10 +367,7 @@ chupa_module_load_modules_unique(const gchar *base_dir,
             continue;
 
         g_module = G_TYPE_MODULE(module);
-        if (chupa_module_find(exist_modules, g_module->name))
-            chupa_module_unload(module);
-        else
-            modules = g_list_prepend(modules, module);
+        modules = g_list_prepend(modules, module);
     }
     g_slist_foreach(sorted_entries, (GFunc)g_free, NULL);
     g_slist_free(sorted_entries);
