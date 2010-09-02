@@ -1,5 +1,7 @@
 EMPTY =
 
+LDFLAGS = -L$(top_builddir)/chupatext -lchupatext
+
 module_LTLIBRARIES = \
 	chupa_tar.la \
 	chupa_pdf.la \
