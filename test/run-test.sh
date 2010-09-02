@@ -81,5 +81,6 @@ export CHUPATEXT_RUBYLIB
 export RUBYLIB
 export CHUPATEXT_CONFIGURATION_MODULE_DIR=$builddir/module/configuration/ruby/.libs
 export CHUPATEXT_CONFIG_DIR=$top_srcdir/test/fixtures/configuration
+export CHUPA_MODULE_PATH=$builddir/module/.libs
 
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$testdir"
