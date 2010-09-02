@@ -11,6 +11,7 @@ noinst_LTLIBRARIES =			\
 	test_text_input_stream.la \
 	test_decomposer.la \
 	test_restrict_input_stream.la \
+	test_pdf.la \
 	$(EMPTY)
 endif
 
@@ -46,6 +47,7 @@ test_text_la_SOURCES = test_text.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
 test_decomposer_la_SOURCES = test_decomposer.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
+test_pdf_la_SOURCES = test_pdf.c
 
 echo-cutter:
 	@echo $(CUTTER)
