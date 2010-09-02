@@ -110,12 +110,17 @@ register_type(GTypeModule *type_module)
         0,
         (GInstanceInitFunc) NULL,
     };
+    GType type = chupa_type_pdf_decomposer;
 
-    return chupa_type_pdf_decomposer =
-        g_type_module_register_type(type_module,
-                                    G_TYPE_OBJECT,
-                                    "ChupaPDFDecomposer",
-                                    &info, 0);
+    if (!type) {
+        type = g_type_module_register_type(type_module,
+                                           CHUPA_TYPE_DECOMPOSER,
+                                           "ChupaPDFDecomposer",
+                                           &info, 0);
+        chupa_type_pdf_decomposer = type;
+        chupa_decomposer_register("application/pdf", type);
+    }
+    return type;
 }
 
 G_MODULE_EXPORT GList *
@@ -124,12 +129,13 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
     GType type = register_type(type_module);
     GList *registered_types = NULL;
 
+#if 0
     if (type) {
-        chupa_decomposer_register("application/pdf", type);
         registered_types =
             g_list_prepend(registered_types,
                            (gchar *)g_type_name(type));
     }
+#endif
 
     return registered_types;
 }
@@ -142,5 +148,6 @@ CHUPA_MODULE_IMPL_EXIT(void)
 G_MODULE_EXPORT GObject *
 CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_args)
 {
-    return NULL;
+    return g_object_new_valist(CHUPA_TYPE_PDF_DECOMPOSER,
+                               first_property, var_args);
 }
