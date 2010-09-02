@@ -1,3 +1,5 @@
+#!/usr/bin/make -f
+
 GIT = git
 
 up: pull update-version.h
