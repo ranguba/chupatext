@@ -38,7 +38,7 @@ text_decomposed(gpointer obj, gpointer arg, gpointer udata)
     GDataInputStream *data = G_DATA_INPUT_STREAM(arg);
     gsize length;
 
-    read_data = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
+    *(gpointer *)udata = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
 }
 
 void
@@ -49,7 +49,7 @@ test_decompose_text_plain (void)
 
     source = mem;
     chupar = chupa_text_new();
-    g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)text_decomposed, NULL);
+    g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)text_decomposed, &read_data);
     chupa_text_feed(chupar, source);
     cut_assert_equal_string(plain_text, read_data);
 }
