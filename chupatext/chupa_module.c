@@ -300,6 +300,39 @@ _chupa_module_load_func(GModule *module, const gchar *func_name,
     }
 }
 
+static gchar *
+chupa_module_stem_name(const gchar *name)
+{
+    gchar *mod_name;
+
+    if (g_str_has_prefix(name, chupa_module_prefix))
+        name += strlen(chupa_module_prefix);
+    mod_name = g_strdup(name);
+    if (g_str_has_suffix(mod_name, "."G_MODULE_SUFFIX)) {
+        guint last_index;
+        last_index = strlen(mod_name) - strlen("."G_MODULE_SUFFIX);
+        mod_name[last_index] = '\0';
+    }
+    return mod_name;
+}
+
+ChupaModule *
+chupa_module_new(const gchar *name,
+                 ChupaModuleInitFunc init,
+                 ChupaModuleExitFunc exit,
+                 ChupaModuleInstantiateFunc instantiate)
+{
+    ChupaModule *module = g_object_new(CHUPA_TYPE_MODULE, NULL);
+    ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(module);
+    gchar *mod_name = chupa_module_stem_name(name);
+    g_type_module_set_name(G_TYPE_MODULE(module), mod_name);
+    g_free(mod_name);
+    priv->init = init;
+    priv->exit = exit;
+    priv->instantiate = instantiate;
+    return module;
+}
+
 ChupaModule *
 chupa_module_load_module(const gchar *base_dir, const gchar *name)
 {

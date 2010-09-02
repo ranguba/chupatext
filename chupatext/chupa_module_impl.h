@@ -31,6 +31,12 @@ typedef void     (*ChupaModuleExitFunc)(void);
 typedef GObject *(*ChupaModuleInstantiateFunc)(const gchar *first_property,
                                                va_list      var_args);
 
+ChupaModule *
+chupa_module_new(const gchar *name,
+                 ChupaModuleInitFunc init,
+                 ChupaModuleExitFunc exit,
+                 ChupaModuleInstantiateFunc instantiate);
+
 G_END_DECLS
 
 #endif /* CHUPA_MODULE_IMPL_H */
