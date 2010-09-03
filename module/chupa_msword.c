@@ -36,28 +36,6 @@ struct _ChupaMSWORDDecomposerClass
 
 static GType chupa_type_msword_decomposer = 0;
 
-static gboolean
-is_null_page(const unsigned int *up, gsize size)
-{
-    gsize i = size / sizeof(*up);
-
-    while (--i > 0) {
-        if (*up++) {
-            return FALSE;
-        }
-    }
-    i = size % sizeof(*up);
-    if (i > 0) {
-        const unsigned char *cp = (const unsigned char *)up;
-        while (--i > 0) {
-            if (*cp++) {
-                return FALSE;
-            }
-        }
-    }
-    return TRUE;
-}
-
 static void
 chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInputStream *stream)
 {
