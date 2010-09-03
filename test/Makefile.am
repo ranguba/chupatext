@@ -11,8 +11,12 @@ noinst_LTLIBRARIES =			\
 	test_text_input_stream.la \
 	test_decomposer.la \
 	test_restrict_input_stream.la \
-	test_pdf.la \
 	$(EMPTY)
+
+if HAVE_POPPLER_GLIB
+noinst_LTLIBRARIES += test_pdf.la
+endif
+
 endif
 
 EXTRA_DIST =		\

@@ -2,10 +2,11 @@ EMPTY =
 
 LDFLAGS = -L$(top_builddir)/chupatext -lchupatext
 
-module_LTLIBRARIES = \
-	chupa_tar.la \
-	chupa_pdf.la \
-	$(EMPTY)
+module_LTLIBRARIES =
+module_LTLIBRARIES += chupa_tar.la
+if HAVE_POPPLER_GLIB
+module_LTLIBRARIES += chupa_pdf.la
+endif
 
 chupa_tar_la_SOURCES = chupa_tar.c
 chupa_tar_la_LDFLAGS = -module
