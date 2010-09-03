@@ -7,7 +7,7 @@
 #include <chupatext/chupa_module.h>
 #include <chupatext/chupa_restrict_input_stream.h>
 #include <glib.h>
-#include <tar.h>
+#include <wv.h>
 
 #define CHUPA_TYPE_MSWORD_DECOMPOSER chupa_type_msword_decomposer
 #define CHUPA_MSWORD_DECOMPOSER(obj)            \

@@ -7,7 +7,7 @@ module_LTLIBRARIES += chupa_tar.la
 if HAVE_POPPLER_GLIB
 module_LTLIBRARIES += chupa_pdf.la
 endif
-if HAVE_WV2
+if HAVE_WV
 module_LTLIBRARIES += chupa_msword.la
 endif
 
@@ -23,7 +23,7 @@ chupa_pdf_la_LIBADD = $(POPPLER_GLIB_LIBS)
 
 chupa_msword_la_SOURCES = chupa_msword.c
 chupa_msword_la_LDFLAGS = -module
-chupa_msword_la_CPPFLAGS = $(WV_CFLAGS) $(GLIB_CFLAGS)
-chupa_msword_la_LIBADD = $(WV_LIBS) $(GLIB_LIBS)
+chupa_msword_la_CPPFLAGS = $(WV_CFLAGS)
+chupa_msword_la_LIBADD = $(WV_LIBS)
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)

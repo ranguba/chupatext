@@ -17,7 +17,7 @@ if HAVE_POPPLER_GLIB
 noinst_LTLIBRARIES += test_pdf.la
 endif
 
-if HAVE_WV2
+if HAVE_WV
 noinst_LTLIBRARIES += test_msword.la
 endif
 
