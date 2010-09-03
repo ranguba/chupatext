@@ -64,6 +64,8 @@ AC_CHECK_GCUTTER(>= 1.1.4)
 
 PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes], [:])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
+PKG_CHECK_MODULES(WV2, wv2, [have_wv2=yes], [:])
+AM_CONDITIONAL([HAVE_WV2], [test "$have_wv2" = "yes"])
 
 AM_CONDITIONAL([WITH_CUTTER], [test "$ac_cv_use_cutter" != "no"])
 if test "$ac_cv_use_cutter" != "no"; then

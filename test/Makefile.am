@@ -17,6 +17,10 @@ if HAVE_POPPLER_GLIB
 noinst_LTLIBRARIES += test_pdf.la
 endif
 
+if HAVE_WV2
+noinst_LTLIBRARIES += test_msword.la
+endif
+
 endif
 
 EXTRA_DIST =		\
@@ -52,6 +56,7 @@ test_text_input_stream_la_SOURCES = test_text_input_stream.c
 test_decomposer_la_SOURCES = test_decomposer.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
 test_pdf_la_SOURCES = test_pdf.c
+test_msword_la_SOURCES = test_msword.c
 
 echo-cutter:
 	@echo $(CUTTER)
