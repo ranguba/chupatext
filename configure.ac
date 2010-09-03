@@ -64,7 +64,12 @@ AC_CHECK_GCUTTER(>= 1.1.4)
 
 PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes], [:])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
-PKG_CHECK_MODULES(WV2, wv2, [have_wv2=yes], [:])
+AC_PATH_TOOL([WV2_CONFIG], [wv2-config])
+if test -n "$WV2_CONFIG"; then
+    WV2_CFLAGS=`$WV2_CONFIG --cflags wv2`
+    WV2_LIBS=`$WV2_CONFIG --libs wv2`
+    have_wv2=yes
+fi
 AM_CONDITIONAL([HAVE_WV2], [test "$have_wv2" = "yes"])
 
 AM_CONDITIONAL([WITH_CUTTER], [test "$ac_cv_use_cutter" != "no"])
