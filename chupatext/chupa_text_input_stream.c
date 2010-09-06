@@ -30,18 +30,24 @@ enum {
 };
 
 static const char *
-guess_mime_type(GInputStream *stream, gboolean *uncertain)
+guess_mime_type(ChupaTextInputStream *stream, gboolean *uncertain)
 {
-    const char *mime_type;
+    const char *mime_type = NULL;
+    GInputStream *base;
 
-    if (G_IS_FILE_INPUT_STREAM(stream)) {
-        GFileInfo *info = g_file_input_stream_query_info(G_FILE_INPUT_STREAM(stream),
+    base = g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream));
+
+    if (G_IS_FILE_INPUT_STREAM(base)) {
+        GFileInfo *info = g_file_input_stream_query_info(G_FILE_INPUT_STREAM(base),
                                                          G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
                                                          NULL, NULL);
-        mime_type = g_content_type_get_mime_type(g_file_info_get_content_type(info));
+        const char *content_type = g_file_info_get_content_type(info);
+        if (content_type) {
+            mime_type = g_content_type_get_mime_type(content_type);
+        }
         g_object_unref(info);
     }
-    else {
+    if (!mime_type) {
         gsize len;
         const char *buf;
         GBufferedInputStream *buffered = G_BUFFERED_INPUT_STREAM(stream);
@@ -73,7 +79,7 @@ constructed(GObject *object)
         priv->metadata = chupa_metadata_new();
     }
 
-    mime_type = guess_mime_type(G_INPUT_STREAM(stream), NULL);
+    mime_type = guess_mime_type(stream, NULL);
     chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);
 }
 
