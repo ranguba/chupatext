@@ -111,7 +111,7 @@ input_stream_file_new(const char *path, GInputStream *stream)
 {
     InputStreamFile *isfile = g_object_new(INPUT_STREAM_FILE_TYPE, NULL);
     isfile->path = g_strdup(path);
-    rb_object_ref(isfile->stream = stream);
+    g_object_ref(isfile->stream = stream);
     return G_FILE(isfile);
 }
 
