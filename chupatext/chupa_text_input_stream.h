@@ -10,6 +10,7 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 #include "chupatext/chupa_metadata.h"
+#include "chupatext/chupa_text_input.h"
 
 G_BEGIN_DECLS
 
@@ -30,18 +31,17 @@ typedef struct _ChupaTextInputStreamClass ChupaTextInputStreamClass;
 
 struct _ChupaTextInputStream
 {
-    GDataInputStream object;
+    GInputStream object;
 };
 
 struct _ChupaTextInputStreamClass
 {
-    GDataInputStreamClass parent_class;
+    GInputStreamClass parent_class;
 };
 
 GType        chupa_text_input_stream_get_type(void) G_GNUC_CONST;
-ChupaTextInputStream *chupa_text_input_stream_new(ChupaMetadata *metadata, GInputStream *input);
-ChupaMetadata *chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream);
-const gchar *chupa_text_input_stream_get_mime_type(ChupaTextInputStream *stream);
+ChupaTextInputStream *chupa_text_input_stream_new(ChupaTextInput *input);
+ChupaTextInput *chupa_text_input_stream_get_input(ChupaTextInputStream *stream);
 
 G_END_DECLS
 

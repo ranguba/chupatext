@@ -8,7 +8,7 @@
 
 #include <gio/gio.h>
 #include <glib-object.h>
-#include "chupatext/chupa_text_input_stream.h"
+#include "chupatext/chupa_text_input.h"
 
 G_BEGIN_DECLS
 
@@ -40,8 +40,8 @@ struct ChupaTextClass
 
 GType chupa_text_get_type(void) G_GNUC_CONST;
 ChupaText *chupa_text_new(void);
-void chupa_text_feed(ChupaText *chupar, GInputStream *stream);
-void chupa_text_decomposed(ChupaText *chupar, ChupaTextInputStream *stream);
+void chupa_text_feed(ChupaText *chupar, ChupaTextInput *input);
+void chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input);
 guint chupa_text_connect_decomposed(ChupaText *chupar, GCallback *func, gpointer arg);
 
 #endif

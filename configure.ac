@@ -54,6 +54,8 @@ if test "$ac_glib_available" != "yes"; then
     AC_MSG_ERROR([no glib available])
 fi
 
+PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes], [:])
+AM_CONDITIONAL([HAVE_GSF], [test "$have_gsf" = "yes"])
 PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes], [:])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
 PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [:])

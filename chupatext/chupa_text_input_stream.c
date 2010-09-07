@@ -16,12 +16,12 @@ typedef struct _ChupaTextInputStreamPrivate ChupaTextInputStreamPrivate;
 
 struct _ChupaTextInputStreamPrivate
 {
-    ChupaMetadata *metadata;
+    ChupaTextInput *input;
 };
 
 enum {
     PROP_0,
-    PROP_METADATA,
+    PROP_INPUT,
     PROP_DUMMY
 };
 
@@ -29,58 +29,13 @@ enum {
     peek_buffer_size = 1024
 };
 
-static const char *
-guess_mime_type(ChupaTextInputStream *stream, gboolean *uncertain)
-{
-    const char *mime_type = NULL;
-    GInputStream *base;
-
-    base = g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(stream));
-
-    if (G_IS_FILE_INPUT_STREAM(base)) {
-        GFileInfo *info = g_file_input_stream_query_info(G_FILE_INPUT_STREAM(base),
-                                                         G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-                                                         NULL, NULL);
-        const char *content_type = g_file_info_get_content_type(info);
-        if (content_type) {
-            mime_type = g_content_type_get_mime_type(content_type);
-        }
-        g_object_unref(info);
-    }
-    if (!mime_type) {
-        gsize len;
-        const char *buf;
-        GBufferedInputStream *buffered = G_BUFFERED_INPUT_STREAM(stream);
-
-        g_buffered_input_stream_fill(buffered, peek_buffer_size, NULL, NULL);
-        buf = g_buffered_input_stream_peek_buffer(buffered, &len);
-        mime_type = g_content_type_get_mime_type(g_content_type_guess(NULL, buf, len, uncertain));
-    }
-    return mime_type;
-}
-
 static void
 chupa_text_input_stream_init(ChupaTextInputStream *stream)
 {
     ChupaTextInputStreamPrivate *priv;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    priv->metadata = NULL;
-}
-
-static void
-constructed(GObject *object)
-{
-    ChupaTextInputStream *stream = CHUPA_TEXT_INPUT_STREAM(object);
-    ChupaTextInputStreamPrivate *priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    const gchar *mime_type;
-
-    if (!priv->metadata) {
-        priv->metadata = chupa_metadata_new();
-    }
-
-    mime_type = guess_mime_type(stream, NULL);
-    chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);
+    priv->input = NULL;
 }
 
 static void
@@ -89,11 +44,10 @@ dispose(GObject *object)
     ChupaTextInputStreamPrivate *priv;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(object);
-    if (priv->metadata) {
-        g_object_unref(priv->metadata);
-        priv->metadata = NULL;
+    if (priv->input) {
+        g_object_unref(priv->input);
+        priv->input = NULL;
     }
-
     G_OBJECT_CLASS(chupa_text_input_stream_parent_class)->dispose(object);
 }
 
@@ -108,9 +62,9 @@ set_property(GObject *object,
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(object);
     switch (prop_id) {
-    case PROP_METADATA:
+    case PROP_INPUT:
         obj = g_value_dup_object(value);
-        priv->metadata = CHUPA_METADATA(obj);
+        priv->input = CHUPA_TEXT_INPUT(obj);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -128,8 +82,8 @@ get_property(GObject *object,
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(object);
     switch (prop_id) {
-    case PROP_METADATA:
-        g_value_set_object(value, priv->metadata);
+    case PROP_INPUT:
+        g_value_set_object(value, priv->input);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -137,55 +91,80 @@ get_property(GObject *object,
     }
 }
 
-static void
-chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
+static gssize
+read_fn(GInputStream *stream, void *buffer, gsize count,
+        GCancellable *cancellable, GError **error)
 {
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-    GParamSpec *spec;
+    ChupaTextInputStreamPrivate *priv;
+    GsfInput *input;
+    gsf_off_t pos;
 
-    gobject_class->constructed  = constructed;
-    gobject_class->dispose      = dispose;
-    gobject_class->set_property = set_property;
-    gobject_class->get_property = get_property;
-
-    spec = g_param_spec_object("metadata",
-                               "Metadata",
-                               "Metadata of the input stream",
-                               CHUPA_TYPE_METADATA,
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-                               G_PARAM_STATIC_STRINGS);
-    g_object_class_install_property(gobject_class, PROP_METADATA, spec);
-    g_type_class_add_private(gobject_class, sizeof(ChupaTextInputStreamPrivate));
-}
-
-ChupaTextInputStream *
-chupa_text_input_stream_new(ChupaMetadata *metadata, GInputStream *input)
-{
-    if (CHUPA_IS_TEXT_INPUT_STREAM(input)) {
-        ChupaTextInputStream *ti = (ChupaTextInputStream *)input;
-        if (metadata) {
-            chupa_metadata_merge(chupa_text_input_stream_get_metadata(ti), metadata);
-        }
-        return ti;
+    priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
+    input = GSF_INPUT(priv->input);
+    pos = gsf_input_tell(input);
+    if (!gsf_input_read(input, count, buffer)) {
+        return 0;
     }
-    return g_object_new(CHUPA_TYPE_TEXT_INPUT_STREAM,
-                        "metadata", metadata,
-                        "base-stream", input,
-                        NULL);
+    return gsf_input_tell(input) - pos;
 }
 
-ChupaMetadata *
-chupa_text_input_stream_get_metadata(ChupaTextInputStream *stream)
+static gssize
+skip_fn(GInputStream *stream, gsize count,
+        GCancellable *cancellable, GError **error)
+{
+    ChupaTextInputStreamPrivate *priv;
+    GsfInput *input;
+
+    priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
+    input = GSF_INPUT(priv->input);
+    if (gsf_input_seek(input, count, G_SEEK_CUR)) {
+        return (gssize)-1;
+    }
+    return gsf_input_tell(input);
+}
+
+static gboolean
+close_fn(GInputStream *stream, GCancellable *cancellable, GError **error)
 {
     ChupaTextInputStreamPrivate *priv;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    return priv->metadata;
+    if (priv->input) {
+        g_object_unref(priv->input);
+        priv->input = NULL;
+    }
 }
 
-const gchar *
-chupa_text_input_stream_get_mime_type(ChupaTextInputStream *stream)
+static void
+chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
 {
-    ChupaMetadata *meta = chupa_text_input_stream_get_metadata(stream);
-    return chupa_metadata_get_first_value(meta, "mime-type");
+    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+    GInputStreamClass *input_stream_class = G_INPUT_STREAM_CLASS(klass);
+    GParamSpec *spec;
+
+    gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
+    input_stream_class->read_fn = read_fn;
+    input_stream_class->skip    = skip_fn;
+    input_stream_class->close_fn = close_fn;
+
+    spec = g_param_spec_object("input",
+                               "Input",
+                               "Input",
+                               CHUPA_TYPE_TEXT_INPUT,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                               G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_INPUT, spec);
+
+    g_type_class_add_private(gobject_class, sizeof(ChupaTextInputStreamPrivate));
 }
+
+ChupaTextInputStream *
+chupa_text_input_stream_new(ChupaTextInput *input)
+{
+    return g_object_new(CHUPA_TYPE_TEXT_INPUT_STREAM,
+                        "input", input,
+                        NULL);
+}
+

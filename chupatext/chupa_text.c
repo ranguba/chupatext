@@ -63,30 +63,28 @@ chupa_text_new(void)
 }
 
 void
-chupa_text_decomposed(ChupaText *chupar, ChupaTextInputStream *stream)
+chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input)
 {
+    GInputStream *stream = chupa_text_input_get_stream(input);
     g_signal_emit_by_name(chupar, chupa_text_signal_decomposed, stream);
 }
 
 void
-chupa_text_feed(ChupaText *chupar, GInputStream *stream)
+chupa_text_feed(ChupaText *chupar, ChupaTextInput *input)
 {
     const char *mime_type = NULL;
-    ChupaTextInputStream *ti;
     ChupaDecomposer *dec;
 
-    ti = chupa_text_input_stream_new(NULL, stream);
-    mime_type = chupa_text_input_stream_get_mime_type(ti);
+    mime_type = chupa_text_input_get_mime_type(input);
 
     if (!mime_type) {
         g_error("can't determin mime-type\n");
     }
     else if (dec = chupa_decomposer_search(mime_type)) {
-        chupa_decomposer_feed(dec, chupar, ti);
+        chupa_decomposer_feed(dec, chupar, input);
         g_object_unref(dec);
     }
     else {
         g_warning("unknown mime-type %s\n", mime_type);
     }
-    g_object_unref(G_OBJECT(ti));
 }
