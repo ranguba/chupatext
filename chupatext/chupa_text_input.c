@@ -177,11 +177,18 @@ constructed(GObject *object)
     ChupaTextInputPrivate *priv = CHUPA_TEXT_INPUT_GET_PRIVATE(input);
     const gchar *mime_type;
     GInputStream *stream = (GInputStream *)priv->stream;
+    const char *path = NULL;
 
     g_return_if_fail(stream || priv->input);
 
     if (!priv->metadata) {
         priv->metadata = chupa_metadata_new();
+        if (priv->input) {
+            path = gsf_input_name(priv->input);
+        }
+    }
+    else {
+        path = chupa_metadata_get_first_value(priv->metadata, "filename");
     }
     if (!stream) {
         stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
@@ -193,7 +200,7 @@ constructed(GObject *object)
         priv->stream = g_data_input_stream_new(stream);
     }
 
-    mime_type = guess_mime_type(gsf_input_name(priv->input),
+    mime_type = guess_mime_type(path,
                                 G_BUFFERED_INPUT_STREAM(priv->stream),
                                 NULL);
     chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);
@@ -315,6 +322,13 @@ chupa_text_input_class_init(ChupaTextInputClass *klass)
 ChupaTextInput *
 chupa_text_input_new(ChupaMetadata *metadata, GsfInput *input)
 {
+    const char *path;
+    if (input && (path = gsf_input_name(input))) {
+        if (!metadata) {
+            metadata = chupa_metadata_new();
+        }
+        chupa_metadata_add_value(metadata, "filename", path);
+    }
     return g_object_new(CHUPA_TYPE_TEXT_INPUT,
                         "input", input,
                         "metadata", metadata,
@@ -324,6 +338,12 @@ chupa_text_input_new(ChupaMetadata *metadata, GsfInput *input)
 ChupaTextInput *
 chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const char *path)
 {
+    if (path) {
+        if (!metadata) {
+            metadata = chupa_metadata_new();
+        }
+        chupa_metadata_add_value(metadata, "filename", path);
+    }
     return g_object_new(CHUPA_TYPE_TEXT_INPUT,
                         "stream", stream,
                         "metadata", metadata,
