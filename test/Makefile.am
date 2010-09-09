@@ -57,6 +57,3 @@ test_decomposer_la_SOURCES = test_decomposer.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
 test_pdf_la_SOURCES = test_pdf.c
 test_msword_la_SOURCES = test_msword.c
-
-echo-cutter:
-	@echo $(CUTTER)
