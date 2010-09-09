@@ -15,13 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-export BASE_DIR="`dirname $0`"
-top_srcdir="$BASE_DIR/.."
+export BASE_DIR="`dirname $0 | sed 's|\/.$||'`"
+case "$BASE_DIR" in
+    */..) top_srcdir="$BASE_DIR/..";;
+    */test) top_srcdir="`dirname "$BASE_DIR"`";;
+esac
 testdir=.
 test $# = 0 || eval testdir='"${'$#'-.}"'
 case "$testdir" in
     -* ) testdir=.; builddir="`pwd`";;
-    */. | */.. ) builddir="$testdir/..";;
+    . | .. | */. | */.. ) builddir="$testdir/..";;
     */* ) builddir=`expr "$testdir" : '\(.*\)/.*'`;;
     *) builddir="`cd $testdir && cd .. && pwd`";;
 esac
