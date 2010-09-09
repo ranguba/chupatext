@@ -97,15 +97,18 @@ read_fn(GInputStream *stream, void *buffer, gsize count,
 {
     ChupaTextInputStreamPrivate *priv;
     GsfInput *input;
-    gsf_off_t pos;
+    gsf_off_t remaining;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
     input = chupa_text_input_get_base_input(priv->input);
-    pos = gsf_input_tell(input);
+    remaining = gsf_input_remaining(input);
+    if (count > remaining) {
+        count = remaining;
+    }
     if (!gsf_input_read(input, count, buffer)) {
         return 0;
     }
-    return gsf_input_tell(input) - pos;
+    return remaining;
 }
 
 static gssize

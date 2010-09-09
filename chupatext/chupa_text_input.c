@@ -61,8 +61,10 @@ input_stream_file_query_info(GFile *file, const char *attributes,
     GSeekable *sk;
     goffset size, curpos;
     if (strcmp(attributes, G_FILE_ATTRIBUTE_STANDARD_NAME) == 0) {
-        info = g_file_info_new();
-        g_file_info_set_attribute_string(info, attributes, isfile->path);
+        if (isfile->path) {
+            info = g_file_info_new();
+            g_file_info_set_attribute_byte_string(info, attributes, isfile->path);
+        }
     }
     else if (strcmp(attributes, G_FILE_ATTRIBUTE_STANDARD_SIZE) == 0 &&
              G_IS_SEEKABLE(isfile->stream) &&
