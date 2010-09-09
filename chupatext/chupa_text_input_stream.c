@@ -108,7 +108,7 @@ read_fn(GInputStream *stream, void *buffer, gsize count,
     if (!gsf_input_read(input, count, buffer)) {
         return 0;
     }
-    return remaining;
+    return count;
 }
 
 static gssize
