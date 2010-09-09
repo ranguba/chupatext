@@ -20,6 +20,7 @@ top_srcdir="$BASE_DIR/.."
 testdir=.
 test $# = 0 || eval testdir='"${'$#'-.}"'
 case "$testdir" in
+    -* ) testdir=.; builddir="`pwd`";;
     */. | */.. ) builddir="$testdir/..";;
     */* ) builddir=`expr "$testdir" : '\(.*\)/.*'`;;
     *) builddir="`cd $testdir && cd .. && pwd`";;
