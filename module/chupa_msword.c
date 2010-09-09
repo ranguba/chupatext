@@ -42,7 +42,6 @@ struct char_proc_arg {
     ChupaText *chupar;
     ChupaTextInput *input;
     const char *encoding;
-    wvParseStruct ps;
 };
 
 static int
@@ -50,7 +49,6 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
     struct char_proc_arg *arg = ps->userData;
     GString *s = arg->buffer;
-    gboolean first = FALSE;
 
     if (!arg->encoding) {
         ChupaMetadata *meta = chupa_text_input_get_metadata(arg->input);
@@ -61,7 +59,6 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
             arg->encoding = "UTF-8";
         }
         chupa_metadata_add_value(meta, "charset", arg->encoding);
-        first = TRUE;
     }
 
     /* take care of any oddities in Microsoft's character "encoding" */
@@ -123,7 +120,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         g_memory_input_stream_add_data(stream, s->str, s->len, g_free);
         g_string_free(s, FALSE);
         arg->buffer = NULL;
-        if (first) {
+        if (arg->chupar) {
             chupa_text_decomposed(arg->chupar, arg->input);
         }
     }
@@ -134,7 +131,9 @@ static void
 chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
 {
     struct char_proc_arg arg;
+    wvParseStruct ps;
     GsfInput *gi = chupa_text_input_get_base_input(input);
+    int ret;
 
     arg.buffer = NULL;
     arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
@@ -143,11 +142,15 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextI
                                                  gsf_input_name(gi));
     arg.encoding = NULL;
 
-    wvInitParser_gsf(&arg.ps, gi);
-    arg.ps.userData = &arg;
-    wvSetCharHandler(&arg.ps, char_proc);
-    wvText(&arg.ps);
-    wvOLEFree(&arg.ps);
+    gsf_input_seek(gi, 0, G_SEEK_SET);
+    if ((ret = wvInitParser_gsf(&ps, gi)) != 0) {
+        g_warning("wvInitParser_gsf failed: %d", ret);
+        return;
+    }
+    ps.userData = &arg;
+    wvSetCharHandler(&ps, char_proc);
+    wvText(&ps);
+    wvOLEFree(&ps);
     if (arg.buffer) {
         GString *s = arg.buffer;
         g_memory_input_stream_add_data(arg.dest, s->str, s->len, g_free);
@@ -156,6 +159,8 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextI
         if (!arg.encoding) {
             ChupaMetadata *meta = chupa_text_input_get_metadata(arg.input);
             chupa_metadata_add_value(meta, "charset", "US-ASCII");
+        }
+        if (arg.chupar) {
             chupa_text_decomposed(chupar, arg.input);
         }
     }
