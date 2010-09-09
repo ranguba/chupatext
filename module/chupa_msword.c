@@ -36,10 +36,131 @@ struct _ChupaMSWORDDecomposerClass
 
 static GType chupa_type_msword_decomposer = 0;
 
+struct char_proc_arg {
+    GString *buffer;
+    GMemoryInputStream *dest;
+    ChupaText *chupar;
+    ChupaTextInput *input;
+    const char *encoding;
+    wvParseStruct ps;
+};
+
+static int
+char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
+{
+    struct char_proc_arg *arg = ps->userData;
+    GString *s = arg->buffer;
+    gboolean first = FALSE;
+
+    if (!arg->encoding) {
+        ChupaMetadata *meta = chupa_text_input_get_metadata(arg->input);
+        if (chartype) {
+            arg->encoding = wvLIDToCodePageConverter(lid);
+        }
+        else {
+            arg->encoding = "UTF-8";
+        }
+        chupa_metadata_add_value(meta, "charset", arg->encoding);
+        first = TRUE;
+    }
+
+    /* take care of any oddities in Microsoft's character "encoding" */
+    /* TODO: does the above code page handler take care of these? */
+    if (chartype == 1 && eachchar == 146)
+	eachchar = 39;		/* apostrophe */
+
+    switch (eachchar) {
+    case 13:			/* paragraph end */
+    case 11:			/* hard line break */
+        eachchar = '\n';
+        break;
+
+    case 12:			/* page breaks, section marks */
+        eachchar = '\f';
+        break;
+
+    case 14:			/* column break */
+        eachchar = '\t';
+        break;
+
+    case 19:			/* field begin */
+        /* flush current text buffer */
+        ps->fieldstate++;
+        ps->fieldmiddle = 0;
+        return 0;
+    case 20:			/* field separator */
+        ps->fieldmiddle = 1;
+        return 0;
+    case 21:			/* field end */
+        ps->fieldstate--;
+        ps->fieldmiddle = 0;
+        return 0;
+
+    default:
+        break;
+    }
+
+    /* todo: properly handle fields */
+    if (eachchar == 0x13 || eachchar == 0x14)
+	return 0;
+
+    if (!s) {
+        s = g_string_new(0);
+        arg->buffer = s;
+    }
+
+    /* convert incoming character to unicode */
+    if (chartype) {
+        g_string_append_c(s, eachchar);
+    }
+    else {
+        g_string_append_unichar(s, eachchar);
+    }
+
+    if (eachchar == '\f') {
+        GMemoryInputStream *stream;
+        stream = G_MEMORY_INPUT_STREAM(arg->dest);
+        g_memory_input_stream_add_data(stream, s->str, s->len, g_free);
+        g_string_free(s, FALSE);
+        arg->buffer = NULL;
+        if (first) {
+            chupa_text_decomposed(arg->chupar, arg->input);
+        }
+    }
+    return 0;
+}
+
 static void
 chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
 {
+    struct char_proc_arg arg;
     GsfInput *gi = chupa_text_input_get_base_input(input);
+
+    arg.buffer = NULL;
+    arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
+    arg.chupar = chupar;
+    arg.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(arg.dest),
+                                                 gsf_input_name(gi));
+    arg.encoding = NULL;
+
+    wvInitParser_gsf(&arg.ps, gi);
+    arg.ps.userData = &arg;
+    wvSetCharHandler(&arg.ps, char_proc);
+    wvText(&arg.ps);
+    wvOLEFree(&arg.ps);
+    if (arg.buffer) {
+        GString *s = arg.buffer;
+        g_memory_input_stream_add_data(arg.dest, s->str, s->len, g_free);
+        g_string_free(s, FALSE);
+        arg.buffer = NULL;
+        if (!arg.encoding) {
+            ChupaMetadata *meta = chupa_text_input_get_metadata(arg.input);
+            chupa_metadata_add_value(meta, "charset", "US-ASCII");
+            chupa_text_decomposed(chupar, arg.input);
+        }
+    }
+    g_object_unref(arg.dest);
+    g_object_unref(arg.input);
 }
 
 static void
@@ -71,8 +192,8 @@ register_type(GTypeModule *type_module)
                                            "ChupaMSWORDDecomposer",
                                            &info, 0);
         chupa_type_msword_decomposer = type;
+        chupa_decomposer_register("application/msword", type);
         chupa_decomposer_register("application/x-msword", type);
-        chupa_decomposer_register("application/x-ole-storage", type);
     }
     return type;
 }
