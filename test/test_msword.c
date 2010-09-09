@@ -16,13 +16,6 @@ static gchar *sample_path;
 static GFile *sample_file;
 static gchar *read_data;
 
-#if !CUTTER_CHECK_VERSION(1, 1, 5)
-#define cut_get_source_directory() \
-    cut_run_context_get_source_directory( \
-      cut_test_context_get_run_context( \
-          cut_get_current_test_context()))
-#endif
-
 void
 setup(void)
 {
