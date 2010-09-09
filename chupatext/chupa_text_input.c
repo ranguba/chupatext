@@ -117,7 +117,7 @@ input_stream_file_new(const char *path, GInputStream *stream)
 
 
 /* ChupaTextInput */
-G_DEFINE_TYPE(ChupaTextInput, chupa_text_input, GSF_INPUT_TYPE)
+G_DEFINE_TYPE(ChupaTextInput, chupa_text_input, G_TYPE_OBJECT)
 
 #define CHUPA_TEXT_INPUT_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), \
@@ -186,7 +186,7 @@ constructed(GObject *object)
         priv->stream = g_data_input_stream_new(stream);
     }
 
-    mime_type = guess_mime_type(gsf_input_name(GSF_INPUT(input)),
+    mime_type = guess_mime_type(gsf_input_name(priv->input),
                                 G_BUFFERED_INPUT_STREAM(priv->stream),
                                 NULL);
     chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);

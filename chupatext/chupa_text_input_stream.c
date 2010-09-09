@@ -100,7 +100,7 @@ read_fn(GInputStream *stream, void *buffer, gsize count,
     gsf_off_t pos;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    input = GSF_INPUT(priv->input);
+    input = chupa_text_input_get_base_input(priv->input);
     pos = gsf_input_tell(input);
     if (!gsf_input_read(input, count, buffer)) {
         return 0;
@@ -116,7 +116,7 @@ skip_fn(GInputStream *stream, gsize count,
     GsfInput *input;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    input = GSF_INPUT(priv->input);
+    input = chupa_text_input_get_base_input(priv->input);
     if (gsf_input_seek(input, count, G_SEEK_CUR)) {
         return (gssize)-1;
     }

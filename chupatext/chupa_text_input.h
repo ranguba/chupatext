@@ -32,20 +32,12 @@ typedef struct _ChupaTextInputClass ChupaTextInputClass;
 
 struct _ChupaTextInput
 {
-    struct {
-        GsfInput     input;
-        GFile        *file;
-        GInputStream *stream;
-        guint8       *buf;
-        size_t       buf_size;
-    } object;
+    GObject parent_instance;
 };
 
 struct _ChupaTextInputClass
 {
-    struct {
-        GsfInputClass input_class;
-    } parent_class;
+    GObjectClass parent_class;
 };
 
 GType chupa_text_input_get_type(void) G_GNUC_CONST;
