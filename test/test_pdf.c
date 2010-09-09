@@ -64,7 +64,7 @@ void
 test_decompose_pdf(void)
 {
     chupar = chupa_text_new();
-    g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)text_decomposed, &read_data);
+    chupa_text_connect_decomposed(chupar, text_decomposed, &read_data);
     sample_path = cut_build_fixture_data_path("sample.pdf", NULL);
     sample_file = g_file_new_for_path(sample_path);
     text_input = chupa_text_input_new_from_file(NULL, sample_file);

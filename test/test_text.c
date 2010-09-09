@@ -55,7 +55,7 @@ test_decompose_text_plain (void)
     source = mem;
     input = chupa_text_input_new_from_stream(NULL, source, NULL);
     chupar = chupa_text_new();
-    g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)text_decomposed, &read_data);
+    chupa_text_connect_decomposed(chupar, text_decomposed, &read_data);
     chupa_text_feed(chupar, input);
     cut_assert_equal_string(plain_text, read_data);
 }

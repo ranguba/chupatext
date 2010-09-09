@@ -68,6 +68,12 @@ chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input)
     g_signal_emit_by_name(chupar, chupa_text_signal_decomposed, input);
 }
 
+guint
+chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointer arg)
+{
+    return g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)func, arg);
+}
+
 void
 chupa_text_feed(ChupaText *chupar, ChupaTextInput *input)
 {

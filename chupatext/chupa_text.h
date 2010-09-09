@@ -38,10 +38,11 @@ struct ChupaTextClass
     void (*decomposed)(GObject *object, GInputStream *stream);
 };
 
+typedef void (*ChupaTextCallback)(ChupaText *, ChupaTextInput *, gpointer);
 GType chupa_text_get_type(void) G_GNUC_CONST;
 ChupaText *chupa_text_new(void);
 void chupa_text_feed(ChupaText *chupar, ChupaTextInput *input);
 void chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input);
-guint chupa_text_connect_decomposed(ChupaText *chupar, GCallback *func, gpointer arg);
+guint chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointer arg);
 
 #endif
