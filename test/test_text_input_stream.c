@@ -10,41 +10,46 @@
 void test_new (void);
 void test_new_with_metadata (void);
 
-static ChupaTextInputStream *stream;
+static GInputStream *memstream;
+static ChupaTextInput *input;
 
 void
 setup (void)
 {
-    stream = NULL;
+    memstream = NULL;
+    input = NULL;
 }
 
 void
 teardown (void)
 {
-    if (stream)
-        g_object_unref(stream);
+    if (memstream)
+        g_object_unref(memstream);
+    if (input)
+        g_object_unref(input);
 }
 
 void
-test_new (void)
+test_read(void)
 {
-    ChupaMetadata *meta;
-    GInputStream *memstream = g_memory_input_stream_new();
-    stream = chupa_text_input_stream_new(NULL, memstream);
-    meta = chupa_text_input_stream_get_metadata(stream);
-    cut_assert_not_null(meta);
-    cut_assert_equal_int(1, chupa_metadata_size(meta));
-    cut_assert_not_null(chupa_metadata_get_first_value(meta, "mime-type"));
-}
+    static const char data[] = "plain\n\0text\nfoo\0bar";
+    GDataInputStream *dis;
+    gsize length;
+    const char *str;
 
-void
-test_new_with_metadata (void)
-{
-    ChupaMetadata *meta = chupa_metadata_new();
-    GInputStream *memstream = g_memory_input_stream_new();
-    stream = chupa_text_input_stream_new(meta, memstream);
-    gcut_assert_equal_object(meta, chupa_text_input_stream_get_metadata(stream));
-    cut_assert_equal_uint(1, chupa_metadata_size(meta));
+    memstream = g_memory_input_stream_new_from_data(data, sizeof(data) - 1, NULL);
+    input = chupa_text_input_new_from_stream(NULL, memstream, NULL);
+    dis = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(input));
+    cut_assert_not_null(dis);
+    str = cut_take_string(g_data_input_stream_read_line(dis, &length, NULL, NULL));
+    cut_assert_equal_string("plain", str);
+    cut_assert_equal_uint(5, length);
+    cut_assert_equal_uint(0, g_data_input_stream_read_byte(dis, NULL, NULL));
+    str = cut_take_string(g_data_input_stream_read_line(dis, &length, NULL, NULL));
+    cut_assert_equal_string("text", str);
+    cut_assert_equal_uint(4, length);
+    str = cut_take_memory(g_data_input_stream_read_line(dis, &length, NULL, NULL));
+    cut_assert_equal_memory("foo\0bar", 7, str, length);
 }
 
 /*

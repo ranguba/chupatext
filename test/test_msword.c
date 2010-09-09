@@ -10,7 +10,8 @@
 #include <cutter/cut-run-context.h>
 
 static ChupaText *chupar;
-static GInputStream *source;
+static ChupaTextInput *text_input;
+static GsfInput *sample_input;
 static gchar *sample_path;
 static GFile *sample_file;
 static gchar *read_data;
@@ -28,7 +29,8 @@ setup(void)
     chupa_decomposer_load_modules();
 
     chupar = NULL;
-    source = NULL;
+    text_input = NULL;
+    sample_input = NULL;
     sample_path = NULL;
     sample_file = NULL;
     read_data = NULL;
@@ -41,8 +43,10 @@ teardown(void)
 {
     if (chupar)
         g_object_unref(chupar);
-    if (source)
-        g_object_unref(source);
+    if (text_input)
+        g_object_unref(text_input);
+    if (sample_input)
+        g_object_unref(sample_input);
     if (sample_path)
         g_free(sample_path);
     if (sample_file)
@@ -52,9 +56,9 @@ teardown(void)
 }
 
 static void
-text_decomposed(gpointer obj, gpointer arg, gpointer udata)
+text_decomposed(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
-    GDataInputStream *data = G_DATA_INPUT_STREAM(arg);
+    GDataInputStream *data = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(input));
     gsize length;
 
     *(gpointer *)udata = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
@@ -67,7 +71,7 @@ test_decompose_msword(void)
     g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)text_decomposed, &read_data);
     sample_path = cut_build_fixture_data_path("sample.doc", NULL);
     sample_file = g_file_new_for_path(sample_path);
-    source = G_INPUT_STREAM(g_file_read(sample_file, NULL, NULL));
-    chupa_text_feed(chupar, source);
+    text_input = chupa_text_input_new_from_file(NULL, sample_file);
+    chupa_text_feed(chupar, text_input);
     cut_assert_equal_string("sample\n", read_data);
 }

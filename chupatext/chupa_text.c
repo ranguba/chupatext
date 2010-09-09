@@ -40,7 +40,7 @@ chupa_text_class_init(ChupaTextClass *klass)
                      G_STRUCT_OFFSET(ChupaTextClass, decomposed),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
-                     G_TYPE_NONE, 1, G_TYPE_INPUT_STREAM);
+                     G_TYPE_NONE, 1, CHUPA_TYPE_TEXT_INPUT);
 }
 
 static void
@@ -65,8 +65,7 @@ chupa_text_new(void)
 void
 chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input)
 {
-    GInputStream *stream = chupa_text_input_get_stream(input);
-    g_signal_emit_by_name(chupar, chupa_text_signal_decomposed, stream);
+    g_signal_emit_by_name(chupar, chupa_text_signal_decomposed, input);
 }
 
 void

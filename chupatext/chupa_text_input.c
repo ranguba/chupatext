@@ -304,6 +304,16 @@ chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, 
     return text;
 }
 
+ChupaTextInput *
+chupa_text_input_new_from_file(ChupaMetadata *metadata, GFile *file)
+{
+    ChupaTextInput *text;
+    GsfInput *input = gsf_input_gio_new(file, NULL);
+    text = chupa_text_input_new(metadata, input);
+    g_object_unref(input);
+    return text;
+}
+
 GsfInput *
 chupa_text_input_get_base_input(ChupaTextInput *input)
 {

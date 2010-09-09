@@ -36,7 +36,7 @@ struct _ChupaPDFDecomposerClass
 static GType chupa_type_pdf_decomposer = 0;
 
 static void
-chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInputStream *stream)
+chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
 {
     PopplerDocument *doc;
     GError **error = NULL;
@@ -45,8 +45,10 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInpu
     gchar buffer[16*1024];
     const gsize bufsize = sizeof(buffer);
     GString *str = g_string_sized_new(sizeof(buffer));
-    GInputStream *inp = G_INPUT_STREAM(stream);
-    ChupaMetadata *meta = chupa_text_input_stream_get_metadata(stream);
+    GInputStream *inp = chupa_text_input_get_stream(input);
+    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
+    ChupaTextInput *pdf_text = NULL;
+    const char *name = gsf_input_name(chupa_text_input_get_base_input(input));
     int n, i;
 
     while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, NULL)) > 0) {
@@ -78,7 +80,8 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInpu
         }
         else {
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
-            chupa_text_decomposed(chupar, chupa_text_input_stream_new(meta, inp));
+            pdf_text = chupa_text_input_new_from_stream(meta, inp, name);
+            chupa_text_decomposed(chupar, pdf_text);
             mem = (GMemoryInputStream *)inp;
         }
         g_object_unref(page);
@@ -86,6 +89,7 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInpu
     g_object_unref(doc);
     g_string_free(str, TRUE);
     g_object_unref(mem);
+    g_object_unref(pdf_text);
 }
 
 static void

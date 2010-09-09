@@ -37,9 +37,9 @@ struct _ChupaMSWORDDecomposerClass
 static GType chupa_type_msword_decomposer = 0;
 
 static void
-chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInputStream *stream)
+chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
 {
-    GInputStream *input = G_INPUT_STREAM(stream);
+    GsfInput *gi = chupa_text_input_get_base_input(input);
 }
 
 static void
