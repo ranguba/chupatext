@@ -66,5 +66,5 @@ test_decompose_msword(void)
     sample_file = g_file_new_for_path(sample_path);
     text_input = chupa_text_input_new_from_file(NULL, sample_file);
     chupa_text_feed(chupar, text_input);
-    cut_assert_equal_string("sample\n", read_data);
+    cut_assert_equal_string("Sample\n\n", read_data);
 }
