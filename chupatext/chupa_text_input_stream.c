@@ -5,7 +5,7 @@
 
 #include "chupatext/chupa_text_input_stream.h"
 
-G_DEFINE_TYPE(ChupaTextInputStream, chupa_text_input_stream, G_TYPE_DATA_INPUT_STREAM)
+G_DEFINE_TYPE(ChupaTextInputStream, chupa_text_input_stream, G_TYPE_INPUT_STREAM)
 
 #define CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), \
