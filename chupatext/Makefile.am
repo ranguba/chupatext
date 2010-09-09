@@ -11,8 +11,9 @@ libchupatext_la_SOURCES = chupa_init.c chupa_metadata.c \
 	$(EMPTY)
 
 AM_CPPFLAGS = -DCHUPA_MODULE_PATH=\"$(moduledir)\" -D_GNU_SOURCE
-
 AM_CFLAGS = $(GSF_CFLAGS)
+AM_LDFLAGS = $(GSF_LIBS)
+
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
 version.lo: version.h

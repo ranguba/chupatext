@@ -35,7 +35,7 @@ INCLUDES =		\
 AM_CFLAGS = 				\
 	$(CHUPATEXT_CFLAGS) \
 	$(GCUTTER_CFLAGS) \
-	$(GLIB_CFLAGS) \
+	$(GSF_CFLAGS) \
 	$(EMPTY)
 
 AM_LDFLAGS =			\
@@ -47,7 +47,7 @@ AM_LDFLAGS =			\
 LIBS =					\
 	$(top_builddir)/chupatext/libchupatext.la \
 	$(GCUTTER_LIBS) \
-	$(GLIB_LIBS) \
+	$(GSF_LIBS) \
 	$(EMPTY)
 
 test_metadata_la_SOURCES = test_metadata.c
