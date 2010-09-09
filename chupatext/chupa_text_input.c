@@ -138,6 +138,7 @@ struct _ChupaTextInputPrivate
 enum {
     PROP_0,
     PROP_INPUT,
+    PROP_STREAM,
     PROP_METADATA,
     PROP_DUMMY
 };
@@ -175,12 +176,16 @@ constructed(GObject *object)
     ChupaTextInput *input = CHUPA_TEXT_INPUT(object);
     ChupaTextInputPrivate *priv = CHUPA_TEXT_INPUT_GET_PRIVATE(input);
     const gchar *mime_type;
-    GInputStream *stream;
+    GInputStream *stream = (GInputStream *)priv->stream;
+
+    g_return_if_fail(stream || priv->input);
 
     if (!priv->metadata) {
         priv->metadata = chupa_metadata_new();
     }
-    stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
+    if (!stream) {
+        stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
+    }
     if (G_IS_DATA_INPUT_STREAM(stream)) {
         priv->stream = G_DATA_INPUT_STREAM(stream);
     }
@@ -223,6 +228,17 @@ set_property(GObject *object,
         obj = g_value_dup_object(value);
         priv->input = GSF_INPUT(obj);
         break;
+    case PROP_STREAM:
+        obj = g_value_dup_object(value);
+        if (obj) {
+            if (G_IS_DATA_INPUT_STREAM(obj)) {
+                priv->stream = G_DATA_INPUT_STREAM(obj);
+            }
+            else {
+                priv->stream = g_data_input_stream_new(G_INPUT_STREAM(obj));
+            }
+        }
+        break;
     case PROP_METADATA:
         obj = g_value_dup_object(value);
         priv->metadata = CHUPA_METADATA(obj);
@@ -244,6 +260,9 @@ get_property(GObject *object,
     priv = CHUPA_TEXT_INPUT_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_INPUT:
+        g_value_set_object(value, priv->input);
+        break;
+    case PROP_STREAM:
         g_value_set_object(value, priv->stream);
         break;
     case PROP_METADATA:
@@ -274,6 +293,14 @@ chupa_text_input_class_init(ChupaTextInputClass *klass)
                                G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_INPUT, spec);
 
+    spec = g_param_spec_object("stream",
+                               "Stream",
+                               "Stream",
+                               G_TYPE_INPUT_STREAM,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                               G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_STREAM, spec);
+
     spec = g_param_spec_object("metadata",
                                "Metadata",
                                "Metadata of the input",
@@ -297,13 +324,10 @@ chupa_text_input_new(ChupaMetadata *metadata, GsfInput *input)
 ChupaTextInput *
 chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const char *path)
 {
-    ChupaTextInput *text;
-    GFile *file = input_stream_file_new(path, stream);
-    GsfInput *input = gsf_input_gio_new(file, NULL);
-    g_object_unref(file);
-    text = chupa_text_input_new(metadata, input);
-    g_object_unref(input);
-    return text;
+    return g_object_new(CHUPA_TYPE_TEXT_INPUT,
+                        "stream", stream,
+                        "metadata", metadata,
+                        NULL);
 }
 
 ChupaTextInput *
