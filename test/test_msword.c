@@ -57,14 +57,20 @@ text_decomposed(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
     *(gpointer *)udata = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
 }
 
-void
-test_decompose_msword(void)
+static const char *
+decompose_msword(const char *fixture)
 {
     chupar = chupa_text_new();
     chupa_text_connect_decomposed(chupar, text_decomposed, &read_data);
-    sample_path = cut_build_fixture_data_path("sample.doc", NULL);
+    sample_path = cut_build_fixture_data_path(fixture, NULL);
     sample_file = g_file_new_for_path(sample_path);
     text_input = chupa_text_input_new_from_file(NULL, sample_file);
     chupa_text_feed(chupar, text_input);
-    cut_assert_equal_string("Sample\n\n", read_data);
+    return read_data;
+}
+
+void
+test_decompose_msword(void)
+{
+    cut_assert_equal_string("Sample\n\n", decompose_msword("sample.doc"));
 }
