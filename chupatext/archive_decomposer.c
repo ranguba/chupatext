@@ -72,6 +72,14 @@ get_property(GObject *object,
 }
 
 static void
+constructed(GObject *object)
+{
+    ChupaArchiveDecomposer *dec = CHUPA_ARCHIVE_DECOMPOSER(object);
+    g_return_if_fail(dec);
+    g_return_if_fail(dec->infile);
+}
+
+static void
 feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
 {
     GsfInfile *infile;
@@ -105,6 +113,7 @@ chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     ChupaDecomposerClass *decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
 
+    gobject_class->constructed  = constructed;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
