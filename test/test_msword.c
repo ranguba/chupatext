@@ -74,3 +74,9 @@ test_decompose_msword(void)
 {
     cut_assert_equal_string("Sample\n\n", decompose_msword("sample.doc"));
 }
+
+void
+test_decompose_msword_ja(void)
+{
+    cut_assert_equal_string("Sample\nあいうえお\n", decompose_msword("sample_ja.doc"));
+}
