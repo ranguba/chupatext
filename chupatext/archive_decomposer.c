@@ -110,3 +110,11 @@ chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
     gobject_class->get_property = get_property;
     decomposer_class->feed = feed;
 }
+
+GsfInfile *
+chupa_archive_decomoser_get_infile(ChupaArchiveDecomposer *dec)
+{
+    g_return_val_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec), NULL);
+
+    return dec->infile;
+}
