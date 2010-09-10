@@ -52,13 +52,13 @@ LIBS =					\
 	$(EMPTY)
 
 test_metadata_la_SOURCES = test_metadata.c
-test_text_la_SOURCES = test_text.c
+test_text_la_SOURCES = test_text.c chupa_test_util.c
 test_text_input_la_SOURCES = test_text_input.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
 test_decomposer_la_SOURCES = test_decomposer.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
-test_pdf_la_SOURCES = test_pdf.c
-test_msword_la_SOURCES = test_msword.c
+test_pdf_la_SOURCES = test_pdf.c chupa_test_util.c
+test_msword_la_SOURCES = test_msword.c chupa_test_util.c
 
 echo-cutter:
 	@echo $(CUTTER)

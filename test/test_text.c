@@ -12,29 +12,16 @@
 void
 setup(void)
 {
-    chupa_decomposer_load_modules();
+    chupa_test_setup();
 }
 
 void
 teardown(void)
 {
+    chupa_test_teardown();
 }
 
-#define TAKE_OBJECT(obj) gcut_take_object(G_OBJECT(obj))
-#define TAKE_STRING(str) cut_take_string(str)
-
-static const char *
-decompose_text(const char *text, gsize size)
-{
-    ChupaText *chupar;
-    ChupaTextInput *text_input;
-    GInputStream *mem;
-
-    TAKE_OBJECT(chupar = chupa_text_new());
-    TAKE_OBJECT(mem = g_memory_input_stream_new_from_data(text, size, NULL));
-    TAKE_OBJECT(text_input = chupa_text_input_new_from_stream(NULL, mem, NULL));
-    return TAKE_STRING(chupa_text_decompose_all(chupar, text_input));
-}
+#define decompose_text chupa_test_decompose_data
 
 void
 test_decompose_text_plain (void)
