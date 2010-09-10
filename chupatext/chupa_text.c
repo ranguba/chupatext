@@ -93,3 +93,27 @@ chupa_text_feed(ChupaText *chupar, ChupaTextInput *input)
         g_warning("unknown mime-type %s\n", mime_type);
     }
 }
+
+void
+chupa_text_decompose(ChupaText *chupar, ChupaTextInput *text_input, ChupaTextCallback func, gpointer arg)
+{
+    chupa_text_connect_decomposed(chupar, func, arg);
+    chupa_text_feed(chupar, text_input);
+}
+
+static void
+text_decomposed(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+{
+    GDataInputStream *data = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(input));
+    gsize length;
+
+    *(gpointer *)udata = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
+}
+
+char *
+chupa_text_decompose_all(ChupaText *chupar, ChupaTextInput *text_input)
+{
+    char *read_data = NULL;
+    chupa_text_decompose(chupar, text_input, text_decomposed, &read_data);
+    return read_data;
+}

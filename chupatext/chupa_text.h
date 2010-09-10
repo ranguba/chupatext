@@ -44,5 +44,7 @@ ChupaText *chupa_text_new(void);
 void chupa_text_feed(ChupaText *chupar, ChupaTextInput *input);
 void chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input);
 guint chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointer arg);
+void chupa_text_decompose(ChupaText *chupar, ChupaTextInput *text_input, ChupaTextCallback func, gpointer arg);
+char *chupa_text_decompose_all(ChupaText *chupar, ChupaTextInput *text_input);
 
 #endif
