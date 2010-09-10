@@ -35,12 +35,6 @@ struct _ChupaDecomposerPrivate
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT,
                                  decomp_modules_init())
 
-enum {
-    PROP_0,
-    PROP_SOURCE,
-    PROP_DUMMY
-};
-
 static void
 chupa_decomposer_init(ChupaDecomposer *decomposer)
 {
