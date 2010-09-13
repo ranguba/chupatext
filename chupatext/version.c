@@ -11,6 +11,12 @@ chupa_version(void)
     return CHUPA_VERSION_CODE;
 }
 
+const char *
+chupa_version_string(void)
+{
+    return CHUPA_VERSION_STRING;
+}
+
 const int
 chupa_commits(void)
 {
@@ -25,6 +31,14 @@ chupa_release_date(void)
 
 #define STRINGIFY_ARG(x) #x
 #define STRINGIFY(x) STRINGIFY_ARG(x)
-const char chupa_ident[] = "$Ident: ChupaText "
+#define CHUPA_DESCRIPTION "ChupaText " \
     CHUPA_VERSION_STRING "-" STRINGIFY(CHUPA_COMMITS)
+
+const char *
+chupa_version_description(void)
+{
+    return CHUPA_DESCRIPTION;
+}
+
+const char chupa_ident[] = "$Ident: " CHUPA_DESCRIPTION
     " $";

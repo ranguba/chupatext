@@ -16,6 +16,8 @@ int chupa_cleanup(void);
 const int chupa_version(void) G_GNUC_CONST;
 const int chupa_commits(void) G_GNUC_CONST;
 const int chupa_release_date(void) G_GNUC_CONST;
+const char *chupa_version_string(void) G_GNUC_CONST;
+const char *chupa_version_description(void) G_GNUC_CONST;
 
 G_END_DECLS
 
