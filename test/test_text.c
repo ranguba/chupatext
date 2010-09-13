@@ -5,6 +5,7 @@
 
 #include <chupatext/text_decomposer.h>
 #include <chupatext/chupa_text_input.h>
+#include "chupa_test_util.h"
 #include <gio/gio.h>
 
 #include <gcutter.h>
