@@ -43,6 +43,8 @@ chupa_tar_decomposer_init(ChupaTARDecomposer *dec)
 static void
 chupa_tar_decomposer_class_init(ChupaTARDecomposerClass *klass)
 {
+    ChupaArchiveDecomposerClass *dec_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);
+    dec_class->get_infile = gsf_infile_tar_new;
 }
 
 static GType

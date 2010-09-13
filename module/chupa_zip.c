@@ -43,6 +43,8 @@ chupa_zip_decomposer_init(ChupaZIPDecomposer *dec)
 static void
 chupa_zip_decomposer_class_init(ChupaZIPDecomposerClass *klass)
 {
+    ChupaArchiveDecomposerClass *dec_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);
+    dec_class->get_infile = gsf_infile_zip_new;
 }
 
 static GType

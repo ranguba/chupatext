@@ -30,18 +30,17 @@ typedef struct _ChupaArchiveDecomposerClass ChupaArchiveDecomposerClass;
 struct _ChupaArchiveDecomposer
 {
     ChupaDecomposer object;
-    GsfInfile *infile;
 };
 
 struct _ChupaArchiveDecomposerClass
 {
     ChupaDecomposerClass parent_class;
+
+    GsfInfile *(*get_infile)(GsfInput *input, GError **error);
 };
 
 GType chupa_archive_decomposer_get_type(void) G_GNUC_CONST;
 GsfInfile *chupa_archive_decomoser_get_infile(ChupaArchiveDecomposer *);
-void chupa_archive_decomposer_feed(ChupaArchiveDecomposer *, ChupaText *, ChupaTextInput *);
-
 
 G_END_DECLS
 
