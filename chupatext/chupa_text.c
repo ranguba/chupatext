@@ -106,7 +106,7 @@ chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointe
  * @chupar: the #ChupaText instance.
  * @input: the input to extract from.
  *
- * Feeds @input to @chpuar, to extract text portions.
+ * Feeds @input to @chupar, to extract text portions.
  */
 void
 chupa_text_feed(ChupaText *chupar, ChupaTextInput *input)

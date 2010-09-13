@@ -9,7 +9,7 @@
 int
 chupa_init(void *var)
 {
-    chpua_module_load_module();
+    chupa_module_load_module();
     return 0;
 }
 
