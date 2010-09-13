@@ -15,7 +15,7 @@ if HAVE_WV
 module_LTLIBRARIES += chupa_msword.la
 endif
 
-chupa_tar_la_SOURCES = chupa_tar.c
+nodist_chupa_tar_la_SOURCES = chupa_tar.c
 chupa_tar_la_LDFLAGS = -module
 chupa_tar_la_CPPFLAGS = $(GSF_CFLAGS)
 chupa_tar_la_LIBADD = $(GSF_LIBS)
