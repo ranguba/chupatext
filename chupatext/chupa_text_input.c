@@ -323,7 +323,9 @@ ChupaTextInput *
 chupa_text_input_new(ChupaMetadata *metadata, GsfInput *input)
 {
     const char *path;
-    if (input && (path = gsf_input_name(input))) {
+
+    g_return_val_if_fail(input, NULL);
+    if ((path = gsf_input_name(input)) != NULL) {
         if (!metadata) {
             metadata = chupa_metadata_new();
         }
@@ -338,6 +340,7 @@ chupa_text_input_new(ChupaMetadata *metadata, GsfInput *input)
 ChupaTextInput *
 chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const char *path)
 {
+    g_return_val_if_fail(stream, NULL);
     if (path) {
         if (!metadata) {
             metadata = chupa_metadata_new();
@@ -355,6 +358,9 @@ chupa_text_input_new_from_file(ChupaMetadata *metadata, GFile *file)
 {
     ChupaTextInput *text;
     GsfInput *input = gsf_input_gio_new(file, NULL);
+    if (!input) {
+        return NULL;
+    }
     text = chupa_text_input_new(metadata, input);
     g_object_unref(input);
     return text;
