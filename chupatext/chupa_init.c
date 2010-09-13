@@ -9,6 +9,7 @@
 int
 chupa_init(void *var)
 {
+    g_type_init();
     chupa_decomposer_load_modules();
     return 0;
 }
@@ -16,4 +17,5 @@ chupa_init(void *var)
 int
 chupa_cleanup(void)
 {
+    return 0;
 }
