@@ -17,10 +17,6 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "chupatext/config.h"
-#endif /* HAVE_CONFIG_H */
-
 #include "chupatext/chupa_metadata.h"
 
 #define CHUPA_METADATA_GET_PRIVATE(obj)                  \
