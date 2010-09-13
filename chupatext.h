@@ -13,9 +13,9 @@ G_BEGIN_DECLS
 int chupa_init(void *);
 int chupa_cleanup(void);
 
-const int chupa_version(void);
-const int chupa_commits(void);
-const int chupa_release_date(void);
+const int chupa_version(void) G_GNUC_CONST;
+const int chupa_commits(void) G_GNUC_CONST;
+const int chupa_release_date(void) G_GNUC_CONST;
 
 G_END_DECLS
 
