@@ -35,8 +35,9 @@ struct _ChupaPDFDecomposerClass
 
 static GType chupa_type_pdf_decomposer = 0;
 
-static void
-chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
+static gboolean
+chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
+                          ChupaTextInput *input, GError **err)
 {
     PopplerDocument *doc;
     GError **error = NULL;
@@ -51,18 +52,18 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInpu
     const char *name = gsf_input_name(chupa_text_input_get_base_input(input));
     int n, i;
 
-    while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, NULL)) > 0) {
+    while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, err)) > 0) {
         g_string_append_len(str, buffer, count);
         if (count < bufsize) break;
     }
     if (count < 0) {
         g_string_free(str, TRUE);
-        return;
+        return FALSE;
     }
-    doc = poppler_document_new_from_data(str->str, str->len, NULL, NULL);
+    doc = poppler_document_new_from_data(str->str, str->len, NULL, err);
     if (!doc) {
         g_string_free(str, TRUE);
-        return;
+        return FALSE;
     }
     n = poppler_document_get_n_pages(doc);
     for (i = 0; i < n; ++i) {
@@ -90,6 +91,7 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInpu
     g_string_free(str, TRUE);
     g_object_unref(mem);
     g_object_unref(pdf_text);
+    return TRUE;
 }
 
 static void

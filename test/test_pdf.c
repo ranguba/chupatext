@@ -22,5 +22,5 @@ teardown(void)
 void
 test_decompose_pdf(void)
 {
-    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf"));
+    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf", NULL));
 }

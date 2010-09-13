@@ -12,10 +12,11 @@ chupa_text_decomposer_init(ChupaTextDecomposer *text_decomposer)
 {
 }
 
-static void
-chupa_text_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input)
+static gboolean
+chupa_text_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err)
 {
     chupa_text_decomposed(text, input);
+    return TRUE;
 }
 
 static void

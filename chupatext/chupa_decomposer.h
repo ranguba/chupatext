@@ -37,13 +37,13 @@ struct _ChupaDecomposerClass
     GObjectClass parent_class;
 
     gboolean (*can_handle)(ChupaDecomposerClass *dec, ChupaTextInput *input, const char *mime_type);
-    void (*feed)(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input);
+    gboolean (*feed)(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
 };
 
 GType        chupa_decomposer_get_type(void) G_GNUC_CONST;
 
 ChupaDecomposer *chupa_decomposer_search(const gchar *mime_type);
-void chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input);
+gboolean chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
 
 void chupa_decomposer_load_modules(void);
 void chupa_decomposer_register(const gchar *mime_type, GType type);

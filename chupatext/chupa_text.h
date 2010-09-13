@@ -58,10 +58,26 @@ typedef void (*ChupaTextCallback)(ChupaText *, ChupaTextInput *, gpointer);
 
 GType chupa_text_get_type(void) G_GNUC_CONST;
 ChupaText *chupa_text_new(void);
-void chupa_text_feed(ChupaText *chupar, ChupaTextInput *input);
+gboolean chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **err);
 void chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input);
 guint chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointer arg);
-void chupa_text_decompose(ChupaText *chupar, ChupaTextInput *text_input, ChupaTextCallback func, gpointer arg);
-char *chupa_text_decompose_all(ChupaText *chupar, ChupaTextInput *text_input);
+void chupa_text_decompose(ChupaText *chupar, ChupaTextInput *text_input,
+                          ChupaTextCallback func, gpointer arg, GError **error);
+char *chupa_text_decompose_all(ChupaText *chupar, ChupaTextInput *text_input, GError **error);
+
+typedef enum {
+    CHUPA_TEXT_ERROR_NONE,
+    CHUPA_TEXT_ERROR_UNKNOWN_CONTENT,
+    CHUPA_TEXT_ERROR_UNKNOWN_MIMETYPE,
+    CHUPA_TEXT_ERROR_INVALID_INPUT,
+    CHUPA_TEXT_ERROR_MAX_
+} ChupaTextError;
+
+#define CHUPA_TEXT_ERROR chupa_text_error_quark()
+
+GQuark chupa_text_error_quark(void) G_GNUC_CONST;
+GError *chupa_text_error_new_valist(ChupaTextError code, const char *format, va_list args);
+GError *chupa_text_error_new(ChupaTextError code, const char *format, ...);
+GError *chupa_text_error_new_literal(ChupaTextError code, const char *message);
 
 #endif

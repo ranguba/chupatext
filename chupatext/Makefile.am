@@ -4,7 +4,7 @@ EMPTY =
 
 libchupatext_la_SOURCES = chupa_init.c chupa_metadata.c \
 	chupa_text.c chupa_text_input.c chupa_module.c \
-	chupa_text_input_stream.c \
+	chupa_text_input_stream.c error.c \
 	chupa_decomposer.c archive_decomposer.c text_decomposer.c \
 	chupa_restrict_input_stream.c \
 	version.c \

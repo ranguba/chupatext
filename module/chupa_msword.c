@@ -127,8 +127,9 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
     return 0;
 }
 
-static void
-chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
+static gboolean
+chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
+                             ChupaTextInput *input, GError **err)
 {
     struct char_proc_arg arg;
     wvParseStruct ps;
@@ -144,7 +145,9 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextI
 
     gsf_input_seek(gi, 0, G_SEEK_SET);
     if ((ret = wvInitParser_gsf(&ps, gi)) != 0) {
-        g_warning("wvInitParser_gsf failed: %d", ret);
+        g_propagate_error(err, chupa_text_error_new(CHUPA_TEXT_ERROR_INVALID_INPUT,
+                                                    "wvInitParser_gsf failed: %d",
+                                                    ret));
         return;
     }
     ps.userData = &arg;

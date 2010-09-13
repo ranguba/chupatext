@@ -51,11 +51,11 @@ chupa_decomposer_class_init(ChupaDecomposerClass *klass)
 #endif
 }
 
-void
-chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input)
+gboolean
+chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err)
 {
-    g_return_if_fail(CHUPA_IS_DECOMPOSER(dec));
-    (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, input);
+    g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
+    return (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, input, err);
 }
 
 static const char text_plain[] = "text/plain";

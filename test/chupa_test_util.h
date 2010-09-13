@@ -14,7 +14,7 @@
 
 void chupa_test_setup(void);
 void chupa_test_teardown(void);
-char *chupa_test_decompose_fixture(const char *fixture);
-char *chupa_test_decompose_data(const char *text, gsize size);
+char *chupa_test_decompose_fixture(const char *fixture, GError **err);
+char *chupa_test_decompose_data(const char *text, gsize size, GError **err);
 
 #endif

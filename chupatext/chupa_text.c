@@ -108,24 +108,38 @@ chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointe
  *
  * Feeds @input to @chupar, to extract text portions.
  */
-void
-chupa_text_feed(ChupaText *chupar, ChupaTextInput *input)
+gboolean
+chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **error)
 {
     const char *mime_type = NULL;
     ChupaDecomposer *dec;
+    GError *e;
+    gboolean result;
+
+    g_return_val_if_fail(chupar != NULL, FALSE);
+    g_return_val_if_fail(input != NULL, FALSE);
+    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
     mime_type = chupa_text_input_get_mime_type(input);
 
     if (!mime_type) {
-        g_error("can't determin mime-type\n");
+        e = chupa_text_error_new_literal(CHUPA_TEXT_ERROR_UNKNOWN_CONTENT,
+                                         "can't determin mime-type");
+        g_propagate_error(error, e);
+        result = FALSE;
     }
     else if (dec = chupa_decomposer_search(mime_type)) {
-        chupa_decomposer_feed(dec, chupar, input);
+        result = chupa_decomposer_feed(dec, chupar, input, error);
         g_object_unref(dec);
+        result = TRUE;
     }
     else {
-        g_warning("unknown mime-type %s\n", mime_type);
+        e = chupa_text_error_new(CHUPA_TEXT_ERROR_UNKNOWN_MIMETYPE,
+                                 "unknown mime-type %s", mime_type);
+        g_propagate_error(error, e);
+        result = FALSE;
     }
+    return result;
 }
 
 /**
@@ -140,19 +154,26 @@ chupa_text_feed(ChupaText *chupar, ChupaTextInput *input)
  * Feeds @input to @chupar, with @func
  */
 void
-chupa_text_decompose(ChupaText *chupar, ChupaTextInput *input, ChupaTextCallback func, gpointer arg)
+chupa_text_decompose(ChupaText *chupar, ChupaTextInput *input,
+                     ChupaTextCallback func, gpointer arg, GError **error)
 {
     chupa_text_connect_decomposed(chupar, func, arg);
-    chupa_text_feed(chupar, input);
+    chupa_text_feed(chupar, input, error);
 }
+
+struct decompose_arg {
+    char *read_data;
+    gsize length;
+    GError **error;
+};
 
 static void
 text_decomposed(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
     GDataInputStream *data = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(input));
-    gsize length;
+    struct decompose_arg *arg = udata;
 
-    *(gpointer *)udata = g_data_input_stream_read_until(data, "", &length, NULL, NULL);
+    arg->read_data = g_data_input_stream_read_until(data, "", &arg->length, NULL, arg->error);
 }
 
 /**
@@ -167,9 +188,12 @@ text_decomposed(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
  * are combined.
  */
 char *
-chupa_text_decompose_all(ChupaText *chupar, ChupaTextInput *input)
+chupa_text_decompose_all(ChupaText *chupar, ChupaTextInput *input, GError **error)
 {
-    char *read_data = NULL;
-    chupa_text_decompose(chupar, input, text_decomposed, &read_data);
-    return read_data;
+    struct decompose_arg arg;
+    arg.read_data = NULL;
+    arg.length = 0;
+    arg.error = error;
+    chupa_text_decompose(chupar, input, text_decomposed, &arg, error);
+    return arg.read_data;
 }

@@ -61,11 +61,12 @@ constructed(GObject *object)
     g_return_if_fail(dec);
 }
 
-static void
-feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
+static gboolean
+feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **err)
 {
     GsfInfile *infile;
     GsfInput *inp;
+    gboolean result = TRUE;
     int i, num;
 
     g_return_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec));
@@ -81,9 +82,13 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input)
         GsfInput *inp = gsf_infile_child_by_index(infile, i);
         ChupaTextInput *t = chupa_text_input_new(NULL, inp);
         g_object_unref(inp);
-        chupa_text_feed(chupar, t);
+        result = chupa_text_feed(chupar, t, err);
         g_object_unref(t);
+        if (!result) {
+            break;
+        }
     }
+    return result;
 }
 
 static void

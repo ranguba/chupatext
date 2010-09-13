@@ -43,7 +43,7 @@ struct _ChupaTextInputClass
 GType chupa_text_input_get_type(void) G_GNUC_CONST;
 ChupaTextInput *chupa_text_input_new(ChupaMetadata *metadata, GsfInput *inpt);
 ChupaTextInput *chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const char *path);
-ChupaTextInput *chupa_text_input_new_from_file(ChupaMetadata *metadata, GFile *file);
+ChupaTextInput *chupa_text_input_new_from_file(ChupaMetadata *metadata, GFile *file, GError **err);
 ChupaMetadata *chupa_text_input_get_metadata(ChupaTextInput *input);
 const gchar *chupa_text_input_get_mime_type(ChupaTextInput *input);
 GsfInput *chupa_text_input_get_base_input(ChupaTextInput *input);

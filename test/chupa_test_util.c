@@ -22,7 +22,7 @@ chupa_test_teardown(void)
 #define TAKE_STRING(str) cut_take_string(str)
 
 char *
-chupa_test_decompose_data(const char *text, gsize size)
+chupa_test_decompose_data(const char *text, gsize size, GError **err)
 {
     ChupaText *chupar;
     ChupaTextInput *text_input;
@@ -32,12 +32,15 @@ chupa_test_decompose_data(const char *text, gsize size)
     TAKE_OBJECT(chupar = chupa_text_new());
     TAKE_OBJECT(mem = g_memory_input_stream_new_from_data(text, size, NULL));
     TAKE_OBJECT(text_input = chupa_text_input_new_from_stream(NULL, mem, NULL));
-    TAKE_STRING(str = chupa_text_decompose_all(chupar, text_input));
+    if (!text_input) {
+        return NULL;
+    }
+    TAKE_STRING(str = chupa_text_decompose_all(chupar, text_input, err));
     return str;
 }
 
 char *
-chupa_test_decompose_fixture(const char *fixture)
+chupa_test_decompose_fixture(const char *fixture, GError **err)
 {
     ChupaText *chupar;
     ChupaTextInput *text_input;
@@ -49,7 +52,10 @@ chupa_test_decompose_fixture(const char *fixture)
     TAKE_OBJECT(chupar = chupa_text_new());
     TAKE_STRING(sample_path = cut_build_fixture_data_path(fixture, NULL));
     TAKE_OBJECT(sample_file = g_file_new_for_path(sample_path));
-    TAKE_OBJECT(text_input = chupa_text_input_new_from_file(NULL, sample_file));
-    TAKE_STRING(str = chupa_text_decompose_all(chupar, text_input));
+    TAKE_OBJECT(text_input = chupa_text_input_new_from_file(NULL, sample_file, err));
+    if (!text_input) {
+        return NULL;
+    }
+    TAKE_STRING(str = chupa_text_decompose_all(chupar, text_input, err));
     return str;
 }
