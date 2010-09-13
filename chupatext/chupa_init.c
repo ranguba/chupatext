@@ -9,7 +9,7 @@
 int
 chupa_init(void *var)
 {
-    chupa_module_load_module();
+    chupa_decomposer_load_modules();
     return 0;
 }
 
