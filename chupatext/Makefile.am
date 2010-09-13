@@ -2,6 +2,11 @@ lib_LTLIBRARIES = libchupatext.la
 
 EMPTY =
 
+bin_PROGRAMS = chupa
+
+chupa_SOURCES = chupa.c
+chupa_LDADD = libchupatext.la
+
 libchupatext_la_SOURCES = chupa_init.c chupa_metadata.c \
 	chupa_text.c chupa_text_input.c chupa_module.c \
 	chupa_text_input_stream.c error.c \
