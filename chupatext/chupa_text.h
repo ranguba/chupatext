@@ -25,11 +25,22 @@ extern const char chupa_text_signal_decomposed[];
 typedef struct ChupaText ChupaText;
 typedef struct ChupaTextClass ChupaTextClass;
 
+/**
+ * ChupaText:
+ *
+ * The class to decompose an input and extract text portions. 
+ */
 struct ChupaText
 {
     GObject parent_instance;
 };
 
+/**
+ * ChupaTextClass:
+ *
+ * @decomposed: the callback function called when each text portion is
+ * found.
+ */
 struct ChupaTextClass
 {
     GObjectClass parent_class;
@@ -38,7 +49,13 @@ struct ChupaTextClass
     void (*decomposed)(GObject *object, GInputStream *stream);
 };
 
+/**
+ * ChupaTextCallback:
+ *
+ * The type used for callback functions when extracting the text portion.
+ */
 typedef void (*ChupaTextCallback)(ChupaText *, ChupaTextInput *, gpointer);
+
 GType chupa_text_get_type(void) G_GNUC_CONST;
 ChupaText *chupa_text_new(void);
 void chupa_text_feed(ChupaText *chupar, ChupaTextInput *input);
