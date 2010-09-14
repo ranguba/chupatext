@@ -69,8 +69,8 @@ register_type(GTypeModule *type_module)
                                            "ChupaTARDecomposer",
                                            &info, 0);
         chupa_type_tar_decomposer = type;
-        chupa_decomposer_register("application/x-tar", type);
-        chupa_decomposer_register("application/x-compressed-tar", type);
+        chupa_decomposer_register("application/tar", type);
+        chupa_decomposer_register("application/compressed-tar", type);
     }
     return type;
 }

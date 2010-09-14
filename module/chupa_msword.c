@@ -201,7 +201,6 @@ register_type(GTypeModule *type_module)
                                            &info, 0);
         chupa_type_msword_decomposer = type;
         chupa_decomposer_register("application/msword", type);
-        chupa_decomposer_register("application/x-msword", type);
     }
     return type;
 }

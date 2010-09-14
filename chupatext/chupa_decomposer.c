@@ -59,6 +59,7 @@ chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *inp
 }
 
 static const char text_plain[] = "text/plain";
+static GList *load_modules = NULL;
 
 void
 chupa_decomposer_load_modules(void)
@@ -67,7 +68,7 @@ chupa_decomposer_load_modules(void)
 
     chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER);
     base_dir = chupa_module_path();
-    chupa_module_load_modules(base_dir);
+    load_modules = chupa_module_load_modules(base_dir);
     g_free(base_dir);
 }
 
@@ -101,22 +102,44 @@ chupa_decomposer_unregister(const gchar *mime_type, GType type)
 }
 
 ChupaDecomposer *
-chupa_decomposer_search(const gchar *mime_type)
+chupa_decomposer_search(const gchar *const mime_type)
 {
     GList *type_list = NULL;
-    const gchar *slash;
+    const char *sub_type;
     gpointer key, value;
 
+ again:
     if (g_hash_table_lookup_extended(decomp_modules, mime_type, &key, &value)) {
         type_list = (GList *)value;
     }
-    else if ((slash = strchr((const char *)mime_type, '/')) != NULL) {
-        GString *tmp_type = g_string_new_len(mime_type, slash + 1 - mime_type);
-        g_string_append_c(tmp_type, '*');
-        if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value)) {
-            type_list = (GList *)value;
+    else if ((sub_type = strchr((const char *)mime_type, '/')) != NULL) {
+        ++sub_type;
+        if (sub_type[0] == 'x' && sub_type[1] == '-') {
+            GString *tmp_type = g_string_new_len(mime_type, sub_type - mime_type);
+            g_string_append(tmp_type, sub_type += 2);
+            if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value)) {
+                type_list = (GList *)value;
+            }
+            g_string_free(tmp_type, TRUE);
         }
-        g_string_free(tmp_type, TRUE);
+        if (!type_list) {
+            const char *dot = strchr(sub_type, '.');
+            gsize i;
+            char *p;
+            ChupaModule *mod;
+            GString *mod_name = g_string_new(dot ? dot + 1 : sub_type);
+            for (i = 0; (p = strchr(mod_name->str + i, '-')) != NULL; ) {
+                g_string_erase(mod_name, i = p - mod_name->str, 1);
+            }
+            mod = chupa_module_find(load_modules, mod_name->str);
+            g_string_free(mod_name, TRUE);
+            if (mod) {
+                load_modules = g_list_remove(load_modules, mod);
+                if (g_type_module_use(G_TYPE_MODULE(mod))) {
+                    goto again;
+                }
+            }
+        }
     }
 
     if (!type_list) {

@@ -360,7 +360,6 @@ GList *
 chupa_module_load_modules(const gchar *base_dir)
 {
     GList *modules = chupa_module_load_modules_unique(base_dir, NULL);
-    g_list_foreach(modules, (GFunc)g_type_module_use, NULL);
     return modules;
 }
 
