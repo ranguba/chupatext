@@ -24,6 +24,7 @@ if HAVE_WV
 noinst_LTLIBRARIES += test_msword.la
 endif
 
+noinst_LTLIBRARIES += test_mspowerpoint.la
 endif
 
 EXTRA_DIST =		\
@@ -61,6 +62,7 @@ test_decomposer_la_SOURCES = test_decomposer.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
 test_pdf_la_SOURCES = test_pdf.c chupa_test_util.c
 test_msword_la_SOURCES = test_msword.c chupa_test_util.c
+test_mspowerpoint_la_SOURCES = test_mspowerpoint.c chupa_test_util.c
 nodist_test_tar_la_SOURCES = test_tar.c chupa_test_util.c
 test_zip_la_SOURCES = test_zip.c chupa_test_util.c
 

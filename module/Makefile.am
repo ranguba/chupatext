@@ -14,6 +14,7 @@ endif
 if HAVE_WV
 module_LTLIBRARIES += chupa_msword.la
 endif
+module_LTLIBRARIES += chupa_mspowerpoint.la
 
 nodist_chupa_tar_la_SOURCES = chupa_tar.c
 chupa_tar_la_LDFLAGS = -module
@@ -34,5 +35,10 @@ chupa_msword_la_SOURCES = chupa_msword.c
 chupa_msword_la_LDFLAGS = -module
 chupa_msword_la_CPPFLAGS = $(WV_CFLAGS)
 chupa_msword_la_LIBADD = $(WV_LIBS) $(GSF_LIBS)
+
+chupa_mspowerpoint_la_SOURCES = chupa_mspowerpoint.c
+chupa_mspowerpoint_la_LDFLAGS = -module
+chupa_mspowerpoint_la_CPPFLAGS = $(GSF_CFLAGS)
+chupa_mspowerpoint_la_LIBADD = $(GSF_LIBS)
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
