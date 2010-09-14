@@ -82,6 +82,9 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
         GsfInput *inp = gsf_infile_child_by_index(infile, i);
         ChupaTextInput *t = chupa_text_input_new(NULL, inp);
         g_object_unref(inp);
+        if (name) {
+            chupa_metadata_add_value(chupa_text_input_get_metadata(t), "filename", name);
+        }
         result = chupa_text_feed(chupar, t, err);
         g_object_unref(t);
         if (!result) {
