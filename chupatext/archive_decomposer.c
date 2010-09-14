@@ -85,7 +85,7 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
         ChupaTextInput *t = chupa_text_input_new(NULL, inp);
         g_object_unref(inp);
         if (name) {
-            chupa_metadata_add_value(chupa_text_input_get_metadata(t), "filename", name);
+            chupa_text_input_set_filename(t, name);
         }
         result = arch_class->feed_component(chupar, t, err);
         g_object_unref(t);

@@ -33,6 +33,9 @@ typedef struct {
 
 static void input_stream_file_file_iface_init(GFileIface *iface);
 
+static const char meta_filename[] = "filename";
+static const char meta_charset[] = "charset";
+
 G_DEFINE_TYPE_WITH_CODE(InputStreamFile, input_stream_file, G_TYPE_OBJECT,
                         G_IMPLEMENT_INTERFACE(G_TYPE_FILE,
                                               input_stream_file_file_iface_init))
@@ -188,7 +191,7 @@ constructed(GObject *object)
         }
     }
     else {
-        path = chupa_metadata_get_first_value(priv->metadata, "filename");
+        path = chupa_metadata_get_first_value(priv->metadata, meta_filename);
     }
     if (!stream) {
         stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
@@ -329,7 +332,7 @@ chupa_text_input_new(ChupaMetadata *metadata, GsfInput *input)
         if (!metadata) {
             metadata = chupa_metadata_new();
         }
-        chupa_metadata_add_value(metadata, "filename", path);
+        chupa_metadata_add_value(metadata, meta_filename, path);
     }
     return g_object_new(CHUPA_TYPE_TEXT_INPUT,
                         "input", input,
@@ -345,7 +348,7 @@ chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, 
         if (!metadata) {
             metadata = chupa_metadata_new();
         }
-        chupa_metadata_add_value(metadata, "filename", path);
+        chupa_metadata_add_value(metadata, meta_filename, path);
     }
     return g_object_new(CHUPA_TYPE_TEXT_INPUT,
                         "stream", stream,
@@ -398,4 +401,32 @@ chupa_text_input_get_mime_type(ChupaTextInput *input)
 {
     ChupaMetadata *meta = chupa_text_input_get_metadata(input);
     return chupa_metadata_get_first_value(meta, "mime-type");
+}
+
+const gchar *
+chupa_text_input_get_filename(ChupaTextInput *input)
+{
+    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
+    return chupa_metadata_get_first_value(meta, meta_filename);
+}
+
+void
+chupa_text_input_set_filename(ChupaTextInput *input, const char *filename)
+{
+    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
+    chupa_metadata_add_value(meta, meta_filename, filename);
+}
+
+const gchar *
+chupa_text_input_get_charset(ChupaTextInput *input)
+{
+    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
+    return chupa_metadata_get_first_value(meta, meta_charset);
+}
+
+void
+chupa_text_input_set_charset(ChupaTextInput *input, const char *charset)
+{
+    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
+    chupa_metadata_add_value(meta, meta_charset, charset);
 }

@@ -11,10 +11,9 @@ static void
 output_to_FILE(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
-    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
     FILE *out = udata;
-    const char *name = chupa_metadata_get_first_value(meta, "filename");
-    const char *charset = chupa_metadata_get_first_value(meta, "charset");
+    const char *name = chupa_text_input_get_filename(input);
+    const char *charset = chupa_text_input_get_charset(input);
     char buf[4096];
     gssize size;
 
