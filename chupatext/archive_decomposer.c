@@ -67,12 +67,14 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
     GsfInfile *infile;
     GsfInput *inp;
     gboolean result = TRUE;
+    ChupaArchiveDecomposerClass *arch_class;
     int i, num;
 
     g_return_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec));
     g_return_if_fail(CHUPA_IS_TEXT_INPUT(input));
+    arch_class = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(dec);
     inp = chupa_text_input_get_base_input(input);
-    infile = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(dec)->get_infile(inp, NULL);
+    infile = arch_class->get_infile(inp, err);
     if (!infile) {
         return;
     }
@@ -85,7 +87,7 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
         if (name) {
             chupa_metadata_add_value(chupa_text_input_get_metadata(t), "filename", name);
         }
-        result = chupa_text_feed(chupar, t, err);
+        result = arch_class->feed_component(chupar, t, err);
         g_object_unref(t);
         if (!result) {
             break;
@@ -110,4 +112,5 @@ chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
     decomposer_class->feed = feed;
+    CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass)->feed_component = chupa_text_feed;
 }
