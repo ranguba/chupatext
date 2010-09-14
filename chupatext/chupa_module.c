@@ -231,12 +231,8 @@ chupa_module_find(GList *modules, const gchar *name)
     GList *node;
 
     for (node = modules; node; node = g_list_next(node)) {
-        ChupaModule *module = node->data;
-        ChupaModulePrivate *priv;
-
-        priv = CHUPA_MODULE_GET_PRIVATE(module);
-        if (_chupa_module_match_name(priv->mod_path, name))
-            return module;
+        if (strcmp(G_TYPE_MODULE(node->data)->name, name) == 0)
+            return node->data;
     }
 
     return NULL;
@@ -409,23 +405,6 @@ chupa_module_load_modules_unique(const gchar *base_dir,
     g_dir_close(dir);
 
     return g_list_concat(modules, exist_modules);
-}
-
-static gboolean
-_chupa_module_match_name(const gchar *mod_path, const gchar *name)
-{
-    gboolean matched;
-    gchar *module_base_name, *normalized_matched_name;
-
-    module_base_name = g_path_get_basename(mod_path);
-    normalized_matched_name = g_strconcat(name, "." G_MODULE_SUFFIX, NULL);
-
-    matched = (0 == strcmp(module_base_name, normalized_matched_name));
-
-    g_free(module_base_name);
-    g_free(normalized_matched_name);
-
-    return matched;
 }
 
 void
