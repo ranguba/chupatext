@@ -1,11 +1,12 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = tool chupatext test module
+SUBDIRS = tool chupatext test module license
 
 pkginclude_HEADERS = chupatext.h
 
 EXTRA_DIST =					\
-	COPYING
+	COPYING					\
+	README.ja
 
 all-recursive: update-version.h
 

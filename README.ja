@@ -1,0 +1,78 @@
+# -*- rd -*-
+
+= はじめに --- テキスト抽出ユーティリティChupaTextの概要
+
+== 名前
+
+ChupaText
+
+== 作者
+
+  * Nobuyoshi Nakada <nakada@clear-code.com>
+  * Kouhei Sutou <kou@clear-code.com>
+
+== ライセンス
+
+  * ソースコード: LGPLバージョン2.1またはそれ以降のバージョン
+    （詳細:
+    ((<"license/lgpl-2.1.txt"|URL:http://www.gnu.org/licenses/lgpl-2.1.html>))）
+    です。
+  * ドキュメント: LGPLとGFDLとクリエイティブ・コモンズ・ライセンス
+    のトリプルライセンス。
+    * LGPLバージョン2.1またはそれ以降のバージョン
+      （詳細:
+      ((<"license/lgpl-2.1.txt"|URL:http://www.gnu.org/licenses/lgpl-2.1.html>))）
+      です。
+    * GFDLはバージョン1.3またはそれ以降
+      のバージョン（詳細:
+      ((<"license/gfdl-1.3.txt"|URL:http://www.gnu.org/licenses/fdl.html>))）
+      です。
+    * クリエイティブ・コモンズ・ライセンスは((<表示-継承
+      （CC
+      BY-SA）|URL:http://creativecommons.org/licenses/by-sa/3.0/>))
+      です。
+  * 例外:
+    * ...
+
+== ChupaText?
+
+ChupaTextはPDFやオフィス文書からテキストとメタデータを抽出す
+るユーティリティです。ライブラリ、コマンドライン、Webサービス
+経由で利用できます。
+
+== 依存ライブラリ
+
+必須:
+  * GLib >= 2.24
+
+任意:
+  * libgsf
+  * Poppler
+  * wv
+  * OpenOffice.org
+
+== 入手方法
+
+tar.gz: ((<URL:http://rubyforge.org/frs/?group_id=8073>))
+
+== リポジトリ
+
+((<GitHub|URL:http://github.com/ranguba/chupatext>))
+
+  % git clone git://github.com/ranguba/chupatext.git
+
+== インストール
+
+((<インストール|INSTALL>))を見てください。
+
+== 使い方
+
+  % chupa [オプション ...] ファイル
+
+ファイルにテキストを抽出したいファイルを指定します。
+
+詳細は((<cutter|"doc/cutter.rd.ja">))を見てください。
+
+== 感謝
+
+  * ...
