@@ -1,5 +1,8 @@
 Makefile
 Makefile.in
+*.lo
+*.la
+*.o
 /aclocal.m4
 /autom4te.cache
 config.h.in
@@ -8,9 +11,12 @@ config.h.in
 /libtool
 /tmp
 /config
-/m4
+/m4/
+/test/log/
 /chupatext/version.h
 /chupatext/config.h
 /chupatext/stamp-h1
+/chupatext/chupa
 /configure
 .deps/
+.libs/
