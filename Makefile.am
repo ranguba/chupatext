@@ -10,4 +10,4 @@ EXTRA_DIST =					\
 
 all-recursive: update-version.h
 
-include prereq.mk
+@am__include@ prereq.mk
