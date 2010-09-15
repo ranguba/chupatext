@@ -21,4 +21,19 @@ AM_LDFLAGS = $(GSF_LIBS)
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
+chupatext_includedir = $(pkgincludedir)/chupatext
+chupatext_include_HEADERS =			\
+	archive_decomposer.h			\
+	chupa_decomposer.h			\
+	chupa_metadata.h			\
+	chupa_module.h				\
+	chupa_module_impl.h			\
+	chupa_private.h				\
+	chupa_restrict_input_stream.h		\
+	chupa_text.h				\
+	chupa_text_input.h			\
+	chupa_text_input_stream.h		\
+	text_decomposer.h			\
+	version.h
+
 version.lo: version.h
