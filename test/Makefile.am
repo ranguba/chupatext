@@ -1,4 +1,4 @@
-SUBDIRS =
+SUBDIRS = fixtures
 EMPTY =
 
 if WITH_CUTTER

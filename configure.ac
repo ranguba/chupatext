@@ -87,6 +87,7 @@ AC_CONFIG_FILES([Makefile
 		 tool/Makefile
 		 chupatext/Makefile
 		 test/Makefile
+		 test/fixtures/Makefile
 		 module/Makefile])
 AC_OUTPUT
 
