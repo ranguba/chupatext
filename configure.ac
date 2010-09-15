@@ -84,6 +84,7 @@ AC_SUBST(build_includedir, '$(top_build_prefix)')
 AC_SUBST(top_includedir, '$(top_srcdir)')
 
 AC_CONFIG_FILES([Makefile
+		 tool/Makefile
 		 chupatext/Makefile
 		 test/Makefile
 		 module/Makefile])

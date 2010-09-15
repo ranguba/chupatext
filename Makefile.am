@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = chupatext test module
+SUBDIRS = tool chupatext test module
 
 pkginclude_HEADERS = chupatext.h
 
