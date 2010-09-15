@@ -27,8 +27,9 @@ endif
 noinst_LTLIBRARIES += test_mspowerpoint.la
 endif
 
-EXTRA_DIST =		\
-	run-test.sh
+EXTRA_DIST =					\
+	run-test.sh				\
+	chupa_test_util.h
 
 INCLUDES =		\
 	-I$(srcdir)	\
