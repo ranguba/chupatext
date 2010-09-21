@@ -15,6 +15,8 @@
                                  ChupaDecomposerPrivate))
 
 static GHashTable *decomp_modules = NULL;
+static GHashTable *decomp_load_table = NULL;
+static gchar *module_base_dir;
 
 #define module_list_free (GDestroyNotify)g_list_free
 
@@ -23,6 +25,13 @@ decomp_modules_init(void)
 {
     decomp_modules = g_hash_table_new_full(g_str_hash, g_str_equal,
                                            NULL, module_list_free);
+    decomp_load_table = g_hash_table_new(g_str_hash, g_str_equal);
+    module_base_dir = chupa_module_path();
+
+#define REGISTER(mime_type, module) \
+    g_hash_table_insert(decomp_load_table, mime_type, module)
+#include "module/init_chupa.h"
+#undef REGISTER
 }
 
 #ifdef USE_CHUPA_DECOMPOSER_PRIVATE
@@ -59,17 +68,11 @@ chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *inp
 }
 
 static const char text_plain[] = "text/plain";
-static GList *load_modules = NULL;
 
 void
 chupa_decomposer_load_modules(void)
 {
-    gchar *base_dir;
-
     chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER);
-    base_dir = chupa_module_path();
-    load_modules = chupa_module_load_modules(base_dir);
-    g_free(base_dir);
 }
 
 void
@@ -104,40 +107,39 @@ chupa_decomposer_search(const gchar *const mime_type)
     GList *type_list = NULL;
     const char *sub_type;
     gpointer key, value;
+    ChupaModule *mod;
+    int retry = 0;
 
- again:
-    if (g_hash_table_lookup_extended(decomp_modules, mime_type, &key, &value)) {
-        type_list = (GList *)value;
-    }
-    else if ((sub_type = strchr((const char *)mime_type, '/')) != NULL) {
-        ++sub_type;
-        if (sub_type[0] == 'x' && sub_type[1] == '-') {
-            GString *tmp_type = g_string_new_len(mime_type, sub_type - mime_type);
-            g_string_append(tmp_type, sub_type += 2);
-            if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value)) {
-                type_list = (GList *)value;
-            }
-            g_string_free(tmp_type, TRUE);
+    do {
+        if (g_hash_table_lookup_extended(decomp_modules, mime_type, &key, &value)) {
+            type_list = (GList *)value;
         }
-        if (!type_list) {
-            const char *dot = strchr(sub_type, '.');
-            gsize i;
-            char *p;
-            ChupaModule *mod;
-            GString *mod_name = g_string_new(dot ? dot + 1 : sub_type);
-            for (i = 0; (p = strchr(mod_name->str + i, '-')) != NULL; ) {
-                g_string_erase(mod_name, i = p - mod_name->str, 1);
+        else if (g_hash_table_lookup_extended(decomp_load_table, mime_type, &key, &value) &&
+                 (mod = chupa_module_load_module(module_base_dir, (const gchar *)value)) != NULL) {
+            if (!g_type_module_use(G_TYPE_MODULE(mod))) {
+                break;
             }
-            mod = chupa_module_find(load_modules, mod_name->str);
-            g_string_free(mod_name, TRUE);
-            if (mod) {
-                load_modules = g_list_remove(load_modules, mod);
-                if (g_type_module_use(G_TYPE_MODULE(mod))) {
-                    goto again;
+        }
+        else if ((sub_type = strchr((const char *)mime_type, '/')) != NULL) {
+            GString *tmp_type = NULL;
+            ++sub_type;
+            if (sub_type[0] == 'x' && sub_type[1] == '-') {
+                tmp_type = g_string_new_len(mime_type, sub_type - mime_type);
+                g_string_append(tmp_type, sub_type += 2);
+                if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value)) {
+                    type_list = (GList *)value;
                 }
             }
+            if (!type_list &&
+                g_hash_table_lookup_extended(decomp_load_table, tmp_type->str, &key, &value)) {
+                mod = chupa_module_load_module(module_base_dir, (const gchar *)value);
+            }
+            g_string_free(tmp_type, TRUE);
+            if (!mod || !g_type_module_use(G_TYPE_MODULE(mod))) {
+                break;
+            }
         }
-    }
+    } while (!type_list && !retry++);
 
     if (!type_list) {
         return NULL;

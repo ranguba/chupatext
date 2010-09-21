@@ -42,3 +42,7 @@ chupa_mspowerpoint_la_CPPFLAGS = $(GSF_CFLAGS)
 chupa_mspowerpoint_la_LIBADD = $(GSF_LIBS)
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
+
+all: prereq
+
+@am__include@ $(srcdir)/prereq.mk

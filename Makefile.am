@@ -8,6 +8,6 @@ EXTRA_DIST =					\
 	COPYING					\
 	README.ja
 
-all-recursive: update-version.h
+all-recursive: prereq
 
 @am__include@ $(srcdir)/prereq.mk
