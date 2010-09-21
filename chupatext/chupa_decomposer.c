@@ -90,13 +90,10 @@ chupa_decomposer_unregister(const gchar *mime_type, GType type)
     gpointer key = (gpointer)mime_type, val = NULL;
 
     if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
+        g_hash_table_steal(decomp_modules, key);
         val = g_list_remove((GList *)val, (gpointer)type);
         if (val) {
-            g_hash_table_steal(decomp_modules, key);
             g_hash_table_insert(decomp_modules, key, val);
-        }
-        else {
-            g_hash_table_remove(decomp_modules, key);
         }
     }
 }

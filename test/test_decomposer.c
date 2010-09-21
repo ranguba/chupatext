@@ -34,3 +34,49 @@ test_search(void)
     cut_assert_not_null(decomp);
     cut_assert_not_null(CHUPA_TEXT_DECOMPOSER(decomp));
 }
+
+#define CHUPA_TEST_TYPE_DUMMY_DECOMPOSER chupa_test_dummy_decomposer_get_type()
+#define CHUPA_TEST_DUMMY_DECOMPOSER(obj) \
+  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER, ChupaTestDummyDecomposer)
+#define CHUPA_TEST_DUMMY_DECOMPOSER_CLASS(klass) \
+  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER, ChupaTestDummyDecomposerClass)
+#define CHUPA_TEST_IS_DUMMY_DECOMPOSER(obj) \
+  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER)
+#define CHUPA_TEST_IS_DUMMY_DECOMPOSER_CLASS(klass) \
+  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER)
+#define CHUPA_TEST_DUMMY_DECOMPOSER_GET_CLASS(obj) \
+  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER, ChupaTestDummyDecomposerClass)
+
+typedef struct _ChupaTestDummyDecomposer ChupaTestDummyDecomposer;
+typedef struct _ChupaTestDummyDecomposerClass ChupaTestDummyDecomposerClass;
+typedef struct _ChupaTestDummyDecomposerPrivate ChupaTestDummyDecomposerPrivate;
+
+struct _ChupaTestDummyDecomposer
+{
+    ChupaDecomposer object;
+};
+
+struct _ChupaTestDummyDecomposerClass
+{
+    ChupaDecomposerClass parent_class;
+};
+
+G_DEFINE_TYPE(ChupaTestDummyDecomposer, chupa_test_dummy_decomposer, CHUPA_TYPE_DECOMPOSER)
+
+static void
+chupa_test_dummy_decomposer_init(ChupaTestDummyDecomposer *dec)
+{
+}
+
+static void
+chupa_test_dummy_decomposer_class_init(ChupaTestDummyDecomposerClass *klass)
+{
+}
+
+void
+test_register(void)
+{
+    static const char test_dummy_type[] = "application/x-chupa-test";
+    chupa_decomposer_register(test_dummy_type, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER);
+    chupa_decomposer_unregister(test_dummy_type, CHUPA_TEST_TYPE_DUMMY_DECOMPOSER);
+}
