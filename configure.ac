@@ -56,6 +56,8 @@ fi
 
 PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes], [:])
 AM_CONDITIONAL([HAVE_GSF], [test "$have_gsf" = "yes"])
+PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0, [have_gio_unix=yes], [:])
+AM_CONDITIONAL([HAVE_GIO_UNIX], [test "$have_gio_unix" = "yes"])
 PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes], [:])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
 PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [:])

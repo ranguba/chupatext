@@ -11,6 +11,7 @@ noinst_LTLIBRARIES =			\
 	test_text_input.la \
 	test_text_input_stream.la \
 	test_decomposer.la \
+	test_external_decomposer.la \
 	test_restrict_input_stream.la \
 	test_tar.la \
 	test_zip.la \
@@ -60,6 +61,7 @@ test_text_la_SOURCES = test_text.c chupa_test_util.c
 test_text_input_la_SOURCES = test_text_input.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
 test_decomposer_la_SOURCES = test_decomposer.c
+test_external_decomposer_la_SOURCES = test_external_decomposer.c chupa_test_util.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
 test_pdf_la_SOURCES = test_pdf.c chupa_test_util.c
 test_msword_la_SOURCES = test_msword.c chupa_test_util.c

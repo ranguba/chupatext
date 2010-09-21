@@ -17,14 +17,15 @@ libchupatext_la_SOURCES =			\
 	error.c					\
 	chupa_decomposer.c			\
 	archive_decomposer.c			\
+	external_decomposer.c			\
 	text_decomposer.c			\
 	chupa_restrict_input_stream.c		\
 	version.c				\
 	$(EMPTY)
 
 AM_CPPFLAGS = -DCHUPA_MODULE_PATH=\"$(moduledir)\" -D_GNU_SOURCE
-AM_CFLAGS = $(GSF_CFLAGS)
-AM_LDFLAGS = $(GSF_LIBS)
+AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
+AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
@@ -41,6 +42,7 @@ chupatext_include_HEADERS =			\
 	chupa_text_input.h			\
 	chupa_text_input_stream.h		\
 	text_decomposer.h			\
+	external_decomposer.h			\
 	version.h
 
 version.lo: version.h
