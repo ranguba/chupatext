@@ -134,7 +134,9 @@ chupa_decomposer_search(const gchar *const mime_type)
                 g_hash_table_lookup_extended(decomp_load_table, tmp_type->str, &key, &value)) {
                 mod = chupa_module_load_module(module_base_dir, (const gchar *)value);
             }
-            g_string_free(tmp_type, TRUE);
+            if (tmp_type) {
+                g_string_free(tmp_type, TRUE);
+            }
             if (!mod || !g_type_module_use(G_TYPE_MODULE(mod))) {
                 break;
             }
