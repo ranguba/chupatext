@@ -20,7 +20,7 @@ case "$BASE_DIR" in
     */..) top_srcdir="$BASE_DIR/..";;
     */test) top_srcdir="`dirname "$BASE_DIR"`";;
 esac
-testdir=.
+testdir=${BASE_DIR}
 test $# = 0 || eval testdir='"${'$#'-.}"'
 case "$testdir" in
     -* ) testdir=.; builddir="`pwd`";;
