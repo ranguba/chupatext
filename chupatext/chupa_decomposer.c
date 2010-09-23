@@ -107,7 +107,7 @@ chupa_decomposer_search(const gchar *const mime_type)
     GList *type_list = NULL;
     const char *sub_type;
     gpointer key, value;
-    ChupaModule *mod;
+    ChupaModule *mod = NULL;
     int retry = 0;
 
     do {
@@ -130,7 +130,7 @@ chupa_decomposer_search(const gchar *const mime_type)
                     type_list = (GList *)value;
                 }
             }
-            if (!type_list &&
+            if (!type_list && tmp_type &&
                 g_hash_table_lookup_extended(decomp_load_table, tmp_type->str, &key, &value)) {
                 mod = chupa_module_load_module(module_base_dir, (const gchar *)value);
             }
