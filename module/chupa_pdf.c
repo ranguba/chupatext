@@ -68,12 +68,13 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     n = poppler_document_get_n_pages(doc);
     for (i = 0; i < n; ++i) {
         PopplerPage *page = poppler_document_get_page(doc, i);
+        gchar *text;
 #if POPPLER_CHECK_VERSION(0, 14, 0)
-        char *text = poppler_page_get_text(page);
+        text = poppler_page_get_text(page);
 #else
         PopplerRectangle rectangle = {0, 0, 0, 0};
         poppler_page_get_size (page, &rectangle.x2, &rectangle.y2);
-        char *text = poppler_page_get_text(page, POPPLER_SELECTION_GLYPH, &rectangle);
+        text = poppler_page_get_text(page, POPPLER_SELECTION_GLYPH, &rectangle);
 #endif
         if (mem) {
             g_memory_input_stream_add_data(mem, "\f", 1, NULL);
