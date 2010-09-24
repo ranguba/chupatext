@@ -201,6 +201,7 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
     GType type = register_type(type_module);
     GList *registered_types = NULL;
 
+    gnm_init ();
     gnm_conf_init();
 #if 0
     if (type) {
