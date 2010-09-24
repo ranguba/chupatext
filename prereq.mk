@@ -1,8 +1,10 @@
 #!/usr/bin/make -f
 
+prereq:
+
 GIT = git
 
-up: pull update-version.h chupatext/module_list.h
+up: pull prereq
 
 pull:
 	@cd "$(srcdir)" && $(GIT) pull
@@ -13,8 +15,8 @@ prereq-local: update-version.h
 
 prereq-recursive:
 	@local_target=`echo $@ | sed s/-recursive//`; \
-	top=$(top_srcdir) cd=$(am__cd); \
-	: "$${top:=.}" "$${cd:=cd}"; \
+	top="$(top_srcdir)"; \
+	: "$${top:=.}"; \
 	set dummy $(SUBDIRS); shift; \
 	if test $$# = 0; then \
 	    set dummy `ls */prereq.mk 2> /dev/null | sed 's/\/prereq\.mk$$//'`; \
@@ -22,7 +24,7 @@ prereq-recursive:
 	fi; \
 	for subdir do \
 	    test -f "$$top/$$subdir/prereq.mk" || continue; \
-	    ($$cd $$subdir && \
+	    (if test -z "$(am__cd)"; then cd $$subdir; else $(am__cd) $$subdir; fi && \
 	    if test -f Makefile; then \
 		exec $(MAKE) $(AM_MAKEFLAGS) $$local_target; \
 	    else \
@@ -34,4 +36,4 @@ update-version.h:
 	@cd "$(top_srcdir)" && \
 	$(SHELL) ./tool/version-update.sh chupatext/version.h
 
-.PHONY: update-version.h
+.PHONY: update-version.h prereq-local prereq-recursive
