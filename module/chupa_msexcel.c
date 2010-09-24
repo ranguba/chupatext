@@ -10,6 +10,7 @@
 #include <glib.h>
 #include "workbook-view.h"
 #include "command-context-stderr.h"
+#include "chupatext/chupa_gsf_input_stream.h"
 
 #define CHUPA_TYPE_EXCEL_DECOMPOSER            chupa_type_excel_decomposer
 #define CHUPA_EXCEL_DECOMPOSER(obj)            \
@@ -38,74 +39,6 @@ struct _ChupaExcelDecomposerClass
 
 static GOCmdContext *cc;
 static GType chupa_type_excel_decomposer = 0;
-
-#define CHUPA_TYPE_TUNNEL_STREAM            chupa_tunnel_stream_get_type()
-#define CHUPA_TUNNEL_STREAM(obj)            \
-  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_TUNNEL_STREAM, ChupaTunnelStream)
-#define CHUPA_TUNNEL_STREAM_CLASS(klass)    \
-  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_TUNNEL_STREAM, ChupaTunnelStreamClass)
-#define CHUPA_IS_TUNNEL_STREAM(obj)         \
-  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_TUNNEL_STREAM)
-#define CHUPA_IS_TUNNEL_STREAM_CLASS(klass) \
-  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_TUNNEL_STREAM)
-#define CHUPA_TUNNEL_STREAM_GET_CLASS(obj)  \
-  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_TUNNEL_STREAM, ChupaTunnelStreamClass)
-
-typedef struct _ChupaTunnelStream ChupaTunnelStream;
-typedef struct _ChupaTunnelStreamClass ChupaTunnelStreamClass;
-
-struct _ChupaTunnelStream
-{
-    GMemoryInputStream parent_object;
-    GsfOutputMemory *source;
-};
-
-struct _ChupaTunnelStreamClass
-{
-    GMemoryInputStreamClass parent_class;
-};
-
-G_DEFINE_TYPE(ChupaTunnelStream, chupa_tunnel_stream, G_TYPE_MEMORY_INPUT_STREAM)
-
-static void
-tunnel_dispose(GObject *object)
-{
-    ChupaTunnelStream *stream = CHUPA_TUNNEL_STREAM(object);
-
-    if (stream->source) {
-        g_object_unref(stream->source);
-        stream->source = NULL;
-    }
-
-    G_OBJECT_CLASS(chupa_tunnel_stream_parent_class)->dispose(object);
-}
-
-static void
-chupa_tunnel_stream_init(ChupaTunnelStream *stream)
-{
-    stream->source = NULL;
-}
-
-static void
-chupa_tunnel_stream_class_init(ChupaTunnelStreamClass *klass)
-{
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-    gobject_class->dispose      = tunnel_dispose;
-}
-
-static GInputStream *
-chupa_tunnel_stream_new(GsfOutputMemory *mem)
-{
-    ChupaTunnelStream *stream = g_object_new(CHUPA_TYPE_TUNNEL_STREAM, NULL);
-    GsfOutput *out = GSF_OUTPUT(mem);
-
-    g_object_ref(mem);
-    stream->source = mem;
-    g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(stream),
-                                   gsf_output_memory_get_bytes(mem),
-                                   gsf_output_size(out), NULL);
-    return G_INPUT_STREAM(stream);
-}
 
 static const char export_id[] = "Gnumeric_stf:stf_csv";
 
@@ -159,7 +92,7 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
         return FALSE;
     }
 
-    tmpinp = chupa_tunnel_stream_new(GSF_OUTPUT_MEMORY(tmpout));
+    tmpinp = chupa_gsf_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
     g_object_unref(io_context);
     g_object_unref(tmpout);
     input = chupa_text_input_new_from_stream(NULL, tmpinp, chupa_text_input_get_filename(input));
