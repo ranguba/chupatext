@@ -29,7 +29,6 @@ typedef struct _ChupaExcelDecomposerClass ChupaExcelDecomposerClass;
 struct _ChupaExcelDecomposer
 {
     ChupaExternalDecomposer parent_object;
-    GOCmdContext	*cc;
 };
 
 struct _ChupaExcelDecomposerClass
@@ -37,6 +36,7 @@ struct _ChupaExcelDecomposerClass
     ChupaExternalDecomposerClass parent_class;
 };
 
+static GOCmdContext *cc;
 static GType chupa_type_excel_decomposer = 0;
 
 #define CHUPA_TYPE_TUNNEL_STREAM            chupa_tunnel_stream_get_type()
@@ -115,17 +115,24 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 {
     ChupaExcelDecomposer *xlsdec = CHUPA_EXCEL_DECOMPOSER(dec);
     GOFileSaver *fs = NULL;
-    GOIOContext *io_context = go_io_context_new(xlsdec->cc);
+    GOFileOpener *fo = NULL;
+    GOIOContext *io_context = go_io_context_new(cc);
     WorkbookView *wbv = NULL;
+    GsfInput *source = chupa_text_input_get_base_input(input);
     GsfOutput *tmpout;
     GInputStream *tmpinp;
+    const char *filename = chupa_text_input_get_filename(input);
 
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
     tmpout = gsf_output_memory_new();
     g_return_val_if_fail(tmpout, FALSE);
-    wbv = wb_view_new_from_input(chupa_text_input_get_base_input(input),
-                                 NULL, NULL, io_context, NULL);
+    g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
+    fo = go_file_opener_for_id("Gnumeric_Excel:excel");
+    wbv = wb_view_new_from_input(source, filename, fo, io_context, NULL);
+    if (go_io_error_occurred(io_context)) {
+        go_io_error_display(io_context);
+    }
     g_return_val_if_fail(wbv, FALSE);
 
     wbv_save_to_output(wbv, fs, tmpout, io_context);
@@ -148,15 +155,12 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 static void
 chupa_excel_decomposer_init(ChupaExcelDecomposer *dec)
 {
-    dec->cc = NULL;
 }
 
 static void
 chupa_excel_constructed(GObject *object)
 {
     ChupaExcelDecomposer *dec = CHUPA_EXCEL_DECOMPOSER(object);
-    dec->cc = cmd_context_stderr_new();
-    gnm_plugins_init(GO_CMD_CONTEXT(dec->cc));
 }
 
 static void
@@ -200,9 +204,19 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
     GType type = register_type(type_module);
     GList *registered_types = NULL;
+    GOErrorInfo	*plugin_errs;
 
     gnm_init ();
     gnm_conf_init();
+    cc = cmd_context_stderr_new();
+    gnm_plugins_init(GO_CMD_CONTEXT(cc));
+    go_plugin_db_activate_plugin_list(go_plugins_get_available_plugins(), &plugin_errs);
+    if (plugin_errs) {
+        fprintf(stderr, "go_plugin_db_activate_plugin_list failed\n");
+        go_error_display(plugin_errs);
+        go_error_info_free(plugin_errs);
+    }
+
 #if 0
     if (type) {
         registered_types =
