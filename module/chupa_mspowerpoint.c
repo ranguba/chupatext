@@ -5,8 +5,11 @@
 
 #include <chupatext/archive_decomposer.h>
 #include <chupatext/chupa_module.h>
+#include <chupatext/chupa_gsf_input_stream.h>
 #include <glib.h>
+#include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-infile-msole.h>
+#include <memory.h>
 
 #define CHUPA_TYPE_PPT_DECOMPOSER            chupa_type_ppt_decomposer
 #define CHUPA_PPT_DECOMPOSER(obj)            \
@@ -90,224 +93,200 @@ getulong(unsigned char *buffer, int offset)
 {
     return (unsigned long)buffer[offset] | ((unsigned long)buffer[offset+1]<<8) |
         ((unsigned long)buffer[offset+2]<<16) | ((unsigned long)buffer[offset+3]<<24);
-}  
+}
 
-/** 
- * process_item:
- *
- * @param rectype 
- * @param reclen 
- * @param input 
- */
+#define WORK_SIZE 128
+
+struct PPT {
+    unsigned char working_buffer[WORK_SIZE];
+    int buf_idx;
+    int output_this_container;
+    int past_first_slide;
+    int last_container;
+    GsfOutput *output;
+};
+
 static void
-process_item(ppt_item_type_t rectype, long reclen,
-             GDataInputStream* input, GMemoryInputStream *mem,
-             GError **err)
+put_byte(struct PPT *ppt, unsigned char c)
 {
-    switch (rectype) {
-    case PPT_ITEM_DOCUMENT_END:
-        g_debug("End of document");
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
+    gsf_output_write(ppt->output, 1, &c);
+}
 
-    case PPT_ITEM_DOCUMENT:
-        g_debug("Start of document, reclen=%ld", reclen);
-        break;
+static void
+put_utf8(struct PPT *ppt, unsigned short c)
+{
+    put_byte(ppt, 0x0080 | ((short)c & 0x003F));
+}
 
-    case PPT_ITEM_DOCUMENT_ATOM:
-        g_debug("DocumentAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_SLIDE:
-        g_debug("Slide, reclen=%ld"
-                "---------------------------------------", reclen);
-        break;
-
-    case PPT_ITEM_SLIDE_ATOM:
-        g_debug("SlideAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
+static void
+print_utf8(struct PPT *ppt, unsigned short c)
+{
+    if (c == 0)
+        return;
 		
-    case PPT_ITEM_SLIDE_BASE:
-        g_debug("SlideBase, reclen=%ld", reclen);
-        break;
+    if (c < 0x80)
+        put_byte(ppt, c);
+    else if (c < 0x800) {
+        put_byte(ppt, 0xC0 | (c >>  6));
+        put_utf8(ppt, c);
+    }
+    else
+    {
+        put_byte(ppt, 0xE0 | (c >> 12));
+        put_utf8(ppt, c >>  6);
+        put_utf8(ppt, c);
+    }
+}
 
-    case PPT_ITEM_SLIDE_BASE_ATOM:
-        g_debug("SlideBaseAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-		
-    case PPT_ITEM_NOTES:
-        g_debug("Notes, reclen=%ld", reclen);
-        break;
+static void
+print_unicode(struct PPT *ppt, unsigned char *ucs, int len)
+{
+    int i;
+    for (i = 0; i < len; i += 2) {
+        print_utf8(ppt, ucs[i] | (ucs[i+1] << 8));
+    }
+}
 
-    case PPT_ITEM_NOTES_ATOM:
-        g_debug("NotesAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
+static void
+container_processor(struct PPT *ppt, int type)
+{
+    if (type == 0x03EE) {
+        if (ppt->past_first_slide) {
+            put_byte(ppt, '\f');
+        }
+        else {
+            ppt->past_first_slide = 1;
+        }
+    }
+    switch (type) {
+    case 0x000D:
+        if (ppt->last_container == 0x11) /* suppress notes info */
+            ppt->output_this_container = 0;
+        else
+            ppt->output_this_container = 1;
         break;
-		
-    case PPT_ITEM_HEADERS_FOOTERS:
-        g_debug("HeadersFooters, reclen=%ld", reclen);
+    case 0x0FF0:
+        ppt->output_this_container = 1;
         break;
+    default:
+        /* printf("Cont:%x|\n", type);	*/
+        ppt->output_this_container = 0;
+        break;
+    }
+    ppt->last_container = type;
+}
 
-    case PPT_ITEM_HEADERS_FOOTERS_ATOM:
-        g_debug("HeadersFootersAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-		
-    case PPT_ITEM_MAIN_MASTER:
-        g_debug("MainMaster, reclen=%ld", reclen);
-        break;
-		
-    case PPT_ITEM_TEXT_BYTES_ATOM: {
-        gchar *buf;
-        gssize i, size;
+static void
+atom_processor(struct PPT *ppt, int type, int count, int buf_last, unsigned char data)
+{
+    if ((ppt->buf_idx >= WORK_SIZE) || (ppt->output_this_container == 0))
+        return;
 
-        g_debug("TextBytes, reclen=%ld", reclen);
-        buf = g_malloc(reclen);
-        if (!g_input_stream_read_all((GInputStream *)input, buf, reclen, &size, NULL, err)) {
+    if (count == 0) {
+        memset(ppt->working_buffer, 0, WORK_SIZE);
+        ppt->buf_idx = 0;
+    }
+	
+    switch (type) {
+    case 0x0FA0:	/* Text String in unicode */
+        ppt->working_buffer[ppt->buf_idx++] = data;
+        if (count == buf_last) {
+            /* printf("Atom:%x|\n", type);	*/
+            /* working_buffer[buf_idx++] = 0;       */
+            /* printf("%s<BR>\n", working_buffer); */
+            print_unicode(ppt, ppt->working_buffer, ppt->buf_idx);
+            put_byte(ppt, '\n');
+        }
+        break;
+    case 0x0FA8:	/* Text String in ASCII */
+        if (data == '\r') {
+            data = '\n';
+        }
+        ppt->working_buffer[ppt->buf_idx++] = data;
+        if (count == buf_last) {
+            int i;
+            /* ppt->working_buffer[ppt->buf_idx++] = 0;	*/
+            /* printf("Atom:%x|\n", type);	*/
+            gsf_output_write(ppt->output, ppt->buf_idx, ppt->working_buffer);
+            put_byte(ppt, '\n');
+        }
+        break;
+    case 0x0FBA:	/* CString - unicode... */
+        if (data == '\r') {
+            data = '\n';
+        }
+        ppt->working_buffer[ppt->buf_idx++] = data;
+        if (count == buf_last) {
+            /* working_buffer[buf_idx++] = 0;	*/
+            /* printf("%s<BR>\n", working_buffer); */
+            /* printf("Atom:%x|\n", type);	*/
+            print_unicode(ppt, ppt->working_buffer, ppt->buf_idx);
+            put_byte(ppt, '\n');
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+static gboolean
+dump_file(struct PPT *ppt, GsfInput *inp)
+{
+    unsigned long version=0, instance=0, type=0, length=0, target=0, count=0;
+    unsigned char buf[16];
+
+    /* Output body */
+    while (gsf_input_read(inp, 1, buf)) {
+        switch (count) {
+        case 0:
+            instance = buf[0];
+            type = 0;
+            length = 0;
+            target = 80;	/* ficticious number */
+            break;
+        case 1:
+            instance |= (buf[0]<<8);
+            version = instance &0x000F;
+            instance = (instance>>4);
+            break;
+        case 2:
+            type = (unsigned)buf[0];
+            break;
+        case 3:
+            type |= (buf[0]<<8)&0x00000FFFL;
+            break;
+        case 4:
+            length = (unsigned)buf[0];
+            break;
+        case 5:
+            length |= (buf[0]<<8);
+            break;
+        case 6:
+            length |= (buf[0]<<16);
+            break;
+        case 7:
+            length |= (buf[0]<<24);
+            target = length;
+            if (version == 0x0F) {
+            	/* Do container level Processing */
+                container_processor(ppt, type);
+                count = -1;
+            }
             break;
         }
-        for (i = 0; i < size; i++) {
-            if ((unsigned char)buf[i] == '\r') {
-                buf[i] = '\n';
-            }
+        if (count > 7) {
+            /* Here is where we want to process the data
+               based on the Atom type... */
+            atom_processor(ppt, type, count-8, target-1, buf[0]);
         }
-        g_memory_input_stream_add_data(mem, buf, size, g_free);
-        break;
+        if (count == (target+7))
+            count = 0;
+        else
+            count++;
     }
-		
-    case PPT_ITEM_TEXT_CHARS_ATOM: 
-    case PPT_ITEM_CSTRING: {
-        int u;
-        gsize size;
-        GString *str;
 
-        g_debug("CString, reclen=%ld", reclen);
-        size = reclen / 2;
-        str = g_string_sized_new(size);
-        while (size > 0) {
-            u = g_data_input_stream_read_uint16(input, NULL, err);
-            if (u == '\r') {
-                u = '\n';
-            }
-            g_string_append_unichar(str, (gunichar)u);
-        }
-        size = str->len;
-        g_memory_input_stream_add_data(mem, g_string_free(str, FALSE), size, g_free);
-        break;
-    }
-		
-    case PPT_ITEM_USER_EDIT_ATOM:
-        g_debug("UserEditAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_COLOR_SCHEME_ATOM:
-        g_debug("ColorSchemeAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_PPDRAWING:
-        g_debug("PPDrawing, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_ENVIRONMENT:
-        g_debug("Environment, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_SSDOC_INFO_ATOM:
-        g_debug("SSDocInfoAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_SSSLIDE_INFO_ATOM:
-        g_debug("SSSlideInfoAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_PROG_TAGS:
-        g_debug("ProgTags, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_PROG_STRING_TAG:
-        g_debug("ProgStringTag, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_PROG_BINARY_TAG:
-        g_debug("ProgBinaryTag, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_LIST:
-        g_debug("List, reclen=%ld", reclen);
-        break;
-
-    case PPT_ITEM_SLIDE_LIST_WITH_TEXT:
-        g_debug("SlideListWithText, reclen=%ld"
-                "---------------------------------------", reclen);
-        break;
-
-    case PPT_ITEM_PERSIST_PTR_INCREMENTAL_BLOCK:
-        g_debug("PersistPtrIncrementalBlock, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_EX_OLE_OBJ_STG:
-        g_debug("ExOleObjStg, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_PPDRAWING_GROUP:
-        g_debug("PpdrawingGroup, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_EX_OBJ_LIST:
-        g_debug("ExObjList, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_TX_MASTER_STYLE_ATOM:
-        g_debug("TxMasterStyleAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_HANDOUT:
-        g_debug("Handout, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_SLIDE_PERSIST_ATOM:
-        g_debug("SlidePersistAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_TEXT_HEADER_ATOM:
-        g_debug("TextHeaderAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_TEXT_SPEC_INFO:
-        g_debug("TextSpecInfo, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    case PPT_ITEM_STYLE_TEXT_PROP_ATOM:
-        g_debug("StyleTextPropAtom, reclen=%ld", reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-        break;
-
-    default:
-        g_debug("Default action for rectype=%d reclen=%ld",
-                rectype, reclen);
-        g_input_stream_skip((GInputStream *)input, reclen, NULL, err);
-
+    if (ppt->past_first_slide) {
+        put_byte(ppt, '\f');
     }
 }
 
@@ -315,38 +294,23 @@ static gboolean
 chupa_feed_ppt(ChupaText *chupar, ChupaTextInput *input, GError **error)
 {
     const char *filename = chupa_text_input_get_filename(input);
-    GInputStream *mem;
-    GDataInputStream *inp;
+    GsfOutput *mem;
+    GsfInput *gin = chupa_text_input_get_base_input(input);
+    GInputStream *inp;
+    struct PPT ppt;
 
     if (strcmp(filename, "PowerPoint Document")) {
         return TRUE;
     }
-    inp = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(input));
-    g_data_input_stream_set_byte_order(inp, G_DATA_STREAM_BYTE_ORDER_LITTLE_ENDIAN);
-    mem = g_memory_input_stream_new();
-    input = chupa_text_input_new_from_stream(NULL, mem, filename);
+    mem = gsf_output_memory_new();
+    inp = chupa_gsf_input_stream_new(GSF_OUTPUT_MEMORY(mem));
+    input = chupa_text_input_new_from_stream(NULL, inp, filename);
     chupa_text_feed(chupar, input, error);
-    do {
-        unsigned short rectype;
-        unsigned long reclen;
-        unsigned char recbuf[8];
-        gssize size = g_input_stream_read((GInputStream *)inp, recbuf, sizeof(recbuf), NULL, error);
-        if (size == 0) {
-            process_item(PPT_ITEM_DOCUMENT_END, 0,
-                         inp, (GMemoryInputStream *)mem, error);
-            break;
-        }
-        if (size < sizeof(recbuf)) {
-            break;
-        }
-        rectype = getushort(recbuf, 2);
-        reclen = getulong(recbuf, 4);
-        if (reclen < 0) {
-            break;
-        }
-        process_item((ppt_item_type_t)rectype, reclen,
-                     inp, (GMemoryInputStream *)mem, error);
-    } while (1);
+    memset(&ppt, 0, sizeof(ppt));
+    gsf_input_seek(gin, 0, G_SEEK_SET);
+    ppt.output = mem;
+    while (dump_file(&ppt, gin)) {
+    }
     return TRUE;
 }
 
