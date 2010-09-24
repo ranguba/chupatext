@@ -109,6 +109,17 @@ chupa_tunnel_stream_new(GsfOutputMemory *mem)
 
 static const char export_id[] = "Gnumeric_stf:stf_csv";
 
+static void
+silent_printerr(const gchar *string)
+{
+}
+
+static void
+silent_log(const gchar *log_domain, GLogLevelFlags log_level,
+           const gchar *message, gpointer user_data)
+{
+}
+
 static gboolean
 chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                              ChupaTextInput *input, GError **err)
@@ -122,14 +133,19 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     GsfOutput *tmpout;
     GInputStream *tmpinp;
     const char *filename = chupa_text_input_get_filename(input);
+    GPrintFunc print_func;
+    guint loghandler;
 
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
     tmpout = gsf_output_memory_new();
     g_return_val_if_fail(tmpout, FALSE);
     g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
-    fo = go_file_opener_for_id("Gnumeric_Excel:excel");
+    print_func = g_set_printerr_handler(silent_printerr);
+    loghandler = g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, silent_log, NULL);
     wbv = wb_view_new_from_input(source, filename, fo, io_context, NULL);
+    g_log_remove_handler(G_LOG_DOMAIN, loghandler);
+    g_set_printerr_handler(print_func);
     if (go_io_error_occurred(io_context)) {
         go_io_error_display(io_context);
     }
