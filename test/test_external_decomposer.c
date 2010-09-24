@@ -35,15 +35,24 @@ struct _ChupaTestExternalDecomposerClass
 
 G_DEFINE_TYPE(ChupaTestExternalDecomposer, chupa_test_external_decomposer, CHUPA_TYPE_EXTERNAL_DECOMPOSER)
 
-static const char plain_text[] = "plain text\n";
+#define A_LINE "abcdefghijklmnopqrstuvwxyz-0123456789"
+#define DOUBLE(x) x x
+#define LONG_LINE DOUBLE(DOUBLE(DOUBLE(DOUBLE(A_LINE))))
+static const char plain_text[] = "plain text\n"
+    "foo bar\n"
+    "\fzot\n"
+    DOUBLE(DOUBLE(DOUBLE(LONG_LINE "\n")))
+    ;
 
 static gboolean
 testdec_spawn(ChupaExternalDecomposer *dec, ChupaText *chupar,
               GOutputStream **stdinput, GInputStream **stdoutput,
               GError **error)
 {
-    *stdoutput = g_memory_input_stream_new_from_data(plain_text, sizeof(plain_text) - 1, NULL);
-    return TRUE;
+    gchar *argv[2];
+    argv[0] = "cat";
+    argv[1] = NULL;
+    return chupa_external_decomposer_spawn(dec, argv, stdinput, stdoutput, error);
 }
 
 static void
