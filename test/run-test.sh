@@ -51,6 +51,8 @@ elif test x"$CUTTER_CHECK_LEAK" = x"yes"; then
     CUTTER_WRAPPER="${LIBTOOL-$builddir/libtool} --mode=execute valgrind "
     CUTTER_WRAPPER="$CUTTER_WRAPPER --leak-check=full --show-reachable=yes -v"
     CUTTER_ARGS="--keep-opening-modules"
+elif test x"$CUTTER_CHECK_STRACE" = x"yes"; then
+    CUTTER_WRAPPER="${LIBTOOL-$builddir/libtool} --mode=execute strace -o strace.out "
 fi
 
 export CUTTER
