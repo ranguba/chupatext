@@ -205,6 +205,10 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
     GType type = register_type(type_module);
     GList *registered_types = NULL;
     GOErrorInfo	*plugin_errs;
+    char *argv[2];
+
+    argv[0] = NULL;
+    gnm_pre_parse_init(0, argv);
 
     gnm_init ();
     gnm_conf_init();
