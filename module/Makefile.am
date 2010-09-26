@@ -4,6 +4,9 @@ LDFLAGS = -L$(top_builddir)/chupatext -lchupatext
 
 decomposer_LTLIBRARIES =
 factory_LTLIBRARIES =
+
+decomposer_LTLIBRARIES += text.la
+factory_LTLIBRARIES += text_factory.la
 decomposer_LTLIBRARIES += chupa_tar.la
 decomposer_LTLIBRARIES += chupa_zip.la
 if HAVE_POPPLER_GLIB
@@ -19,6 +22,16 @@ decomposer_LTLIBRARIES += excel.la
 factory_LTLIBRARIES += excel_factory.la
 endif
 decomposer_LTLIBRARIES += chupa_mspowerpoint.la
+
+text_la_SOURCES = text.c
+text_la_LDFLAGS = -module
+text_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+text_la_LIBADD = $(GLIB_LIBS)
+
+text_factory_la_SOURCES = text_factory.c
+text_factory_la_LDFLAGS = -module
+text_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+text_factory_la_LIBADD = $(GLIB_LIBS)
 
 chupa_tar_la_SOURCES = chupa_tar.c
 chupa_tar_la_LDFLAGS = -module

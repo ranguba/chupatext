@@ -3,24 +3,27 @@
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  */
 
-#include <chupatext/text_decomposer.h>
+#include <chupatext/chupa_dispatcher.h>
 #include <gio/gio.h>
 
 #include <gcutter.h>
 
 static ChupaDecomposer *decomp;
+static ChupaDispatcher *dispatcher;
 static GInputStream *source;
 
 void
 setup(void)
 {
-    chupa_decomposer_load_modules();
     decomp = NULL;
+    dispatcher = chupa_dispatcher_new();
 }
 
 void
 teardown(void)
 {
+    if (dispatcher)
+        g_object_unref(dispatcher);
     if (decomp)
         g_object_unref(decomp);
     if (source)
@@ -30,7 +33,7 @@ teardown(void)
 void
 test_search(void)
 {
-    decomp = chupa_decomposer_search("text/plain");
+    decomp = chupa_dispatcher_dispatch(dispatcher, "text/plain");
     cut_assert_not_null(decomp);
     cut_assert_not_null(CHUPA_TEXT_DECOMPOSER(decomp));
 }

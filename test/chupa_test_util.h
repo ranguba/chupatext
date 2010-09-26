@@ -6,7 +6,7 @@
 #ifndef CHUPA_TEST_UTIL_H
 #define CHUPA_TEST_UTIL_H
 
-#include <chupatext/text_decomposer.h>
+#include <chupatext/chupa_text.h>
 #include <gio/gio.h>
 
 #include <gcutter.h>

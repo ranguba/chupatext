@@ -8,8 +8,6 @@
 void
 chupa_test_setup(void)
 {
-    chupa_decomposer_load_modules();
-
     cut_set_fixture_data_dir(cut_get_source_directory(), "fixtures", NULL);
 }
 

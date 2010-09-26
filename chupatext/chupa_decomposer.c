@@ -93,7 +93,7 @@ ChupaDecomposer *
 chupa_decomposer_new (const gchar *name, const gchar *first_property, ...)
 {
     ChupaModule *module;
-    ChupaDecomposer *decomposer;
+    GObject *decomposer;
     va_list var_args;
 
     module = _chupa_decomposer_load_module(name);
@@ -103,7 +103,7 @@ chupa_decomposer_new (const gchar *name, const gchar *first_property, ...)
     decomposer = chupa_module_instantiate(module, first_property, var_args);
     va_end(var_args);
 
-    return decomposer;
+    return CHUPA_DECOMPOSER(decomposer);
 }
 
 gboolean
@@ -111,12 +111,4 @@ chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *inp
 {
     g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
     return (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, input, err);
-}
-
-static const char text_plain[] = "text/plain";
-
-void
-chupa_decomposer_load_modules(void)
-{
-    /* chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER); */
 }

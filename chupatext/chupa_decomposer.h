@@ -50,7 +50,6 @@ gboolean         chupa_decomposer_feed   (ChupaDecomposer *dec,
                                           ChupaTextInput  *input,
                                           GError         **error);
 
-void chupa_decomposer_load_modules(void);
 void chupa_decomposer_register(const gchar *mime_type, GType type);
 void chupa_decomposer_unregister(const gchar *mime_type, GType type);
 
