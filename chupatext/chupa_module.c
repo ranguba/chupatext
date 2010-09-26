@@ -456,10 +456,10 @@ get_package_dir(void)
 #endif
 
 gchar *
-chupa_module_path(void)
+chupa_module_dir(void)
 {
-    const gchar *path = g_getenv("CHUPA_MODULE_PATH");
-    if (!path && !g_path_is_absolute(path = CHUPA_MODULE_PATH)) {
+    const gchar *dir = g_getenv("CHUPA_MODULE_DIR");
+    if (!dir && !g_dir_is_absolute(dir = CHUPA_MODULE_DIR)) {
         gchar *base_dir;
 #if defined G_OS_WIN32
         base_dir = g_win32_get_package_installation_directory_of_module(chupa_dll);
@@ -467,10 +467,10 @@ chupa_module_path(void)
         base_dir = get_package_dir();
 #endif
         if (base_dir) {
-            return g_build_filename(base_dir, path, NULL);
+            return g_build_filename(base_dir, dir, NULL);
         }
     }
-    return g_strdup(path);
+    return g_strdup(dir);
 }
 
 /*

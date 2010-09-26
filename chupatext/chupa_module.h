@@ -46,7 +46,7 @@ GObject     *chupa_module_instantiate(ChupaModule *module,
 GList       *chupa_module_collect_registered_types(GList *modules);
 GList       *chupa_module_collect_names(GList *modules);
 void         chupa_module_unload(ChupaModule *module);
-gchar *chupa_module_path(void);
+gchar       *chupa_module_dir(void);
 
 #define CHUPA_MODULE_IMPL_INIT           chupa_module_impl_init
 #define CHUPA_MODULE_IMPL_EXIT           chupa_module_impl_exit

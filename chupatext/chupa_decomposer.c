@@ -26,7 +26,7 @@ decomp_modules_init(void)
     decomp_modules = g_hash_table_new_full(g_str_hash, g_str_equal,
                                            NULL, module_list_free);
     decomp_load_table = g_hash_table_new(g_str_hash, g_str_equal);
-    module_base_dir = chupa_module_path();
+    module_base_dir = chupa_module_dir();
 
 #define REGISTER(mime_type, module) \
     g_hash_table_insert(decomp_load_table, mime_type, module)
