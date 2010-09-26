@@ -54,8 +54,8 @@ silent_log(const gchar *log_domain, GLogLevelFlags log_level,
 }
 
 static gboolean
-chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
-                             ChupaTextInput *input, GError **err)
+chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
+                            ChupaTextInput *input, GError **err)
 {
     ChupaExcelDecomposer *xlsdec = CHUPA_EXCEL_DECOMPOSER(dec);
     GOFileSaver *fs = NULL;
@@ -118,7 +118,7 @@ chupa_excel_decomposer_class_init(ChupaExcelDecomposerClass *klass)
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     ChupaDecomposerClass *dec_class = CHUPA_DECOMPOSER_CLASS(klass);
     gobject_class->constructed = chupa_excel_constructed;
-    dec_class->feed = chupa_msword_decomposer_feed;
+    dec_class->feed = chupa_excel_decomposer_feed;
 }
 
 static GType
