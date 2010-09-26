@@ -9,27 +9,27 @@
 #include <glib.h>
 #include <wv.h>
 
-#define CHUPA_TYPE_MSWORD_DECOMPOSER chupa_type_msword_decomposer
-#define CHUPA_MSWORD_DECOMPOSER(obj)            \
-  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_MSWORD_DECOMPOSER, ChupaMSWORDDecomposer)
-#define CHUPA_MSWORD_DECOMPOSER_CLASS(klass)    \
-  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_MSWORD_DECOMPOSER, ChupaMSWORDDecomposerClass)
-#define CHUPA_IS_MSWORD_DECOMPOSER(obj)         \
-  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_MSWORD_DECOMPOSER)
-#define CHUPA_IS_MSWORD_DECOMPOSER_CLASS(klass) \
-  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_MSWORD_DECOMPOSER)
-#define CHUPA_MSWORD_DECOMPOSER_GET_CLASS(obj)  \
-  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_MSWORD_DECOMPOSER, ChupaMSWORDDecomposerClass)
+#define CHUPA_TYPE_WORD_DECOMPOSER chupa_type_msword_decomposer
+#define CHUPA_WORD_DECOMPOSER(obj)            \
+  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_WORD_DECOMPOSER, ChupaWordDecomposer)
+#define CHUPA_WORD_DECOMPOSER_CLASS(klass)    \
+  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_WORD_DECOMPOSER, ChupaWordDecomposerClass)
+#define CHUPA_IS_WORD_DECOMPOSER(obj)         \
+  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_WORD_DECOMPOSER)
+#define CHUPA_IS_WORD_DECOMPOSER_CLASS(klass) \
+  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_WORD_DECOMPOSER)
+#define CHUPA_WORD_DECOMPOSER_GET_CLASS(obj)  \
+  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_WORD_DECOMPOSER, ChupaWordDecomposerClass)
 
-typedef struct _ChupaMSWORDDecomposer ChupaMSWORDDecomposer;
-typedef struct _ChupaMSWORDDecomposerClass ChupaMSWORDDecomposerClass;
+typedef struct _ChupaWordDecomposer ChupaWordDecomposer;
+typedef struct _ChupaWordDecomposerClass ChupaWordDecomposerClass;
 
-struct _ChupaMSWORDDecomposer
+struct _ChupaWordDecomposer
 {
     ChupaDecomposer object;
 };
 
-struct _ChupaMSWORDDecomposerClass
+struct _ChupaWordDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 };
@@ -172,7 +172,7 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 }
 
 static void
-chupa_msword_decomposer_class_init(ChupaMSWORDDecomposerClass *klass)
+chupa_msword_decomposer_class_init(ChupaWordDecomposerClass *klass)
 {
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
     super->feed = chupa_msword_decomposer_feed;
@@ -182,13 +182,13 @@ static GType
 register_type(GTypeModule *type_module)
 {
     static const GTypeInfo info = {
-        sizeof(ChupaMSWORDDecomposerClass),
+        sizeof(ChupaWordDecomposerClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) chupa_msword_decomposer_class_init,
         NULL,           /* class_finalize */
         NULL,           /* class_data */
-        sizeof(ChupaMSWORDDecomposer),
+        sizeof(ChupaWordDecomposer),
         0,
         (GInstanceInitFunc) NULL,
     };
@@ -197,7 +197,7 @@ register_type(GTypeModule *type_module)
     if (!type) {
         type = g_type_module_register_type(type_module,
                                            CHUPA_TYPE_DECOMPOSER,
-                                           "ChupaMSWORDDecomposer",
+                                           "ChupaWordDecomposer",
                                            &info, 0);
         chupa_type_msword_decomposer = type;
     }
@@ -229,6 +229,6 @@ CHUPA_MODULE_IMPL_EXIT(void)
 G_MODULE_EXPORT GObject *
 CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_args)
 {
-    return g_object_new_valist(CHUPA_TYPE_MSWORD_DECOMPOSER,
+    return g_object_new_valist(CHUPA_TYPE_WORD_DECOMPOSER,
                                first_property, var_args);
 }
