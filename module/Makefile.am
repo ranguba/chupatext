@@ -14,7 +14,8 @@ if HAVE_WV
 decomposer_LTLIBRARIES += chupa_msword.la
 endif
 if HAVE_GOFFICE
-decomposer_LTLIBRARIES += chupa_msexcel.la
+decomposer_LTLIBRARIES += excel.la
+factory_LTLIBRARIES += excel_factory.la
 endif
 decomposer_LTLIBRARIES += chupa_mspowerpoint.la
 
@@ -43,10 +44,15 @@ chupa_msword_la_LDFLAGS = -module
 chupa_msword_la_CPPFLAGS = $(WV_CFLAGS)
 chupa_msword_la_LIBADD = $(WV_LIBS) $(GSF_LIBS)
 
-chupa_msexcel_la_SOURCES = chupa_msexcel.c
-chupa_msexcel_la_LDFLAGS = -module
-chupa_msexcel_la_CPPFLAGS = -I$(srcdir)/msexcel $(GOFFICE_CFLAGS)
-chupa_msexcel_la_LIBADD = $(GOFFICE_LIBS) -lspreadsheet
+excel_la_SOURCES = excel.c
+excel_la_LDFLAGS = -module
+excel_la_CPPFLAGS = -I$(srcdir)/excel $(GOFFICE_CFLAGS)
+excel_la_LIBADD = $(GOFFICE_LIBS) -lspreadsheet
+
+excel_factory_la_SOURCES = excel_factory.c
+excel_factory_la_LDFLAGS = -module
+excel_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+excel_factory_la_LIBADD = $(GLIB_LIBS)
 
 chupa_mspowerpoint_la_SOURCES = chupa_mspowerpoint.c
 chupa_mspowerpoint_la_LDFLAGS = -module

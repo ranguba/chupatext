@@ -143,8 +143,6 @@ register_type(GTypeModule *type_module)
                                            "ChupaExcelDecomposer",
                                            &info, 0);
         chupa_type_excel_decomposer = type;
-        chupa_decomposer_register("application/vnd.ms-excel", type);
-        chupa_decomposer_register("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", type);
     }
     return type;
 }
