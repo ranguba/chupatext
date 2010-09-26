@@ -7,7 +7,8 @@ factory_LTLIBRARIES =
 
 decomposer_LTLIBRARIES += text.la
 factory_LTLIBRARIES += text_factory.la
-decomposer_LTLIBRARIES += chupa_tar.la
+decomposer_LTLIBRARIES += tar.la
+factory_LTLIBRARIES += tar_factory.la
 decomposer_LTLIBRARIES += chupa_zip.la
 if HAVE_POPPLER_GLIB
 decomposer_LTLIBRARIES += pdf.la
@@ -33,10 +34,15 @@ text_factory_la_LDFLAGS = -module
 text_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 text_factory_la_LIBADD = $(GLIB_LIBS)
 
-chupa_tar_la_SOURCES = chupa_tar.c
-chupa_tar_la_LDFLAGS = -module
-chupa_tar_la_CPPFLAGS = $(GSF_CFLAGS)
-chupa_tar_la_LIBADD = $(GSF_LIBS)
+tar_la_SOURCES = tar.c
+tar_la_LDFLAGS = -module
+tar_la_CPPFLAGS = $(GSF_CFLAGS)
+tar_la_LIBADD = $(GSF_LIBS)
+
+tar_factory_la_SOURCES = tar_factory.c
+tar_factory_la_LDFLAGS = -module
+tar_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+tar_factory_la_LIBADD = $(GLIB_LIBS)
 
 chupa_zip_la_SOURCES = chupa_zip.c
 chupa_zip_la_LDFLAGS = -module
