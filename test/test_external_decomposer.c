@@ -73,13 +73,14 @@ void
 setup(void)
 {
     chupa_test_setup();
-    chupa_decomposer_register(test_external_type, CHUPA_TEST_TYPE_EXTERNAL_DECOMPOSER);
+    cut_omit("chupa_decomposer_register() was deleted");
+    /* chupa_decomposer_register(test_external_type, CHUPA_TEST_TYPE_EXTERNAL_DECOMPOSER); */
 }
 
 void
 teardown(void)
 {
-    chupa_decomposer_unregister(test_external_type, CHUPA_TEST_TYPE_EXTERNAL_DECOMPOSER);
+    /* chupa_decomposer_unregister(test_external_type, CHUPA_TEST_TYPE_EXTERNAL_DECOMPOSER); */
     chupa_test_teardown();
 }
 
