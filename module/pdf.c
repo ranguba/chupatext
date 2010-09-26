@@ -103,7 +103,7 @@ chupa_pdf_decomposer_class_init(ChupaPDFDecomposerClass *klass)
 }
 
 
-static GType
+static void
 register_type(GTypeModule *type_module)
 {
     static const GTypeInfo info = {
@@ -117,32 +117,23 @@ register_type(GTypeModule *type_module)
         0,
         (GInstanceInitFunc) NULL,
     };
-    GType type = chupa_type_pdf_decomposer;
 
-    if (!type) {
-        type = g_type_module_register_type(type_module,
-                                           CHUPA_TYPE_DECOMPOSER,
-                                           "ChupaPDFDecomposer",
-                                           &info, 0);
-        chupa_type_pdf_decomposer = type;
-        POPPLER_TYPE_DOCUMENT;
-    }
-    return type;
+    chupa_type_pdf_decomposer =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_DECOMPOSER,
+                                    "ChupaPDFDecomposer",
+                                    &info, 0);
 }
 
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
-    GType type = register_type(type_module);
     GList *registered_types = NULL;
 
-#if 0
-    if (type) {
-        registered_types =
-            g_list_prepend(registered_types,
-                           (gchar *)g_type_name(type));
-    }
-#endif
+    register_type(type_module);
+    registered_types =
+        g_list_prepend(registered_types,
+                       (gchar *)g_type_name(chupa_type_pdf_decomposer));
 
     return registered_types;
 }
