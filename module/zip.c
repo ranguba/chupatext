@@ -10,25 +10,25 @@
 
 #define CHUPA_TYPE_ZIP_DECOMPOSER            chupa_type_zip_decomposer
 #define CHUPA_ZIP_DECOMPOSER(obj)            \
-  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_ZIP_DECOMPOSER, ChupaZIPDecomposer)
+  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_ZIP_DECOMPOSER, ChupaZipDecomposer)
 #define CHUPA_ZIP_DECOMPOSER_CLASS(klass)    \
-  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_ZIP_DECOMPOSER, ChupaZIPDecomposerClass)
+  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_ZIP_DECOMPOSER, ChupaZipDecomposerClass)
 #define CHUPA_IS_ZIP_DECOMPOSER(obj)         \
   G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_ZIP_DECOMPOSER)
 #define CHUPA_IS_ZIP_DECOMPOSER_CLASS(klass) \
   G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_ZIP_DECOMPOSER)
 #define CHUPA_ZIP_DECOMPOSER_GET_CLASS(obj)  \
-  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_ZIP_DECOMPOSER, ChupaZIPDecomposerClass)
+  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_ZIP_DECOMPOSER, ChupaZipDecomposerClass)
 
-typedef struct _ChupaZIPDecomposer ChupaZIPDecomposer;
-typedef struct _ChupaZIPDecomposerClass ChupaZIPDecomposerClass;
+typedef struct _ChupaZipDecomposer ChupaZipDecomposer;
+typedef struct _ChupaZipDecomposerClass ChupaZipDecomposerClass;
 
-struct _ChupaZIPDecomposer
+struct _ChupaZipDecomposer
 {
     ChupaArchiveDecomposer parent_object;
 };
 
-struct _ChupaZIPDecomposerClass
+struct _ChupaZipDecomposerClass
 {
     ChupaArchiveDecomposerClass parent_class;
 };
@@ -36,57 +36,48 @@ struct _ChupaZIPDecomposerClass
 static GType chupa_type_zip_decomposer = 0;
 
 static void
-chupa_zip_decomposer_init(ChupaZIPDecomposer *dec)
+chupa_zip_decomposer_init(ChupaZipDecomposer *dec)
 {
 }
 
 static void
-chupa_zip_decomposer_class_init(ChupaZIPDecomposerClass *klass)
+chupa_zip_decomposer_class_init(ChupaZipDecomposerClass *klass)
 {
     ChupaArchiveDecomposerClass *dec_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);
     dec_class->get_infile = gsf_infile_zip_new;
 }
 
-static GType
+static void
 register_type(GTypeModule *type_module)
 {
     static const GTypeInfo info = {
-        sizeof(ChupaZIPDecomposerClass),
+        sizeof(ChupaZipDecomposerClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) chupa_zip_decomposer_class_init,
         NULL,           /* class_finalize */
         NULL,           /* class_data */
-        sizeof(ChupaZIPDecomposer),
+        sizeof(ChupaZipDecomposer),
         0,
         (GInstanceInitFunc) NULL,
     };
-    GType type = chupa_type_zip_decomposer;
 
-    if (!type) {
-        type = g_type_module_register_type(type_module,
-                                           CHUPA_TYPE_ARCHIVE_DECOMPOSER,
-                                           "ChupaZIPDecomposer",
-                                           &info, 0);
-        chupa_type_zip_decomposer = type;
-        chupa_decomposer_register("application/zip", type);
-    }
-    return type;
+    chupa_type_zip_decomposer =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_ARCHIVE_DECOMPOSER,
+                                    "ChupaZipDecomposer",
+                                    &info, 0);
 }
 
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
-    GType type = register_type(type_module);
     GList *registered_types = NULL;
 
-#if 0
-    if (type) {
-        registered_types =
-            g_list_prepend(registered_types,
-                           (gchar *)g_type_name(type));
-    }
-#endif
+    register_type(type_module);
+    registered_types =
+        g_list_prepend(registered_types,
+                       (gchar *)g_type_name(chupa_type_zip_decomposer));
 
     return registered_types;
 }
