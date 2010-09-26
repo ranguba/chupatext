@@ -83,7 +83,3 @@ powerpoint_la_LIBADD = $(GSF_LIBS)
 powerpoint_factory_la_SOURCES = powerpoint_factory.c
 powerpoint_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
-
-all: prereq
-
-@am__include@ $(srcdir)/prereq.mk
