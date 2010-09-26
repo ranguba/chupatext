@@ -467,7 +467,10 @@ chupa_module_dir(void)
         base_dir = get_package_dir();
 #endif
         if (base_dir) {
-            return g_build_filename(base_dir, dir, NULL);
+            gchar *absolute_dir;
+            absolute_dir = g_build_filename(base_dir, dir, NULL);
+            g_free(base_dir);
+            return absolute_dir;
         }
     }
     return g_strdup(dir);
