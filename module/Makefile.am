@@ -25,7 +25,8 @@ if HAVE_GOFFICE
 decomposer_LTLIBRARIES += excel.la
 factory_LTLIBRARIES += excel_factory.la
 endif
-decomposer_LTLIBRARIES += chupa_mspowerpoint.la
+decomposer_LTLIBRARIES += powerpoint.la
+factory_LTLIBRARIES += powerpoint_factory.la
 
 text_la_SOURCES = text.c
 text_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
@@ -75,9 +76,13 @@ excel_factory_la_SOURCES = excel_factory.c
 excel_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 excel_factory_la_LIBADD = $(GLIB_LIBS)
 
-chupa_mspowerpoint_la_SOURCES = chupa_mspowerpoint.c
-chupa_mspowerpoint_la_CPPFLAGS = $(GSF_CFLAGS)
-chupa_mspowerpoint_la_LIBADD = $(GSF_LIBS)
+powerpoint_la_SOURCES = powerpoint.c
+powerpoint_la_CPPFLAGS = $(GSF_CFLAGS)
+powerpoint_la_LIBADD = $(GSF_LIBS)
+
+powerpoint_factory_la_SOURCES = powerpoint_factory.c
+powerpoint_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
 
 all: prereq
 

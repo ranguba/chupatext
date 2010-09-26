@@ -20,12 +20,12 @@ teardown(void)
 #define decompose_msppt chupa_test_decompose_fixture
 
 void
-test_decompose_msppt(void)
+test_decompose_ppt(void)
 {
     cut_assert_equal_string("Sample Title\n\n", decompose_msppt("sample.ppt", NULL));
 }
 
 void
-test_decompose_msppt_ja(void)
+test_decompose_ppt_ja(void)
 {
 }

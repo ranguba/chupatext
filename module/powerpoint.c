@@ -326,7 +326,7 @@ chupa_ppt_decomposer_class_init(ChupaPPTDecomposerClass *klass)
     dec_class->feed_component = chupa_feed_ppt;
 }
 
-static GType
+static void
 register_type(GTypeModule *type_module)
 {
     static const GTypeInfo info = {
@@ -340,32 +340,23 @@ register_type(GTypeModule *type_module)
         0,
         (GInstanceInitFunc) NULL,
     };
-    GType type = chupa_type_ppt_decomposer;
 
-    if (!type) {
-        type = g_type_module_register_type(type_module,
-                                           CHUPA_TYPE_ARCHIVE_DECOMPOSER,
-                                           "ChupaPPTDecomposer",
-                                           &info, 0);
-        chupa_type_ppt_decomposer = type;
-        chupa_decomposer_register("application/vnd.ms-powerpoint", type);
-    }
-    return type;
+    chupa_type_ppt_decomposer =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_ARCHIVE_DECOMPOSER,
+                                    "ChupaPPTDecomposer",
+                                    &info, 0);
 }
 
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
-    GType type = register_type(type_module);
     GList *registered_types = NULL;
 
-#if 0
-    if (type) {
-        registered_types =
-            g_list_prepend(registered_types,
-                           (gchar *)g_type_name(type));
-    }
-#endif
+    register_type(type_module);
+    registered_types =
+        g_list_prepend(registered_types,
+                       (gchar *)g_type_name(chupa_type_ppt_decomposer));
 
     return registered_types;
 }
