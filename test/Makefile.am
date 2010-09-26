@@ -23,7 +23,7 @@ noinst_LTLIBRARIES += test_pdf.la
 endif
 
 if HAVE_WV
-noinst_LTLIBRARIES += test_msword.la
+noinst_LTLIBRARIES += test_word.la
 endif
 if HAVE_GOFFICE
 noinst_LTLIBRARIES += test_excel.la
@@ -70,7 +70,7 @@ test_decomposer_la_SOURCES = test_decomposer.c
 test_external_decomposer_la_SOURCES = test_external_decomposer.c chupa_test_util.c
 test_restrict_input_stream_la_SOURCES = test_restrict_input_stream.c
 test_pdf_la_SOURCES = test_pdf.c chupa_test_util.c
-test_msword_la_SOURCES = test_msword.c chupa_test_util.c
+test_word_la_SOURCES = test_word.c chupa_test_util.c
 test_excel_la_SOURCES = test_excel.c chupa_test_util.c
 test_mspowerpoint_la_SOURCES = test_mspowerpoint.c chupa_test_util.c
 test_tar_la_SOURCES = test_tar.c chupa_test_util.c

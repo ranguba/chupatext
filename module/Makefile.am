@@ -11,7 +11,8 @@ decomposer_LTLIBRARIES += pdf.la
 factory_LTLIBRARIES += pdf_factory.la
 endif
 if HAVE_WV
-decomposer_LTLIBRARIES += chupa_msword.la
+decomposer_LTLIBRARIES += word.la
+factory_LTLIBRARIES += word_factory.la
 endif
 if HAVE_GOFFICE
 decomposer_LTLIBRARIES += excel.la
@@ -39,10 +40,15 @@ pdf_factory_la_LDFLAGS = -module
 pdf_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 pdf_factory_la_LIBADD = $(GLIB_LIBS)
 
-chupa_msword_la_SOURCES = chupa_msword.c
-chupa_msword_la_LDFLAGS = -module
-chupa_msword_la_CPPFLAGS = $(WV_CFLAGS)
-chupa_msword_la_LIBADD = $(WV_LIBS) $(GSF_LIBS)
+word_la_SOURCES = word.c
+word_la_LDFLAGS = -module
+word_la_CPPFLAGS = $(WV_CFLAGS)
+word_la_LIBADD = $(WV_LIBS) $(GSF_LIBS)
+
+word_factory_la_SOURCES = word_factory.c
+word_factory_la_LDFLAGS = -module
+word_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+word_factory_la_LIBADD = $(GLIB_LIBS)
 
 excel_la_SOURCES = excel.c
 excel_la_LDFLAGS = -module
