@@ -51,8 +51,6 @@ struct _ChupaModulePrivate
 
 G_DEFINE_TYPE(ChupaModule, chupa_module, G_TYPE_TYPE_MODULE)
 
-static const char chupa_module_prefix[] = "chupa_";
-
 static void     finalize(GObject     *object);
 static gboolean load(GTypeModule *module);
 static void     unload(GTypeModule *module);
@@ -63,8 +61,6 @@ static void     _chupa_module_close(GModule     *module);
 static gboolean _chupa_module_load_func(GModule     *module,
                                         const gchar *func_name,
                                         gpointer    *symbol);
-static gboolean _chupa_module_match_name(const gchar *mod_path,
-                                         const gchar *name);
 
 static void
 chupa_module_class_init(ChupaModuleClass *klass)
@@ -301,14 +297,13 @@ chupa_module_stem_name(const gchar *name)
 {
     gchar *mod_name;
 
-    if (g_str_has_prefix(name, chupa_module_prefix))
-        name += strlen(chupa_module_prefix);
     mod_name = g_strdup(name);
     if (g_str_has_suffix(mod_name, "."G_MODULE_SUFFIX)) {
         guint last_index;
         last_index = strlen(mod_name) - strlen("."G_MODULE_SUFFIX);
         mod_name[last_index] = '\0';
     }
+
     return mod_name;
 }
 
@@ -321,11 +316,14 @@ chupa_module_new(const gchar *name,
     ChupaModule *module = g_object_new(CHUPA_TYPE_MODULE, NULL);
     ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(module);
     gchar *mod_name = chupa_module_stem_name(name);
+
     g_type_module_set_name(G_TYPE_MODULE(module), mod_name);
     g_free(mod_name);
+
     priv->init = init;
     priv->exit = exit;
     priv->instantiate = instantiate;
+
     return module;
 }
 
@@ -378,8 +376,6 @@ chupa_module_load_modules_unique(const gchar *base_dir,
         return exist_modules;
 
     while ((entry = g_dir_read_name(dir))) {
-        if (!g_str_has_prefix(entry, chupa_module_prefix))
-            continue;
         if (!g_str_has_suffix(entry, "."G_MODULE_SUFFIX))
             continue;
         if (chupa_module_find(exist_modules, entry))
@@ -459,7 +455,7 @@ gchar *
 chupa_module_dir(void)
 {
     const gchar *dir = g_getenv("CHUPA_MODULE_DIR");
-    if (!dir && !g_dir_is_absolute(dir = CHUPA_MODULE_DIR)) {
+    if (!dir && !g_path_is_absolute(dir = CHUPA_MODULE_DIR)) {
         gchar *base_dir;
 #if defined G_OS_WIN32
         base_dir = g_win32_get_package_installation_directory_of_module(chupa_dll);

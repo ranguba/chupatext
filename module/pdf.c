@@ -125,7 +125,7 @@ register_type(GTypeModule *type_module)
                                            "ChupaPDFDecomposer",
                                            &info, 0);
         chupa_type_pdf_decomposer = type;
-        chupa_decomposer_register("application/pdf", type);
+        POPPLER_TYPE_DOCUMENT;
     }
     return type;
 }

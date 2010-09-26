@@ -8,7 +8,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include "chupatext/chupa_text.h"
+#include <chupatext/chupa_text.h>
 
 G_BEGIN_DECLS
 
@@ -42,8 +42,13 @@ struct _ChupaDecomposerClass
 
 GType        chupa_decomposer_get_type(void) G_GNUC_CONST;
 
-ChupaDecomposer *chupa_decomposer_search(const gchar *mime_type);
-gboolean chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
+ChupaDecomposer *chupa_decomposer_new    (const gchar *name,
+                                          const gchar *first_property,
+                                          ...);
+gboolean         chupa_decomposer_feed   (ChupaDecomposer *dec,
+                                          ChupaText       *text,
+                                          ChupaTextInput  *input,
+                                          GError         **error);
 
 void chupa_decomposer_load_modules(void);
 void chupa_decomposer_register(const gchar *mime_type, GType type);

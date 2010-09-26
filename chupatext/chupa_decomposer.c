@@ -3,36 +3,17 @@
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  */
 
-#include "chupatext/chupa_decomposer.h"
-#include "chupatext/chupa_module.h"
-#include "chupatext/text_decomposer.h"
 #include <glib.h>
 #include <string.h>
 
-#define CHUPA_DECOMPOSER_GET_PRIVATE(obj) \
-    (G_TYPE_INSTANCE_GET_PRIVATE(obj, \
-                                 CHUPA_TYPE_DECOMPOSER_OBJECT, \
+#include "chupa_decomposer.h"
+#include "chupa_module.h"
+#include "chupa_module_factory.h"
+
+#define CHUPA_DECOMPOSER_GET_PRIVATE(obj)                       \
+    (G_TYPE_INSTANCE_GET_PRIVATE(obj,                           \
+                                 CHUPA_TYPE_DECOMPOSER_OBJECT,  \
                                  ChupaDecomposerPrivate))
-
-static GHashTable *decomp_modules = NULL;
-static GHashTable *decomp_load_table = NULL;
-static gchar *module_base_dir;
-
-#define module_list_free (GDestroyNotify)g_list_free
-
-static void
-decomp_modules_init(void)
-{
-    decomp_modules = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                           NULL, module_list_free);
-    decomp_load_table = g_hash_table_new(g_str_hash, g_str_equal);
-    module_base_dir = chupa_module_dir();
-
-#define REGISTER(mime_type, module) \
-    g_hash_table_insert(decomp_load_table, mime_type, module)
-#include "module/init_chupa.h"
-#undef REGISTER
-}
 
 #ifdef USE_CHUPA_DECOMPOSER_PRIVATE
 typedef struct _ChupaDecomposerPrivate  ChupaDecomposerPrivate;
@@ -41,8 +22,7 @@ struct _ChupaDecomposerPrivate
 };
 #endif
 
-G_DEFINE_ABSTRACT_TYPE_WITH_CODE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT,
-                                 decomp_modules_init())
+G_DEFINE_ABSTRACT_TYPE(ChupaDecomposer, chupa_decomposer, G_TYPE_OBJECT)
 
 static void
 chupa_decomposer_init(ChupaDecomposer *decomposer)
@@ -60,6 +40,72 @@ chupa_decomposer_class_init(ChupaDecomposerClass *klass)
 #endif
 }
 
+static GList *decomposers = NULL;
+static gchar *decomposer_module_dir = NULL;
+#ifdef G_OS_WIN32
+static gchar *win32_decomposer_module_dir = NULL;
+#endif
+
+static const gchar *
+_chupa_decomposer_module_dir (void)
+{
+    const gchar *dir;
+
+    if (decomposer_module_dir)
+        return decomposer_module_dir;
+
+    dir = g_getenv("CHUPA_DECOMPOSER_DIR");
+    if (dir)
+        return dir;
+
+#ifdef G_OS_WIN32
+    if (!win32_decomposer_module_dir)
+        win32_decomposer_module_dir =
+            chupa_win32_build_module_dir_name("decomposer");
+    return win32_decomopser_module_dir;
+#else
+    return DECOMPOSER_MODULE_DIR;
+#endif
+}
+
+static ChupaModule *
+_chupa_decomposer_load_module (const gchar *decomposer)
+{
+    ChupaModule *module;
+
+    module = chupa_module_find(decomposers, decomposer);
+    if (module)
+        return module;
+
+    module = chupa_module_load_module(_chupa_decomposer_module_dir(),
+                                      decomposer);
+    if (module) {
+        if (g_type_module_use(G_TYPE_MODULE(module))) {
+            decomposers = g_list_prepend(decomposers, module);
+            g_type_module_unuse(G_TYPE_MODULE(module));
+        }
+    }
+
+    return module;
+}
+
+ChupaDecomposer *
+chupa_decomposer_new (const gchar *name, const gchar *first_property, ...)
+{
+    ChupaModule *module;
+    ChupaDecomposer *decomposer;
+    va_list var_args;
+
+    module = _chupa_decomposer_load_module(name);
+    g_return_val_if_fail(module != NULL, NULL);
+
+    va_start(var_args, first_property);
+    decomposer = chupa_module_instantiate(module, first_property, var_args);
+    va_end(var_args);
+
+    return decomposer;
+}
+
 gboolean
 chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err)
 {
@@ -72,79 +118,5 @@ static const char text_plain[] = "text/plain";
 void
 chupa_decomposer_load_modules(void)
 {
-    chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER);
-}
-
-void
-chupa_decomposer_register(const gchar *mime_type, GType type)
-{
-    gpointer key = (gpointer)mime_type, val = NULL;
-
-    if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
-        g_hash_table_steal(decomp_modules, key);
-    }
-    val = g_list_prepend((GList *)val, (gpointer)type);
-    g_hash_table_insert(decomp_modules, key, val);
-}
-
-void
-chupa_decomposer_unregister(const gchar *mime_type, GType type)
-{
-    gpointer key = (gpointer)mime_type, val = NULL;
-
-    if (g_hash_table_lookup_extended(decomp_modules, key, &key, &val)) {
-        g_hash_table_steal(decomp_modules, key);
-        val = g_list_remove((GList *)val, (gpointer)type);
-        if (val) {
-            g_hash_table_insert(decomp_modules, key, val);
-        }
-    }
-}
-
-ChupaDecomposer *
-chupa_decomposer_search(const gchar *const mime_type)
-{
-    GList *type_list = NULL;
-    const char *sub_type;
-    gpointer key, value;
-    ChupaModule *mod = NULL;
-    int retry = 0;
-
-    do {
-        if (g_hash_table_lookup_extended(decomp_modules, mime_type, &key, &value)) {
-            type_list = (GList *)value;
-        }
-        else if (g_hash_table_lookup_extended(decomp_load_table, mime_type, &key, &value) &&
-                 (mod = chupa_module_load_module(module_base_dir, (const gchar *)value)) != NULL) {
-            if (!g_type_module_use(G_TYPE_MODULE(mod))) {
-                break;
-            }
-        }
-        else if ((sub_type = strchr((const char *)mime_type, '/')) != NULL) {
-            GString *tmp_type = NULL;
-            ++sub_type;
-            if (sub_type[0] == 'x' && sub_type[1] == '-') {
-                tmp_type = g_string_new_len(mime_type, sub_type - mime_type);
-                g_string_append(tmp_type, sub_type += 2);
-                if (g_hash_table_lookup_extended(decomp_modules, tmp_type->str, &key, &value)) {
-                    type_list = (GList *)value;
-                }
-            }
-            if (!type_list && tmp_type &&
-                g_hash_table_lookup_extended(decomp_load_table, tmp_type->str, &key, &value)) {
-                mod = chupa_module_load_module(module_base_dir, (const gchar *)value);
-            }
-            if (tmp_type) {
-                g_string_free(tmp_type, TRUE);
-            }
-            if (!mod || !g_type_module_use(G_TYPE_MODULE(mod))) {
-                break;
-            }
-        }
-    } while (!type_list && !retry++);
-
-    if (!type_list) {
-        return NULL;
-    }
-    return CHUPA_DECOMPOSER(g_object_new((GType)type_list->data, NULL));
+    /* chupa_decomposer_register(text_plain, CHUPA_TYPE_TEXT_DECOMPOSER); */
 }

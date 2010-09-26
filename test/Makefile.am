@@ -5,16 +5,17 @@ if WITH_CUTTER
 TESTS = run-test.sh
 TESTS_ENVIRONMENT = NO_MAKE=yes CUTTER="$(CUTTER)"
 
-noinst_LTLIBRARIES =			\
-	test_metadata.la \
-	test_text.la \
-	test_text_input.la \
-	test_text_input_stream.la \
-	test_decomposer.la \
-	test_external_decomposer.la \
-	test_restrict_input_stream.la \
-	test_tar.la \
-	test_zip.la \
+noinst_LTLIBRARIES =				\
+	suite_chupatext_test.la			\
+	test_metadata.la			\
+	test_text.la				\
+	test_text_input.la			\
+	test_text_input_stream.la		\
+	test_decomposer.la			\
+	test_external_decomposer.la		\
+	test_restrict_input_stream.la		\
+	test_tar.la				\
+	test_zip.la				\
 	$(EMPTY)
 
 if HAVE_POPPLER_GLIB
@@ -58,6 +59,8 @@ LIBS =					\
 	$(GCUTTER_LIBS) \
 	$(GSF_LIBS) \
 	$(EMPTY)
+
+suite_chupatext_test_la_SOURCES = suite_chupatext_test.c
 
 test_metadata_la_SOURCES = test_metadata.c
 test_text_la_SOURCES = test_text.c chupa_test_util.c

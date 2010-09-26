@@ -39,6 +39,33 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
+if test "x$GCC" = "xyes"; then
+  case " $CFLAGS " in
+  *[\ \	]-Wall[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wall" ;;
+  esac
+
+  case " $CFLAGS " in
+  *[\ \	]-Wmissing-declarations[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wmissing-declarations" ;;
+  esac
+
+  case " $CFLAGS " in
+  *[\ \	]-Wmissing-prototypes[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wmissing-prototypes" ;;
+  esac
+
+  case " $CFLAGS " in
+  *[\ \	]-Wpointer-arith[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wpointer-arith" ;;
+  esac
+
+  case " $CFLAGS " in
+  *[\ \	]-Wcast-align[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wcast-align" ;;
+  esac
+fi
+
 m4_ifdef([AM_PATH_GLIB_2_0], [
   GLIB_REQUIRED=2.24.0
   AC_SUBST(GLIB_REQUIRED)
@@ -83,6 +110,12 @@ GENHTML_OPTIONS="--title 'chupatext Code Coverage'"
 
 moduledir='$(pkglibdir)/module'
 AC_SUBST(moduledir)
+
+decomposerdir='$(moduledir)/decomposer'
+AC_SUBST(decomposerdir)
+
+factorydir='$(moduledir)/factory'
+AC_SUBST(factorydir)
 
 AC_SUBST(build_includedir, '$(top_build_prefix)')
 AC_SUBST(top_includedir, '$(top_srcdir)')

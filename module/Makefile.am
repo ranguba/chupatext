@@ -1,23 +1,22 @@
 EMPTY =
 
-AM_CFLAGS = $(GSF_CFLAGS)
-AM_LDFLAGS = $(GSF_LIBS)
-
 LDFLAGS = -L$(top_builddir)/chupatext -lchupatext
 
-module_LTLIBRARIES =
-module_LTLIBRARIES += chupa_tar.la
-module_LTLIBRARIES += chupa_zip.la
+decomposer_LTLIBRARIES =
+factory_LTLIBRARIES =
+decomposer_LTLIBRARIES += chupa_tar.la
+decomposer_LTLIBRARIES += chupa_zip.la
 if HAVE_POPPLER_GLIB
-module_LTLIBRARIES += chupa_pdf.la
+decomposer_LTLIBRARIES += pdf.la
+factory_LTLIBRARIES += pdf_factory.la
 endif
 if HAVE_WV
-module_LTLIBRARIES += chupa_msword.la
+decomposer_LTLIBRARIES += chupa_msword.la
 endif
 if HAVE_GOFFICE
-module_LTLIBRARIES += chupa_msexcel.la
+decomposer_LTLIBRARIES += chupa_msexcel.la
 endif
-module_LTLIBRARIES += chupa_mspowerpoint.la
+decomposer_LTLIBRARIES += chupa_mspowerpoint.la
 
 chupa_tar_la_SOURCES = chupa_tar.c
 chupa_tar_la_LDFLAGS = -module
@@ -29,10 +28,15 @@ chupa_zip_la_LDFLAGS = -module
 chupa_zip_la_CPPFLAGS = $(GSF_CFLAGS)
 chupa_zip_la_LIBADD = $(GSF_LIBS)
 
-chupa_pdf_la_SOURCES = chupa_pdf.c
-chupa_pdf_la_LDFLAGS = -module
-chupa_pdf_la_CPPFLAGS = $(POPPLER_GLIB_CFLAGS)
-chupa_pdf_la_LIBADD = $(POPPLER_GLIB_LIBS) $(GSF_LIBS)
+pdf_la_SOURCES = pdf.c
+pdf_la_LDFLAGS = -module
+pdf_la_CPPFLAGS = $(POPPLER_GLIB_CFLAGS) $(GSF_CFLAGS)
+pdf_la_LIBADD = $(POPPLER_GLIB_LIBS) $(GSF_LIBS)
+
+pdf_factory_la_SOURCES = pdf_factory.c
+pdf_factory_la_LDFLAGS = -module
+pdf_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+pdf_factory_la_LIBADD = $(GLIB_LIBS)
 
 chupa_msword_la_SOURCES = chupa_msword.c
 chupa_msword_la_LDFLAGS = -module

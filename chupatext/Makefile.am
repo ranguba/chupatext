@@ -14,6 +14,8 @@ libchupatext_la_SOURCES =			\
 	chupa_text_input.c			\
 	chupa_module.c				\
 	chupa_module_factory.c			\
+	chupa_module_factory_utils.c		\
+	chupa_dispatcher.c			\
 	chupa_text_input_stream.c		\
 	chupa_gsf_input_stream.c		\
 	error.c					\
@@ -22,11 +24,14 @@ libchupatext_la_SOURCES =			\
 	external_decomposer.c			\
 	text_decomposer.c			\
 	chupa_restrict_input_stream.c		\
+	chupa_utils.c				\
 	version.c				\
 	$(EMPTY)
 
-AM_CPPFLAGS =					\
-	-DCHUPA_MODULE_DIR=\"$(moduledir)\"	\
+AM_CPPFLAGS =						\
+	-DCHUPA_MODULE_DIR=\"$(moduledir)\"		\
+	-DDECOMPOSER_MODULE_DIR=\"$(decomposerdir)\"	\
+	-DFACTORY_MODULE_DIR=\"$(factorydir)\"		\
 	-D_GNU_SOURCE
 AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
 AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)
@@ -40,7 +45,9 @@ chupatext_include_HEADERS =			\
 	chupa_metadata.h			\
 	chupa_module.h				\
 	chupa_module_factory.h			\
+	chupa_module_factory_utils.h		\
 	chupa_module_impl.h			\
+	chupa_dispatcher.h			\
 	chupa_private.h				\
 	chupa_restrict_input_stream.h		\
 	chupa_text.h				\
@@ -49,6 +56,7 @@ chupatext_include_HEADERS =			\
 	chupa_gsf_input_stream.h		\
 	text_decomposer.h			\
 	external_decomposer.h			\
+	chupa_utils.h				\
 	version.h
 
 version.lo: version.h

@@ -5,14 +5,19 @@
 
 #include "chupatext/chupa_text.h"
 #include "chupatext/chupa_decomposer.h"
+#include "chupatext/chupa_dispatcher.h"
+#include "chupatext/chupa_module_factory_utils.h"
+
+#define CHUPA_TEXT_GET_PRIVATE(obj)                        \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                    \
+                                 CHUPA_TYPE_TEXT,          \
+                                 ChupaTextPrivate))
 
 G_DEFINE_TYPE(ChupaText, chupa_text, G_TYPE_OBJECT)
 
-#ifdef USE_CHUPA_TEXT_PRIVATE
 typedef struct ChupaTextPrivate {
-    
+    ChupaDispatcher *dispatcher;
 } ChupaTextPrivate;
-#endif
 
 const char chupa_text_signal_decomposed[] = "decomposed";
 
@@ -23,15 +28,16 @@ enum {
 
 static gint gsignals[LAST_SIGNAL] = {0};
 
+static void dispose        (GObject         *object);
+
 static void
 chupa_text_class_init(ChupaTextClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-    /*GTypeModuleClass *type_module_class = G_TYPE_MODULE_CLASS(klass);*/
 
-#ifdef USE_CHUPA_TEXT_PRIVATE
     g_type_class_add_private(gobject_class, sizeof(ChupaTextPrivate));
-#endif
+
+    gobject_class->dispose      = dispose;
 
     gsignals[DECOMPOSED] =
         g_signal_new(chupa_text_signal_decomposed,
@@ -46,11 +52,24 @@ chupa_text_class_init(ChupaTextClass *klass)
 static void
 chupa_text_init(ChupaText *chupar)
 {
-#ifdef USE_CHUPA_TEXT_PRIVATE
     ChupaTextPrivate *priv;
 
     priv = CHUPA_TEXT_GET_PRIVATE(chupar);
-#endif
+
+    priv->dispatcher = chupa_dispatcher_new();
+}
+
+static void
+dispose (GObject *object)
+{
+    ChupaTextPrivate *priv = CHUPA_TEXT_GET_PRIVATE(object);
+
+    if (priv->dispatcher) {
+        g_object_unref(priv->dispatcher);
+        priv->dispatcher = NULL;
+    }
+
+    G_OBJECT_CLASS(chupa_text_parent_class)->dispose(object);
 }
 
 /**
@@ -111,6 +130,7 @@ chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointe
 gboolean
 chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **error)
 {
+    ChupaTextPrivate *priv;
     const char *mime_type = NULL;
     ChupaDecomposer *dec;
     GError *e;
@@ -120,6 +140,7 @@ chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **error)
     g_return_val_if_fail(input != NULL, FALSE);
     g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
+    priv = CHUPA_TEXT_GET_PRIVATE(chupar);
     mime_type = chupa_text_input_get_mime_type(input);
 
     if (!mime_type) {
@@ -128,7 +149,7 @@ chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **error)
         g_propagate_error(error, e);
         result = FALSE;
     }
-    else if (dec = chupa_decomposer_search(mime_type)) {
+    else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
         result = chupa_decomposer_feed(dec, chupar, input, error);
         g_object_unref(dec);
         result = TRUE;
