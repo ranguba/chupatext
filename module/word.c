@@ -9,7 +9,7 @@
 #include <glib.h>
 #include <wv.h>
 
-#define CHUPA_TYPE_WORD_DECOMPOSER chupa_type_msword_decomposer
+#define CHUPA_TYPE_WORD_DECOMPOSER chupa_type_word_decomposer
 #define CHUPA_WORD_DECOMPOSER(obj)            \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_WORD_DECOMPOSER, ChupaWordDecomposer)
 #define CHUPA_WORD_DECOMPOSER_CLASS(klass)    \
@@ -34,7 +34,7 @@ struct _ChupaWordDecomposerClass
     ChupaDecomposerClass parent_class;
 };
 
-static GType chupa_type_msword_decomposer = 0;
+static GType chupa_type_word_decomposer = 0;
 
 struct char_proc_arg {
     GString *buffer;
@@ -128,7 +128,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 }
 
 static gboolean
-chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
+chupa_word_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                              ChupaTextInput *input, GError **err)
 {
     struct char_proc_arg arg;
@@ -172,10 +172,10 @@ chupa_msword_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 }
 
 static void
-chupa_msword_decomposer_class_init(ChupaWordDecomposerClass *klass)
+chupa_word_decomposer_class_init(ChupaWordDecomposerClass *klass)
 {
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
-    super->feed = chupa_msword_decomposer_feed;
+    super->feed = chupa_word_decomposer_feed;
 }
 
 static GType
@@ -185,21 +185,21 @@ register_type(GTypeModule *type_module)
         sizeof(ChupaWordDecomposerClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) chupa_msword_decomposer_class_init,
+        (GClassInitFunc) chupa_word_decomposer_class_init,
         NULL,           /* class_finalize */
         NULL,           /* class_data */
         sizeof(ChupaWordDecomposer),
         0,
         (GInstanceInitFunc) NULL,
     };
-    GType type = chupa_type_msword_decomposer;
+    GType type = chupa_type_word_decomposer;
 
     if (!type) {
         type = g_type_module_register_type(type_module,
                                            CHUPA_TYPE_DECOMPOSER,
                                            "ChupaWordDecomposer",
                                            &info, 0);
-        chupa_type_msword_decomposer = type;
+        chupa_type_word_decomposer = type;
     }
     return type;
 }
