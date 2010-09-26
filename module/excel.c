@@ -121,7 +121,7 @@ chupa_excel_decomposer_class_init(ChupaExcelDecomposerClass *klass)
     dec_class->feed = chupa_excel_decomposer_feed;
 }
 
-static GType
+static void
 register_type(GTypeModule *type_module)
 {
     static const GTypeInfo info = {
@@ -135,22 +135,17 @@ register_type(GTypeModule *type_module)
         0,
         (GInstanceInitFunc) NULL,
     };
-    GType type = chupa_type_excel_decomposer;
 
-    if (!type) {
-        type = g_type_module_register_type(type_module,
-                                           CHUPA_TYPE_EXTERNAL_DECOMPOSER,
-                                           "ChupaExcelDecomposer",
-                                           &info, 0);
-        chupa_type_excel_decomposer = type;
-    }
-    return type;
+    chupa_type_excel_decomposer =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_EXTERNAL_DECOMPOSER,
+                                    "ChupaExcelDecomposer",
+                                    &info, 0);
 }
 
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
-    GType type = register_type(type_module);
     GList *registered_types = NULL;
     GOErrorInfo	*plugin_errs;
     char *argv[2];
@@ -169,13 +164,10 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
         go_error_info_free(plugin_errs);
     }
 
-#if 0
-    if (type) {
-        registered_types =
-            g_list_prepend(registered_types,
-                           (gchar *)g_type_name(type));
-    }
-#endif
+    register_type(type_module);
+    registered_types =
+        g_list_prepend(registered_types,
+                       (gchar *)g_type_name(chupa_type_excel_decomposer));
 
     return registered_types;
 }

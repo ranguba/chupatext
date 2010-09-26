@@ -178,7 +178,7 @@ chupa_word_decomposer_class_init(ChupaWordDecomposerClass *klass)
     super->feed = chupa_word_decomposer_feed;
 }
 
-static GType
+static void
 register_type(GTypeModule *type_module)
 {
     static const GTypeInfo info = {
@@ -192,31 +192,23 @@ register_type(GTypeModule *type_module)
         0,
         (GInstanceInitFunc) NULL,
     };
-    GType type = chupa_type_word_decomposer;
 
-    if (!type) {
-        type = g_type_module_register_type(type_module,
-                                           CHUPA_TYPE_DECOMPOSER,
-                                           "ChupaWordDecomposer",
-                                           &info, 0);
-        chupa_type_word_decomposer = type;
-    }
-    return type;
+    chupa_type_word_decomposer =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_DECOMPOSER,
+                                    "ChupaWordDecomposer",
+                                    &info, 0);
 }
 
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
-    GType type = register_type(type_module);
     GList *registered_types = NULL;
+    register_type(type_module);
 
-#if 0
-    if (type) {
-        registered_types =
-            g_list_prepend(registered_types,
-                           (gchar *)g_type_name(type));
-    }
-#endif
+    registered_types =
+        g_list_prepend(registered_types,
+                       (gchar *)g_type_name(chupa_type_word_decomposer));
 
     return registered_types;
 }
