@@ -13,6 +13,7 @@ libchupatext_la_SOURCES =			\
 	chupa_text.c				\
 	chupa_text_input.c			\
 	chupa_module.c				\
+	chupa_module_factory.c			\
 	chupa_text_input_stream.c		\
 	chupa_gsf_input_stream.c		\
 	error.c					\
@@ -24,7 +25,9 @@ libchupatext_la_SOURCES =			\
 	version.c				\
 	$(EMPTY)
 
-AM_CPPFLAGS = -DCHUPA_MODULE_PATH=\"$(moduledir)\" -D_GNU_SOURCE
+AM_CPPFLAGS =					\
+	-DCHUPA_MODULE_DIR=\"$(moduledir)\"	\
+	-D_GNU_SOURCE
 AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
 AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)
 
@@ -36,6 +39,7 @@ chupatext_include_HEADERS =			\
 	chupa_decomposer.h			\
 	chupa_metadata.h			\
 	chupa_module.h				\
+	chupa_module_factory.h			\
 	chupa_module_impl.h			\
 	chupa_private.h				\
 	chupa_restrict_input_stream.h		\
