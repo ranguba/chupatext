@@ -57,6 +57,7 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     gsize size;
     gboolean result;
     GsfInput *base_input;
+    gint ooo_status;
 
     fd_ppt = g_file_open_tmp(TMPFILE_BASE".ppt", &tmp_ppt_name, error);
     out_tmpfile = g_unix_output_stream_new(fd_ppt, TRUE);
@@ -81,9 +82,12 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
         g_error("argv overflow");
         return FALSE;
     }
-    g_return_val_if_fail(chupa_external_decomposer_spawn(CHUPA_EXTERNAL_DECOMPOSER(dec),
-                                                         argv, NULL, NULL, error),
-                         FALSE);
+
+    result = g_spawn_sync(NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
+                          NULL, NULL, NULL, NULL, &ooo_status, error);
+    g_return_val_if_fail(result, FALSE);
+    g_return_val_if_fail(ooo_status == 0, FALSE);
+
     sleep(2);                   /* Suck! */
     g_unlink(tmp_ppt_name);
     g_free(tmp_ppt_name);
