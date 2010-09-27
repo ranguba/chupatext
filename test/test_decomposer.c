@@ -26,14 +26,14 @@
 void test_search(void);
 void test_register(void);
 
-static ChupaDecomposer *decomp;
+static ChupaDecomposer *decomposer;
 static ChupaDispatcher *dispatcher;
 static GInputStream *source;
 
 void
 setup(void)
 {
-    decomp = NULL;
+    decomposer = NULL;
     dispatcher = chupa_dispatcher_new();
 }
 
@@ -42,8 +42,8 @@ teardown(void)
 {
     if (dispatcher)
         g_object_unref(dispatcher);
-    if (decomp)
-        g_object_unref(decomp);
+    if (decomposer)
+        g_object_unref(decomposer);
     if (source)
         g_object_unref(source);
 }
@@ -51,6 +51,6 @@ teardown(void)
 void
 test_search(void)
 {
-    decomp = chupa_dispatcher_dispatch(dispatcher, "text/plain");
-    cut_assert_not_null(decomp);
+    decomposer = chupa_dispatcher_dispatch(dispatcher, "text/plain");
+    cut_assert_not_null(decomposer);
 }
