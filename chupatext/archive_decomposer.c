@@ -70,13 +70,13 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
     ChupaArchiveDecomposerClass *arch_class;
     int i, num;
 
-    g_return_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec));
-    g_return_if_fail(CHUPA_IS_TEXT_INPUT(input));
+    g_return_val_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec), FALSE);
+    g_return_val_if_fail(CHUPA_IS_TEXT_INPUT(input), FALSE);
     arch_class = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(dec);
     inp = chupa_text_input_get_base_input(input);
     infile = arch_class->get_infile(inp, err);
     if (!infile) {
-        return;
+        return FALSE;
     }
     num = gsf_infile_num_children(infile);
     for (i = 0; i < num; ++i) {

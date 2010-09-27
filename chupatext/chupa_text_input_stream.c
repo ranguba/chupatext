@@ -136,6 +136,7 @@ close_fn(GInputStream *stream, GCancellable *cancellable, GError **error)
         g_object_unref(priv->input);
         priv->input = NULL;
     }
+    return TRUE;
 }
 
 static void

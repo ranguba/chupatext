@@ -148,7 +148,7 @@ chupa_word_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
         g_propagate_error(err, chupa_text_error_new(CHUPA_TEXT_ERROR_INVALID_INPUT,
                                                     "wvInitParser_gsf failed: %d",
                                                     ret));
-        return;
+        return FALSE;
     }
     ps.userData = &arg;
     wvSetCharHandler(&ps, char_proc);
@@ -169,6 +169,8 @@ chupa_word_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     }
     g_object_unref(arg.dest);
     g_object_unref(arg.input);
+
+    return TRUE;
 }
 
 static void
