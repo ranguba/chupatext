@@ -184,43 +184,40 @@ container_processor(struct PPT *ppt, int type)
 static void
 atom_processor(struct PPT *ppt, int type, int count, int buf_last, unsigned char data)
 {
-    if ((ppt->buf_idx >= WORK_SIZE) || (ppt->output_this_container == 0))
+    if (ppt->output_this_container == 0)
         return;
 
-    if (count == 0) {
-        memset(ppt->working_buffer, 0, WORK_SIZE);
-        ppt->buf_idx = 0;
-    }
-	
     switch (type) {
-    case 0x0FA0:	/* Text String in unicode */
-        ppt->working_buffer[ppt->buf_idx++] = data;
-        if (count == buf_last) {
-            /* printf("Atom:%x|\n", type);	*/
-            /* working_buffer[buf_idx++] = 0;       */
-            /* printf("%s<BR>\n", working_buffer); */
-            print_unicode(ppt, ppt->working_buffer, ppt->buf_idx);
-            put_byte(ppt, '\n');
-        }
-        break;
     case 0x0FA8:	/* Text String in ASCII */
+        if (count == 0) {
+            ppt->buf_idx = 0;
+        }
+        else if (ppt->buf_idx >= WORK_SIZE) {
+            gsf_output_write(ppt->output, ppt->buf_idx, ppt->working_buffer);
+            ppt->buf_idx = 0;
+        }
         if (data == '\r') {
             data = '\n';
         }
         ppt->working_buffer[ppt->buf_idx++] = data;
         if (count == buf_last) {
-            /* ppt->working_buffer[ppt->buf_idx++] = 0;	*/
-            /* printf("Atom:%x|\n", type);	*/
+            /* printf("Atom:%x|%.*s\n", type, ppt->buf_idx, ppt->working_buffer); */
             gsf_output_write(ppt->output, ppt->buf_idx, ppt->working_buffer);
             put_byte(ppt, '\n');
         }
         break;
+    case 0x0FA0:	/* Text String in unicode */
     case 0x0FBA:	/* CString - unicode... */
+        if (count == 0) {
+            ppt->buf_idx = 0;
+        }
+        else if (ppt->buf_idx >= WORK_SIZE) {
+            print_unicode(ppt, ppt->working_buffer, ppt->buf_idx);
+            ppt->buf_idx = 0;
+        }
         ppt->working_buffer[ppt->buf_idx++] = data;
         if (count == buf_last) {
-            /* working_buffer[buf_idx++] = 0;	*/
-            /* printf("%s<BR>\n", working_buffer); */
-            /* printf("Atom:%x|\n", type);	*/
+            /* printf("Atom:%x|%.*s\n", type, ppt->buf_idx, ppt->working_buffer); */
             print_unicode(ppt, ppt->working_buffer, ppt->buf_idx);
             put_byte(ppt, '\n');
         }
