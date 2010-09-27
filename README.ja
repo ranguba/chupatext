@@ -32,6 +32,11 @@ ChupaText
       BY-SA）|URL:http://creativecommons.org/licenses/by-sa/3.0/>))
       です。
   * 例外:
+    * module/excel/: GPLバージョン2（詳細:
+      ((<"license/gpl-2.txt"|URL:http://www.gnu.org/licenses/gpl-2.html>))）
+      です。
+      ((<Gnumeric|URL:http://projects.gnome.org/gnumeric/>))
+      に含まれているファイルです。
     * ...
 
 == ChupaText?
