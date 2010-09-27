@@ -49,11 +49,15 @@ chupa_gsf_input_stream_new(GsfOutputMemory *mem)
 {
     ChupaGsfInputStream *stream = g_object_new(CHUPA_TYPE_GSF_INPUT_STREAM, NULL);
     GsfOutput *out = GSF_OUTPUT(mem);
+    gsize size;
 
     g_object_ref(mem);
     stream->source = mem;
-    g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(stream),
-                                   gsf_output_memory_get_bytes(mem),
-                                   gsf_output_size(out), NULL);
+    size = gsf_output_size(out);
+    if (size > 0) {
+        g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(stream),
+                                       gsf_output_memory_get_bytes(mem),
+                                       size, NULL);
+    }
     return G_INPUT_STREAM(stream);
 }
