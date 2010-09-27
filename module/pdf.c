@@ -40,7 +40,6 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                           ChupaTextInput *input, GError **err)
 {
     PopplerDocument *doc;
-    GError **error = NULL;
     GMemoryInputStream *mem = NULL;
     gssize count;
     gchar buffer[16*1024];

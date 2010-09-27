@@ -46,7 +46,6 @@ set_property(GObject *object,
              GParamSpec *pspec)
 {
     ChupaRestrictInputStreamPrivate *priv;
-    GObject *obj;
     goffset ofs;
 
     priv = CHUPA_RESTRICT_INPUT_STREAM_GET_PRIVATE(object);

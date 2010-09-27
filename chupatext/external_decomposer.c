@@ -110,7 +110,6 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
     ChupaExternalDecomposerClass *self_class;
     ChupaExternalDecomposer *extdec;
     ChupaExternalDecomposerPrivate *priv;
-    ChupaMetadata *meta;
     gboolean result;
 
     g_return_val_if_fail(CHUPA_IS_EXTERNAL_DECOMPOSER(dec), FALSE);

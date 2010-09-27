@@ -5,6 +5,7 @@
 
 #include "archive_decomposer.h"
 
+#ifdef USE_CHUPA_ARCHIVE_DECOMPOSER_PRIVATE
 #define CHUPA_ARCHIVE_DECOMPOSER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE(obj, \
                                  CHUPA_TYPE_ARCHIVE_DECOMPOSER_OBJECT, \
@@ -14,9 +15,11 @@ typedef struct _ChupaArchiveDecomposerPrivate  ChupaArchiveDecomposerPrivate;
 struct _ChupaArchiveDecomposerPrivate
 {
 };
+#endif
 
 G_DEFINE_ABSTRACT_TYPE(ChupaArchiveDecomposer, chupa_archive_decomposer, CHUPA_TYPE_DECOMPOSER)
 
+#ifdef USE_CHUPA_ARCHIVE_DECOMPOSER_PRIVATE
 static void
 dispose(GObject *object)
 {
@@ -31,7 +34,6 @@ set_property(GObject *object,
              GParamSpec *pspec)
 {
     ChupaArchiveDecomposer *dec = CHUPA_ARCHIVE_DECOMPOSER(object);
-    GObject *obj;
 
     switch (prop_id) {
     default:
@@ -60,6 +62,7 @@ constructed(GObject *object)
     ChupaArchiveDecomposer *dec = CHUPA_ARCHIVE_DECOMPOSER(object);
     g_return_if_fail(dec);
 }
+#endif
 
 static gboolean
 feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **err)
@@ -104,13 +107,18 @@ chupa_archive_decomposer_init(ChupaArchiveDecomposer *dec)
 static void
 chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
 {
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-    ChupaDecomposerClass *decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
-
-    gobject_class->constructed  = constructed;
-    gobject_class->dispose      = dispose;
-    gobject_class->set_property = set_property;
-    gobject_class->get_property = get_property;
-    decomposer_class->feed = feed;
+#ifdef USE_CHUPA_ARCHIVE_DECOMPOSER_PRIVATE
+    {
+        GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+        gobject_class->constructed  = constructed;
+        gobject_class->dispose      = dispose;
+        gobject_class->set_property = set_property;
+        gobject_class->get_property = get_property;
+    }
+#endif
+    {
+        ChupaDecomposerClass *decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
+        decomposer_class->feed = feed;
+    }
     CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass)->feed_component = chupa_text_feed;
 }

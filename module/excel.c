@@ -57,7 +57,6 @@ static gboolean
 chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                             ChupaTextInput *input, GError **err)
 {
-    ChupaExcelDecomposer *xlsdec = CHUPA_EXCEL_DECOMPOSER(dec);
     GOFileSaver *fs = NULL;
     GOFileOpener *fo = NULL;
     GOIOContext *io_context = go_io_context_new(cc);
@@ -102,22 +101,9 @@ chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 }
 
 static void
-chupa_excel_decomposer_init(ChupaExcelDecomposer *dec)
-{
-}
-
-static void
-chupa_excel_constructed(GObject *object)
-{
-    ChupaExcelDecomposer *dec = CHUPA_EXCEL_DECOMPOSER(object);
-}
-
-static void
 chupa_excel_decomposer_class_init(ChupaExcelDecomposerClass *klass)
 {
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     ChupaDecomposerClass *dec_class = CHUPA_DECOMPOSER_CLASS(klass);
-    gobject_class->constructed = chupa_excel_constructed;
     dec_class->feed = chupa_excel_decomposer_feed;
 }
 

@@ -32,10 +32,8 @@ chupa_decomposer_init(ChupaDecomposer *decomposer)
 static void
 chupa_decomposer_class_init(ChupaDecomposerClass *klass)
 {
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-    /*GTypeModuleClass *type_module_class = G_TYPE_MODULE_CLASS(klass);*/
-
 #ifdef USE_CHUPA_DECOMPOSER_PRIVATE
+    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     g_type_class_add_private(gobject_class, sizeof(ChupaDecomposerPrivate));
 #endif
 }

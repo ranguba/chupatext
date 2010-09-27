@@ -82,6 +82,7 @@ typedef enum {
     PPT_ITEM_UNKNOWN                       = 0
 } ppt_item_type_t;
 
+#if 0
 static unsigned int
 getushort(unsigned char *buffer, int offset)
 {
@@ -94,6 +95,7 @@ getulong(unsigned char *buffer, int offset)
     return (unsigned long)buffer[offset] | ((unsigned long)buffer[offset+1]<<8) |
         ((unsigned long)buffer[offset+2]<<16) | ((unsigned long)buffer[offset+3]<<24);
 }
+#endif
 
 #define WORK_SIZE 128
 
@@ -204,7 +206,6 @@ atom_processor(struct PPT *ppt, int type, int count, int buf_last, unsigned char
         }
         ppt->working_buffer[ppt->buf_idx++] = data;
         if (count == buf_last) {
-            int i;
             /* ppt->working_buffer[ppt->buf_idx++] = 0;	*/
             /* printf("Atom:%x|\n", type);	*/
             gsf_output_write(ppt->output, ppt->buf_idx, ppt->working_buffer);
@@ -315,10 +316,6 @@ chupa_feed_ppt(ChupaText *chupar, ChupaTextInput *input, GError **error)
     return TRUE;
 }
 
-static void
-chupa_ppt_decomposer_init(ChupaPPTDecomposer *dec)
-{
-}
 static void
 chupa_ppt_decomposer_class_init(ChupaPPTDecomposerClass *klass)
 {

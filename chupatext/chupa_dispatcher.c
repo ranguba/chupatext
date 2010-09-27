@@ -114,6 +114,7 @@ register_factory(ChupaDispatcherPrivate *priv,
     g_hash_table_insert(priv->mime_type_table, key, value);
 }
 
+#if 0
 static void
 unregister_factory(ChupaDispatcherPrivate *priv,
                    const gchar *mime_type, ChupaModuleFactory *factory)
@@ -128,6 +129,7 @@ unregister_factory(ChupaDispatcherPrivate *priv,
         }
     }
 }
+#endif
 
 static void
 load_factories (ChupaDispatcherPrivate *priv)

@@ -38,7 +38,6 @@ static void
 chupa_metadata_class_init (ChupaMetadataClass *klass)
 {
     GObjectClass *gobject_class;
-    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
@@ -92,7 +91,6 @@ chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar 
 {
     ChupaMetadataPrivate *priv;
     GList *values = NULL;
-    gboolean existing;
     gpointer keyptr = (gpointer)key, valptr;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
@@ -112,7 +110,6 @@ void
 chupa_metadata_replace_value(ChupaMetadata *metadata, const gchar *key, const gchar *value)
 {
     ChupaMetadataPrivate *priv;
-    GList *values, *new_values;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
     g_hash_table_replace(priv->data, g_strdup(key), g_list_append(NULL, g_strdup(value)));
@@ -136,7 +133,6 @@ GList *
 chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key)
 {
     ChupaMetadataPrivate *priv;
-    GList *values;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
     return g_hash_table_lookup(priv->data, key);

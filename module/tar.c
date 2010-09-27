@@ -36,11 +36,6 @@ struct _ChupaTarDecomposerClass
 static GType chupa_type_tar_decomposer = 0;
 
 static void
-chupa_tar_decomposer_init(ChupaTarDecomposer *dec)
-{
-}
-
-static void
 chupa_tar_decomposer_class_init(ChupaTarDecomposerClass *klass)
 {
     ChupaArchiveDecomposerClass *dec_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);

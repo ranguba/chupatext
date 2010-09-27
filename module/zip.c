@@ -36,11 +36,6 @@ struct _ChupaZipDecomposerClass
 static GType chupa_type_zip_decomposer = 0;
 
 static void
-chupa_zip_decomposer_init(ChupaZipDecomposer *dec)
-{
-}
-
-static void
 chupa_zip_decomposer_class_init(ChupaZipDecomposerClass *klass)
 {
     ChupaArchiveDecomposerClass *dec_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);
