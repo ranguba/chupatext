@@ -142,7 +142,7 @@ create (ChupaModuleFactory *factory)
     static int n_instances = 0;
     GObject *decomposer;
 
-    decomposer = G_OBJECT(chupa_decomposer_new("ppt", NULL));
+    decomposer = G_OBJECT(chupa_decomposer_new("powerpoint", NULL));
     n_instances++;
     if (n_instances == 1) {
         /* FIXME: This causes memory leak but we need to
