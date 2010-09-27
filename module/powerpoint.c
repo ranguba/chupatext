@@ -38,50 +38,6 @@ struct _ChupaPPTDecomposerClass
 
 static GType chupa_type_ppt_decomposer = 0;
 
-/* borrowed from catdoc-0.94.2 */
-typedef enum {
-    PPT_ITEM_DOCUMENT                      = 1000,
-    PPT_ITEM_DOCUMENT_ATOM                 = 1001,
-    PPT_ITEM_DOCUMENT_END                  = 1002,
-    PPT_ITEM_SLIDE_PERSIST                 = 1003,
-    PPT_ITEM_SLIDE_BASE                    = 1004,
-    PPT_ITEM_SLIDE_BASE_ATOM               = 1005,
-    PPT_ITEM_SLIDE                         = 1006,
-    PPT_ITEM_SLIDE_ATOM                    = 1007,
-    PPT_ITEM_NOTES                         = 1008 ,
-    PPT_ITEM_NOTES_ATOM                    = 1009,
-    PPT_ITEM_ENVIRONMENT                   = 1010,
-    PPT_ITEM_SLIDE_PERSIST_ATOM            = 1011,
-    PPT_ITEM_MAIN_MASTER                   = 1016,
-    PPT_ITEM_SSSLIDE_INFO_ATOM             = 1017,
-    PPT_ITEM_SSDOC_INFO_ATOM               = 1025,
-    PPT_ITEM_EX_OBJ_LIST                   = 1033,
-    PPT_ITEM_PPDRAWING_GROUP               = 1035,
-    PPT_ITEM_PPDRAWING                     = 1036,
-    PPT_ITEM_LIST                          = 2000,
-    PPT_ITEM_COLOR_SCHEME_ATOM             = 2032,
-    PPT_ITEM_TEXT_HEADER_ATOM              = 3999,
-    PPT_ITEM_TEXT_CHARS_ATOM               = 4000,
-    PPT_ITEM_STYLE_TEXT_PROP_ATOM          = 4001,
-    PPT_ITEM_TX_MASTER_STYLE_ATOM          = 4003,
-    PPT_ITEM_TEXT_BYTES_ATOM               = 4008,
-    PPT_ITEM_TEXT_CISTYLE_ATOM             = 4008,
-    PPT_ITEM_TEXT_SPEC_INFO                = 4010,
-    PPT_ITEM_EX_OLE_OBJ_STG                = 4113,
-    PPT_ITEM_CSTRING                       = 4026,
-    PPT_ITEM_HANDOUT                       = 4041,
-    PPT_ITEM_HEADERS_FOOTERS               = 4057,
-    PPT_ITEM_HEADERS_FOOTERS_ATOM          = 4058,
-    PPT_ITEM_SLIDE_LIST_WITH_TEXT          = 4080,
-    PPT_ITEM_SLIDE_LIST                    = 4084,
-    PPT_ITEM_USER_EDIT_ATOM                = 4085,
-    PPT_ITEM_PROG_TAGS                     = 5000,
-    PPT_ITEM_PROG_STRING_TAG               = 5001,
-    PPT_ITEM_PROG_BINARY_TAG               = 5002,
-    PPT_ITEM_PERSIST_PTR_INCREMENTAL_BLOCK = 6002,
-    PPT_ITEM_UNKNOWN                       = 0
-} ppt_item_type_t;
-
 #if 0
 static unsigned int
 getushort(unsigned char *buffer, int offset)
