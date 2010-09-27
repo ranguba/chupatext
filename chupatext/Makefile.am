@@ -7,6 +7,8 @@ bin_PROGRAMS = chupa
 chupa_SOURCES = chupa.c
 chupa_LDADD = libchupatext.la
 
+BUILT_SOURCES = version.h
+
 libchupatext_la_SOURCES =			\
 	chupa_init.c				\
 	chupa_metadata.c			\
@@ -57,4 +59,5 @@ chupatext_include_HEADERS =			\
 	chupa_utils.h				\
 	version.h
 
-version.lo: version.h
+version.h: $(top_srcdir)/tool/version-update.sh
+	$(SHELL) $(top_srcdir)/tool/version-update.sh version.h

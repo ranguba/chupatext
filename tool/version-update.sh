@@ -3,9 +3,12 @@
 header="$1"
 test -z "$2" || cd "$2"
 
+base_dir="$(dirname $0)"
+top_dir="${base_dir}/.."
+
 new=
-if test -d .git; then
-    versionstr=`git describe --tags --match='[0-9][.0-9]*' 2>/dev/null`
+if test -d "${top_dir}/.git"; then
+    versionstr=`git --git-dir "${top_dir}" describe --tags --match='[0-9][.0-9]*' 2>/dev/null`
     if test -n "$versionstr"; then
 	save_IFS="$IFS" IFS=-; set $versionstr
 	versionstr=$1
