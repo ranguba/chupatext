@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Export" script:language="StarBasic">
+sub WritePDF(url as string)
+dim document   as object
+dim dispatcher as object
+document   = ThisComponent.CurrentController.Frame
+dispatcher = createUnoService(&quot;com.sun.star.frame.DispatchHelper&quot;)
+
+dim args1(1) as new com.sun.star.beans.PropertyValue
+args1(0).Name = &quot;URL&quot;
+args1(0).Value = url
+args1(1).Name = &quot;FilterName&quot;
+args1(1).Value = &quot;writer_pdf_Export&quot;
+
+dispatcher.executeDispatch(document, &quot;.uno:ExportDirectToPDF&quot;, &quot;&quot;, 0, args1())
+
+document.close(true)
+
+end sub
+</script:module>
