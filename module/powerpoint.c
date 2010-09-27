@@ -51,6 +51,7 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     gint fd_ppt, fd_pdf;
     GOutputStream *out_tmpfile;
     GInputStream *in_tmpfile;
+    int argc;
     char *argv[5];
     gsize size;
     gboolean result;
@@ -69,11 +70,16 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     g_object_unref(out_tmpfile);
     g_return_val_if_fail(size != -1, (g_unlink(tmp_ppt_name), g_free(tmp_ppt_name), FALSE));
     fd_pdf = g_file_open_tmp(TMPFILE_BASE".pdf", &tmp_pdf_name, error);
-    argv[0] = "ooffice";
-    argv[1] = "-headless";
-    argv[2] = tmp_ppt_name;
-    argv[3] = g_strdup_printf("macro:///Standard.Export.WritePDF(\"file://%s\")", tmp_pdf_name);
-    argv[4] = NULL;
+    argc = 0;
+    argv[argc++] = "ooffice";
+    argv[argc++] = "-headless";
+    argv[argc++] = tmp_ppt_name;
+    argv[argc++] = g_strdup_printf("macro:///Standard.Export.WritePDF(\"file://%s\")", tmp_pdf_name);
+    argv[argc++] = NULL;
+    if (argc > (int)(sizeof(argv)/sizeof(argv[0]))) {
+        g_error("argv overflow");
+        return FALSE;
+    }
     g_return_val_if_fail(chupa_external_decomposer_spawn(CHUPA_EXTERNAL_DECOMPOSER(dec),
                                                          argv, NULL, NULL, error),
                          FALSE);
