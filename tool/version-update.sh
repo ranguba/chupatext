@@ -15,14 +15,27 @@ if test -d .git; then
 	IFS="$save_IFS"
 	version=`expr $major \* 1000000 + $minor \* 1000 + $micro`
 	date=`git log --max-count=1 --format=%cd --date=short | tr -d -`
-	new="\
+	new="#ifndef CHUPATEXT_VERSION_H
 #define CHUPA_VERSION_STRING \"$versionstr\"
 #define CHUPA_VERSION_CODE $version
 #define CHUPA_VERSION_MAJOR $major
 #define CHUPA_VERSION_MINOR $minor
 #define CHUPA_VERSION_MICRO $micro
 #define CHUPA_COMMITS ${commits:-0}
-#define CHUPA_RELEASE_DATE $date"
+#define CHUPA_RELEASE_DATE $date
+
+#ifdef __cplusplus
+extern \"C\" {
+#endif
+const int chupa_version(void);
+const char *chupa_version_string(void);
+const int chupa_commits(void);
+const int chupa_release_date(void);
+const char *chupa_version_description(void);
+#ifdef __cplusplus
+}
+#endif
+#endif"
     fi
 fi
 unset old

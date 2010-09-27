@@ -5,6 +5,9 @@
 
 #include "chupa_test_util.h"
 
+void test_decompose_excel(void);
+void test_decompose_excel_2007(void);
+
 void
 setup(void)
 {

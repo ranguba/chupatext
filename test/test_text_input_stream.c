@@ -9,6 +9,7 @@
 
 void test_new (void);
 void test_new_with_metadata (void);
+void test_read(void);
 
 static GInputStream *memstream;
 static ChupaTextInput *input;

@@ -5,6 +5,8 @@
 
 #include "chupa_test_util.h"
 
+void test_decompose_zip(void);
+
 void
 setup(void)
 {

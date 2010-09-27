@@ -48,6 +48,9 @@ struct _ChupaExternalDecomposerClass
 
 GType chupa_external_decomposer_get_type(void) G_GNUC_CONST;
 GsfInfile *chupa_external_decomoser_get_infile(ChupaExternalDecomposer *);
+gboolean chupa_external_decomposer_spawn(ChupaExternalDecomposer *, gchar **, GOutputStream **,
+                                         GInputStream **, GError **);
+void chupa_external_decomposer_set_metadata(ChupaExternalDecomposer *, ChupaTextInput *);
 
 G_END_DECLS
 

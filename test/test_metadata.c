@@ -24,6 +24,8 @@
 void test_new (void);
 void test_get_first_value (void);
 void test_get_values (void);
+void test_replace_value (void);
+void test_update_value (void);
 
 static ChupaMetadata *metadata, *metadata2;
 

@@ -8,6 +8,9 @@
 
 #include <gcutter.h>
 
+void test_search(void);
+void test_register(void);
+
 static ChupaDecomposer *decomp;
 static ChupaDispatcher *dispatcher;
 static GInputStream *source;
@@ -62,6 +65,8 @@ struct _ChupaTestDummyDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 };
+
+static GType chupa_test_dummy_decomposer_get_type(void);
 
 G_DEFINE_TYPE(ChupaTestDummyDecomposer, chupa_test_dummy_decomposer, CHUPA_TYPE_DECOMPOSER)
 

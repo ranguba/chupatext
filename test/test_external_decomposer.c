@@ -7,6 +7,8 @@
 #include "chupa_test_util.h"
 #include <glib.h>
 
+void test_decompose_external(void);
+
 #define CHUPA_TEST_TYPE_EXTERNAL_DECOMPOSER chupa_test_external_decomposer_get_type()
 #define CHUPA_TEST_EXTERNAL_DECOMPOSER(obj) \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TEST_TYPE_EXTERNAL_DECOMPOSER, ChupaTestExternalDecomposer)
@@ -33,6 +35,7 @@ struct _ChupaTestExternalDecomposerClass
     ChupaExternalDecomposerClass parent_class;
 };
 
+static GType chupa_test_external_decomposer_get_type(void);
 G_DEFINE_TYPE(ChupaTestExternalDecomposer, chupa_test_external_decomposer, CHUPA_TYPE_EXTERNAL_DECOMPOSER)
 
 #define A_LINE "abcdefghijklmnopqrstuvwxyz-0123456789"

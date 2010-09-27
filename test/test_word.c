@@ -5,6 +5,11 @@
 
 #include "chupa_test_util.h"
 
+void test_decompose_msword(void);
+void test_decompose_msword_ja(void);
+void test_decompose_msword_ja97(void);
+void test_decompose_msword_ja95(void);
+
 void
 setup(void)
 {

@@ -24,6 +24,7 @@ G_BEGIN_DECLS
 typedef struct _ChupaGsfInputStream ChupaGsfInputStream;
 typedef struct _ChupaGsfInputStreamClass ChupaGsfInputStreamClass;
 
+GType chupa_gsf_input_stream_get_type(void);
 GInputStream *chupa_gsf_input_stream_new(GsfOutputMemory *);
 
 G_END_DECLS

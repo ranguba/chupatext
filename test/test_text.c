@@ -9,6 +9,8 @@
 
 #include <gcutter.h>
 
+void test_decompose_text_plain (void);
+
 void
 setup(void)
 {

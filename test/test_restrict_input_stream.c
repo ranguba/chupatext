@@ -9,6 +9,7 @@
 
 void test_read (void);
 void test_skip_to_end (void);
+void test_read_line (void);
 
 static GInputStream *stream;
 

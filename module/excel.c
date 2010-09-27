@@ -143,12 +143,24 @@ register_type(GTypeModule *type_module)
                                     &info, 0);
 }
 
+/* copied from libgnumeric.h */
+char const **gnm_pre_parse_init     (int argc, gchar const **argv);
+void	     gnm_pre_parse_shutdown (void);
+void	     gnm_init		    (void);
+void	     gnm_shutdown	    (void);
+/* copied from gnumeric-gconf.h */
+void     gnm_conf_init (void);
+void     gnm_conf_shutdown (void);
+GOConfNode *gnm_conf_get_root (void);
+/* copied from gnm-plugin.h */
+void gnm_plugins_init (GOCmdContext *c);
+
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
     GList *registered_types = NULL;
     GOErrorInfo	*plugin_errs;
-    char *argv[2];
+    const gchar *argv[2];
 
     argv[0] = NULL;
     gnm_pre_parse_init(0, argv);

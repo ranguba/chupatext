@@ -5,6 +5,9 @@
 
 #include "chupa_test_util.h"
 
+void test_decompose_ppt(void);
+void test_decompose_ppt_ja(void);
+
 void
 setup(void)
 {

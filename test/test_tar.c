@@ -5,6 +5,8 @@
 
 #include "chupa_test_util.h"
 
+void test_decompose_tar(void);
+
 void
 setup(void)
 {
