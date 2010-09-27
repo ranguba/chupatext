@@ -283,9 +283,6 @@ dump_file(struct PPT *ppt, GsfInput *inp)
             count++;
     }
 
-    if (ppt->past_first_slide) {
-        put_byte(ppt, '\f');
-    }
     return TRUE;
 }
 
