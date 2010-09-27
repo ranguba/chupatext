@@ -157,8 +157,10 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
     gnm_plugins_init(GO_CMD_CONTEXT(cc));
     go_plugin_db_activate_plugin_list(go_plugins_get_available_plugins(), &plugin_errs);
     if (plugin_errs) {
-        fprintf(stderr, "go_plugin_db_activate_plugin_list failed\n");
-        go_error_display(plugin_errs);
+        if (go_error_info_peek_severity(plugin_errs) >= GO_ERROR) {
+            g_warning("go_plugin_db_activate_plugin_list failed: %s",
+                      go_error_info_peek_message(plugin_errs));
+        }
         go_error_info_free(plugin_errs);
     }
 
