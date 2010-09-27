@@ -20,3 +20,4 @@ config.h.in
 /configure
 .deps/
 .libs/
+strace.out
