@@ -45,7 +45,7 @@ guess_mime_type(const char *name, GBufferedInputStream *buffered, gboolean *unce
 {
     const char *content_type;
     gsize len;
-    const char *buf;
+    const guchar *buf;
 
     g_buffered_input_stream_fill(buffered, peek_buffer_size, NULL, NULL);
     buf = g_buffered_input_stream_peek_buffer(buffered, &len);
