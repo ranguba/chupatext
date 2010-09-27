@@ -125,7 +125,10 @@ print_utf8(struct PPT *ppt, unsigned short c)
 {
     if (c == 0)
         return;
-		
+
+    if (c == '\r') {
+        c = '\n';
+    }
     if (c < 0x80)
         put_byte(ppt, c);
     else if (c < 0x800) {
@@ -213,9 +216,6 @@ atom_processor(struct PPT *ppt, int type, int count, int buf_last, unsigned char
         }
         break;
     case 0x0FBA:	/* CString - unicode... */
-        if (data == '\r') {
-            data = '\n';
-        }
         ppt->working_buffer[ppt->buf_idx++] = data;
         if (count == buf_last) {
             /* working_buffer[buf_idx++] = 0;	*/
