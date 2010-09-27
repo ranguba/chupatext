@@ -77,8 +77,8 @@ excel_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 excel_factory_la_LIBADD = $(GLIB_LIBS)
 
 powerpoint_la_SOURCES = powerpoint.c
-powerpoint_la_CPPFLAGS = $(GSF_CFLAGS)
-powerpoint_la_LIBADD = $(GSF_LIBS)
+powerpoint_la_CPPFLAGS = $(GIO_UNIX_CFLAGS) $(GSF_CFLAGS)
+powerpoint_la_LIBADD = $(GIO_UNIX_LIBS) $(GSF_LIBS)
 
 powerpoint_factory_la_SOURCES = powerpoint_factory.c
 powerpoint_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
