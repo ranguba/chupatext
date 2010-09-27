@@ -25,14 +25,14 @@ typedef struct _ChupaGsfInputStreamPrivate ChupaGsfInputStreamPrivate;
 
 struct _ChupaGsfInputStream
 {
-    GInputStream parent_object;
+    GMemoryInputStream parent_object;
     GsfOutputMemory *source;
     gsize cur_offset;
 };
 
 struct _ChupaGsfInputStreamClass
 {
-    GInputStreamClass parent_class;
+    GMemoryInputStreamClass parent_class;
 };
 
 G_DEFINE_TYPE(ChupaGsfInputStream, chupa_gsf_input_stream, G_TYPE_MEMORY_INPUT_STREAM)
