@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4; encoding: utf-8 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  */

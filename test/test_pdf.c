@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4; encoding: utf-8 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  */
@@ -25,7 +25,7 @@ teardown(void)
 void
 test_decompose_pdf(void)
 {
-    cut_assert_equal_string("sample", decompose_pdf("sample.pdf", NULL));
+    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf", NULL));
 }
 
 void
