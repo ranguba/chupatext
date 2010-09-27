@@ -14,6 +14,7 @@
 #include <gsf/gsf-infile-msole.h>
 #include <glib/gstdio.h>
 #include <memory.h>
+#include <unistd.h>
 
 #define CHUPA_TYPE_PPT_DECOMPOSER            chupa_type_ppt_decomposer
 #define CHUPA_PPT_DECOMPOSER(obj)            \
@@ -83,6 +84,7 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     g_return_val_if_fail(chupa_external_decomposer_spawn(CHUPA_EXTERNAL_DECOMPOSER(dec),
                                                          argv, NULL, NULL, error),
                          FALSE);
+    sleep(2);                   /* Suck! */
     g_unlink(tmp_ppt_name);
     g_free(tmp_ppt_name);
     g_free(argv[3]);
