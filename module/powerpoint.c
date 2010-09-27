@@ -308,7 +308,8 @@ chupa_feed_ppt(ChupaText *chupar, ChupaTextInput *input, GError **error)
     memset(&ppt, 0, sizeof(ppt));
     gsf_input_seek(gin, 0, G_SEEK_SET);
     ppt.output = mem;
-    while (dump_file(&ppt, gin)) {
+    if (!dump_file(&ppt, gin)) {
+        return FALSE;
     }
     return TRUE;
 }
