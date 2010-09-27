@@ -48,7 +48,6 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     GInputStream *inp = chupa_text_input_get_stream(input);
     ChupaMetadata *meta = chupa_text_input_get_metadata(input);
     ChupaTextInput *pdf_text = NULL;
-    const char *name = gsf_input_name(chupa_text_input_get_base_input(input));
     int n, i;
 
     while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, err)) > 0) {
@@ -80,6 +79,8 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
             g_memory_input_stream_add_data(mem, text, -1, g_free);
         }
         else {
+            GsfInput *base_input = chupa_text_input_get_base_input(input);
+            const char *name = base_input ? gsf_input_name(base_input) : NULL;
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
             pdf_text = chupa_text_input_new_from_stream(meta, inp, name);
             chupa_text_decomposed(chupar, pdf_text);
