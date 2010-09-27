@@ -4,16 +4,20 @@
  */
 
 #include "chupatext/chupa_gsf_input_stream.h"
+#include <string.h>
+
+typedef struct _ChupaGsfInputStreamPrivate ChupaGsfInputStreamPrivate;
 
 struct _ChupaGsfInputStream
 {
-    GMemoryInputStream parent_object;
+    GInputStream parent_object;
     GsfOutputMemory *source;
+    gsize cur_offset;
 };
 
 struct _ChupaGsfInputStreamClass
 {
-    GMemoryInputStreamClass parent_class;
+    GInputStreamClass parent_class;
 };
 
 G_DEFINE_TYPE(ChupaGsfInputStream, chupa_gsf_input_stream, G_TYPE_MEMORY_INPUT_STREAM)
@@ -31,6 +35,32 @@ gsf_input_dispose(GObject *object)
     G_OBJECT_CLASS(chupa_gsf_input_stream_parent_class)->dispose(object);
 }
 
+static gssize
+gsf_input_stream_read(GInputStream *input_stream,
+                      void *buffer,
+                      gsize count,
+                      GCancellable *cancellable,
+                      GError **error)
+{
+    ChupaGsfInputStream *stream = CHUPA_GSF_INPUT_STREAM(input_stream);
+    gsize cur_size;
+
+    g_return_val_if_fail(stream->source, -1);
+    g_return_val_if_fail(count >= 0, -1);
+    cur_size = gsf_output_size(GSF_OUTPUT(stream->source));
+    if (count > cur_size) {
+        return -1;
+    }
+    if (count + stream->cur_offset > cur_size) {
+        count = cur_size - stream->cur_offset;
+    }
+    if (count > 0) {
+        const guint8 *mem_buffer = gsf_output_memory_get_bytes(stream->source);
+        memcpy(buffer, mem_buffer + stream->cur_offset, count);
+    }
+    return count;
+}
+
 static void
 chupa_gsf_input_stream_init(ChupaGsfInputStream *stream)
 {
@@ -42,6 +72,10 @@ chupa_gsf_input_stream_class_init(ChupaGsfInputStreamClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     gobject_class->dispose      = gsf_input_dispose;
+    {
+        GInputStreamClass *input_stream_class = G_INPUT_STREAM_CLASS(klass);
+        input_stream_class->read_fn = gsf_input_stream_read;
+    }
 }
 
 GInputStream *
