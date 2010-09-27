@@ -159,12 +159,11 @@ void gnm_plugins_init (GOCmdContext *c);
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
+    extern void gutils_init(void);
     GList *registered_types = NULL;
     GOErrorInfo	*plugin_errs;
-    const gchar *argv[2];
 
-    argv[0] = NULL;
-    gnm_pre_parse_init(0, argv);
+    gutils_init();
 
     gnm_init ();
     gnm_conf_init();
