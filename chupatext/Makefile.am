@@ -24,7 +24,6 @@ libchupatext_la_SOURCES =			\
 	chupa_decomposer.c			\
 	archive_decomposer.c			\
 	external_decomposer.c			\
-	chupa_restrict_input_stream.c		\
 	chupa_utils.c				\
 	version.c				\
 	$(EMPTY)
@@ -50,7 +49,6 @@ chupatext_include_HEADERS =			\
 	chupa_module_impl.h			\
 	chupa_dispatcher.h			\
 	chupa_private.h				\
-	chupa_restrict_input_stream.h		\
 	chupa_text.h				\
 	chupa_text_input.h			\
 	chupa_text_input_stream.h		\
