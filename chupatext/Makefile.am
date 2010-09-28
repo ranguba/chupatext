@@ -19,7 +19,7 @@ libchupatext_la_SOURCES =			\
 	chupa_module_factory_utils.c		\
 	chupa_dispatcher.c			\
 	chupa_text_input_stream.c		\
-	chupa_gsf_input_stream.c		\
+	chupa_memory_input_stream.c		\
 	error.c					\
 	chupa_decomposer.c			\
 	archive_decomposer.c			\
@@ -54,7 +54,7 @@ chupatext_include_HEADERS =			\
 	chupa_text.h				\
 	chupa_text_input.h			\
 	chupa_text_input_stream.h		\
-	chupa_gsf_input_stream.h		\
+	chupa_memory_input_stream.h		\
 	external_decomposer.h			\
 	chupa_utils.h				\
 	version.h

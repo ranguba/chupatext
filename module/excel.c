@@ -25,7 +25,7 @@
 #include <glib.h>
 #include "workbook-view.h"
 #include "command-context-stderr.h"
-#include "chupatext/chupa_gsf_input_stream.h"
+#include "chupatext/chupa_memory_input_stream.h"
 
 #define CHUPA_TYPE_EXCEL_DECOMPOSER            chupa_type_excel_decomposer
 #define CHUPA_EXCEL_DECOMPOSER(obj)            \
@@ -106,7 +106,7 @@ chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
         return FALSE;
     }
 
-    tmpinp = chupa_gsf_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
+    tmpinp = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
     g_object_unref(io_context);
     g_object_unref(tmpout);
     input = chupa_text_input_new_from_stream(NULL, tmpinp, chupa_text_input_get_filename(input));
