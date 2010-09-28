@@ -61,7 +61,7 @@ struct ChupaTextClass
     GObjectClass parent_class;
 
     /* signals */
-    void (*decomposed)(GObject *object, ChupaTextInput *input);
+    void (*decomposed)(GObject *object, ChupaTextInput *input, gpointer userdata);
 };
 
 /**
