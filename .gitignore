@@ -3,6 +3,7 @@ Makefile.in
 *.lo
 *.la
 *.o
+*~
 /aclocal.m4
 /autom4te.cache
 config.h.in
@@ -21,3 +22,6 @@ config.h.in
 .deps/
 .libs/
 strace.out
+/po/Makefile.in.in
+/po/POTFILES
+/po/stamp-it

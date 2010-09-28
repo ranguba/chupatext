@@ -66,6 +66,9 @@ if test "x$GCC" = "xyes"; then
   esac
 fi
 
+dnl **************************************************************
+dnl Check for GLib
+dnl **************************************************************
 m4_ifdef([AM_PATH_GLIB_2_0], [
   GLIB_REQUIRED=2.24.0
   AC_SUBST(GLIB_REQUIRED)
@@ -81,6 +84,18 @@ if test "$ac_glib_available" != "yes"; then
     AC_MSG_ERROR([no glib available])
 fi
 
+dnl **************************************************************
+dnl Check for GetText
+dnl **************************************************************
+AC_PROG_INTLTOOL([0.35.0])
+AM_GLIB_GNU_GETTEXT
+GETTEXT_PACKAGE=chupatext
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
+
+dnl **************************************************************
+dnl Check for Packages
+dnl **************************************************************
 PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes], [:])
 AM_CONDITIONAL([HAVE_GSF], [test "$have_gsf" = "yes"])
 PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0, [have_gio_unix=yes], [:])
@@ -92,6 +107,9 @@ AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
 PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [:])
 AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
 
+dnl **************************************************************
+dnl Check for Ruby
+dnl **************************************************************
 ruby_available="no"
 AC_ARG_WITH([ruby],
             AS_HELP_STRING([--with-ruby=PATH],
@@ -163,6 +181,7 @@ AC_SUBST(build_includedir, '$(top_build_prefix)')
 AC_SUBST(top_includedir, '$(top_srcdir)')
 
 AC_CONFIG_FILES([Makefile
+		 po/Makefile.in
 		 tool/Makefile
 		 chupatext/Makefile
 		 test/Makefile

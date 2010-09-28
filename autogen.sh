@@ -11,7 +11,7 @@ run()
 
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
-#run ${INTLTOOLIZE:-intltoolize} --force --copy
+run ${INTLTOOLIZE:-intltoolize} --force --copy
 #run ${GTKDOCIZE:-gtkdocize} --copy
 run ${AUTOHEADER:-autoheader}
 run ${AUTOMAKE:-automake} --add-missing --foreign --copy

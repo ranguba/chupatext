@@ -24,7 +24,7 @@
 
 #include <string.h>
 #include <glib.h>
-/* #include <glib/gi18n-lib.h> */
+#include <glib/gi18n-lib.h>
 
 #include "chupa_module.h"
 #include "chupa_module_factory.h"
