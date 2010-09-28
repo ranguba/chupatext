@@ -20,7 +20,6 @@
 
 #include <chupatext/chupa_decomposer.h>
 #include <chupatext/chupa_module.h>
-#include <chupatext/chupa_restrict_input_stream.h>
 #include <glib.h>
 #include <wv.h>
 
