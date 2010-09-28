@@ -27,6 +27,10 @@ factory_LTLIBRARIES += excel_factory.la
 endif
 decomposer_LTLIBRARIES += powerpoint.la
 factory_LTLIBRARIES += powerpoint_factory.la
+if HAVE_RUBY
+decomposer_LTLIBRARIES += ruby.la
+factory_LTLIBRARIES += ruby_factory.la
+endif
 
 text_la_SOURCES = text.c
 text_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
@@ -83,3 +87,13 @@ powerpoint_la_LIBADD = $(GIO_UNIX_LIBS) $(GSF_LIBS)
 powerpoint_factory_la_SOURCES = powerpoint_factory.c
 powerpoint_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
+
+ruby_la_SOURCES = ruby.c
+ruby_la_CFLAGS = $(RUBY_CFLAGS)
+ruby_la_CPPFLAGS = -DCHUPA_RUBY_DIR=\"$(rubydir)\" -DRUBY_ARCH=\"$(rubyarch)\" \
+	$(RUBY_CPPFLAGS) $(GSF_CFLAGS)
+ruby_la_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
+
+ruby_factory_la_SOURCES = ruby_factory.c
+ruby_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+ruby_factory_la_LIBADD = $(GLIB_LIBS)
