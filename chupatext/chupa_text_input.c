@@ -51,6 +51,15 @@ enum {
     PROP_DUMMY
 };
 
+const char chupa_text_signal_finished[] = "finished";
+
+enum {
+    FINISHED,
+    LAST_SIGNAL
+};
+
+static gint gsignals[LAST_SIGNAL] = {0};
+
 enum {
     peek_buffer_size = 1024
 };
@@ -225,6 +234,15 @@ chupa_text_input_class_init(ChupaTextInputClass *klass)
     g_object_class_install_property(gobject_class, PROP_METADATA, spec);
 
     g_type_class_add_private(gobject_class, sizeof(ChupaTextInputPrivate));
+
+    gsignals[FINISHED] =
+        g_signal_new(chupa_text_signal_finished,
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(ChupaTextInputClass, finished),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
 }
 
 ChupaTextInput *
@@ -334,4 +352,16 @@ chupa_text_input_set_charset(ChupaTextInput *input, const char *charset)
 {
     ChupaMetadata *meta = chupa_text_input_get_metadata(input);
     chupa_metadata_add_value(meta, meta_charset, charset);
+}
+
+void
+chupa_text_input_finished(ChupaTextInput *input)
+{
+    g_signal_emit_by_name(input, chupa_text_signal_finished);
+}
+
+guint
+chupa_text_input_connect_finished(ChupaTextInput *input, ChupaTextInputCallback func, gpointer arg)
+{
+    return g_signal_connect(input, chupa_text_signal_finished, (GCallback)func, arg);
 }

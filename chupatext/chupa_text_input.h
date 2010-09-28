@@ -42,6 +42,9 @@ G_BEGIN_DECLS
 #define CHUPA_TEXT_INPUT_GET_CLASS(obj) \
   G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_TEXT_INPUT, ChupaTextInputClass)
 
+#define CHUPA_TEXT_SIGNAL_FINISHED chupa_text_signal_finished
+extern const char chupa_text_signal_finished[];
+
 typedef struct _ChupaTextInput ChupaTextInput;
 typedef struct _ChupaTextInputClass ChupaTextInputClass;
 
@@ -53,7 +56,12 @@ struct _ChupaTextInput
 struct _ChupaTextInputClass
 {
     GObjectClass parent_class;
+
+    /* signals */
+    void (*finished)(GObject *object, gpointer userdata);
 };
+
+typedef void (*ChupaTextInputCallback)(ChupaTextInput *, gpointer);
 
 GType chupa_text_input_get_type(void) G_GNUC_CONST;
 ChupaTextInput *chupa_text_input_new(ChupaMetadata *metadata, GsfInput *inpt);
@@ -67,6 +75,8 @@ const gchar *chupa_text_input_get_charset(ChupaTextInput *input);
 void chupa_text_input_set_charset(ChupaTextInput *input, const char *charset);
 GsfInput *chupa_text_input_get_base_input(ChupaTextInput *input);
 GInputStream *chupa_text_input_get_stream(ChupaTextInput *input);
+void chupa_text_input_finished(ChupaTextInput *input);
+guint chupa_text_input_connect_finished(ChupaTextInput *input, ChupaTextInputCallback func, gpointer arg);
 
 G_END_DECLS
 
