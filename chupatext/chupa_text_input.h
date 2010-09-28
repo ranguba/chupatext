@@ -58,7 +58,7 @@ struct _ChupaTextInputClass
     GObjectClass parent_class;
 
     /* signals */
-    void (*finished)(GObject *object, gpointer userdata);
+    void (*finished)(GObject *object);
 };
 
 typedef void (*ChupaTextInputCallback)(ChupaTextInput *, gpointer);
