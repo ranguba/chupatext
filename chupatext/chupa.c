@@ -78,7 +78,8 @@ main(int argc, char **argv)
 
     chupa_init(&chupar);
     chupar = chupa_text_new();
-    chupa_text_connect_decomposed(chupar, output_to_FILE, stdout);
+    g_signal_connect(chupar, chupa_text_signal_decomposed,
+                     (GCallback)output_to_FILE, stdout);
     for (i = 1; i < argc; ++i) {
         GFile *file = g_file_new_for_commandline_arg(argv[i]);
         ChupaTextInput *input = chupa_text_input_new_from_file(NULL, file, &err);

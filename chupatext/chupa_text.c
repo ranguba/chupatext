@@ -118,23 +118,6 @@ chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input)
 }
 
 /**
- * chupa_text_connect_decomposed:
- *
- * @chupar: the #ChupaText instance to be connected.
- * @func: the callback function to be called with extracted text
- * input.
- * @arg: arbitrary user data.
- *
- * Connect @func to @chupar, so that @func will be called when any
- * text portion is found.
- */
-guint
-chupa_text_connect_decomposed(ChupaText *chupar, ChupaTextCallback func, gpointer arg)
-{
-    return g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)func, arg);
-}
-
-/**
  * chupa_text_feed:
  *
  * @chupar: the #ChupaText instance.
@@ -193,7 +176,7 @@ void
 chupa_text_decompose(ChupaText *chupar, ChupaTextInput *input,
                      ChupaTextCallback func, gpointer arg, GError **error)
 {
-    chupa_text_connect_decomposed(chupar, func, arg);
+    g_signal_connect(chupar, chupa_text_signal_decomposed, (GCallback)func, arg);
     chupa_text_feed(chupar, input, error);
 }
 

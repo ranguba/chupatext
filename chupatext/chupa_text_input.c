@@ -359,9 +359,3 @@ chupa_text_input_finished(ChupaTextInput *input)
 {
     g_signal_emit_by_name(input, chupa_text_signal_finished);
 }
-
-guint
-chupa_text_input_connect_finished(ChupaTextInput *input, ChupaTextInputCallback func, gpointer arg)
-{
-    return g_signal_connect(input, chupa_text_signal_finished, (GCallback)func, arg);
-}

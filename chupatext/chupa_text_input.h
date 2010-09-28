@@ -76,7 +76,6 @@ void chupa_text_input_set_charset(ChupaTextInput *input, const char *charset);
 GsfInput *chupa_text_input_get_base_input(ChupaTextInput *input);
 GInputStream *chupa_text_input_get_stream(ChupaTextInput *input);
 void chupa_text_input_finished(ChupaTextInput *input);
-guint chupa_text_input_connect_finished(ChupaTextInput *input, ChupaTextInputCallback func, gpointer arg);
 
 G_END_DECLS
 
