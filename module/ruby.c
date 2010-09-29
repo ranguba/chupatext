@@ -70,8 +70,11 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     gsf_input_seek(chupa_text_input_get_base_input(input), 0, G_SEEK_SET);
 
     receiver = chupa_ruby_new(CHUPA_RUBY_DECOMPOSER_GET_CLASS(dec)->klass, chupar, input);
-    if (!NIL_P(receiver) && chupa_ruby_feed(DATA_PTR(receiver), g_error)) {
+    if (!NIL_P(receiver)) {
         result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, g_error);
+        if (RTEST(result)) {
+            chupa_ruby_feed(DATA_PTR(receiver), g_error);
+        }
     }
 
     return RTEST(result);
