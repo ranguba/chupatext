@@ -23,9 +23,12 @@
 #include "chupa_private.h"
 #include "chupa_module_factory_utils.h"
 
+void *chupa_stack_base;
+
 int
 chupa_init(void *var)
 {
+    chupa_stack_base = var;
     g_type_init();
     chupa_module_factory_init();
     chupa_module_factory_load(chupa_module_factory_get_module_dir(),

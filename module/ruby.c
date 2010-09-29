@@ -122,7 +122,6 @@ chupa_ruby_s_create(VALUE arg)
     const char *filename = chupa_text_input_get_filename(text_input);
     VALUE obj;
 
-    init_chupa_ruby();
     obj = TypedData_Make_Struct(klass, chupa_ruby_t, &chupa_ruby_type, ptr);
     ptr->chupar = chupar;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
@@ -292,6 +291,8 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
     GList *registered_types = NULL;
     register_type(type_module);
+
+    init_chupa_ruby();
 
     registered_types =
         g_list_prepend(registered_types,
