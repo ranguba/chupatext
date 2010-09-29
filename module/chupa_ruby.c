@@ -21,6 +21,7 @@
 #include "chupa_ruby.h"
 
 static VALUE chupa_ruby_gets(VALUE self);
+static VALUE chupa_ruby_decompose(VALUE self);
 
 static void
 chupa_ruby_dispose(void *ptr)
@@ -180,6 +181,12 @@ chupa_ruby_decomposed(VALUE self, VALUE data)
 }
 
 VALUE
+chupa_ruby_decompose(VALUE self)
+{
+    return chupa_ruby_decomposed(self, chupa_ruby_gets(self));
+}
+
+VALUE
 chupa_ruby_init(void)
 {
     extern void *chupa_stack_base;
@@ -216,6 +223,7 @@ chupa_ruby_init(void)
         cChupa = rb_define_class_under(*outer_klass, "Chupa", rb_cObject);
         rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
         rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
+        rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
     }
     else {
         cChupa = rb_const_get_at(*outer_klass, id_Chupa);
