@@ -19,11 +19,17 @@ export BASE_DIR="`dirname $0 | sed 's|\/.$||'`"
 case "$BASE_DIR" in
     */..) top_srcdir="$BASE_DIR/..";;
     */test) top_srcdir="`dirname "$BASE_DIR"`";;
+    *) top_srcdir="`cd "$BASE_DIR" && cd .. && pwd`";;
 esac
 testdir=${BASE_DIR}
 test $# = 0 || eval testdir='"${'$#'-.}"'
+if case "$testdir" in -*) :;; *) [ ! -f "$testdir/Makefile" ];; esac; then
+    testdir=.
+    builddir=..
+    set dummy "$@" "$testdir"
+    shift
+fi
 case "$testdir" in
-    -* ) testdir=.; builddir="`pwd`";;
     . | .. | */. | */.. ) builddir="$testdir/..";;
     */* ) builddir=`expr "$testdir" : '\(.*\)/.*'`;;
     *) builddir="`cd $testdir && cd .. && pwd`";;
@@ -90,4 +96,4 @@ export CHUPATEXT_CONFIG_DIR=$top_srcdir/test/fixtures/configuration
 export CHUPA_DECOMPOSER_DIR=$builddir/module/.libs
 export CHUPA_FACTORY_DIR=$builddir/module/.libs
 
-$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$testdir"
+$CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@"
