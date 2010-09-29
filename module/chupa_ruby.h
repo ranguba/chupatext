@@ -23,6 +23,7 @@
 #include <chupatext/chupa_memory_input_stream.h>
 #include <glib.h>
 #include <ruby.h>
+#include <ruby/encoding.h>
 
 /* ruby class */
 typedef struct {

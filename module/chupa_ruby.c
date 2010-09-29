@@ -20,6 +20,8 @@
 
 #include "chupa_ruby.h"
 
+static VALUE chupa_ruby_gets(VALUE self);
+
 static void
 chupa_ruby_dispose(void *ptr)
 {
@@ -155,6 +157,19 @@ chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_err
 }
 
 VALUE
+chupa_ruby_gets(VALUE self)
+{
+    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
+    GDataInputStream *input_stream = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(ptr->source));
+    gsize length;
+    char *str = g_data_input_stream_read_line(input_stream, &length, NULL, NULL);
+    if (!str) {
+        return Qnil;
+    }
+    return rb_enc_str_new(str, (long)length, rb_utf8_encoding());
+}
+
+VALUE
 chupa_ruby_decomposed(VALUE self, VALUE data)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
@@ -200,6 +215,7 @@ chupa_ruby_init(void)
     if (!rb_const_defined(*outer_klass, id_Chupa)) {
         cChupa = rb_define_class_under(*outer_klass, "Chupa", rb_cObject);
         rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
+        rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
     }
     else {
         cChupa = rb_const_get_at(*outer_klass, id_Chupa);
