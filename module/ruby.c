@@ -64,14 +64,14 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 {
     VALUE receiver;
     VALUE result;
-    ID id_decomposed;
-    CONST_ID(id_decomposed, "decomposed");
+    ID id_decompose;
+    CONST_ID(id_decompose, "decompose");
 
     gsf_input_seek(chupa_text_input_get_base_input(input), 0, G_SEEK_SET);
 
     receiver = chupa_ruby_new(CHUPA_RUBY_DECOMPOSER_GET_CLASS(dec)->klass, chupar, input);
     if (!NIL_P(receiver) && chupa_ruby_feed(DATA_PTR(receiver), g_error)) {
-        result = chupa_ruby_funcall(receiver, id_decomposed, 0, 0, g_error);
+        result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, g_error);
     }
 
     return RTEST(result);
