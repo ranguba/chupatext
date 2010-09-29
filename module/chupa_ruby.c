@@ -167,6 +167,7 @@ chupa_ruby_init(void)
     extern void *chupa_stack_base;
     const VALUE *outer_klass = &rb_cObject;
     VALUE cChupa;
+    ID id_Chupa;
 
     if (!outer_klass || !*outer_klass) {
         int argc;
@@ -192,9 +193,13 @@ chupa_ruby_init(void)
         args[argc] = NULL;
         (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
     }
-    if (!rb_const_defined(*outer_klass, rb_intern("Chupa"))) {
+    CONST_ID(id_Chupa, "Chupa");
+    if (!rb_const_defined(*outer_klass, id_Chupa)) {
         cChupa = rb_define_class_under(*outer_klass, "Chupa", rb_cObject);
         rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
+    }
+    else {
+        cChupa = rb_const_get_at(*outer_klass, id_Chupa);
     }
     return cChupa;
 }
