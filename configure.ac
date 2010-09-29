@@ -126,10 +126,14 @@ AS_CASE("$RUBY",
 RBCONFIG="$RUBY -rrbconfig"dnl
 AC_DEFUN([RUBY_CONFIG],dnl
 [dnl
-AS_VAR_PUSHDEF([rbcv],[rb_]$1)dnl
+AS_VAR_PUSHDEF([rbcv], m4_if([$2], [$2],
+			     m4_bmatch([$1],
+				       [ruby], [$1], [RUBY], [$1],
+				       [^[a-z]], [ruby]$1,
+				       [RUBY_]$1)))dnl
 if test $ruby_available = yes; then
     AC_MSG_CHECKING([for RbConfig[[$1]]])
-    rbcv=`[$RBCONFIG -e 'puts RbConfig::CONFIG["$1"]||abort']` || ruby_available=no
+    rbcv=`[$RBCONFIG -e 'puts RbConfig::CONFIG["$1"].strip||abort']` || ruby_available=no
     AC_MSG_RESULT($rbcv)
 fi dnl
 AS_VAR_POPDEF([rbcv])dnl
@@ -142,13 +146,14 @@ RUBY_CONFIG(CPPFLAGS)
 RUBY_CONFIG(LDFLAGS)
 RUBY_CONFIG(DLDFLAGS)
 RUBY_CONFIG(LIBS)
-AC_SUBST(RUBY_CFLAGS, "$rb_CFLAGS")
-AC_SUBST(RUBY_CPPFLAGS, "$rb_CPPFLAGS -I$rb_rubyhdrdir/$rb_arch -I$rb_rubyhdrdir")
-AC_SUBST(RUBY_LDFLAGS, "$rb_LDFLAGS $rb_DLDFLAGS")
-AC_SUBST(RUBY_LIBS, "$rb_LIBS")
-if test "$ruby_available" = "yes"; then
-    AC_SUBST(rubyarch, $rb_arch)
-fi
+RUBY_CONFIG(LIBRUBYARG)
+RUBY_CPPFLAGS="$RUBY_CPPFLAGS -I$rubyhdrdir/$rubyarch -I$rubyhdrdir"
+RUBY_LDFLAGS="$LIBRUBYARG $RUBY_LDFLAGS $RUBY_DLDFLAGS"
+AC_SUBST(RUBY_CFLAGS)
+AC_SUBST(RUBY_CPPFLAGS)
+AC_SUBST(RUBY_LDFLAGS)
+AC_SUBST(RUBY_LIBS)
+AC_SUBST(rubyarch)
 
 AM_CONDITIONAL([HAVE_RUBY], [test "$ruby_available" = "yes"])
 
