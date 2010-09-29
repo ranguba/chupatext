@@ -112,8 +112,7 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     in_tmpfile = g_unix_input_stream_new(fd_pdf, TRUE);
     input = chupa_text_input_new_from_stream(NULL, in_tmpfile, filename);
     g_object_unref(in_tmpfile);
-    chupa_metadata_replace_value(chupa_text_input_get_metadata(input),
-                                 "mime-type", "application/pdf");
+    chupa_text_input_set_mime_type(input, "application/pdf");
     result = chupa_text_feed(chupar, input, error);
     g_object_unref(input);
     return result;

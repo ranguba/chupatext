@@ -69,6 +69,7 @@ ChupaTextInput *chupa_text_input_new_from_stream(ChupaMetadata *metadata, GInput
 ChupaTextInput *chupa_text_input_new_from_file(ChupaMetadata *metadata, GFile *file, GError **err);
 ChupaMetadata *chupa_text_input_get_metadata(ChupaTextInput *input);
 const gchar *chupa_text_input_get_mime_type(ChupaTextInput *input);
+void chupa_text_input_set_mime_type(ChupaTextInput *input, const char *mime_type);
 const gchar *chupa_text_input_get_filename(ChupaTextInput *input);
 void chupa_text_input_set_filename(ChupaTextInput *input, const char *filename);
 const gchar *chupa_text_input_get_charset(ChupaTextInput *input);

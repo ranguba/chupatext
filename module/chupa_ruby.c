@@ -109,6 +109,7 @@ chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input)
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
     ptr->stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(ptr->sink));
     ptr->feed = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
+    chupa_text_input_set_mime_type(ptr->feed, "text/plain");
 
     return receiver;
 }

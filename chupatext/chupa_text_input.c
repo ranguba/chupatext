@@ -326,6 +326,13 @@ chupa_text_input_get_mime_type(ChupaTextInput *input)
     return chupa_metadata_get_first_value(meta, "mime-type");
 }
 
+void
+chupa_text_input_set_mime_type(ChupaTextInput *input, const gchar *mime_type)
+{
+    ChupaMetadata *meta = chupa_text_input_get_metadata(input);
+    chupa_metadata_replace_value(meta, "mime-type", mime_type);
+}
+
 const gchar *
 chupa_text_input_get_filename(ChupaTextInput *input)
 {
