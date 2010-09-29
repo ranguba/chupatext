@@ -27,6 +27,7 @@
 /* ruby class */
 typedef struct {
     ChupaText *chupar;
+    ChupaTextInput *source;
     ChupaTextInput *feed;
     ChupaMemoryInputStream *stream;
     GsfOutputMemory *sink;

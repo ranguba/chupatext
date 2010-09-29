@@ -30,6 +30,7 @@ chupa_ruby_dispose(void *ptr)
         (!(obj = (gpointer)ch->member) ? (void)0 : \
          (void)(ch->member = 0, g_object_unref(obj)))
         DISPOSE(chupar);
+        DISPOSE(source);
         DISPOSE(feed);
         DISPOSE(stream);
         DISPOSE(sink);
@@ -106,6 +107,7 @@ chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input)
     receiver = rb_protect(chupa_ruby_s_allocate, klass, &state);
     ptr = DATA_PTR(receiver);
     ptr->chupar = chupar;
+    ptr->source = input;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
     ptr->stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(ptr->sink));
     ptr->feed = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
