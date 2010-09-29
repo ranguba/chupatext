@@ -60,7 +60,7 @@ chupa_memory_input_stream_read(GInputStream *input_stream, void *buffer, gsize c
     g_return_val_if_fail(stream->source, -1);
     g_return_val_if_fail(count >= 0, -1);
     cur_size = gsf_output_size(GSF_OUTPUT(stream->source));
-    if (count > cur_size) {
+    if (stream->cur_offset > cur_size) {
         return -1;
     }
     if (count + stream->cur_offset > cur_size) {
@@ -69,6 +69,7 @@ chupa_memory_input_stream_read(GInputStream *input_stream, void *buffer, gsize c
     if (count > 0) {
         const guint8 *mem_buffer = gsf_output_memory_get_bytes(stream->source);
         memcpy(buffer, mem_buffer + stream->cur_offset, count);
+        stream->cur_offset += count;
     }
     return count;
 }
