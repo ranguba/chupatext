@@ -88,12 +88,12 @@ powerpoint_factory_la_SOURCES = powerpoint_factory.c
 powerpoint_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
 powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
 
-ruby_la_SOURCES = ruby.c
+ruby_la_SOURCES = ruby.c chupa_ruby.c
 ruby_la_CFLAGS = $(RUBY_CFLAGS)
 ruby_la_CPPFLAGS = -DCHUPA_RUBY_DIR=\"$(rubydir)\" -DRUBY_ARCH=\"$(rubyarch)\" \
-	$(RUBY_CPPFLAGS) $(GSF_CFLAGS)
+	$(RUBY_CPPFLAGS) $(GLIB_CFLAGS) $(GSF_CFLAGS)
 ruby_la_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
 
 ruby_factory_la_SOURCES = ruby_factory.c
 ruby_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
-ruby_factory_la_LIBADD = $(GLIB_LIBS)
+ruby_factory_la_LIBADD = $(RUBY_LIBS) $(GLIB_LIBS)

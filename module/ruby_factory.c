@@ -132,7 +132,7 @@ get_mime_types (ChupaModuleFactory *factory)
 {
     GList *mime_types = NULL;
 
-    mime_types = g_list_prepend(mime_types, g_strdup("text/ruby"));
+    mime_types = g_list_prepend(mime_types, g_strdup("application/ruby"));
 
     return mime_types;
 }
