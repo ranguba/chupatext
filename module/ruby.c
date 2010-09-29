@@ -262,6 +262,8 @@ chupa_ruby_decomposer_class_init(ChupaRubyDecomposerClass *klass)
 {
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
     super->feed = chupa_ruby_decomposer_feed;
+
+    init_chupa_ruby();
 }
 
 static void
@@ -291,8 +293,6 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
     GList *registered_types = NULL;
     register_type(type_module);
-
-    init_chupa_ruby();
 
     registered_types =
         g_list_prepend(registered_types,
