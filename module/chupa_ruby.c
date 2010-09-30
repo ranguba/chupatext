@@ -164,7 +164,10 @@ chupa_ruby_gets(VALUE self)
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
     GDataInputStream *input_stream = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(ptr->source));
     gsize length;
-    char *str = g_data_input_stream_read_line(input_stream, &length, NULL, NULL);
+    GCancellable *cancellable = NULL;
+    GError **error = NULL;
+    char *str = g_data_input_stream_read_line(input_stream, &length, cancellable, error);
+
     if (!str) {
         return Qnil;
     }
