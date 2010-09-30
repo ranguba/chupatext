@@ -213,11 +213,16 @@ chupa_ruby_decomposed(VALUE self, VALUE data)
     return data;
 }
 
+#ifdef ABSTRACT_CLASS_RUBY
+#define chupa_ruby_decompose rb_f_notimplement
+#else
+/* provisional implementation */
 VALUE
 chupa_ruby_decompose(VALUE self)
 {
     return chupa_ruby_decomposed(self, chupa_ruby_read(0, NULL, self));
 }
+#endif
 
 VALUE
 chupa_ruby_init(void)
