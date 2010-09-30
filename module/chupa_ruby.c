@@ -21,6 +21,7 @@
 #include "chupa_ruby.h"
 
 static VALUE chupa_ruby_gets(VALUE self);
+static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
 static VALUE chupa_ruby_decompose(VALUE self);
 
 static void
@@ -171,6 +172,35 @@ chupa_ruby_gets(VALUE self)
 }
 
 VALUE
+chupa_ruby_read(int argc, VALUE *argv, VALUE self)
+{
+    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
+    GInputStream *input_stream = chupa_text_input_get_stream(ptr->source);
+    GDataInputStream *data_input_stream = G_DATA_INPUT_STREAM(input_stream);
+    gsize length;
+    char *str;
+    VALUE buffer;
+    GCancellable *cancellable = NULL;
+    GError **error = NULL;
+
+    switch (argc) {
+    case 0:
+        str = g_data_input_stream_read_until(data_input_stream, "", &length, cancellable, error);
+        return rb_enc_str_new(str, (long)length, rb_utf8_encoding());
+        break;
+    case 1:
+        length = NUM2UINT(argv[0]);
+        buffer = rb_enc_str_new(NULL, (long)length, rb_utf8_encoding());
+        g_input_stream_read_all(input_stream, RSTRING_PTR(buffer), length, &length, cancellable, error);
+        rb_str_set_len(buffer, (long)length);
+        return buffer;
+    default:
+        rb_raise(rb_eArgError, "wrong number of arguments (%d for 0..1)", argc);
+        return Qnil;            /* not reached */
+    }
+}
+
+VALUE
 chupa_ruby_decomposed(VALUE self, VALUE data)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
@@ -183,7 +213,7 @@ chupa_ruby_decomposed(VALUE self, VALUE data)
 VALUE
 chupa_ruby_decompose(VALUE self)
 {
-    return chupa_ruby_decomposed(self, chupa_ruby_gets(self));
+    return chupa_ruby_decomposed(self, chupa_ruby_read(0, NULL, self));
 }
 
 VALUE
@@ -223,6 +253,7 @@ chupa_ruby_init(void)
         cChupa = rb_define_class_under(*outer_klass, "Chupa", rb_cObject);
         rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
         rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
+        rb_define_method(cChupa, "read", chupa_ruby_read, -1);
         rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
     }
     else {
