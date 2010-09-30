@@ -14,6 +14,7 @@ noinst_LTLIBRARIES =				\
 	test_decomposer.la			\
 	test_tar.la				\
 	test_zip.la				\
+	test_ruby.la				\
 	$(EMPTY)
 
 if HAVE_POPPLER_GLIB
@@ -71,6 +72,7 @@ test_excel_la_SOURCES = test_excel.c chupa_test_util.c
 test_powerpoint_la_SOURCES = test_powerpoint.c chupa_test_util.c
 test_tar_la_SOURCES = test_tar.c chupa_test_util.c
 test_zip_la_SOURCES = test_zip.c chupa_test_util.c
+test_ruby_la_SOURCES = test_ruby.c chupa_test_util.c
 
 echo-cutter:
 	@echo $(CUTTER)
