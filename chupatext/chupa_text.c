@@ -125,40 +125,48 @@ chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input)
  *
  * Feeds @input to @chupar, to extract text portions.
  */
-gboolean
+ChupaTextInput *
 chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **error)
 {
     ChupaTextPrivate *priv;
     const char *mime_type = NULL;
     ChupaDecomposer *dec;
     GError *e;
-    gboolean result;
+    ChupaTextInput *next_input = NULL;
 
-    g_return_val_if_fail(chupar != NULL, FALSE);
-    g_return_val_if_fail(input != NULL, FALSE);
-    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+    g_return_val_if_fail(chupar != NULL, NULL);
+    g_return_val_if_fail(input != NULL, NULL);
+    g_return_val_if_fail(error == NULL || *error == NULL, NULL);
 
     priv = CHUPA_TEXT_GET_PRIVATE(chupar);
-    mime_type = chupa_text_input_get_mime_type(input);
+    while (TRUE) {
+        mime_type = chupa_text_input_get_mime_type(input);
 
-    if (!mime_type) {
-        e = chupa_text_error_new_literal(CHUPA_TEXT_ERROR_UNKNOWN_CONTENT,
-                                         "can't determin mime-type");
-        g_propagate_error(error, e);
-        result = FALSE;
+        if (!mime_type) {
+            if (error) {
+                e = chupa_text_error_new_literal(CHUPA_TEXT_ERROR_UNKNOWN_CONTENT,
+                                                 "can't determin mime-type");
+                g_propagate_error(error, e);
+            }
+            return NULL;
+        }
+        else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
+            next_input = chupa_decomposer_feed(dec, chupar, input, error);
+        }
+        else {
+            if (error) {
+                e = chupa_text_error_new(CHUPA_TEXT_ERROR_UNKNOWN_MIMETYPE,
+                                         "unknown mime-type %s", mime_type);
+                g_propagate_error(error, e);
+            }
+            return NULL;
+        }
+        if (!next_input) {
+            break;
+        }
+        input = next_input;
     }
-    else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
-        result = chupa_decomposer_feed(dec, chupar, input, error);
-        g_object_unref(dec);
-        result = TRUE;
-    }
-    else {
-        e = chupa_text_error_new(CHUPA_TEXT_ERROR_UNKNOWN_MIMETYPE,
-                                 "unknown mime-type %s", mime_type);
-        g_propagate_error(error, e);
-        result = FALSE;
-    }
-    return result;
+    return input;
 }
 
 /**
