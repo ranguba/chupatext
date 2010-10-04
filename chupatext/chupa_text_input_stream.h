@@ -55,8 +55,8 @@ struct _ChupaTextInputStreamClass
 };
 
 GType        chupa_text_input_stream_get_type(void) G_GNUC_CONST;
-ChupaTextInputStream *chupa_text_input_stream_new(ChupaTextInput *input);
-ChupaTextInput *chupa_text_input_stream_get_input(ChupaTextInputStream *stream);
+ChupaTextInputStream *chupa_text_input_stream_new(GsfInput *input);
+GsfInput *chupa_text_input_stream_get_input(ChupaTextInputStream *stream);
 
 G_END_DECLS
 
