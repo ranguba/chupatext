@@ -31,7 +31,7 @@ typedef struct _ChupaTextInputStreamPrivate ChupaTextInputStreamPrivate;
 
 struct _ChupaTextInputStreamPrivate
 {
-    ChupaTextInput *input;
+    GsfInput *input;
 };
 
 enum {
@@ -79,7 +79,7 @@ set_property(GObject *object,
     switch (prop_id) {
     case PROP_INPUT:
         obj = g_value_dup_object(value);
-        priv->input = CHUPA_TEXT_INPUT(obj);
+        priv->input = GSF_INPUT(obj);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -115,7 +115,7 @@ read_fn(GInputStream *stream, void *buffer, gsize count,
     gsf_off_t remaining;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    input = chupa_text_input_get_base_input(priv->input);
+    input = priv->input;
     remaining = gsf_input_remaining(input);
     if (count > remaining) {
         count = remaining;
@@ -134,7 +134,7 @@ skip_fn(GInputStream *stream, gsize count,
     GsfInput *input;
 
     priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
-    input = chupa_text_input_get_base_input(priv->input);
+    input = priv->input;
     if (gsf_input_seek(input, count, G_SEEK_CUR)) {
         return (gssize)-1;
     }
@@ -180,10 +180,18 @@ chupa_text_input_stream_class_init(ChupaTextInputStreamClass *klass)
 }
 
 ChupaTextInputStream *
-chupa_text_input_stream_new(ChupaTextInput *input)
+chupa_text_input_stream_new(GsfInput *input)
 {
     return g_object_new(CHUPA_TYPE_TEXT_INPUT_STREAM,
                         "input", input,
                         NULL);
 }
 
+GsfInput *
+chupa_text_input_stream_get_input(ChupaTextInputStream *stream)
+{
+    ChupaTextInputStreamPrivate *priv;
+
+    priv = CHUPA_TEXT_INPUT_STREAM_GET_PRIVATE(stream);
+    return priv->input;
+}
