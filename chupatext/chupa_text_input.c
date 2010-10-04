@@ -87,6 +87,18 @@ chupa_text_input_init(ChupaTextInput *input)
     priv->metadata = NULL;
 }
 
+static GDataInputStream *
+make_stream(ChupaTextInputPrivate *priv, GInputStream *obj)
+{
+    if (G_IS_DATA_INPUT_STREAM(obj)) {
+        priv->stream = G_DATA_INPUT_STREAM(obj);
+    }
+    else {
+        priv->stream = g_data_input_stream_new(G_INPUT_STREAM(obj));
+    }
+    return priv->stream;
+}
+
 static void
 constructed(GObject *object)
 {
@@ -108,14 +120,9 @@ constructed(GObject *object)
         path = chupa_metadata_get_first_value(priv->metadata, meta_filename);
     }
     if (!stream) {
-        stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
+        stream = G_INPUT_STREAM(chupa_text_input_stream_new(priv->input));
     }
-    if (G_IS_DATA_INPUT_STREAM(stream)) {
-        priv->stream = G_DATA_INPUT_STREAM(stream);
-    }
-    else {
-        priv->stream = g_data_input_stream_new(stream);
-    }
+    make_stream(priv, stream);
 
     mime_type = guess_mime_type(path,
                                 G_BUFFERED_INPUT_STREAM(priv->stream),
@@ -155,12 +162,7 @@ set_property(GObject *object,
     case PROP_STREAM:
         obj = g_value_dup_object(value);
         if (obj) {
-            if (G_IS_DATA_INPUT_STREAM(obj)) {
-                priv->stream = G_DATA_INPUT_STREAM(obj);
-            }
-            else {
-                priv->stream = g_data_input_stream_new(G_INPUT_STREAM(obj));
-            }
+            make_stream(priv, G_INPUT_STREAM(obj));
         }
         break;
     case PROP_METADATA:
