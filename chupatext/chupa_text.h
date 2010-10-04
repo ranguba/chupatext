@@ -73,7 +73,7 @@ typedef void (*ChupaTextCallback)(ChupaText *, ChupaTextInput *, gpointer);
 
 GType chupa_text_get_type(void) G_GNUC_CONST;
 ChupaText *chupa_text_new(void);
-gboolean chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **err);
+ChupaTextInput *chupa_text_feed(ChupaText *chupar, ChupaTextInput *input, GError **err);
 void chupa_text_decomposed(ChupaText *chupar, ChupaTextInput *input);
 void chupa_text_decompose(ChupaText *chupar, ChupaTextInput *text_input,
                           ChupaTextCallback func, gpointer arg, GError **error);

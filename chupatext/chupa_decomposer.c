@@ -119,9 +119,10 @@ chupa_decomposer_new (const gchar *name, const gchar *first_property, ...)
     return CHUPA_DECOMPOSER(decomposer);
 }
 
-gboolean
+ChupaTextInput *
 chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err)
 {
-    g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
+    g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), NULL);
+    g_return_val_if_fail(input, NULL);
     return (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, input, err);
 }
