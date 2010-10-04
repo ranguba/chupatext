@@ -52,7 +52,7 @@ struct _ChupaDecomposerClass
     GObjectClass parent_class;
 
     gboolean (*can_handle)(ChupaDecomposerClass *dec, ChupaTextInput *input, const char *mime_type);
-    gboolean (*feed)(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
+    ChupaTextInput *(*feed)(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
 };
 
 GType        chupa_decomposer_get_type(void) G_GNUC_CONST;
@@ -60,7 +60,7 @@ GType        chupa_decomposer_get_type(void) G_GNUC_CONST;
 ChupaDecomposer *chupa_decomposer_new    (const gchar *name,
                                           const gchar *first_property,
                                           ...);
-gboolean         chupa_decomposer_feed   (ChupaDecomposer *dec,
+ChupaTextInput *chupa_decomposer_feed   (ChupaDecomposer *dec,
                                           ChupaText       *text,
                                           ChupaTextInput  *input,
                                           GError         **error);
