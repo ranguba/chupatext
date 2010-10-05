@@ -18,6 +18,9 @@
  *  MA  02110-1301  USA
  */
 
+#ifndef CHUPA_RUBY_H
+#define CHUPA_RUBY_H
+
 #include <chupatext/chupa_decomposer.h>
 #include <chupatext/chupa_module.h>
 #include <chupatext/chupa_memory_input_stream.h>
@@ -39,3 +42,4 @@ VALUE chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError *
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 VALUE chupa_ruby_init(void);
 
+#endif
