@@ -21,3 +21,6 @@ update-po:
 	   find module -name '*.c') |		\
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
+
+echo-top-builddir:
+	@echo $(top_builddir)

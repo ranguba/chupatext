@@ -74,5 +74,11 @@ test_tar_la_SOURCES = test_tar.c chupa_test_util.c
 test_zip_la_SOURCES = test_zip.c chupa_test_util.c
 test_ruby_la_SOURCES = test_ruby.c chupa_test_util.c
 
+echo-top-builddir:
+	@echo $(top_builddir)
+
+echo-top-srcdir:
+	@echo $(top_srcdir)
+
 echo-cutter:
 	@echo $(CUTTER)
