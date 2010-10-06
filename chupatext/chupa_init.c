@@ -66,7 +66,7 @@ chupa_init(void *address)
     if (initialized) {
         remove_glib_log_handlers();
         delegate_glib_log_handlers();
-        return 0;
+        return;
     }
 
     initialized = TRUE;
@@ -80,15 +80,13 @@ chupa_init(void *address)
     chupa_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("ChupaText");
 
     chupa_module_factory_init();
-
-    return 0;
 }
 
 void
 chupa_cleanup(void)
 {
     if (!initialized)
-        return 0;
+        return;
 
     chupa_module_factory_quit();
 
@@ -97,6 +95,4 @@ chupa_cleanup(void)
     chupa_log_handler_id = 0;
 
     initialized = FALSE;
-
-    return 0;
 }
