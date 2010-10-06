@@ -25,3 +25,9 @@ strace.out
 /po/Makefile.in.in
 /po/POTFILES
 /po/stamp-it
+/chupatext/chupa_enum_types.c
+/chupatext/chupa_enum_types.h
+/chupatext/chupa_marshalers.c
+/chupatext/chupa_marshalers.h
+/chupatext/stamp-chupa_enum_types-c
+/chupatext/stamp-chupa_enum_types-h

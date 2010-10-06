@@ -196,6 +196,7 @@ AC_SUBST(top_includedir, '$(top_srcdir)')
 
 AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
+		 build/Makefile
 		 tool/Makefile
 		 data/Makefile
 		 data/descriptions/Makefile

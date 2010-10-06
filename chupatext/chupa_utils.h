@@ -21,14 +21,24 @@
 #ifndef __CHUPA_UTILS_H__
 #define __CHUPA_UTILS_H__
 
-#include <glib.h>
+#include <glib-object.h>
 
 G_BEGIN_DECLS
 
+guint        chupa_utils_flags_from_string   (GType        flags_type,
+                                              const gchar *flags_string);
+gint         chupa_utils_enum_from_string
+                                             (GType        enum_type,
+                                              const gchar *enum_string);
+gboolean     chupa_utils_guess_console_color_usability
+                                             (void);
+
 #ifdef G_OS_WIN32
-const gchar *chupa_win32_base_path                     (void);
-gchar       *chupa_win32_build_module_dir_name         (const gchar *type);
-gchar       *chupa_win32_build_factory_module_dir_name (const gchar *type);
+const gchar *chupa_win32_base_path           (void);
+gchar       *chupa_win32_build_module_dir_name
+                                             (const gchar *type);
+gchar       *chupa_win32_build_factory_module_dir_name
+                                             (const gchar *type);
 #endif
 
 G_END_DECLS

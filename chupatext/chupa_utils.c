@@ -39,6 +39,72 @@
 
 #include "chupa_utils.h"
 
+guint
+chupa_utils_flags_from_string (GType        flags_type,
+                               const gchar *flags_string)
+{
+    gchar **names, **name;
+    GFlagsClass *flags_class;
+    guint flags = 0;
+
+    if (!flags_string)
+        return 0;
+
+    names = g_strsplit(flags_string, "|", 0);
+    flags_class = g_type_class_ref(flags_type);
+    for (name = names; *name; name++) {
+        if (g_str_equal(*name, "all")) {
+            flags |= flags_class->mask;
+            break;
+        } else {
+            GFlagsValue *value;
+
+            value = g_flags_get_value_by_nick(flags_class, *name);
+            if (value)
+                flags |= value->value;
+        }
+    }
+    g_type_class_unref(flags_class);
+    g_strfreev(names);
+
+    return flags;
+}
+
+gint
+chupa_utils_enum_from_string (GType        enum_type,
+                              const gchar *enum_string)
+{
+    GEnumClass *enum_class;
+    GEnumValue *enum_value;
+    gint value = 0;
+
+    if (!enum_string)
+        return 0;
+
+    enum_class = g_type_class_ref(enum_type);
+    enum_value = g_enum_get_value_by_nick(enum_class, enum_string);
+    if (enum_value)
+        value = enum_value->value;
+    g_type_class_unref(enum_class);
+
+    return value;
+}
+
+gboolean
+chupa_utils_guess_console_color_usability (void)
+{
+    const gchar *term;
+
+    term = g_getenv("TERM");
+    if (term && (g_str_has_suffix(term, "term") ||
+                 g_str_has_suffix(term, "term-color") ||
+                 g_str_equal(term, "screen") ||
+                 g_str_equal(term, "linux")))
+        return TRUE;
+
+    return FALSE;
+}
+
 #ifdef G_OS_WIN32
 static gchar *win32_base_path = NULL;
 
