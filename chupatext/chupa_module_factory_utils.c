@@ -229,7 +229,7 @@ chupa_module_factory_exist_module (const gchar *type, const gchar *name)
     names = chupa_module_factory_get_names(type);
     if (!names)
         return FALSE;
-    list= g_list_find_custom(names, name, (GCompareFunc)strcmp);
+    list = g_list_find_custom(names, name, (GCompareFunc)strcmp);
 
     g_list_foreach(names, (GFunc)g_free, NULL);
     g_list_free(names);
