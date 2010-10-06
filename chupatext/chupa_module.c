@@ -94,6 +94,7 @@ finalize(GObject *object)
 {
     ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(object);
 
+    g_print("finalize!: %p\n", object);
     g_free(priv->mod_path);
     priv->mod_path = NULL;
     g_list_free(priv->registered_types);

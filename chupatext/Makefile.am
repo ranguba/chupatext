@@ -17,6 +17,7 @@ libchupatext_la_SOURCES =			\
 	chupa_module.c				\
 	chupa_module_factory.c			\
 	chupa_module_factory_utils.c		\
+	chupa_module_description.c		\
 	chupa_dispatcher.c			\
 	chupa_text_input_stream.c		\
 	chupa_memory_input_stream.c		\
@@ -32,6 +33,7 @@ AM_CPPFLAGS =						\
 	-DCHUPA_MODULE_DIR=\"$(moduledir)\"		\
 	-DDECOMPOSER_MODULE_DIR=\"$(decomposerdir)\"	\
 	-DFACTORY_MODULE_DIR=\"$(factorydir)\"		\
+	-DDESCRIPTIONS_DIR=\"$(descriptionsdir)\"	\
 	-D_GNU_SOURCE
 AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
 AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)
@@ -46,6 +48,7 @@ chupatext_include_HEADERS =			\
 	chupa_module.h				\
 	chupa_module_factory.h			\
 	chupa_module_factory_utils.h		\
+	chupa_module_description.h		\
 	chupa_module_impl.h			\
 	chupa_dispatcher.h			\
 	chupa_private.h				\

@@ -31,27 +31,16 @@
 #include "chupa_module_factory_utils.h"
 
 static gchar *module_dir = NULL;
-static GHashTable *factories = NULL;
+static GList *factories = NULL;
 #ifdef G_OS_WIN32
 static gchar *win32_factory_module_dir = NULL;
 #endif
 
 
-static void
-unload_modules (gpointer data)
-{
-    GList *modules = (GList *)data;
-    g_list_foreach(modules, (GFunc)chupa_module_unload, NULL);
-    g_list_free(modules);
-}
-
 void
 chupa_module_factory_init (void)
 {
-    factories = g_hash_table_new_full(g_str_hash,
-                                      g_str_equal,
-                                      g_free,
-                                      unload_modules);
+    factories = NULL;
 }
 
 void
@@ -104,12 +93,7 @@ void
 chupa_module_factory_load (const gchar *dir, const gchar *type)
 {
     if (g_file_test(dir, G_FILE_TEST_IS_DIR)) {
-        GList *modules;
-
-        modules = chupa_module_load_modules(dir);
-
-        if (modules)
-            g_hash_table_replace(factories, g_strdup(type), modules);
+        factories = g_list_concat(factories, chupa_module_load_modules(dir));
     }
 }
 
@@ -142,8 +126,7 @@ chupa_module_factory_load_all (const gchar *base_dir)
                     modules = chupa_module_load_modules(libs_dir);
                 g_free(libs_dir);
             }
-            if (modules)
-                g_hash_table_replace(factories, g_strdup(entry), modules);
+            factories = g_list_concat(factories, modules);
         }
         g_free(dir_name);
     }
@@ -154,18 +137,13 @@ ChupaModule *
 chupa_module_factory_load_module (const gchar *type, const gchar *name)
 {
     ChupaModule *module;
-    GList *modules = NULL;
     gchar *real_name;
     gchar *separators[] = {"_", "-", NULL};
     gchar **separators_p;
 
-    modules = g_hash_table_lookup(factories, type);
-    if (!modules)
-        return NULL;
-
     for (separators_p = separators; *separators_p; separators_p++) {
         real_name = g_strconcat(name, *separators_p, "factory", NULL);
-        module = chupa_module_find(modules, real_name);
+        module = chupa_module_find(factories, real_name);
         if (module) {
             g_free(real_name);
             return module;
@@ -176,9 +154,8 @@ chupa_module_factory_load_module (const gchar *type, const gchar *name)
         g_free(real_name);
         if (module) {
             if (g_type_module_use(G_TYPE_MODULE(module))) {
-                modules = g_list_prepend(modules, module);
+                factories = g_list_prepend(factories, module);
                 g_type_module_unuse(G_TYPE_MODULE(module));
-                g_hash_table_replace(factories, g_strdup(type), modules);
             }
             return module;
         }
@@ -193,20 +170,20 @@ chupa_module_factory_unload (void)
     if (!factories)
         return;
 
-    g_hash_table_unref(factories);
+    g_list_foreach(factories, (GFunc)chupa_module_unload, NULL);
+    g_list_free(factories);
     factories = NULL;
 }
 
 GList *
 chupa_module_factory_get_names (const gchar *type)
 {
-    GList *modules, *orig_names, *node, *names = NULL;
+    GList *orig_names, *node, *names = NULL;
 
-    modules = g_hash_table_lookup(factories, type);
-    if (!modules)
+    if (!factories)
         return NULL;
 
-    orig_names = chupa_module_collect_names(modules);
+    orig_names = chupa_module_collect_names(factories);
     for (node = orig_names; node; node = g_list_next(node)) {
         const gchar *name = node->data;
 

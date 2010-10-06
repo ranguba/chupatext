@@ -188,12 +188,17 @@ AC_SUBST(decomposerdir)
 factorydir='$(moduledir)/factory'
 AC_SUBST(factorydir)
 
+descriptionsdir='$(sysconfdir)/$(PACKAGE)/descriptions'
+AC_SUBST(descriptionsdir)
+
 AC_SUBST(build_includedir, '$(top_build_prefix)')
 AC_SUBST(top_includedir, '$(top_srcdir)')
 
 AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
 		 tool/Makefile
+		 data/Makefile
+		 data/descriptions/Makefile
 		 chupatext/Makefile
 		 test/Makefile
 		 test/fixtures/Makefile

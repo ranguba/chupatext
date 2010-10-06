@@ -31,8 +31,6 @@ chupa_init(void *var)
     chupa_stack_base = var;
     g_type_init();
     chupa_module_factory_init();
-    chupa_module_factory_load(chupa_module_factory_get_module_dir(),
-                              "decomposer");
     return 0;
 }
 

@@ -1,0 +1,4 @@
+[Tar]
+
+name = tar
+mime_types = application/tar;application/compressed-tar

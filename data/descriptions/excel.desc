@@ -1,0 +1,4 @@
+[Excel]
+
+name = excel
+mime_types = application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet

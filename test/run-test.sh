@@ -43,7 +43,7 @@ if test -z "$CUTTER"; then
 fi
 
 if test -z "$TOP_SRC_DIR"; then
-    TOP_SRC_DIR="$(${MAKE} -s -C "$test_dir" echo-top-srcdir)"
+    TOP_SRC_DIR="$test_dir/$(${MAKE} -s -C "$test_dir" echo-top-srcdir)"
 fi
 
 : ${LIBTOOL:=${TOP_BUILD_DIR}/libtool}
@@ -95,5 +95,6 @@ export CHUPATEXT_CONFIGURATION_MODULE_DIR=$TOP_BUILD_DIR/module/configuration/ru
 export CHUPATEXT_CONFIG_DIR=$TOP_SRC_DIR/test/fixtures/configuration
 export CHUPA_DECOMPOSER_DIR=$TOP_BUILD_DIR/module/.libs
 export CHUPA_FACTORY_DIR=$TOP_BUILD_DIR/module/.libs
+export CHUPA_DESCRIPTIONS_DIR=$TOP_SRC_DIR/data/descriptions
 
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$test_dir"
