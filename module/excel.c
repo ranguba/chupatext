@@ -18,11 +18,14 @@
  *  MA  02110-1301  USA
  */
 
+#include <string.h>
+#include <glib.h>
+
 #include <chupatext/external_decomposer.h>
 #include <chupatext/chupa_module.h>
+#include <chupatext/chupa_logger.h>
 #include <goffice/goffice.h>
 #include <gsf/gsf-output-memory.h>
-#include <glib.h>
 #include "workbook-view.h"
 #include "command-context-stderr.h"
 #include "chupatext/chupa_memory_input_stream.h"
@@ -57,6 +60,19 @@ static GType chupa_type_excel_decomposer = 0;
 
 static const char export_id[] = "Gnumeric_stf:stf_csv";
 
+static void
+printerr_to_log_delegator (const gchar *string)
+{
+    gint length;
+
+    length = strlen(string);
+    if (string[length - 1] == '\n') {
+        chupa_warning("%.*s", length - 1, string);
+    } else {
+        chupa_warning("%s", string);
+    }
+}
+
 static gboolean
 chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                             ChupaTextInput *input, GError **err)
@@ -69,13 +85,16 @@ chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     GsfOutput *tmpout;
     GInputStream *tmpinp;
     const char *filename = chupa_text_input_get_filename(input);
+    GPrintFunc old_print_error_func;
 
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
     tmpout = gsf_output_memory_new();
     g_return_val_if_fail(tmpout, FALSE);
     g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
+    old_print_error_func = g_set_printerr_handler(printerr_to_log_delegator);
     wbv = wb_view_new_from_input(source, filename, fo, io_context, NULL);
+    g_set_printerr_handler(old_print_error_func);
     if (go_io_error_occurred(io_context)) {
         go_io_error_display(io_context);
     }

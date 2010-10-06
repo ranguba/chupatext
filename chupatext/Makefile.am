@@ -36,6 +36,8 @@ libchupatext_la_SOURCES =			\
 	$(EMPTY)
 
 AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"ChupaText\"			\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText\"		\
 	-DCHUPA_MODULE_DIR=\"$(moduledir)\"		\
 	-DDECOMPOSER_MODULE_DIR=\"$(decomposerdir)\"	\
 	-DFACTORY_MODULE_DIR=\"$(factorydir)\"		\

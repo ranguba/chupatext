@@ -28,6 +28,7 @@ void *chupa_stack_base;
 
 static gboolean initialized = FALSE;
 
+static guint default_log_handler_id = 0;
 static guint glib_log_handler_id = 0;
 static guint gobject_log_handler_id = 0;
 static guint gthread_log_handler_id = 0;
@@ -41,6 +42,7 @@ remove_glib_log_handlers (void)
     g_log_remove_handler(domain, prefix ## _log_handler_id);            \
     prefix ## _log_handler_id = 0
 
+    REMOVE(NULL, default);
     REMOVE("GLib", glib);
     REMOVE("GLib-GObject", gobject);
     REMOVE("GThread", gthread);
@@ -52,6 +54,7 @@ remove_glib_log_handlers (void)
 static void
 delegate_glib_log_handlers (void)
 {
+    default_log_handler_id = CHUPA_GLIB_LOG_DELEGATE(NULL);
     glib_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GLib");
     gobject_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GLib-GObject");
     gthread_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GThread");

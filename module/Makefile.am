@@ -33,67 +33,130 @@ factory_LTLIBRARIES += ruby_factory.la
 endif
 
 text_la_SOURCES = text.c
-text_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+text_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)				\
+	$(GSF_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"ChupaText-Text\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Text\"
 text_la_LIBADD = $(GLIB_LIBS)
 
 text_factory_la_SOURCES = text_factory.c
-text_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+text_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-TextFactory\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-TextFactory\"
 text_factory_la_LIBADD = $(GLIB_LIBS)
 
 tar_la_SOURCES = tar.c
-tar_la_CPPFLAGS = $(GSF_CFLAGS)
+tar_la_CPPFLAGS =				\
+	$(GSF_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"ChupaText-Tar\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Tar\"
 tar_la_LIBADD = $(GSF_LIBS)
 
 tar_factory_la_SOURCES = tar_factory.c
-tar_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+tar_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-TarFactory\"		\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-TarFactory\"
 tar_factory_la_LIBADD = $(GLIB_LIBS)
 
 zip_la_SOURCES = zip.c
-zip_la_CPPFLAGS = $(GSF_CFLAGS)
+zip_la_CPPFLAGS =				\
+	$(GSF_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"ChupaText-Zip\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Zip\"
 zip_la_LIBADD = $(GSF_LIBS)
 
 zip_factory_la_SOURCES = zip_factory.c
-zip_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+zip_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-ZipFactory\"		\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-ZipFactory\"
 zip_factory_la_LIBADD = $(GLIB_LIBS)
 
 pdf_la_SOURCES = pdf.c
-pdf_la_CPPFLAGS = $(POPPLER_GLIB_CFLAGS) $(GSF_CFLAGS)
+pdf_la_CPPFLAGS =				\
+	$(POPPLER_GLIB_CFLAGS)			\
+	$(GSF_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"ChupaText-PDF\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-PDF\"
 pdf_la_LIBADD = $(POPPLER_GLIB_LIBS) $(GSF_LIBS)
 
 pdf_factory_la_SOURCES = pdf_factory.c
-pdf_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+pdf_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-PDFFactory\"		\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-PDFFactory\"
 pdf_factory_la_LIBADD = $(GLIB_LIBS)
 
 word_la_SOURCES = word.c
-word_la_CPPFLAGS = $(WV_CFLAGS)
+word_la_CPPFLAGS =				\
+	$(WV_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"ChupaText-Word\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Word\"
 word_la_LIBADD = $(WV_LIBS) $(GSF_LIBS)
 
 word_factory_la_SOURCES = word_factory.c
-word_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+word_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-WordFactory\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-WordFactory\"
 word_factory_la_LIBADD = $(GLIB_LIBS)
 
 excel_la_SOURCES = excel.c
-excel_la_CPPFLAGS = -I$(srcdir)/excel $(GOFFICE_CFLAGS)
+excel_la_CPPFLAGS =				\
+	-I$(srcdir)/excel			\
+	$(GOFFICE_CFLAGS)			\
+	-DG_LOG_DOMAIN=\"ChupaText-Excel\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Excel\"
 excel_la_LIBADD = $(GOFFICE_LIBS) -lspreadsheet
 
 excel_factory_la_SOURCES = excel_factory.c
-excel_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+excel_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-ExcelFactory\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-ExcelFactory\"
 excel_factory_la_LIBADD = $(GLIB_LIBS)
 
 powerpoint_la_SOURCES = powerpoint.c
-powerpoint_la_CPPFLAGS = $(GIO_UNIX_CFLAGS) $(GSF_CFLAGS)
+powerpoint_la_CPPFLAGS =				\
+	$(GIO_UNIX_CFLAGS)				\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-PowerPoint\"		\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPoint\"
 powerpoint_la_LIBADD = $(GIO_UNIX_LIBS) $(GSF_LIBS)
 
 powerpoint_factory_la_SOURCES = powerpoint_factory.c
-powerpoint_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+powerpoint_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)						\
+	$(GSF_CFLAGS)						\
+	-DG_LOG_DOMAIN=\"ChupaText-PowerPointFactory\"		\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPointFactory\"
 powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
 
 ruby_la_SOURCES = ruby.c chupa_ruby.c
 ruby_la_CFLAGS = $(RUBY_CFLAGS)
-ruby_la_CPPFLAGS = -DCHUPA_RUBY_DIR=\"$(rubydir)\" -DRUBY_ARCH=\"$(rubyarch)\" \
-	$(RUBY_CPPFLAGS) $(GLIB_CFLAGS) $(GSF_CFLAGS)
+ruby_la_CPPFLAGS =				\
+	$(RUBY_CPPFLAGS)			\
+	$(GLIB_CFLAGS)				\
+	$(GSF_CFLAGS)				\
+	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
+	-DRUBY_ARCH=\"$(rubyarch)\"		\
+	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"
 ruby_la_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
 
 ruby_factory_la_SOURCES = ruby_factory.c
-ruby_factory_la_CPPFLAGS = $(GLIB_CFLAGS) $(GSF_CFLAGS)
+ruby_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-RubyFactory\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-RubyFactory\"
 ruby_factory_la_LIBADD = $(RUBY_LIBS) $(GLIB_LIBS)
