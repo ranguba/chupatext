@@ -10,8 +10,8 @@
 
 G_BEGIN_DECLS
 
-int chupa_init(void *);
-int chupa_cleanup(void);
+void chupa_init(void *address);
+void chupa_cleanup(void);
 
 const int chupa_version(void) G_GNUC_CONST;
 const int chupa_commits(void) G_GNUC_CONST;

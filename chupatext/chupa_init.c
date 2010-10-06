@@ -58,10 +58,10 @@ delegate_glib_log_handlers (void)
     gmodule_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GModule");
 }
 
-int
-chupa_init(void *var)
+void
+chupa_init(void *address)
 {
-    chupa_stack_base = var;
+    chupa_stack_base = address;
 
     if (initialized) {
         remove_glib_log_handlers();
@@ -84,7 +84,7 @@ chupa_init(void *var)
     return 0;
 }
 
-int
+void
 chupa_cleanup(void)
 {
     if (!initialized)
