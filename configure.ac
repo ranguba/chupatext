@@ -116,12 +116,14 @@ AC_ARG_WITH([ruby],
                            [Ruby interpreter path (default: auto-detect)]),
             [RUBY="$withval"])
 
-AS_CASE("$RUBY",
-    [no], [:],
-    [""],
-    [AC_PATH_PROG(RUBY, ruby, none)
-    test "$RUBY" = "none" || ruby_available="yes"
-    ])
+if test "$RUBY" != "no"; then
+  AC_PATH_PROG(RUBY, ruby, none)
+  if test "$RUBY" != "none"; then
+    ruby_available="yes"
+  fi
+fi
+AC_MSG_CHECKING([for Ruby availability])
+AC_MSG_RESULT($ruby_available)
 
 RBCONFIG="$RUBY -rrbconfig"dnl
 AC_DEFUN([RUBY_CONFIG],dnl
@@ -133,8 +135,12 @@ AS_VAR_PUSHDEF([rbcv], m4_if([$2], [$2],
 				       [RUBY_]$1)))dnl
 if test $ruby_available = yes; then
     AC_MSG_CHECKING([for RbConfig[[$1]]])
-    rbcv=`[$RBCONFIG -e 'puts RbConfig::CONFIG["$1"].strip||abort']` || ruby_available=no
+    rbcv=`[$RBCONFIG -e 'puts RbConfig::CONFIG["$1"].strip'] 2>&1` || \
+      ruby_available=no
     AC_MSG_RESULT($rbcv)
+    if test $ruby_available = no; then
+      AC_MSG_WARN(Ruby disabled)
+    fi
 fi dnl
 AS_VAR_POPDEF([rbcv])dnl
 ])
