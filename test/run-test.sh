@@ -91,9 +91,9 @@ fi
 RUBYLIB=$CHUPATEXT_RUBYLIB:$RUBYLIB
 export CHUPATEXT_RUBYLIB
 export RUBYLIB
-export CHUPATEXT_CONFIGURATION_MODULE_DIR=$builddir/module/configuration/ruby/.libs
-export CHUPATEXT_CONFIG_DIR=$top_srcdir/test/fixtures/configuration
-export CHUPA_DECOMPOSER_DIR=$builddir/module/.libs
-export CHUPA_FACTORY_DIR=$builddir/module/.libs
+export CHUPATEXT_CONFIGURATION_MODULE_DIR=$TOP_BUILD_DIR/module/configuration/ruby/.libs
+export CHUPATEXT_CONFIG_DIR=$TOP_SRC_DIR/test/fixtures/configuration
+export CHUPA_DECOMPOSER_DIR=$TOP_BUILD_DIR/module/.libs
+export CHUPA_FACTORY_DIR=$TOP_BUILD_DIR/module/.libs
 
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" "$test_dir"
