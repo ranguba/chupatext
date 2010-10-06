@@ -22,21 +22,81 @@
 
 #include "chupa_private.h"
 #include "chupa_module_factory_utils.h"
+#include "chupa_logger.h"
 
 void *chupa_stack_base;
+
+static gboolean initialized = FALSE;
+
+static guint glib_log_handler_id = 0;
+static guint gobject_log_handler_id = 0;
+static guint gthread_log_handler_id = 0;
+static guint gmodule_log_handler_id = 0;
+static guint chupa_log_handler_id = 0;
+
+static void
+remove_glib_log_handlers (void)
+{
+#define REMOVE(domain, prefix)                                          \
+    g_log_remove_handler(domain, prefix ## _log_handler_id);            \
+    prefix ## _log_handler_id = 0
+
+    REMOVE("GLib", glib);
+    REMOVE("GLib-GObject", gobject);
+    REMOVE("GThread", gthread);
+    REMOVE("GModule", gmodule);
+
+#undef REMOVE
+}
+
+static void
+delegate_glib_log_handlers (void)
+{
+    glib_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GLib");
+    gobject_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GLib-GObject");
+    gthread_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GThread");
+    gmodule_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("GModule");
+}
 
 int
 chupa_init(void *var)
 {
     chupa_stack_base = var;
+
+    if (initialized) {
+        remove_glib_log_handlers();
+        delegate_glib_log_handlers();
+        return 0;
+    }
+
+    initialized = TRUE;
+
+    if (!g_thread_supported())
+        g_thread_init(NULL);
+
     g_type_init();
+
+    delegate_glib_log_handlers();
+    chupa_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("ChupaText");
+
     chupa_module_factory_init();
+
     return 0;
 }
 
 int
 chupa_cleanup(void)
 {
+    if (!initialized)
+        return 0;
+
     chupa_module_factory_quit();
+
+    remove_glib_log_handlers();
+    g_log_remove_handler("ChupaText", chupa_log_handler_id);
+    chupa_log_handler_id = 0;
+
+    initialized = FALSE;
+
     return 0;
 }
