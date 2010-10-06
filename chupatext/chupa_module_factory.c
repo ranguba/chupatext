@@ -100,7 +100,7 @@ chupa_module_factory_new_valist (const gchar *type, const gchar *name,
 
 ChupaModuleFactory *
 chupa_module_factory_new (const gchar *type, const gchar *name,
-                        const gchar *first_property, ...)
+                          const gchar *first_property, ...)
 {
     ChupaModule *module;
     GObject *factory;
