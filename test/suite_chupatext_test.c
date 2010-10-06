@@ -28,6 +28,7 @@ chupatext_test_warmup(void)
 {
     int variable;
     chupa_init(&variable);
+    /* chupa_set_log_level(CHUPA_LOG_LEVEL_NONE); */
 }
 
 void
