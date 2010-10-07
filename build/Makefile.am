@@ -1,3 +1,3 @@
 EXTRA_DIST =		\
-	enum-types.mk	\
+	enum_types.mk	\
 	marshal.mk

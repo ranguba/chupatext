@@ -1,0 +1,173 @@
+Source: chupatext
+Priority: extra
+Maintainer: Kouhei Sutou <kou@clear-code.com>
+Build-Depends: debhelper (>= 5),
+               cdbs,
+               autotools-dev,
+               intltool,
+               gtk-doc-tools,
+               libgsf-1-dev,
+               libpoppler-glib-dev,
+               libwv-dev,
+               libgoffice-0-8-dev,
+               gnumeric,
+               ruby1.9.1-dev
+Standards-Version: 3.7.3
+Section: libs
+Homepage: http://groonga.rubyforge.org/
+
+Package: chupatext
+Section: text
+Architecture: any
+Depends: chupatext-bin (= ${binary:Version}),
+         chupatext-decomposer-text (= ${binary:Version}),
+         chupatext-decomposer-excel (= ${binary:Version}),
+         chupatext-decomposer-word (= ${binary:Version}),
+         chupatext-decomposer-powerpoint (= ${binary:Version}),
+         chupatext-decomposer-pdf (= ${binary:Version}),
+         chupatext-decomposer-tar (= ${binary:Version}),
+         chupatext-decomposer-zip (= ${binary:Version}),
+         chupatext-decomposer-ruby (= ${binary:Version}),
+         chupatext-doc (= ${binary:Version})
+Description: ChupaText text extractor (meta-package)
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package depends all ChupaText related package for convenience.
+
+Package: chupatext-doc
+Section: doc
+Architecture: any
+Description: Documentation of ChupaText
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides README and reference manual of ChupaText.
+
+Package: libchupatext
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libglib2.0-0,
+         libgsf-1-114
+Description: Library files for ChupaText
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides library files for ChupaText.
+
+Package: libchupatext-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+	 libchupuatext (= ${binary:Version})
+Description: Development files to use ChupaText as a library
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides header files to write a program taht uses ChupaText
+ as a library.
+
+Package: chupatext-bin
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version})
+Description: ChupaText text extractor
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides 'chupatext' command that extracts text and meta
+ information from a file.
+
+Package: chupatext-decomposer-text
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version})
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for plain text.
+
+Package: chupatext-decomposer-excel
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version}),
+         gnumeric
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for Microsoft Excel file.
+
+Package: chupatext-decomposer-word
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version}),
+         libwv2-4
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for Microsoft Word file.
+
+Package: chupatext-decomposer-powerpoint
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version}),
+         openoffice.org
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for Microsoft PowerPoint file.
+
+Package: chupatext-decomposer-pdf
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+	 libchupatext (= ${binary:Version}),
+         libpoppler-glib4
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for PDF file.
+
+Package: chupatext-decomposer-tar
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version})
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for tar archive.
+
+Package: chupatext-decomposer-zip
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version})
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for zip archive.
+
+Package: chupatext-decomposer-ruby
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version}),
+	 ruby1.9.1
+Description: ChupaText text decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer written by Ruby. It supports many
+ formats: e.g. HTML, ... and so on.

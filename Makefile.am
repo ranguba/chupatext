@@ -1,10 +1,10 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = build tool data chupatext test module license
+SUBDIRS = build tool data chupatext test module license apt
 
 pkginclude_HEADERS = chupatext.h
 
-EXTRA_DIST = config/config.rpath m4/ChangeLog 					\
+EXTRA_DIST =					\
 	COPYING					\
 	README.ja
 

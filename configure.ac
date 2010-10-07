@@ -204,6 +204,7 @@ AC_CONFIG_FILES([Makefile
 		 test/Makefile
 		 test/fixtures/Makefile
 		 module/Makefile
-		 license/Makefile])
+		 license/Makefile
+		 apt/Makefile])
 AC_OUTPUT
 
