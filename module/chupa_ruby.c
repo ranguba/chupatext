@@ -139,15 +139,25 @@ invoke_rb_funcall2(VALUE data)
 VALUE
 chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error)
 {
-    VALUE result, error;
-    int state = 0;
     funcall_arguments call_args;
 
     call_args.receiver = receiver;
     call_args.name = mid;
     call_args.argc = argc;
     call_args.argv = argv;
-    result = rb_protect(invoke_rb_funcall2, (VALUE)&call_args, &state);
+    return chupa_ruby_protect(invoke_rb_funcall2, (VALUE)&call_args, NULL, g_error);
+}
+
+VALUE
+chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_error)
+{
+    VALUE result, error;
+    int state = 0;
+
+    result = rb_protect(func, arg, &state);
+    if (statep) {
+        *statep = state;
+    }
     if (state && !NIL_P(error = rb_errinfo())) {
 	make_error_arguments error_args;
 	error_args.g_error = g_error;

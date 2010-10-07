@@ -38,6 +38,7 @@ typedef struct {
 } chupa_ruby_t;
 
 VALUE chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input);
+VALUE chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *state, GError **g_error);
 VALUE chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error);
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 VALUE chupa_ruby_init(void);
