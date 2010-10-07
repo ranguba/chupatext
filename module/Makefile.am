@@ -5,7 +5,11 @@ EMPTY =
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
 binding_dir = $(top_builddir)/binding
-LDFLAGS = -module -L$(top_builddir)/chupatext -lchupatext
+LDFLAGS =					\
+	-avoid-version				\
+	-module					\
+	-L$(top_builddir)/chupatext		\
+	-lchupatext
 
 decomposer_LTLIBRARIES =
 factory_LTLIBRARIES =
