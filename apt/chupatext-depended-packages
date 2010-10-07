@@ -4,8 +4,8 @@ intltool
 autotools-dev
 gtk-doc-tools
 libgsf-1-dev
-libpopper-glib-dev
-libwv-dev,
+libpoppler-glib-dev
+libwv-dev
 libgoffice-0-8-dev
 gnumeric
 ruby1.9.1-dev
