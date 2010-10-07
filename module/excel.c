@@ -26,8 +26,8 @@
 #include <chupatext/chupa_logger.h>
 #include <goffice/goffice.h>
 #include <gsf/gsf-output-memory.h>
-#include "workbook-view.h"
-#include "command-context-stderr.h"
+#include "excel/workbook-view.h"
+#include "excel/command-context-stderr.h"
 #include "chupatext/chupa_memory_input_stream.h"
 
 #define CHUPA_TYPE_EXCEL_DECOMPOSER            chupa_type_excel_decomposer

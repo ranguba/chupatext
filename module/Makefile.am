@@ -116,7 +116,6 @@ word_factory_la_LIBADD = $(GLIB_LIBS)
 
 excel_la_SOURCES = excel.c
 excel_la_CPPFLAGS =				\
-	-I$(srcdir)/excel			\
 	$(GOFFICE_CFLAGS)			\
 	-DG_LOG_DOMAIN=\"ChupaText-Excel\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Excel\"
