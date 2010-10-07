@@ -59,20 +59,20 @@ LIBS =					\
 	$(GSF_LIBS) \
 	$(EMPTY)
 
-suite_chupatext_test_la_SOURCES = suite_chupatext_test.c
+suite_chupatext_test_la_SOURCES = suite_chupatext_test.c chupa_test_util.c
 
 test_metadata_la_SOURCES = test_metadata.c
-test_text_la_SOURCES = test_text.c chupa_test_util.c
+test_text_la_SOURCES = test_text.c
 test_text_input_la_SOURCES = test_text_input.c
 test_text_input_stream_la_SOURCES = test_text_input_stream.c
 test_decomposer_la_SOURCES = test_decomposer.c
-test_pdf_la_SOURCES = test_pdf.c chupa_test_util.c
-test_word_la_SOURCES = test_word.c chupa_test_util.c
-test_excel_la_SOURCES = test_excel.c chupa_test_util.c
-test_powerpoint_la_SOURCES = test_powerpoint.c chupa_test_util.c
-test_tar_la_SOURCES = test_tar.c chupa_test_util.c
-test_zip_la_SOURCES = test_zip.c chupa_test_util.c
-test_ruby_la_SOURCES = test_ruby.c chupa_test_util.c
+test_pdf_la_SOURCES = test_pdf.c
+test_word_la_SOURCES = test_word.c
+test_excel_la_SOURCES = test_excel.c
+test_powerpoint_la_SOURCES = test_powerpoint.c
+test_tar_la_SOURCES = test_tar.c
+test_zip_la_SOURCES = test_zip.c
+test_ruby_la_SOURCES = test_ruby.c
 
 echo-top-builddir:
 	@echo $(top_builddir)
