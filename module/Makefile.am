@@ -2,6 +2,7 @@ EMPTY =
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
+binding_dir = $(top_builddir)/binding
 LDFLAGS = -module -L$(top_builddir)/chupatext -lchupatext
 
 decomposer_LTLIBRARIES =
@@ -30,6 +31,8 @@ factory_LTLIBRARIES += powerpoint_factory.la
 if HAVE_RUBY
 decomposer_LTLIBRARIES += ruby.la
 factory_LTLIBRARIES += ruby_factory.la
+decomposer_LTLIBRARIES += html.la
+factory_LTLIBRARIES += html_factory.la
 endif
 
 text_la_SOURCES = text.c
@@ -141,17 +144,21 @@ powerpoint_factory_la_CPPFLAGS =				\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPointFactory\"
 powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
 
-ruby_la_SOURCES = ruby.c chupa_ruby.c
-ruby_la_CFLAGS = $(RUBY_CFLAGS)
-ruby_la_CPPFLAGS =				\
+CHUPA_RUBY_CFLAGS = $(RUBY_CFLAGS)
+CHUPA_RUBY_CPPFLAGS =				\
+	-I$(top_srcdir)/binding/ruby		\
 	$(RUBY_CPPFLAGS)			\
 	$(GLIB_CFLAGS)				\
-	$(GSF_CFLAGS)				\
-	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
-	-DRUBY_ARCH=\"$(rubyarch)\"		\
+	$(GSF_CFLAGS)
+CHUPA_RUBY_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
+
+ruby_la_SOURCES = ruby.c
+ruby_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
+ruby_la_CPPFLAGS =				\
+	$(CHUPA_RUBY_CPPFLAGS)			\
 	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"
-ruby_la_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
+ruby_la_LIBADD = $(binding_dir)/ruby/libchuparuby.la $(CHUPA_RUBY_LIBADD)
 
 ruby_factory_la_SOURCES = ruby_factory.c
 ruby_factory_la_CPPFLAGS =				\
@@ -159,4 +166,4 @@ ruby_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-RubyFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-RubyFactory\"
-ruby_factory_la_LIBADD = $(RUBY_LIBS) $(GLIB_LIBS)
+ruby_factory_la_LIBADD = $(GLIB_LIBS)

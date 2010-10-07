@@ -18,6 +18,7 @@
  *  MA  02110-1301  USA
  */
 
+#define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
 #include "chupa_ruby.h"
 
 static GType chupa_type_ruby_decomposer = 0;

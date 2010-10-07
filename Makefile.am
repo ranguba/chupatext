@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = build tool data chupatext test module license po apt
+SUBDIRS = build tool data chupatext test binding module license po apt
 
 pkginclude_HEADERS = chupatext.h
 

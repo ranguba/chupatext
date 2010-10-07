@@ -18,11 +18,24 @@
  *  MA  02110-1301  USA
  */
 
+#define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 
 static VALUE chupa_ruby_gets(VALUE self);
 static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
 static VALUE chupa_ruby_decompose(VALUE self);
+
+GType
+chupa_ruby_decomposer_get_type(void)
+{
+    static volatile gsize chupa_ruby_decomposer_type_id__volatile = 0;
+    if (g_once_init_enter(&chupa_ruby_decomposer_type_id__volatile)) {
+        GObject *ruby = G_OBJECT(chupa_decomposer_new("ruby", NULL));
+        g_once_init_leave(&chupa_ruby_decomposer_type_id__volatile,
+                          G_TYPE_FROM_INSTANCE(ruby));
+    }
+    return chupa_ruby_decomposer_type_id__volatile;
+}
 
 static void
 chupa_ruby_dispose(void *ptr)

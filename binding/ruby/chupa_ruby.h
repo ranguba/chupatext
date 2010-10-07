@@ -44,7 +44,7 @@ VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 VALUE chupa_ruby_init(void);
 
 /* decomposer */
-#define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
+GType chupa_ruby_decomposer_get_type(void);
 #define CHUPA_RUBY_DECOMPOSER(obj)            \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposer)
 #define CHUPA_RUBY_DECOMPOSER_CLASS(klass)    \
@@ -55,6 +55,10 @@ VALUE chupa_ruby_init(void);
   G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
 #define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)  \
   G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
+
+#ifndef CHUPA_TYPE_RUBY_DECOMPOSER
+#define CHUPA_TYPE_RUBY_DECOMPOSER chupa_ruby_decomposer_get_type()
+#endif
 
 typedef struct _ChupaRubyDecomposer ChupaRubyDecomposer;
 typedef struct _ChupaRubyDecomposerClass ChupaRubyDecomposerClass;
