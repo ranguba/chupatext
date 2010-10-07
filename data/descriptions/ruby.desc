@@ -1,4 +1,9 @@
-[HTML]
+[Ruby]
 
 name = ruby
+mime_types = application/ruby
+
+[HTML]
+
+name = html
 mime_types = text/html

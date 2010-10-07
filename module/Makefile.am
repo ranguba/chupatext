@@ -167,3 +167,19 @@ ruby_factory_la_CPPFLAGS =				\
 	-DG_LOG_DOMAIN=\"ChupaText-RubyFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-RubyFactory\"
 ruby_factory_la_LIBADD = $(GLIB_LIBS)
+
+html_la_SOURCES = html.c
+html_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
+html_la_CPPFLAGS =				\
+	$(CHUPA_RUBY_CPPFLAGS)			\
+	-DG_LOG_DOMAIN=\"ChupaText-Html\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Html\"
+html_la_LIBADD = $(binding_dir)/ruby/libchuparuby.la $(CHUPA_RUBY_LIBADD)
+
+html_factory_la_SOURCES = html_factory.c
+html_factory_la_CPPFLAGS =				\
+	$(GLIB_CFLAGS)					\
+	$(GSF_CFLAGS)					\
+	-DG_LOG_DOMAIN=\"ChupaText-HtmlFactory\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-HtmlFactory\"
+html_factory_la_LIBADD = $(GLIB_LIBS)
