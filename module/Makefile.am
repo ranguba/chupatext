@@ -5,11 +5,13 @@ EMPTY =
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
 binding_dir = $(top_builddir)/binding
-LDFLAGS =					\
+AM_LDFLAGS =					\
 	-avoid-version				\
-	-module					\
-	-L$(top_builddir)/chupatext		\
-	-lchupatext
+	-no-undefined				\
+	-module
+
+chupa_libs =						\
+	$(top_builddir)/chupatext/libchupatext.la
 
 decomposer_LTLIBRARIES =
 factory_LTLIBRARIES =
@@ -47,7 +49,7 @@ text_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-Text\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Text\"
-text_la_LIBADD = $(GLIB_LIBS)
+text_la_LIBADD = $(chupa_libs)
 
 text_factory_la_SOURCES = text_factory.c
 text_factory_la_CPPFLAGS =				\
@@ -55,14 +57,14 @@ text_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-TextFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-TextFactory\"
-text_factory_la_LIBADD = $(GLIB_LIBS)
+text_factory_la_LIBADD = $(chupa_libs)
 
 tar_la_SOURCES = tar.c
 tar_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-Tar\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Tar\"
-tar_la_LIBADD = $(GSF_LIBS)
+tar_la_LIBADD = $(chupa_libs)
 
 tar_factory_la_SOURCES = tar_factory.c
 tar_factory_la_CPPFLAGS =				\
@@ -70,14 +72,14 @@ tar_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-TarFactory\"		\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-TarFactory\"
-tar_factory_la_LIBADD = $(GLIB_LIBS)
+tar_factory_la_LIBADD = $(chupa_libs)
 
 zip_la_SOURCES = zip.c
 zip_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-Zip\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Zip\"
-zip_la_LIBADD = $(GSF_LIBS)
+zip_la_LIBADD = $(chupa_libs)
 
 zip_factory_la_SOURCES = zip_factory.c
 zip_factory_la_CPPFLAGS =				\
@@ -85,7 +87,7 @@ zip_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-ZipFactory\"		\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-ZipFactory\"
-zip_factory_la_LIBADD = $(GLIB_LIBS)
+zip_factory_la_LIBADD = $(chupa_libs)
 
 pdf_la_SOURCES = pdf.c
 pdf_la_CPPFLAGS =				\
@@ -93,7 +95,7 @@ pdf_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-PDF\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PDF\"
-pdf_la_LIBADD = $(POPPLER_GLIB_LIBS) $(GSF_LIBS)
+pdf_la_LIBADD = $(chupa_libs) $(POPPLER_GLIB_LIBS)
 
 pdf_factory_la_SOURCES = pdf_factory.c
 pdf_factory_la_CPPFLAGS =				\
@@ -101,14 +103,14 @@ pdf_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-PDFFactory\"		\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PDFFactory\"
-pdf_factory_la_LIBADD = $(GLIB_LIBS)
+pdf_factory_la_LIBADD = $(chupa_libs)
 
 word_la_SOURCES = word.c
 word_la_CPPFLAGS =				\
 	$(WV_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-Word\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Word\"
-word_la_LIBADD = $(WV_LIBS) $(GSF_LIBS)
+word_la_LIBADD = $(chupa_libs) $(WV_LIBS)
 
 word_factory_la_SOURCES = word_factory.c
 word_factory_la_CPPFLAGS =				\
@@ -116,14 +118,14 @@ word_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-WordFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-WordFactory\"
-word_factory_la_LIBADD = $(GLIB_LIBS)
+word_factory_la_LIBADD = $(chupa_libs)
 
 excel_la_SOURCES = excel.c
 excel_la_CPPFLAGS =				\
 	$(GOFFICE_CFLAGS)			\
 	-DG_LOG_DOMAIN=\"ChupaText-Excel\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Excel\"
-excel_la_LIBADD = $(GOFFICE_LIBS) -lspreadsheet
+excel_la_LIBADD = $(chupa_libs) $(GOFFICE_LIBS) -lspreadsheet
 
 excel_factory_la_SOURCES = excel_factory.c
 excel_factory_la_CPPFLAGS =				\
@@ -131,7 +133,7 @@ excel_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-ExcelFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-ExcelFactory\"
-excel_factory_la_LIBADD = $(GLIB_LIBS)
+excel_factory_la_LIBADD = $(chupa_libs)
 
 powerpoint_la_SOURCES = powerpoint.c
 powerpoint_la_CPPFLAGS =				\
@@ -139,7 +141,7 @@ powerpoint_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-PowerPoint\"		\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPoint\"
-powerpoint_la_LIBADD = $(GIO_UNIX_LIBS) $(GSF_LIBS)
+powerpoint_la_LIBADD = $(chupa_libs) $(GIO_UNIX_LIBS)
 
 powerpoint_factory_la_SOURCES = powerpoint_factory.c
 powerpoint_factory_la_CPPFLAGS =				\
@@ -147,7 +149,7 @@ powerpoint_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)						\
 	-DG_LOG_DOMAIN=\"ChupaText-PowerPointFactory\"		\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPointFactory\"
-powerpoint_factory_la_LIBADD = $(GLIB_LIBS)
+powerpoint_factory_la_LIBADD = $(chupa_libs)
 
 CHUPA_RUBY_CFLAGS = $(RUBY_CFLAGS)
 CHUPA_RUBY_CPPFLAGS =				\
@@ -155,7 +157,7 @@ CHUPA_RUBY_CPPFLAGS =				\
 	$(RUBY_CPPFLAGS)			\
 	$(GLIB_CFLAGS)				\
 	$(GSF_CFLAGS)
-CHUPA_RUBY_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
+CHUPA_RUBY_LIBADD = $(chupa_libs) $(RUBY_LDFLAGS) $(RUBY_LIBS)
 
 ruby_la_SOURCES = ruby.c
 ruby_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
@@ -171,7 +173,7 @@ ruby_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-RubyFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-RubyFactory\"
-ruby_factory_la_LIBADD = $(GLIB_LIBS)
+ruby_factory_la_LIBADD = $(chupa_libs)
 
 html_la_SOURCES = html.c
 html_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
@@ -187,4 +189,4 @@ html_factory_la_CPPFLAGS =				\
 	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-HtmlFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-HtmlFactory\"
-html_factory_la_LIBADD = $(GLIB_LIBS)
+html_factory_la_LIBADD = $(chupa_libs)
