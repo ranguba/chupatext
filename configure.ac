@@ -204,6 +204,7 @@ AC_CONFIG_FILES([Makefile
 		 test/Makefile
 		 test/fixtures/Makefile
 		 module/Makefile
+		 module/excel/Makefile
 		 binding/Makefile
 		 binding/ruby/Makefile
 		 license/Makefile

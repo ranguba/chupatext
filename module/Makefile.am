@@ -1,3 +1,5 @@
+SUBDIRS = excel
+
 EMPTY =
 
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
