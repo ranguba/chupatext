@@ -137,7 +137,7 @@ get_mime_types (ChupaModuleFactory *factory)
     return mime_types;
 }
 
-GObject *
+static GObject *
 create (ChupaModuleFactory *factory)
 {
     return G_OBJECT(chupa_decomposer_new("text", NULL));

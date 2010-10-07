@@ -138,7 +138,7 @@ get_mime_types (ChupaModuleFactory *factory)
     return mime_types;
 }
 
-GObject *
+static GObject *
 create (ChupaModuleFactory *factory)
 {
     static int n_instances = 0;
