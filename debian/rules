@@ -3,7 +3,10 @@
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
-DEB_INSTALL_DOCS_ALL = EADME.ja
+DEB_CONFIGURE_USER_FLAGS =			\
+	--with-ruby=/usr/bin/ruby1.9.1
+
+DEB_INSTALL_DOCS_ALL = README.ja
 # DEB_INSTALL_DOCS_chupatext-doc = doc/chupatext.rd doc/chupatext.rd.ja doc/reference/
 
 # DEB_INSTALL_DIRS_chupatext-doc =			\
