@@ -42,4 +42,34 @@ VALUE chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError *
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 VALUE chupa_ruby_init(void);
 
+/* decomposer */
+#define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
+#define CHUPA_RUBY_DECOMPOSER(obj)            \
+  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposer)
+#define CHUPA_RUBY_DECOMPOSER_CLASS(klass)    \
+  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
+#define CHUPA_IS_RUBY_DECOMPOSER(obj)         \
+  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_RUBY_DECOMPOSER)
+#define CHUPA_IS_RUBY_DECOMPOSER_CLASS(klass) \
+  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
+#define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)  \
+  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
+
+typedef struct _ChupaRubyDecomposer ChupaRubyDecomposer;
+typedef struct _ChupaRubyDecomposerClass ChupaRubyDecomposerClass;
+
+struct _ChupaRubyDecomposer
+{
+    ChupaDecomposer object;
+
+    VALUE self;
+};
+
+struct _ChupaRubyDecomposerClass
+{
+    ChupaDecomposerClass parent_class;
+
+    VALUE klass;
+};
+
 #endif
