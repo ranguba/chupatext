@@ -29,6 +29,7 @@
 #include <glib.h>
 
 #include "chupa_logger.h"
+#include "chupa_utils.h"
 #include "chupa_enum_types.h"
 #include "chupa_marshalers.h"
 
