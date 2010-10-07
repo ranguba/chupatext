@@ -1,4 +1,4 @@
-descriptions_DATA =				\
+dist_descriptions_DATA =			\
 	excel.desc				\
 	pdf.desc				\
 	powerpoint.desc				\
