@@ -46,7 +46,7 @@ AM_CPPFLAGS =						\
 AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
 AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)
 
-DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
+DEFAULT_INCLUDES = -I$(top_includedir) -I$(srcdir) -I$(build_includedir) -I.
 
 chupa_public_headers =				\
 	archive_decomposer.h			\
