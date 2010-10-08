@@ -56,7 +56,7 @@ static GType chupa_type_ruby_factory = 0;
 static ChupaModuleFactoryClass *parent_class;
 
 static GList     *get_mime_types   (ChupaModuleFactory    *factory);
-static GObject   *create           (ChupaModuleFactory    *factory);
+static GObject   *create           (ChupaModuleFactory    *factory, const gchar *label);
 
 static void
 class_init (ChupaModuleFactoryClass *klass)
@@ -138,12 +138,12 @@ get_mime_types (ChupaModuleFactory *factory)
 }
 
 static GObject *
-create (ChupaModuleFactory *factory)
+create (ChupaModuleFactory *factory, const gchar *label)
 {
     static int n_instances = 0;
     GObject *decomposer;
 
-    decomposer = G_OBJECT(chupa_decomposer_new("ruby", NULL));
+    decomposer = G_OBJECT(chupa_decomposer_new("ruby", "class", label, NULL));
     n_instances++;
     if (n_instances == 1) {
         /* FIXME: This causes memory leak but we need to

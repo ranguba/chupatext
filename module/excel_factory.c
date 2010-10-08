@@ -56,7 +56,7 @@ static GType chupa_type_excel_factory = 0;
 static ChupaModuleFactoryClass *parent_class;
 
 static GList     *get_mime_types   (ChupaModuleFactory    *factory);
-static GObject   *create           (ChupaModuleFactory    *factory);
+static GObject   *create           (ChupaModuleFactory    *factory, const gchar *label);
 
 static void
 class_init (ChupaModuleFactoryClass *klass)
@@ -139,7 +139,7 @@ get_mime_types (ChupaModuleFactory *factory)
 }
 
 static GObject *
-create (ChupaModuleFactory *factory)
+create (ChupaModuleFactory *factory, const gchar *label)
 {
     static int n_instances = 0;
     GObject *decomposer;

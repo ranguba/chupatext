@@ -56,7 +56,7 @@ static GType chupa_type_text_factory = 0;
 static ChupaModuleFactoryClass *parent_class;
 
 static GList     *get_mime_types   (ChupaModuleFactory    *factory);
-static GObject   *create           (ChupaModuleFactory    *factory);
+static GObject   *create           (ChupaModuleFactory    *factory, const gchar *label);
 
 static void
 class_init (ChupaModuleFactoryClass *klass)
@@ -138,7 +138,7 @@ get_mime_types (ChupaModuleFactory *factory)
 }
 
 static GObject *
-create (ChupaModuleFactory *factory)
+create (ChupaModuleFactory *factory, const gchar *label)
 {
     return G_OBJECT(chupa_decomposer_new("text", NULL));
 }

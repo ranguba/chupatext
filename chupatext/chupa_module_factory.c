@@ -118,7 +118,7 @@ chupa_module_factory_new (const gchar *type, const gchar *name,
 }
 
 GObject *
-chupa_module_factory_create(ChupaModuleFactory *factory)
+chupa_module_factory_create(ChupaModuleFactory *factory, const gchar *label)
 {
     ChupaModuleFactoryClass *klass;
 
@@ -127,7 +127,7 @@ chupa_module_factory_create(ChupaModuleFactory *factory)
     klass = CHUPA_MODULE_FACTORY_GET_CLASS(factory);
     g_return_val_if_fail(klass->create, NULL);
 
-    return klass->create(factory);
+    return klass->create(factory, label);
 }
 
 GList *

@@ -171,6 +171,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     ChupaModuleFactory *factory = NULL;
     GString *normalized_type = NULL;
     gboolean normalized = FALSE;
+    const gchar *label = NULL;
 
     priv = CHUPA_DISPATCHER_GET_PRIVATE(dispatcher);
     for (node = priv->descriptions; !factory && node; node = g_list_next(node)) {
@@ -206,6 +207,9 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
                 }
             }
         }
+        if (factory) {
+            label = chupa_module_description_get_label(description);
+        }
     }
 
     if (normalized_type)
@@ -214,7 +218,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     if (!factory)
         return NULL;
 
-    return CHUPA_DECOMPOSER(chupa_module_factory_create(factory));
+    return CHUPA_DECOMPOSER(chupa_module_factory_create(factory, label));
 }
 
 /*

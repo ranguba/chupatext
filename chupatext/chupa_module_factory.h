@@ -46,7 +46,7 @@ struct _ChupaModuleFactoryClass
 {
     GObjectClass parent_class;
 
-    GObject     *(*create)              (ChupaModuleFactory *factory);
+    GObject     *(*create)              (ChupaModuleFactory *factory, const gchar *label);
     GList       *(*get_mime_types)      (ChupaModuleFactory *factory);
 };
 
@@ -62,7 +62,7 @@ ChupaModuleFactory *chupa_module_factory_new_valist
                                                  const gchar *first_property,
                                                  va_list      var_args);
 
-GObject     *chupa_module_factory_create        (ChupaModuleFactory *factory);
+GObject     *chupa_module_factory_create        (ChupaModuleFactory *factory, const gchar *label);
 
 GList       *chupa_module_factory_get_mime_types(ChupaModuleFactory *factory);
 
