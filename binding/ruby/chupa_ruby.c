@@ -191,9 +191,25 @@ chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value)
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
     ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
     const char *namestr = StringValueCStr(name);
-    const char *valuestr = StringValueCStr(value);
+    VALUE aryvalue;
 
-    chupa_metadata_replace_value(metadata, namestr, valuestr);
+    name = rb_str_new_frozen(name);
+    namestr = RSTRING_PTR(name);
+    if (NIL_P(value)) {
+        chupa_metadata_replace_value(metadata, namestr, NULL);
+    }
+    else if (!NIL_P(aryvalue = rb_check_array_type(value))) {
+        long i;
+        chupa_metadata_replace_value(metadata, namestr, NULL);
+        for (i = 0; i < RARRAY_LEN(aryvalue); ++i) {
+            value = RARRAY_PTR(aryvalue)[i];
+            chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
+        }
+    }
+    else {
+        chupa_metadata_replace_value(metadata, namestr, StringValueCStr(value));
+    }
+
     return value;
 }
 
