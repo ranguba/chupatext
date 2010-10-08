@@ -39,6 +39,8 @@ factory_LTLIBRARIES += powerpoint_factory.la
 if HAVE_RUBY
 decomposer_LTLIBRARIES += ruby.la
 factory_LTLIBRARIES += ruby_factory.la
+endif
+if FALSE
 decomposer_LTLIBRARIES += html.la
 factory_LTLIBRARIES += html_factory.la
 endif
@@ -177,6 +179,7 @@ ruby_factory_la_CPPFLAGS =				\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-RubyFactory\"
 ruby_factory_la_LIBADD = $(chupa_libs)
 
+if FALSE
 html_la_SOURCES = html.c
 html_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
 html_la_CPPFLAGS =				\
@@ -192,3 +195,4 @@ html_factory_la_CPPFLAGS =				\
 	-DG_LOG_DOMAIN=\"ChupaText-HtmlFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-HtmlFactory\"
 html_factory_la_LIBADD = $(chupa_libs)
+endif
