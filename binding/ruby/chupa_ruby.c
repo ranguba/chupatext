@@ -22,6 +22,7 @@
 #include "chupa_ruby.h"
 
 static VALUE chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value);
+static VALUE chupa_ruby_add_metadata(VALUE self, VALUE name, VALUE value);
 static VALUE chupa_ruby_gets(VALUE self);
 static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
 static VALUE chupa_ruby_decompose(VALUE self);
@@ -214,6 +215,30 @@ chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value)
 }
 
 VALUE
+chupa_ruby_add_metadata(VALUE self, VALUE name, VALUE value)
+{
+    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
+    ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
+    const char *namestr = StringValueCStr(name);
+    VALUE aryvalue;
+
+    name = rb_str_new_frozen(name);
+    namestr = RSTRING_PTR(name);
+    if (!NIL_P(aryvalue = rb_check_array_type(value))) {
+        long i;
+        for (i = 0; i < RARRAY_LEN(aryvalue); ++i) {
+            value = RARRAY_PTR(aryvalue)[i];
+            chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
+        }
+    }
+    else {
+        chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
+    }
+
+    return value;
+}
+
+VALUE
 chupa_ruby_gets(VALUE self)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
@@ -319,6 +344,7 @@ chupa_ruby_init(void)
         rb_define_method(cChupa, "read", chupa_ruby_read, -1);
         rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
         rb_define_method(cChupa, "set_metadata", chupa_ruby_set_metadata, 2);
+        rb_define_method(cChupa, "add_metadata", chupa_ruby_add_metadata, 2);
     }
     else {
         cChupa = rb_const_get_at(*outer_klass, id_Chupa);
