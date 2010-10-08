@@ -21,6 +21,7 @@
 #include "chupa_test_util.h"
 
 void test_decompose_html(void);
+void test_decompose_html_title(void);
 
 void
 setup(void)
@@ -39,5 +40,13 @@ teardown(void)
 void
 test_decompose_html(void)
 {
-    cut_assert_equal_string("\n  ", decompose_fixture("sample.html", NULL));
+    cut_assert_equal_string("This is a sample.", decompose_fixture("sample.html", NULL));
+}
+
+void
+test_decompose_html_title(void)
+{
+    ChupaMetadata *metadata = chupa_test_metadata_fixture("sample.html", NULL);
+
+    cut_assert_equal_string("Sample HTML File", chupa_metadata_get_first_value(metadata, "title"));
 }

@@ -34,5 +34,7 @@ char *chupa_test_decompose_data(const char *text, gsize size, GError **err);
 ChupaTextInput *chupa_test_decomposer_from_data(const char *text, gsize size, GError **err);
 ChupaTextInput *chupa_test_decomposer_from_fixture(const char *fixture, GError **err);
 char *chupa_test_decompose_all(ChupaTextInput *text_input, GError **err);
+ChupaMetadata *chupa_test_decompose_metadata(ChupaTextInput *text_input, GError **err);
+ChupaMetadata *chupa_test_metadata_fixture(const char *fixture, GError **err);
 
 #endif

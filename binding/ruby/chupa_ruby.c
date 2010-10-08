@@ -21,6 +21,7 @@
 #define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 
+static VALUE chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value);
 static VALUE chupa_ruby_gets(VALUE self);
 static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
 static VALUE chupa_ruby_decompose(VALUE self);
@@ -182,6 +183,18 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_erro
 }
 
 VALUE
+chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value)
+{
+    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
+    ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
+    const char *namestr = StringValueCStr(name);
+    const char *valuestr = StringValueCStr(value);
+
+    chupa_metadata_replace_value(metadata, namestr, valuestr);
+    return value;
+}
+
+VALUE
 chupa_ruby_gets(VALUE self)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
@@ -286,6 +299,7 @@ chupa_ruby_init(void)
         rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
         rb_define_method(cChupa, "read", chupa_ruby_read, -1);
         rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
+        rb_define_method(cChupa, "set_metadata", chupa_ruby_set_metadata, 2);
     }
     else {
         cChupa = rb_const_get_at(*outer_klass, id_Chupa);

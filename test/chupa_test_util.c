@@ -85,3 +85,31 @@ chupa_test_decompose_all(ChupaTextInput *text_input, GError **err)
     TAKE_STRING(str = chupa_text_decompose_all(chupar, text_input, err));
     return str;
 }
+
+static void
+decomposed_metadata(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+{
+    *(ChupaMetadata **)udata = chupa_text_input_get_metadata(input);
+}
+
+ChupaMetadata *
+chupa_test_decompose_metadata(ChupaTextInput *text_input, GError **err)
+{
+    ChupaText *chupar;
+    ChupaMetadata *metadata = NULL;
+
+    if (!text_input) {
+        return NULL;
+    }
+    TAKE_OBJECT(chupar = chupa_text_new());
+    chupa_text_decompose(chupar, text_input, decomposed_metadata, &metadata, err);
+    TAKE_OBJECT(metadata);
+    return metadata;
+}
+
+ChupaMetadata *
+chupa_test_metadata_fixture(const char *fixture, GError **err)
+{
+    ChupaTextInput *input = chupa_test_decomposer_from_fixture(fixture, err);
+    return chupa_test_decompose_metadata(input, err);
+}
