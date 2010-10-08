@@ -39,5 +39,5 @@ teardown(void)
 void
 test_decompose_html(void)
 {
-    cut_assert_equal_string("", decompose_fixture("sample.html", NULL));
+    cut_assert_equal_string("\n  ", decompose_fixture("sample.html", NULL));
 }
