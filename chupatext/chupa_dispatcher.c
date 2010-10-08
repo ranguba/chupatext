@@ -178,7 +178,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
 
         mime_types = chupa_module_description_get_mime_types(description);
         for (; !factory && mime_types; mime_types = g_list_next(mime_types)) {
-            if (g_str_equal(mime_type, mime_types->data)) {
+            if (strcmp(mime_type, mime_types->data) == 0) {
                 factory = chupa_module_description_get_factory(description);
             } else {
                 GString *normalized_type = NULL;
@@ -193,7 +193,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
                 normalized_type = g_string_new_len(mime_type,
                                                    sub_type - mime_type);
                 g_string_append(normalized_type, sub_type + 2);
-                if (g_str_equal(normalized_type, mime_types->data)) {
+                if (strcmp(normalized_type->str, mime_types->data) == 0) {
                     factory = chupa_module_description_get_factory(description);
                 }
                 g_string_free(normalized_type, TRUE);
