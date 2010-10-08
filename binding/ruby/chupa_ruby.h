@@ -30,11 +30,15 @@
 
 /* ruby class */
 typedef struct {
+    ChupaTextInput *input;
+    VALUE metadata;
+} chupa_ruby_input_t;
+
+typedef struct {
     ChupaText *chupar;
-    ChupaTextInput *source;
-    ChupaTextInput *feed;
     ChupaMemoryInputStream *stream;
     GsfOutputMemory *sink;
+    chupa_ruby_input_t target, source;
 } chupa_ruby_t;
 
 VALUE chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input);
@@ -42,6 +46,12 @@ VALUE chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *state, GError **g
 VALUE chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error);
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 VALUE chupa_ruby_init(void);
+
+VALUE chupa_ruby_metadata_init(VALUE cChupa);
+VALUE chupa_ruby_metadata_new(VALUE klass, ChupaMetadata *metadata, gboolean readonly);
+
+#define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
+#define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
 
 /* decomposer */
 GType chupa_ruby_decomposer_get_type(void);

@@ -11,7 +11,7 @@ CHUPA_RUBY_CPPFLAGS =				\
 	$(GSF_CFLAGS)
 CHUPA_RUBY_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
 
-libchuparuby_la_SOURCES = chupa_ruby.c chupa_ruby.h
+libchuparuby_la_SOURCES = init.c metadata.c chupa_ruby.h
 libchuparuby_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
 libchuparuby_la_CPPFLAGS =			\
 	$(CHUPA_RUBY_CPPFLAGS)			\

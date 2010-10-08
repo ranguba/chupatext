@@ -21,9 +21,9 @@
 #define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 
-static VALUE chupa_ruby_get_metadata(VALUE self, VALUE name);
-static VALUE chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value);
-static VALUE chupa_ruby_add_metadata(VALUE self, VALUE name, VALUE value);
+static VALUE chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly);
+static VALUE chupa_ruby_target_metadata(VALUE self);
+static VALUE chupa_ruby_source_metadata(VALUE self);
 static VALUE chupa_ruby_gets(VALUE self);
 static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
 static VALUE chupa_ruby_decompose(VALUE self);
@@ -41,6 +41,16 @@ chupa_ruby_decomposer_get_type(void)
 }
 
 static void
+chupa_ruby_mark(void *ptr)
+{
+    if (ptr) {
+        chupa_ruby_t *ch = ptr;
+        rb_gc_mark(ch->target.metadata);
+        rb_gc_mark(ch->source.metadata);
+    }
+}
+
+static void
 chupa_ruby_dispose(void *ptr)
 {
     if (ptr) {
@@ -50,8 +60,8 @@ chupa_ruby_dispose(void *ptr)
         (!(obj = (gpointer)ch->member) ? (void)0 : \
          (void)(ch->member = 0, g_object_unref(obj)))
         DISPOSE(chupar);
-        DISPOSE(source);
-        DISPOSE(feed);
+        DISPOSE(source.input);
+        DISPOSE(target.input);
         DISPOSE(stream);
         DISPOSE(sink);
 #undef DISPOSE
@@ -69,7 +79,7 @@ static const rb_data_type_t chupa_ruby_type = {
 #ifdef HAVE_RB_DATA_TYPE_T_FUNCTION
     {
 #endif
-        0, chupa_ruby_dispose, chupa_ruby_memsize,
+        chupa_ruby_mark, chupa_ruby_dispose, chupa_ruby_memsize,
 #ifdef HAVE_RB_DATA_TYPE_T_FUNCTION
     },
 #endif
@@ -109,9 +119,6 @@ make_error_message(VALUE arg)
     return Qnil;
 }
 
-#define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
-#define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
-
 static VALUE
 chupa_ruby_s_allocate(VALUE klass)
 {
@@ -130,11 +137,11 @@ chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input)
     receiver = rb_protect(chupa_ruby_s_allocate, klass, &state);
     ptr = DATA_PTR(receiver);
     ptr->chupar = chupar;
-    ptr->source = input;
+    ptr->source.input = input;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
     ptr->stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(ptr->sink));
-    ptr->feed = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
-    chupa_text_input_set_mime_type(ptr->feed, "text/plain");
+    ptr->target.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
+    chupa_text_input_set_mime_type(ptr->target.input, "text/plain");
 
     return receiver;
 }
@@ -188,76 +195,38 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_erro
 }
 
 VALUE
-chupa_ruby_get_metadata(VALUE self, VALUE name)
+chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly)
 {
-    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
-    const char *namestr = StringValueCStr(name);
-    const char *valuestr = chupa_metadata_get_first_value(metadata, namestr);
-
-    if (!valuestr) {
-        return Qnil;
+    if (!input->metadata) {
+        ChupaMetadata *metadata = chupa_text_input_get_metadata(input->input);
+        VALUE metadata_klass;
+        ID id_Meta;
+        CONST_ID(id_Meta, "Metadata");
+        metadata_klass = rb_const_get(rb_obj_class(self), id_Meta);
+        input->metadata = chupa_ruby_metadata_new(metadata_klass, metadata, readonly);
     }
-    return rb_utf8_str_new_cstr(valuestr);
+    return input->metadata;
 }
 
 VALUE
-chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value)
+chupa_ruby_target_metadata(VALUE self)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
-    const char *namestr = StringValueCStr(name);
-    VALUE aryvalue;
-
-    name = rb_str_new_frozen(name);
-    namestr = RSTRING_PTR(name);
-    if (NIL_P(value)) {
-        chupa_metadata_replace_value(metadata, namestr, NULL);
-    }
-    else if (!NIL_P(aryvalue = rb_check_array_type(value))) {
-        long i;
-        chupa_metadata_replace_value(metadata, namestr, NULL);
-        for (i = 0; i < RARRAY_LEN(aryvalue); ++i) {
-            value = RARRAY_PTR(aryvalue)[i];
-            chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
-        }
-    }
-    else {
-        chupa_metadata_replace_value(metadata, namestr, StringValueCStr(value));
-    }
-
-    return value;
+    return chupa_ruby_make_metadata(self, &ptr->target, FALSE);
 }
 
 VALUE
-chupa_ruby_add_metadata(VALUE self, VALUE name, VALUE value)
+chupa_ruby_source_metadata(VALUE self)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
-    const char *namestr = StringValueCStr(name);
-    VALUE aryvalue;
-
-    name = rb_str_new_frozen(name);
-    namestr = RSTRING_PTR(name);
-    if (!NIL_P(aryvalue = rb_check_array_type(value))) {
-        long i;
-        for (i = 0; i < RARRAY_LEN(aryvalue); ++i) {
-            value = RARRAY_PTR(aryvalue)[i];
-            chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
-        }
-    }
-    else {
-        chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
-    }
-
-    return value;
+    return chupa_ruby_make_metadata(self, &ptr->source, TRUE);
 }
 
 VALUE
 chupa_ruby_gets(VALUE self)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    GDataInputStream *input_stream = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(ptr->source));
+    GDataInputStream *input_stream = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(ptr->source.input));
     gsize length;
     GCancellable *cancellable = NULL;
     GError **error = NULL;
@@ -273,7 +242,7 @@ VALUE
 chupa_ruby_read(int argc, VALUE *argv, VALUE self)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    GInputStream *input_stream = chupa_text_input_get_stream(ptr->source);
+    GInputStream *input_stream = chupa_text_input_get_stream(ptr->source.input);
     GDataInputStream *data_input_stream = G_DATA_INPUT_STREAM(input_stream);
     gsize length;
     char *str;
@@ -358,9 +327,10 @@ chupa_ruby_init(void)
         rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
         rb_define_method(cChupa, "read", chupa_ruby_read, -1);
         rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
-        rb_define_method(cChupa, "metadata", chupa_ruby_get_metadata, 1);
-        rb_define_method(cChupa, "set_metadata", chupa_ruby_set_metadata, 2);
-        rb_define_method(cChupa, "add_metadata", chupa_ruby_add_metadata, 2);
+        rb_define_method(cChupa, "metadata", chupa_ruby_target_metadata, 0);
+        rb_define_method(cChupa, "target_metadata", chupa_ruby_target_metadata, 0);
+        rb_define_method(cChupa, "source_metadata", chupa_ruby_source_metadata, 0);
+        chupa_ruby_metadata_init(cChupa);
     }
     else {
         cChupa = rb_const_get_at(*outer_klass, id_Chupa);

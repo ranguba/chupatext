@@ -26,7 +26,7 @@ static GType chupa_type_ruby_decomposer = 0;
 static gboolean
 chupa_ruby_feed(chupa_ruby_t *self, GError **g_error)
 {
-    return chupa_text_feed(self->chupar, self->feed, g_error);
+    return chupa_text_feed(self->chupar, self->target.input, g_error);
 }
 
 static gboolean
