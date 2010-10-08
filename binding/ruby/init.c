@@ -21,6 +21,7 @@
 #define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 
+extern void Init_chupa(void);
 static VALUE chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly);
 static VALUE chupa_ruby_target_metadata(VALUE self);
 static VALUE chupa_ruby_source_metadata(VALUE self);
@@ -288,12 +289,26 @@ chupa_ruby_decompose(VALUE self)
 }
 #endif
 
+
+void
+Init_chupa(void)
+{
+    VALUE cChupa = rb_define_class("Chupa", rb_cObject);
+    rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
+    rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
+    rb_define_method(cChupa, "read", chupa_ruby_read, -1);
+    rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
+    rb_define_method(cChupa, "metadata", chupa_ruby_target_metadata, 0);
+    rb_define_method(cChupa, "target_metadata", chupa_ruby_target_metadata, 0);
+    rb_define_method(cChupa, "source_metadata", chupa_ruby_source_metadata, 0);
+    chupa_ruby_metadata_init(cChupa);
+}
+
 VALUE
 chupa_ruby_init(void)
 {
     extern void *chupa_stack_base;
     const VALUE *outer_klass = &rb_cObject;
-    VALUE cChupa;
     ID id_Chupa;
 
     if (!outer_klass || !*outer_klass) {
@@ -322,18 +337,7 @@ chupa_ruby_init(void)
     }
     CONST_ID(id_Chupa, "Chupa");
     if (!rb_const_defined(*outer_klass, id_Chupa)) {
-        cChupa = rb_define_class_under(*outer_klass, "Chupa", rb_cObject);
-        rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
-        rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
-        rb_define_method(cChupa, "read", chupa_ruby_read, -1);
-        rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
-        rb_define_method(cChupa, "metadata", chupa_ruby_target_metadata, 0);
-        rb_define_method(cChupa, "target_metadata", chupa_ruby_target_metadata, 0);
-        rb_define_method(cChupa, "source_metadata", chupa_ruby_source_metadata, 0);
-        chupa_ruby_metadata_init(cChupa);
+        Init_chupa();
     }
-    else {
-        cChupa = rb_const_get_at(*outer_klass, id_Chupa);
-    }
-    return cChupa;
+    return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
 }
