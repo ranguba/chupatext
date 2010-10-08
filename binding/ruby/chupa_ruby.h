@@ -77,6 +77,7 @@ struct _ChupaRubyDecomposer
 {
     ChupaDecomposer object;
 
+    gchar *label;
     VALUE self;
 };
 

@@ -23,6 +23,12 @@
 
 static GType chupa_type_ruby_decomposer = 0;
 
+enum {
+    PROP_0,
+    PROP_CLASS,
+    PROP_DUMMY
+};
+
 static gboolean
 chupa_ruby_feed(chupa_ruby_t *self, GError **g_error)
 {
@@ -50,10 +56,78 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 }
 
 static void
+chupa_ruby_decomposer_init(ChupaRubyDecomposer *obj)
+{
+    obj->label = NULL;
+}
+
+static void
+dispose(GObject *object)
+{
+    ChupaRubyDecomposer *obj = (ChupaRubyDecomposer *)object;
+    if (obj->label) {
+        g_free(obj->label);
+        obj->label = NULL;
+    }
+
+    G_OBJECT_CLASS(g_type_class_peek_parent(G_OBJECT_GET_CLASS(object)))->dispose(object);
+}
+
+static void
+set_property(GObject *object,
+             guint prop_id,
+             const GValue *value,
+             GParamSpec *pspec)
+{
+    ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
+    switch (prop_id) {
+      case PROP_CLASS:
+        if (obj->label)
+            g_free(obj->label);
+        obj->label = g_value_dup_string(value);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
+
+    switch (prop_id) {
+      case PROP_CLASS:
+        g_value_set_string(value, obj->label);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 chupa_ruby_decomposer_class_init(ChupaRubyDecomposerClass *klass)
 {
+    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+    GParamSpec *spec;
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
+
+    gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
     super->feed = chupa_ruby_decomposer_feed;
+
+    spec = g_param_spec_string("class",
+                               "The class of the module",
+                               "The class of the module",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CLASS, spec);
 
     klass->klass = chupa_ruby_init();
 }
@@ -70,7 +144,7 @@ register_type(GTypeModule *type_module)
         NULL,           /* class_data */
         sizeof(ChupaRubyDecomposer),
         0,
-        (GInstanceInitFunc) NULL,
+        (GInstanceInitFunc) chupa_ruby_decomposer_init,
     };
 
     chupa_type_ruby_decomposer =
