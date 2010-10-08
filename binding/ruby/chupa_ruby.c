@@ -107,6 +107,9 @@ make_error_message(VALUE arg)
     return Qnil;
 }
 
+#define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
+#define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
+
 static VALUE
 chupa_ruby_s_allocate(VALUE klass)
 {
@@ -207,7 +210,7 @@ chupa_ruby_gets(VALUE self)
     if (!str) {
         return Qnil;
     }
-    return rb_enc_str_new(str, (long)length, rb_utf8_encoding());
+    return rb_utf8_str_new(str, (long)length);
 }
 
 VALUE
@@ -223,17 +226,17 @@ chupa_ruby_read(int argc, VALUE *argv, VALUE self)
     GError **error = NULL;
 
     switch (argc) {
-    case 0:
+      case 0:
         str = g_data_input_stream_read_until(data_input_stream, "", &length, cancellable, error);
-        return rb_enc_str_new(str, (long)length, rb_utf8_encoding());
+        return rb_utf8_str_new(str, (long)length);
         break;
-    case 1:
+      case 1:
         length = NUM2UINT(argv[0]);
-        buffer = rb_enc_str_new(NULL, (long)length, rb_utf8_encoding());
+        buffer = rb_utf8_str_new(NULL, (long)length);
         g_input_stream_read_all(input_stream, RSTRING_PTR(buffer), length, &length, cancellable, error);
         rb_str_set_len(buffer, (long)length);
         return buffer;
-    default:
+      default:
         rb_raise(rb_eArgError, "wrong number of arguments (%d for 0..1)", argc);
         return Qnil;            /* not reached */
     }
