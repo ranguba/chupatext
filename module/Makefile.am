@@ -154,6 +154,8 @@ powerpoint_factory_la_LIBADD = $(chupa_libs)
 CHUPA_RUBY_CFLAGS = $(RUBY_CFLAGS)
 CHUPA_RUBY_CPPFLAGS =				\
 	-I$(top_srcdir)/binding/ruby		\
+	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
+	-DRUBY_ARCH=\"$(rubyarch)\"		\
 	$(RUBY_CPPFLAGS)			\
 	$(GLIB_CFLAGS)				\
 	$(GSF_CFLAGS)
@@ -165,7 +167,7 @@ ruby_la_CPPFLAGS =				\
 	$(CHUPA_RUBY_CPPFLAGS)			\
 	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"
-ruby_la_LIBADD = $(binding_dir)/ruby/libchuparuby.la $(CHUPA_RUBY_LIBADD)
+ruby_la_LIBADD = $(CHUPA_RUBY_LIBADD)
 
 ruby_factory_la_SOURCES = ruby_factory.c
 ruby_factory_la_CPPFLAGS =				\
@@ -181,7 +183,7 @@ html_la_CPPFLAGS =				\
 	$(CHUPA_RUBY_CPPFLAGS)			\
 	-DG_LOG_DOMAIN=\"ChupaText-Html\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Html\"
-html_la_LIBADD = $(binding_dir)/ruby/libchuparuby.la $(CHUPA_RUBY_LIBADD)
+html_la_LIBADD = $(CHUPA_RUBY_LIBADD)
 
 html_factory_la_SOURCES = html_factory.c
 html_factory_la_CPPFLAGS =				\

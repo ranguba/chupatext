@@ -1,8 +1,8 @@
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
-LDFLAGS = -L$(top_builddir)/chupatext -lchupatext
+LDFLAGS = -module -L$(top_builddir)/chupatext -lchupatext
 
-lib_LTLIBRARIES = libchuparuby.la
+module_LTLIBRARIES = chupa.la
 
 CHUPA_RUBY_CFLAGS = $(RUBY_CFLAGS)
 CHUPA_RUBY_CPPFLAGS =				\
@@ -11,11 +11,9 @@ CHUPA_RUBY_CPPFLAGS =				\
 	$(GSF_CFLAGS)
 CHUPA_RUBY_LIBADD = $(RUBY_LDFLAGS) $(RUBY_LIBS) $(GSF_LIBS)
 
-libchuparuby_la_SOURCES = init.c metadata.c chupa_ruby.h
-libchuparuby_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
-libchuparuby_la_CPPFLAGS =			\
+chupa_la_SOURCES = init.c metadata.c chupa_ruby.h
+chupa_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
+chupa_la_CPPFLAGS =			\
 	$(CHUPA_RUBY_CPPFLAGS)			\
-	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
-	-DRUBY_ARCH=\"$(rubyarch)\"		\
 	$(EMPTY)
-libchuparuby_la_LIBADD = $(CHUPA_RUBY_LIBADD)
+chupa_la_LIBADD = $(CHUPA_RUBY_LIBADD)

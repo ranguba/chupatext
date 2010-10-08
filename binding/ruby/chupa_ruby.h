@@ -41,7 +41,13 @@ typedef struct {
     chupa_ruby_input_t target, source;
 } chupa_ruby_t;
 
-VALUE chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input);
+typedef struct {
+    VALUE (*new)(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input);
+    VALUE (*protect)(VALUE (*func)(VALUE), VALUE arg, int *state, GError **g_error);
+    VALUE (*funcall)(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error);
+} chupa_ruby_funcs_t;
+
+VALUE chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input);
 VALUE chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *state, GError **g_error);
 VALUE chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error);
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
@@ -85,7 +91,7 @@ struct _ChupaRubyDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 
-    VALUE klass;
+    chupa_ruby_funcs_t *funcs;
 };
 
 #endif

@@ -127,15 +127,41 @@ chupa_ruby_s_allocate(VALUE klass)
     return TypedData_Make_Struct(klass, chupa_ruby_t, &chupa_ruby_type, ptr);
 }
 
+static VALUE
+chupa_ruby_allocate(VALUE arg)
+{
+    ID name = (ID)arg;
+    VALUE klass = rb_const_get(rb_cObject, rb_intern("Chupa"));
+    if (name) {
+        klass = rb_const_get(klass, name);
+    }
+    return chupa_ruby_s_allocate(klass);
+}
+
+static VALUE
+chupa_require(VALUE name)
+{
+    return rb_require((const char *)name);
+}
+
 VALUE
-chupa_ruby_new(VALUE klass, ChupaText *chupar, ChupaTextInput *input)
+chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input)
 {
     VALUE receiver;
     const char *filename = chupa_text_input_get_filename(input);
     int state = 0;
     chupa_ruby_t *ptr;
+    ID klassid = 0;
 
-    receiver = rb_protect(chupa_ruby_s_allocate, klass, &state);
+    if (klassname) {
+        GString *libname = g_string_new("chupa/");
+        g_string_append(libname, klassname);
+        g_string_ascii_down(libname);
+        rb_protect(chupa_require, (VALUE)libname->str, &state);
+        g_string_free(libname, TRUE);
+        klassid = rb_intern(klassname);
+    }
+    receiver = rb_protect(chupa_ruby_allocate, (VALUE)klassid, &state);
     ptr = DATA_PTR(receiver);
     ptr->chupar = chupar;
     ptr->source.input = input;
@@ -289,6 +315,17 @@ chupa_ruby_decompose(VALUE self)
 }
 #endif
 
+static const chupa_ruby_funcs_t funcs = {
+    chupa_ruby_new,
+    chupa_ruby_protect,
+    chupa_ruby_funcall,
+};
+
+static VALUE
+make_funcs(void)
+{
+    return Data_Wrap_Struct(rb_cObject, 0, 0, (void *)&funcs);
+}
 
 void
 Init_chupa(void)
@@ -302,42 +339,5 @@ Init_chupa(void)
     rb_define_method(cChupa, "target_metadata", chupa_ruby_target_metadata, 0);
     rb_define_method(cChupa, "source_metadata", chupa_ruby_source_metadata, 0);
     chupa_ruby_metadata_init(cChupa);
-}
-
-VALUE
-chupa_ruby_init(void)
-{
-    extern void *chupa_stack_base;
-    const VALUE *outer_klass = &rb_cObject;
-    ID id_Chupa;
-
-    if (!outer_klass || !*outer_klass) {
-        int argc;
-        const char *args[6];
-        char **argv;
-        gchar *rubydir, *rubyarchdir;
-
-        argv = (char **)args;
-        argc = 0;
-        args[argc++] = "chupa";
-        args[argc] = NULL;
-        ruby_sysinit(&argc, &argv);
-        ruby_init_stack(chupa_stack_base);
-        ruby_init();
-        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
-        rubyarchdir = g_build_path("/", rubydir, RUBY_ARCH, NULL);
-        ruby_incpush(rubyarchdir);
-        ruby_incpush(rubydir);
-        g_free(rubyarchdir);
-        g_free(rubydir);
-        argc = 1;
-        args[argc++] = "-e;";
-        args[argc] = NULL;
-        (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
-    }
-    CONST_ID(id_Chupa, "Chupa");
-    if (!rb_const_defined(*outer_klass, id_Chupa)) {
-        Init_chupa();
-    }
-    return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
+    rb_iv_set(cChupa, "funcs", make_funcs());
 }

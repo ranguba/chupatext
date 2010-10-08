@@ -29,6 +29,42 @@ enum {
     PROP_DUMMY
 };
 
+VALUE
+chupa_ruby_init(void)
+{
+    extern void *chupa_stack_base;
+    const VALUE *outer_klass = &rb_cObject;
+    ID id_Chupa;
+
+    if (!outer_klass || !*outer_klass) {
+        int argc;
+        const char *args[6];
+        char **argv;
+        gchar *rubydir, *rubyarchdir;
+
+        argv = (char **)args;
+        argc = 0;
+        args[argc++] = "chupa";
+        args[argc] = NULL;
+        ruby_sysinit(&argc, &argv);
+        ruby_init_stack(chupa_stack_base);
+        ruby_init();
+        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
+        rubyarchdir = g_build_path("/", rubydir, RUBY_ARCH, NULL);
+        ruby_incpush(rubyarchdir);
+        ruby_incpush(rubydir);
+        g_free(rubyarchdir);
+        g_free(rubydir);
+        argc = 1;
+        args[argc++] = "-rchupa";
+        args[argc++] = "-e;";
+        args[argc] = NULL;
+        (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
+    }
+    CONST_ID(id_Chupa, "Chupa");
+    return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
+}
+
 static gboolean
 chupa_ruby_feed(chupa_ruby_t *self, GError **g_error)
 {
@@ -42,11 +78,13 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     VALUE receiver;
     VALUE result;
     ID id_decompose;
+    ChupaRubyDecomposer *rubydec = CHUPA_RUBY_DECOMPOSER(dec);
+    chupa_ruby_funcs_t *funcs = CHUPA_RUBY_DECOMPOSER_GET_CLASS(rubydec)->funcs;
     CONST_ID(id_decompose, "decompose");
 
-    receiver = chupa_ruby_new(CHUPA_RUBY_DECOMPOSER_GET_CLASS(dec)->klass, chupar, input);
+    receiver = funcs->new(rubydec->label, chupar, input);
     if (!NIL_P(receiver)) {
-        result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, g_error);
+        result = funcs->funcall(receiver, id_decompose, 0, 0, g_error);
         if (RTEST(result)) {
             chupa_ruby_feed(DATA_PTR(receiver), g_error);
         }
@@ -129,7 +167,10 @@ chupa_ruby_decomposer_class_init(ChupaRubyDecomposerClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CLASS, spec);
 
-    klass->klass = chupa_ruby_init();
+    {
+        VALUE funcs = rb_iv_get(chupa_ruby_init(), "funcs");
+        klass->funcs = DATA_PTR(funcs);
+    }
 }
 
 static void
