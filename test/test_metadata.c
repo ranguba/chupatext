@@ -27,6 +27,7 @@ void test_get_first_value (void);
 void test_get_values (void);
 void test_replace_value (void);
 void test_update_value (void);
+void test_remove_value (void);
 
 static ChupaMetadata *metadata, *metadata2;
 
@@ -104,6 +105,18 @@ test_update_value (void)
     cut_assert_null(chupa_metadata_get_first_value(metadata, key2));
     chupa_metadata_update(metadata, metadata2);
     cut_assert_equal_string("100", chupa_metadata_get_first_value(metadata, key2));
+}
+
+void
+test_remove_value (void)
+{
+    const gchar *key = "content-type";
+
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, key, "text/plain");
+    cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, key));
+    chupa_metadata_replace_value(metadata, key, NULL);
+    cut_assert_null(chupa_metadata_get_values(metadata, key));
 }
 
 /*

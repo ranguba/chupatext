@@ -113,6 +113,10 @@ chupa_metadata_replace_value(ChupaMetadata *metadata, const gchar *key, const gc
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    if (!value) {
+        g_hash_table_remove(priv->data, key);
+        return;
+    }
     g_hash_table_replace(priv->data, g_strdup(key), g_list_append(NULL, g_strdup(value)));
 }
 
