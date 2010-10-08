@@ -40,10 +40,6 @@ if HAVE_RUBY
 decomposer_LTLIBRARIES += ruby.la
 factory_LTLIBRARIES += ruby_factory.la
 endif
-if FALSE
-decomposer_LTLIBRARIES += html.la
-factory_LTLIBRARIES += html_factory.la
-endif
 
 text_la_SOURCES = text.c
 text_la_CPPFLAGS =				\
@@ -178,21 +174,3 @@ ruby_factory_la_CPPFLAGS =				\
 	-DG_LOG_DOMAIN=\"ChupaText-RubyFactory\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-RubyFactory\"
 ruby_factory_la_LIBADD = $(chupa_libs)
-
-if FALSE
-html_la_SOURCES = html.c
-html_la_CFLAGS = $(CHUPA_RUBY_CFLAGS)
-html_la_CPPFLAGS =				\
-	$(CHUPA_RUBY_CPPFLAGS)			\
-	-DG_LOG_DOMAIN=\"ChupaText-Html\"	\
-	-DCHUPA_LOG_DOMAIN=\"ChupaText-Html\"
-html_la_LIBADD = $(CHUPA_RUBY_LIBADD)
-
-html_factory_la_SOURCES = html_factory.c
-html_factory_la_CPPFLAGS =				\
-	$(GLIB_CFLAGS)					\
-	$(GSF_CFLAGS)					\
-	-DG_LOG_DOMAIN=\"ChupaText-HtmlFactory\"	\
-	-DCHUPA_LOG_DOMAIN=\"ChupaText-HtmlFactory\"
-html_factory_la_LIBADD = $(chupa_libs)
-endif
