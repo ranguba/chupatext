@@ -169,6 +169,8 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     ChupaDispatcherPrivate *priv;
     GList *node;
     ChupaModuleFactory *factory = NULL;
+    GString *normalized_type = NULL;
+    gboolean normalized = FALSE;
 
     priv = CHUPA_DISPATCHER_GET_PRIVATE(dispatcher);
     for (node = priv->descriptions; !factory && node; node = g_list_next(node)) {
@@ -181,25 +183,33 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
             if (strcmp(mime_type, mime_types->data) == 0) {
                 factory = chupa_module_description_get_factory(description);
             } else {
-                GString *normalized_type = NULL;
+                if (!normalized_type) {
+                    if (normalized)
+                        continue;
+                    normalized = TRUE;
+                    sub_type = strchr(mime_type, '/');
+                    if (!sub_type)
+                        continue;
+                    sub_type++;
+                    if (!g_str_has_prefix(sub_type, "x-"))
+                        continue;
 
-                sub_type = strchr(mime_type, '/');
-                if (!sub_type)
-                    continue;
-                sub_type++;
-                if (!g_str_has_prefix(sub_type, "x-"))
-                    continue;
+                    normalized_type = g_string_new_len(mime_type,
+                                                       sub_type - mime_type);
+                    g_string_append(normalized_type, sub_type + 2);
 
-                normalized_type = g_string_new_len(mime_type,
-                                                   sub_type - mime_type);
-                g_string_append(normalized_type, sub_type + 2);
+                    if (!normalized_type)
+                        continue;
+                }
                 if (strcmp(normalized_type->str, mime_types->data) == 0) {
                     factory = chupa_module_description_get_factory(description);
                 }
-                g_string_free(normalized_type, TRUE);
             }
         }
     }
+
+    if (normalized_type)
+        g_string_free(normalized_type, TRUE);
 
     if (!factory)
         return NULL;
