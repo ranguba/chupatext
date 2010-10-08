@@ -73,8 +73,10 @@ if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
-ruby_dir=$TOP_SRC_DIR/binding/ruby
-CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/lib
+ruby_src_dir=$TOP_SRC_DIR/binding/ruby
+ruby_dir=$TOP_BUILD_DIR/binding/ruby
+CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/.libs
+CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/src/toolkit/.libs
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/src/manager/.libs
 ruby_glib2_dir=
