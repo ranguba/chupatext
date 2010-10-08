@@ -5,5 +5,5 @@ mime_types = application/ruby
 
 [HTML]
 
-name = html
+name = ruby
 mime_types = text/html
