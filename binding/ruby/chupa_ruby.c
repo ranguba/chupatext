@@ -21,6 +21,7 @@
 #define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 
+static VALUE chupa_ruby_get_metadata(VALUE self, VALUE name);
 static VALUE chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value);
 static VALUE chupa_ruby_add_metadata(VALUE self, VALUE name, VALUE value);
 static VALUE chupa_ruby_gets(VALUE self);
@@ -187,6 +188,20 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_erro
 }
 
 VALUE
+chupa_ruby_get_metadata(VALUE self, VALUE name)
+{
+    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
+    ChupaMetadata *metadata = chupa_text_input_get_metadata(ptr->feed);
+    const char *namestr = StringValueCStr(name);
+    const char *valuestr = chupa_metadata_get_first_value(metadata, namestr);
+
+    if (!valuestr) {
+        return Qnil;
+    }
+    return rb_utf8_str_new_cstr(valuestr);
+}
+
+VALUE
 chupa_ruby_set_metadata(VALUE self, VALUE name, VALUE value)
 {
     chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
@@ -343,6 +358,7 @@ chupa_ruby_init(void)
         rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
         rb_define_method(cChupa, "read", chupa_ruby_read, -1);
         rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
+        rb_define_method(cChupa, "metadata", chupa_ruby_get_metadata, 1);
         rb_define_method(cChupa, "set_metadata", chupa_ruby_set_metadata, 2);
         rb_define_method(cChupa, "add_metadata", chupa_ruby_add_metadata, 2);
     }
