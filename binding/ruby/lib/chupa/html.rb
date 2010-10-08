@@ -3,6 +3,7 @@ class Chupa::HTML < Chupa
   def decompose
     doc = Nokogiri::HTML.parse(read)
     self.metadata["title"] = (doc % "head/title").text
-    decomposed((doc % "body").text.strip)
+    self.metadata["charset"] = doc.encoding
+    decomposed((doc % "body").text.gsub(/^\s+|\s+$/, ''))
   end
 end

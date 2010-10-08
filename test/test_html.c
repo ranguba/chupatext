@@ -40,7 +40,7 @@ teardown(void)
 void
 test_decompose_html(void)
 {
-    cut_assert_equal_string("This is a sample.", decompose_fixture("sample.html", NULL));
+    cut_assert_equal_string("This is a sample.\nサンプル", decompose_fixture("sample.html", NULL));
 }
 
 void
