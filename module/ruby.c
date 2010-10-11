@@ -50,7 +50,7 @@ chupa_ruby_init(void)
         ruby_init_stack(chupa_stack_base);
         ruby_init();
         rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
-        rubyarchdir = g_build_path("/", rubydir, RUBY_ARCH, NULL);
+        rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
         ruby_incpush(rubyarchdir);
         ruby_incpush(rubydir);
         g_free(rubyarchdir);

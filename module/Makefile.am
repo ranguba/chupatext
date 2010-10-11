@@ -153,7 +153,7 @@ CHUPA_RUBY_CFLAGS = $(RUBY_CFLAGS)
 CHUPA_RUBY_CPPFLAGS =				\
 	-I$(top_srcdir)/binding/ruby		\
 	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
-	-DRUBY_ARCH=\"$(rubyarch)\"		\
+	-DCHUPA_RUBY_ARCH=\"$(rubyarch)\"	\
 	$(RUBY_CPPFLAGS)			\
 	$(GLIB_CFLAGS)				\
 	$(GSF_CFLAGS)
