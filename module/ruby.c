@@ -76,7 +76,6 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                            ChupaTextInput *input, GError **g_error)
 {
     VALUE receiver;
-    VALUE result;
     ID id_decompose;
     ChupaRubyDecomposer *rubydec = CHUPA_RUBY_DECOMPOSER(dec);
     chupa_ruby_funcs_t *funcs = CHUPA_RUBY_DECOMPOSER_GET_CLASS(rubydec)->funcs;
@@ -84,13 +83,16 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 
     receiver = funcs->new(rubydec->label, chupar, input);
     if (!NIL_P(receiver)) {
-        result = funcs->funcall(receiver, id_decompose, 0, 0, g_error);
+        VALUE result = funcs->funcall(receiver, id_decompose, 0, 0, g_error);
         if (RTEST(result)) {
             chupa_ruby_feed(DATA_PTR(receiver), g_error);
         }
-    }
 
-    return RTEST(result);
+	return RTEST(result);
+    }
+    else {
+	return FALSE;
+    }
 }
 
 static void
