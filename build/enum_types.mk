@@ -1,16 +1,13 @@
 # -*- Mode: Makefile; tab-width: 8; indent-tabs-mode: t; -*-
 
-BUILT_SOURCES +=				\
+enum_sources =					\
 	$(enum_source_prefix).c			\
 	$(enum_source_prefix).h			\
 	stamp-$(enum_source_prefix)-c		\
 	stamp-$(enum_source_prefix)-h
 
-MAINTAINERCLEANFILES +=				\
-	$(enum_source_prefix).c			\
-	$(enum_source_prefix).h			\
-	stamp-$(enum_source_prefix)-c		\
-	stamp-$(enum_source_prefix)-h
+BUILT_SOURCES += $(enum_sources)
+MAINTAINERCLEANFILES += $(enum_sources)
 
 $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h
 	@true
