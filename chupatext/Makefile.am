@@ -8,6 +8,7 @@ chupa_SOURCES = chupa.c
 chupa_LDADD = libchupatext.la
 
 BUILT_SOURCES = version.h
+DISTCLEANFILES = $(BUILT_SOURCES)
 MAINTAINERCLEANFILES = version.h
 EXTRA_DIST = version.h
 

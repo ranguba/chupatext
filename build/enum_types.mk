@@ -7,7 +7,6 @@ enum_sources =					\
 	stamp-$(enum_source_prefix)-h
 
 BUILT_SOURCES += $(enum_sources)
-MAINTAINERCLEANFILES += $(enum_sources)
 
 $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h
 	@true
