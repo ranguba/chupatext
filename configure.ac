@@ -128,11 +128,12 @@ AC_MSG_RESULT($ruby_available)
 RBCONFIG="$RUBY -rrbconfig"dnl
 AC_DEFUN([RUBY_CONFIG],dnl
 [dnl
-AS_VAR_PUSHDEF([rbcv], m4_if([$2], [$2],
+AS_VAR_PUSHDEF([rbcv], m4_if([$2], [],
 			     m4_bmatch([$1],
 				       [ruby], [$1], [RUBY], [$1],
 				       [^[a-z]], [ruby]$1,
-				       [RUBY_]$1)))dnl
+				       [RUBY_]$1),
+			     [$2]))dnl
 if test $ruby_available = yes; then
     AC_MSG_CHECKING([for RbConfig[[$1]]])
     rbcv=`[$RBCONFIG -e 'puts RbConfig::CONFIG["$1"].strip'] 2>&1` || \
