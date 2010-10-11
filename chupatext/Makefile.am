@@ -80,7 +80,7 @@ marshal_source_prefix = chupa_marshalers
 marshal_prefix = _chupa_marshal
 
 version.h: $(top_srcdir)/tool/version-update.sh
-	$(SHELL) $(top_srcdir)/tool/version-update.sh version.h
+	$(SHELL) $(top_srcdir)/tool/version-update.sh $@
 
 include $(top_srcdir)/build/enum_types.mk
 include $(top_srcdir)/build/marshal.mk

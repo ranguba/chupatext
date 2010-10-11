@@ -5,10 +5,11 @@ test -z "$2" || cd "$2"
 
 base_dir="$(dirname $0)"
 top_dir="${base_dir}/.."
+export GIT_DIR="${top_dir}/.git"
 
 new=
 if test -d "${top_dir}/.git"; then
-    versionstr=`git --git-dir "${top_dir}/.git" describe --tags --match='[0-9][.0-9]*' 2>/dev/null`
+    versionstr=`git describe --tags --match='[0-9][.0-9]*' 2>/dev/null`
     if test -n "$versionstr"; then
 	save_IFS="$IFS" IFS=-; set $versionstr
 	versionstr=$1
