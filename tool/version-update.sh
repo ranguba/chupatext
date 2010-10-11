@@ -30,10 +30,10 @@ if test -d "${top_dir}/.git"; then
 #ifdef __cplusplus
 extern \"C\" {
 #endif
-const int chupa_version(void);
+int chupa_version(void);
 const char *chupa_version_string(void);
-const int chupa_commits(void);
-const int chupa_release_date(void);
+int chupa_commits(void);
+int chupa_release_date(void);
 const char *chupa_version_description(void);
 #ifdef __cplusplus
 }

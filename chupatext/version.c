@@ -20,7 +20,7 @@
 
 #include "version.h"
 
-const int
+int
 chupa_version(void)
 {
     return CHUPA_VERSION_CODE;
@@ -32,13 +32,13 @@ chupa_version_string(void)
     return CHUPA_VERSION_STRING;
 }
 
-const int
+int
 chupa_commits(void)
 {
     return CHUPA_COMMITS;
 }
 
-const int
+int
 chupa_release_date(void)
 {
     return CHUPA_RELEASE_DATE;
