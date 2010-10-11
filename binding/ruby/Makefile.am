@@ -1,6 +1,7 @@
 DEFAULT_INCLUDES = -I$(top_includedir) -I$(build_includedir)
 
 LDFLAGS = -module -L$(top_builddir)/chupatext -lchupatext
+ARCH_FLAG = $(RUBY_ARCH_FLAG)
 
 module_LTLIBRARIES = chupa.la
 
