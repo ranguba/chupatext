@@ -18,6 +18,9 @@
  *  MA  02110-1301  USA
  */
 
+#ifndef CHUPA_MEMORY_INPUT_CONVERTER_H
+#define CHUPA_MEMORY_INPUT_CONVERTER_H
+
 #include <glib.h>
 #include <gio/gio.h>
 #include <gsf/gsf-output-memory.h>
@@ -59,3 +62,5 @@ struct _ChupaMemoryInputConverterClass {
 GType chupa_memory_input_converter_get_type(void);
 
 G_END_DECLS
+
+#endif
