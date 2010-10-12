@@ -106,6 +106,8 @@ PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [:])
 AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
 PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [:])
 AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
+PKG_CHECK_MODULES(GROONGA, groonga, [have_groonga=yes], [:])
+AM_CONDITIONAL([HAVE_GROONGA], [test "$have_groonga" = "yes"])
 
 dnl **************************************************************
 dnl Check for Ruby
