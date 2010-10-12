@@ -11,11 +11,11 @@ remove-existing-packages:
 	done
 
 update:
-	./update-repository.sh \
+	$(srcdir)/update-repository.sh \
 	  '$(SF_PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
 
 sign:
-	./sign-repository.sh '$(CODE_NAMES)'
+	$(srcdir)/sign-repository.sh '$(CODE_NAMES)'
 
 ensure-rsync-path:
 	@if test -z "$(RSYNC_PATH)"; then				\
@@ -38,6 +38,6 @@ download: ensure-rsync-path
 	done
 
 build:
-	./build-in-chroot.sh \
+	$(srcdir)/build-in-chroot.sh \
 	  $(PACKAGE) $(VERSION) $(CHROOT_BASE) \
 	  '$(ARCHITECTURES)' '$(CODE_NAMES)'
