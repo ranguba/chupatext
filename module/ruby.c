@@ -33,6 +33,36 @@ enum {
     PROP_DUMMY
 };
 
+static VALUE
+chupa_ruby_call_init(VALUE base)
+{
+    void Init_chupa(void);
+    int argc;
+    const char *args[6];
+    char **argv;
+    gchar *rubydir, *rubyarchdir;
+
+    argv = (char **)args;
+    argc = 0;
+    args[argc++] = "chupa";
+    args[argc] = NULL;
+    ruby_sysinit(&argc, &argv);
+    ruby_init_stack((void *)base);
+    ruby_init();
+    rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
+    rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
+    ruby_incpush(rubyarchdir);
+    ruby_incpush(rubydir);
+    g_free(rubyarchdir);
+    g_free(rubydir);
+    argc = 1;
+    args[argc++] = "-e;";
+    args[argc] = NULL;
+    (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
+    Init_chupa();
+    return Qtrue;
+}
+
 VALUE
 chupa_ruby_init(void)
 {
@@ -40,31 +70,11 @@ chupa_ruby_init(void)
     const VALUE *outer_klass = &rb_cObject;
     ID id_Chupa;
 
-    if (!outer_klass || !*outer_klass) {
-        void Init_chupa(void);
-        int argc;
-        const char *args[6];
-        char **argv;
-        gchar *rubydir, *rubyarchdir;
-
-        argv = (char **)args;
-        argc = 0;
-        args[argc++] = "chupa";
-        args[argc] = NULL;
-        ruby_sysinit(&argc, &argv);
-        ruby_init_stack(chupa_stack_base);
-        ruby_init();
-        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
-        rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
-        ruby_incpush(rubyarchdir);
-        ruby_incpush(rubydir);
-        g_free(rubyarchdir);
-        g_free(rubydir);
-        argc = 1;
-        args[argc++] = "-e;";
-        args[argc] = NULL;
-        (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
-        Init_chupa();
+    {
+	int state;
+	if (!RTEST(rb_protect(chupa_ruby_call_init, (VALUE)chupa_stack_base, &state))) {
+	    return Qnil;
+	}
     }
     CONST_ID(id_Chupa, "Chupa");
     return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
@@ -163,6 +173,7 @@ decomposer_class_init(ChupaRubyDecomposerClass *klass)
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GParamSpec *spec;
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
+    VALUE cChupa;
 
     decomposer_parent_class = g_type_class_peek_parent(klass);
 
@@ -178,8 +189,9 @@ decomposer_class_init(ChupaRubyDecomposerClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CLASS, spec);
 
+    g_return_if_fail(!NIL_P(cChupa = chupa_ruby_init()));
     {
-        VALUE funcs = rb_iv_get(chupa_ruby_init(), "funcs");
+        VALUE funcs = rb_iv_get(cChupa, "funcs");
         klass->funcs = DATA_PTR(funcs);
     }
 }
