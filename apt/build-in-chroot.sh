@@ -11,6 +11,7 @@ VERSION=$2
 CHROOT_BASE=$3
 ARCHITECTURES=$4
 CODES=$5
+TOPDIR=..
 
 PATH=/usr/local/sbin:/usr/sbin:$PATH
 
@@ -87,7 +88,7 @@ build()
     pool_base_dir=${script_base_dir}/${distribution}/pool/${code_name}/${component}
     package_initial=$(echo ${PACKAGE} | sed -e 's/\(.\).*/\1/')
     pool_dir=${pool_base_dir}/${package_initial}/${PACKAGE}
-    run cp $source_dir/${PACKAGE}-${VERSION}.tar.gz \
+    run cp $TOPDIR/${PACKAGE}-${VERSION}.tar.gz \
 	${CHROOT_BASE}/$target/tmp/
     run rm -rf ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
     run cp -rp $source_dir/debian/ \
