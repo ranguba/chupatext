@@ -80,6 +80,13 @@ enum_sources_h = $(chupa_public_headers)
 marshal_source_prefix = chupa_marshalers
 marshal_prefix = _chupa_marshal
 
+if HAVE_GROONGA
+bin_PROGRAMS += chupa_index
+chupa_index_CPPFLAGS = $(GROONGA_CFLAGS) $(AM_CPPFLAGS)
+chupa_index_CFLAGS = $(AM_CFLAGS)
+chupa_index_LDADD = libchupatext.la $(GROONGA_LIBS) $(AM_LDFLAGS)
+endif
+
 version.h: $(top_srcdir)/tool/version-update.sh
 	$(SHELL) $(top_srcdir)/tool/version-update.sh $@
 
