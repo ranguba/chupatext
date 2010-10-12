@@ -25,7 +25,7 @@
 #include <chupatext.h>
 
 static void
-output_to_plain(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+output_plain(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
     FILE *out = udata;
@@ -75,7 +75,7 @@ write_quote(const char *str, gsize len, FILE *out)
         write_quote(string, (string) ? strlen(string) : 0, out)
 
 static void
-output_to_json(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+output_json(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
     FILE *out = udata;
@@ -137,7 +137,7 @@ main(int argc, char **argv)
 
     chupa_init(&chupar);
     chupar = chupa_text_new();
-    output = json ? output_to_json : output_to_plain;
+    output = json ? output_json : output_plain;
     g_signal_connect(chupar, chupa_text_signal_decomposed,
                      (GCallback)output, stdout);
     for (i = 1; i < argc; ++i) {
