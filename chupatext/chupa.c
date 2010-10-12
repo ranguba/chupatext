@@ -45,6 +45,16 @@ output_plain(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 }
 
 static void
+start_plain(gpointer udata, int idx)
+{
+}
+
+static void
+finish_plain(gpointer udata, int idx)
+{
+}
+
+static void
 write_quote(const char *str, gsize len, FILE *out)
 {
     char c, esc;
@@ -100,8 +110,33 @@ output_json(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
     while ((size = g_input_stream_read(inst, buf, sizeof(buf), NULL, NULL)) > 0) {
         write_quote(buf, size, out);
     }
-    fputs("\"\n]\n", out);
+    fputs("\"\n]", out);
 }
+
+static void
+start_json(gpointer udata, int idx)
+{
+    FILE *out = udata;
+    putc(idx ? ',' : '[', out);
+    putc('\n', out);
+}
+
+static void
+finish_json(gpointer udata, int idx)
+{
+    FILE *out = udata;
+    if (idx > 0) {
+        fputs("\n]", out);
+    }
+    putc('\n', out);
+}
+
+static const struct writer_funcs {
+    void (*output)(ChupaText *chupar, ChupaTextInput *input, gpointer udata);
+    void (*start)(gpointer udata, int idx);
+    void (*finish)(gpointer udata, int idx);
+} plain_writer = {output_plain, start_plain, finish_plain},
+    json_writer = {output_json, start_json, finish_json};
 
 int
 main(int argc, char **argv)
@@ -112,7 +147,7 @@ main(int argc, char **argv)
     GError *err = NULL;
     gboolean json = FALSE;
     gboolean version = FALSE;
-    void (*output)(ChupaText *chupar, ChupaTextInput *input, gpointer udata);
+    const struct writer_funcs *writer;
     GOptionContext *ctx;
     GOptionEntry opts[] = {
         {
@@ -145,22 +180,30 @@ main(int argc, char **argv)
 
     chupa_init(&chupar);
     chupar = chupa_text_new();
-    output = json ? output_json : output_plain;
+    writer = json ? &json_writer : &plain_writer;
     g_signal_connect(chupar, chupa_text_signal_decomposed,
-                     (GCallback)output, stdout);
-    for (i = 1; i < argc; ++i) {
-        GFile *file = g_file_new_for_commandline_arg(argv[i]);
-        ChupaTextInput *input = chupa_text_input_new_from_file(NULL, file, &err);
+                     (GCallback)writer->output, stdout);
+    --argc;
+    ++argv;
+    for (i = 0; i < argc; ++i) {
+        GFile *file;
+        ChupaTextInput *input;
+        writer->start(stdout, i);
+        file = g_file_new_for_commandline_arg(argv[i]);
+        input = chupa_text_input_new_from_file(NULL, file, &err);
         g_object_unref(file);
         if (!input || !chupa_text_feed(chupar, input, &err)) {
+            writer->finish(stdout, i);
             fprintf(stderr, "%s: %s\n", argv[0], err->message);
             g_error_free(err);
             err = NULL;
             rc = EXIT_FAILURE;
+            i = -1;
             break;
         }
         g_object_unref(input);
     }
+    if (i > 0) writer->finish(stdout, i);
     g_object_unref(chupar);
     chupa_quit();
     return rc;
