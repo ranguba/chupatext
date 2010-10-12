@@ -59,11 +59,19 @@ write_quote(const char *str, gsize len, FILE *out)
             case '\f': esc = 'f'; break;
             case '\b': esc = 'b'; break;
             case '\\': case '"': esc = c; break;
+            default:
+                if (iscntrl(c)) esc = -1;
             }
         }
         if (esc) {
             putc('\\', out);
-            putc(esc, out);
+            if (esc == -1) {
+                fprintf(out, "%.2x", c);
+            }
+            else {
+                putc(esc, out);
+            }
+            
         }
         else {
             putc(c, out);
