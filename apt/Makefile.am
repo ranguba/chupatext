@@ -3,7 +3,7 @@ CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
 CODE_NAMES = lenny squeeze unstable hardy lucid
 
-release: build update sign upload
+release: dist build update sign upload
 
 remove-existing-packages:
 	for distribution in $(DISTRIBUTIONS); do	\
@@ -41,3 +41,6 @@ build:
 	$(srcdir)/build-in-chroot.sh \
 	  $(PACKAGE) $(VERSION) $(CHROOT_BASE) \
 	  '$(ARCHITECTURES)' '$(CODE_NAMES)'
+
+dist:
+	cd .. && $(MAKE) $@
