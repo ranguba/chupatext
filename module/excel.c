@@ -73,7 +73,7 @@ printerr_to_log_delegator (const gchar *string)
     }
 }
 
-static gboolean
+static ChupaTextInput *
 chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                             ChupaTextInput *input, GError **err)
 {
@@ -114,7 +114,7 @@ chupa_excel_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     input = chupa_text_input_new_from_stream(NULL, tmpinp, chupa_text_input_get_filename(input));
     g_object_unref(tmpinp);
     chupa_text_decomposed(chupar, input);
-    return TRUE;
+    return input;
 }
 
 static void

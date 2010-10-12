@@ -59,7 +59,7 @@ struct _ChupaPPTDecomposerClass
 static GType chupa_type_ppt_decomposer = 0;
 
 #define TMPFILE_BASE "chupa-XXXXXX"
-static gboolean
+static ChupaTextInput *
 chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **error)
 {
     const char *filename = chupa_text_input_get_filename(input);
@@ -72,6 +72,7 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     gsize size;
     gboolean result;
     GsfInput *base_input;
+    ChupaTextInput *next_input;
     gint ooo_status;
 
     fd_ppt = g_file_open_tmp(TMPFILE_BASE".ppt", &tmp_ppt_name, error);
@@ -85,7 +86,7 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
                                   G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET,
                                   NULL, error);
     g_object_unref(out_tmpfile);
-    g_return_val_if_fail(size != -1, (g_unlink(tmp_ppt_name), g_free(tmp_ppt_name), FALSE));
+    g_return_val_if_fail(size != -1, (g_unlink(tmp_ppt_name), g_free(tmp_ppt_name), NULL));
     fd_pdf = g_file_open_tmp(TMPFILE_BASE".pdf", &tmp_pdf_name, error);
     argc = 0;
     argv[argc++] = "ooffice";
@@ -113,9 +114,9 @@ chupa_feed_ppt(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, G
     input = chupa_text_input_new_from_stream(NULL, in_tmpfile, filename);
     g_object_unref(in_tmpfile);
     chupa_text_input_set_mime_type(input, "application/pdf");
-    result = chupa_text_feed(chupar, input, error);
+    next_input = chupa_text_feed(chupar, input, error);
     g_object_unref(input);
-    return result;
+    return next_input;
 }
 
 static void

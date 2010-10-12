@@ -49,12 +49,12 @@ struct _ChupaTextDecomposerClass
 
 static GType chupa_type_text_decomposer = 0;
 
-static gboolean
+static ChupaTextInput *
 chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaText *chupar,
                            ChupaTextInput *input, GError **err)
 {
     chupa_text_decomposed(chupar, input);
-    return TRUE;
+    return NULL;
 }
 
 static void

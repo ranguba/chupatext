@@ -65,13 +65,13 @@ chupa_ruby_init(void)
     return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
 }
 
-static gboolean
+static ChupaTextInput *
 chupa_ruby_feed(chupa_ruby_t *self, GError **g_error)
 {
     return chupa_text_feed(self->chupar, self->target.input, g_error);
 }
 
-static gboolean
+static ChupaTextInput *
 chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                            ChupaTextInput *input, GError **g_error)
 {
@@ -84,14 +84,12 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     receiver = funcs->new(rubydec->label, chupar, input);
     if (!NIL_P(receiver)) {
         VALUE result = funcs->funcall(receiver, id_decompose, 0, 0, g_error);
-        if (RTEST(result)) {
-            chupa_ruby_feed(DATA_PTR(receiver), g_error);
-        }
-
-	return RTEST(result);
+        if (!RTEST(result))
+            return NULL;
+        return chupa_ruby_feed(DATA_PTR(receiver), g_error);
     }
     else {
-	return FALSE;
+	return NULL;
     }
 }
 

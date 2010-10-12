@@ -79,12 +79,12 @@ constructed(GObject *object)
 }
 #endif
 
-static gboolean
+static ChupaTextInput *
 feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **err)
 {
     GsfInfile *infile;
     GsfInput *inp;
-    gboolean result = TRUE;
+    ChupaTextInput *sub_input = NULL;
     ChupaArchiveDecomposerClass *arch_class;
     int i, num;
 
@@ -105,13 +105,13 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
         if (name) {
             chupa_text_input_set_filename(t, name);
         }
-        result = arch_class->feed_component(chupar, t, err);
+        sub_input = arch_class->feed_component(chupar, t, err);
         g_object_unref(t);
-        if (!result) {
+        if (!sub_input) {
             break;
         }
     }
-    return result;
+    return sub_input;
 }
 
 static void

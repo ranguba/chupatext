@@ -141,7 +141,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
     return 0;
 }
 
-static gboolean
+static ChupaTextInput *
 chupa_word_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                              ChupaTextInput *input, GError **err)
 {
@@ -182,9 +182,7 @@ chupa_word_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
         }
     }
     g_object_unref(arg.dest);
-    g_object_unref(arg.input);
-
-    return TRUE;
+    return arg.input;
 }
 
 static void

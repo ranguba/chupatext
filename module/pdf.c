@@ -50,7 +50,7 @@ struct _ChupaPDFDecomposerClass
 
 static GType chupa_type_pdf_decomposer = 0;
 
-static gboolean
+static ChupaTextInput *
 chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
                           ChupaTextInput *input, GError **err)
 {
@@ -106,8 +106,7 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
     g_object_unref(doc);
     g_string_free(str, TRUE);
     g_object_unref(mem);
-    g_object_unref(pdf_text);
-    return TRUE;
+    return pdf_text;
 }
 
 static void

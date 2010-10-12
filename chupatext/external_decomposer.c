@@ -117,7 +117,7 @@ constructed(GObject *object)
 }
 #endif
 
-static gboolean
+static ChupaTextInput *
 feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **err)
 {
     GInputStream *inp, *sout = NULL;
@@ -125,7 +125,7 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
     ChupaExternalDecomposerClass *self_class;
     ChupaExternalDecomposer *extdec;
     ChupaExternalDecomposerPrivate *priv;
-    gboolean result;
+    ChupaTextInput *next_input;
 
     g_return_val_if_fail(CHUPA_IS_EXTERNAL_DECOMPOSER(dec), FALSE);
     g_return_val_if_fail(CHUPA_IS_TEXT_INPUT(input), FALSE);
@@ -147,9 +147,9 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
                                              chupa_text_input_get_filename(input));
     g_object_unref(sout);
     self_class->set_metadata(extdec, input);
-    result = chupa_text_feed(chupar, input, err);
+    next_input = chupa_text_feed(chupar, input, err);
     g_object_unref(input);
-    return result;
+    return next_input;
 }
 
 static void
