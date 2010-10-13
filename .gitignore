@@ -31,3 +31,7 @@ strace.out
 /chupatext/chupa_marshalers.h
 /chupatext/stamp-chupa_enum_types-c
 /chupatext/stamp-chupa_enum_types-h
+/apt/debian/
+/apt/ubuntu/
+.gdb_history
+/*.tar.gz
