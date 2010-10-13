@@ -163,7 +163,10 @@ chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input)
         klassid = rb_intern(klassname);
     }
     receiver = rb_protect(chupa_ruby_allocate, (VALUE)klassid, &state);
-    ptr = DATA_PTR(receiver);
+    if (NIL_P(receiver)) {
+        return receiver;
+    }
+    ptr = rb_check_typeddata(receiver, &chupa_ruby_type);
     g_object_ref(chupar);
     g_object_ref(input);
     ptr->chupar = chupar;
