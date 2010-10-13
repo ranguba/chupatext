@@ -23,7 +23,7 @@
 #include <chupatext/chupa_decomposer_factory.h>
 #include <chupatext/chupa_module_impl.h>
 
-/* ChupaText */
+/* ChupaTextDecomposer */
 #define CHUPA_TYPE_TEXT_DECOMPOSER              \
     (chupa_type_text_decomposer)
 #define CHUPA_TEXT_DECOMPOSER(obj)                              \
@@ -102,7 +102,7 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
     *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
 
-/* ChupaTextFactory */
+/* ChupaTextDecomposerFactory */
 #define CHUPA_TYPE_TEXT_DECOMPOSER_FACTORY \
     (chupa_type_text_decomposer_factory)
 #define CHUPA_TEXT_DECOMPOSER_FACTORY(obj)                              \

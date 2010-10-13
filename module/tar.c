@@ -25,7 +25,7 @@
 #include <glib.h>
 #include <gsf/gsf-infile-tar.h>
 
-/* ChupaText */
+/* ChupaTarDecomposer */
 #define CHUPA_TYPE_TAR_DECOMPOSER               \
     chupa_type_tar_decomposer
 #define CHUPA_TAR_DECOMPOSER(obj)                               \
@@ -96,7 +96,7 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
     *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
 
-/* ChupaTarFactory */
+/* ChupaTarDecomposerFactory */
 #define CHUPA_TYPE_TAR_DECOMPOSER_FACTORY       \
     (chupa_type_tar_decomposer_factory)
 #define CHUPA_TAR_DECOMPOSER_FACTORY(obj)                               \

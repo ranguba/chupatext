@@ -25,6 +25,7 @@
 #include <glib.h>
 #include <glib/poppler.h>
 
+/* ChupaPDFDecomposer */
 #define CHUPA_TYPE_PDF_DECOMPOSER \
     (chupa_type_pdf_decomposer)
 #define CHUPA_PDF_DECOMPOSER(obj)                               \
@@ -156,7 +157,7 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 }
 
 
-/* ChupaPDFFactory */
+/* ChupaPDFDecomposerFactory */
 #define CHUPA_TYPE_PDF_DECOMPOSER_FACTORY \
     (chupa_type_pdf_decomposer_factory)
 #define CHUPA_PDF_DECOMPOSER_FACTORY(obj)                               \

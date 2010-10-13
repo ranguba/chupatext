@@ -25,7 +25,7 @@
 #include <glib.h>
 #include <gsf/gsf-infile-zip.h>
 
-/* ChupaZip */
+/* ChupaZipDecomposer */
 #define CHUPA_TYPE_ZIP_DECOMPOSER \
     (chupa_type_zip_decomposer)
 #define CHUPA_ZIP_DECOMPOSER(obj)                               \
@@ -96,7 +96,7 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
     *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
 
-/* ChupaZipFactory */
+/* ChupaZipDecomposerFactory */
 #define CHUPA_TYPE_ZIP_DECOMPOSER_FACTORY \
     (chupa_type_zip_decomposer_factory)
 #define CHUPA_ZIP_DECOMPOSER_FACTORY(obj)                               \
