@@ -85,6 +85,16 @@ printerr_to_log_delegator (const gchar *string)
     }
 }
 
+static const char excel_magic[8] = "\320\317\021\340\241\261\032\341";
+
+static gboolean
+chupa_excel_plain_file_p(GsfInput *source)
+{
+    guint8 header[sizeof(excel_magic)];
+    if (!gsf_input_read(source, sizeof(header), header)) return FALSE;
+    return memcmp(header, excel_magic, sizeof(header)) == 0;
+}
+
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaText *chupar,
      ChupaTextInput *input, GError **error)
@@ -101,9 +111,14 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
 
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
+    g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
+    if (!chupa_excel_plain_file_p(source)) {
+        /* encrypted file, skip */
+        return FALSE;
+    }
+    g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
     tmpout = gsf_output_memory_new();
     g_return_val_if_fail(tmpout, FALSE);
-    g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
     old_print_error_func = g_set_printerr_handler(printerr_to_log_delegator);
     wbv = wb_view_new_from_input(source, filename, fo, io_context, NULL);
     g_set_printerr_handler(old_print_error_func);
