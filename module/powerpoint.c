@@ -76,6 +76,7 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     gboolean result;
     GsfInput *base_input;
     gint ooo_status;
+    struct stat st;
 
     fd_ppt = g_file_open_tmp(TMPFILE_BASE".ppt", &tmp_power_point_name, error);
     out_tmpfile = g_unix_output_stream_new(fd_ppt, TRUE);
@@ -112,6 +113,10 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     g_free(argv[3]);
     g_unlink(tmp_pdf_name);
     g_free(tmp_pdf_name);
+    if (fstat(fd_pdf, &st) || st.st_size == 0) {
+        close(fd_pdf);
+        return FALSE;
+    }
     in_tmpfile = g_unix_input_stream_new(fd_pdf, TRUE);
     input = chupa_text_input_new_from_stream(NULL, in_tmpfile, filename);
     g_object_unref(in_tmpfile);
