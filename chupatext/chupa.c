@@ -118,6 +118,7 @@ main(int argc, char **argv)
     ChupaText *chupar;
     GError *err = NULL;
     gboolean json = FALSE;
+    gboolean ignore_errors = FALSE;
     gboolean version = FALSE;
     const struct writer_funcs *writer;
     GOptionContext *ctx;
@@ -127,13 +128,19 @@ main(int argc, char **argv)
             "output in JSON", NULL
         },
         {
+            "ignore-errors", 'i', 0, G_OPTION_ARG_NONE, NULL,
+            "ignore errors on input", NULL
+        },
+        {
             "version", 'v', 0, G_OPTION_ARG_NONE, NULL,
             "show version", NULL
         },
         { NULL }
     };
-    opts[0].arg_data = &json;
-    opts[1].arg_data = &version;
+    i = 0;
+    opts[i++].arg_data = &json;
+    opts[i++].arg_data = &ignore_errors;
+    opts[i++].arg_data = &version;
 
     g_type_init();
     ctx = g_option_context_new(" input files...");
@@ -167,8 +174,10 @@ main(int argc, char **argv)
             fprintf(stderr, "%s: %s\n", argv[0], err->message);
             g_error_free(err);
             err = NULL;
-            rc = EXIT_FAILURE;
-            break;
+            if (!ignore_errors) {
+                rc = EXIT_FAILURE;
+                break;
+            }
         }
         g_object_unref(input);
     }
