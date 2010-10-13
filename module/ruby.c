@@ -29,31 +29,17 @@ enum {
     PROP_DUMMY
 };
 
-static VALUE
-chupa_ruby_call_init(VALUE base)
-{
+struct main_args {
     int argc;
-    const char *args[6];
     char **argv;
-    gchar *rubydir, *rubyarchdir;
+};
 
-    argv = (char **)args;
-    argc = 0;
-    args[argc++] = "chupa";
-    args[argc] = NULL;
-    ruby_sysinit(&argc, &argv);
-    ruby_init_stack((void *)base);
-    ruby_init();
-    rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
-    rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
-    ruby_incpush(rubyarchdir);
-    ruby_incpush(rubydir);
-    g_free(rubyarchdir);
-    g_free(rubydir);
-    argc = 1;
-    args[argc++] = "-rchupa";
-    args[argc++] = "-e;";
-    args[argc] = NULL;
+static VALUE
+chupa_ruby_process_options(VALUE args)
+{
+    struct main_args *ap = (struct main_args *)args;
+    int argc = ap->argc;
+    char **argv = ap->argv;
     (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
     return Qtrue;
 }
@@ -67,8 +53,35 @@ chupa_ruby_init(void)
 
     if (!outer_klass || !*outer_klass) {
         int state;
-        if (!RTEST(rb_protect(chupa_ruby_call_init, (VALUE)chupa_stack_base, &state))) {
-            return Qnil;
+        int argc;
+        const char *args[6];
+        char **argv;
+        gchar *rubydir, *rubyarchdir;
+
+        argv = (char **)args;
+        argc = 0;
+        args[argc++] = "chupa";
+        args[argc] = NULL;
+        ruby_sysinit(&argc, &argv);
+        ruby_init_stack(chupa_stack_base);
+        ruby_init();
+        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
+        rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
+        ruby_incpush(rubyarchdir);
+        ruby_incpush(rubydir);
+        g_free(rubyarchdir);
+        g_free(rubydir);
+        argc = 1;
+        args[argc++] = "-rchupa";
+        args[argc++] = "-e;";
+        args[argc] = NULL;
+        {
+            struct main_args a;
+            a.argc = argc;
+            a.argv = argv;
+            if (!RTEST(rb_protect(chupa_ruby_process_options, (VALUE)&a, &state))) {
+                return Qnil;
+            }
         }
     }
     CONST_ID(id_Chupa, "Chupa");
