@@ -127,12 +127,12 @@ set_property(GObject *object,
 {
     ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
     switch (prop_id) {
-      case PROP_CLASS:
+    case PROP_CLASS:
         if (obj->label)
             g_free(obj->label);
         obj->label = g_value_dup_string(value);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -147,10 +147,10 @@ get_property (GObject    *object,
     ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
 
     switch (prop_id) {
-      case PROP_CLASS:
+    case PROP_CLASS:
         g_value_set_string(value, obj->label);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
