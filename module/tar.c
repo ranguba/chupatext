@@ -214,10 +214,10 @@ CHUPA_MODULE_IMPL_EXIT(void)
 }
 
 G_MODULE_EXPORT GObject *
-CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property, va_list var_args)
+CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property, va_list va_args)
 {
     return g_object_new_valist(CHUPA_TYPE_TAR_DECOMPOSER_FACTORY,
-                               first_property, var_args);
+                               first_property, va_args);
 }
 
 /*

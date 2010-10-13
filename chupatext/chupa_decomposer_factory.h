@@ -58,29 +58,18 @@ const gchar *chupa_decomposer_factory_get_default_module_dir   (void);
 void         chupa_decomposer_factory_set_default_module_dir   (const gchar *dir);
 const gchar *chupa_decomposer_factory_get_module_dir           (void);
 
-void         chupa_decomposer_factory_load        (const gchar *dir,
-                                                   const gchar *type);
+void         chupa_decomposer_factory_load        (const gchar *dir);
 void         chupa_decomposer_factory_load_all    (const gchar *base_dir);
 void         chupa_decomposer_factory_unload      (void);
-GList       *chupa_decomposer_factory_get_names   (const gchar *type);
-gboolean     chupa_decomposer_factory_exist_module(const gchar *type,
-                                                   const gchar *name);
-ChupaModule *chupa_decomposer_factory_load_module (const gchar *type,
-                                                   const gchar *name);
+GList       *chupa_decomposer_factory_get_names   (void);
+gboolean     chupa_decomposer_factory_exist_module(const gchar *name);
+ChupaModule *chupa_decomposer_factory_load_module (const gchar *name);
 
 /* ChupaDecomposerFactory */
 GType        chupa_decomposer_factory_get_type    (void) G_GNUC_CONST;
 
 ChupaDecomposerFactory *
-             chupa_decomposer_factory_new         (const gchar *type,
-                                                   const gchar *name,
-                                                   const gchar *first_property,
-                                                   ...);
-ChupaDecomposerFactory *
-             chupa_decomposer_factory_new_valist  (const gchar *type,
-                                                   const gchar *name,
-                                                   const gchar *first_property,
-                                                   va_list      var_args);
+             chupa_decomposer_factory_new         (const gchar *name);
 
 GObject     *chupa_decomposer_factory_create      (ChupaDecomposerFactory *factory,
                                                    const gchar *label);

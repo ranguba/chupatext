@@ -30,7 +30,7 @@ G_BEGIN_DECLS
 typedef GList   *(*ChupaModuleInitFunc)(GTypeModule *module);
 typedef void     (*ChupaModuleExitFunc)(void);
 typedef GObject *(*ChupaModuleCreateFactoryFunc)(const gchar *first_property,
-                                                 va_list      var_args);
+                                                 va_list      va_args);
 
 ChupaModule *
 chupa_module_new(const gchar *name,

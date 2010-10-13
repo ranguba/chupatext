@@ -91,7 +91,7 @@ chupa_decomposer_factory_get_module_dir (void)
 }
 
 void
-chupa_decomposer_factory_load (const gchar *dir, const gchar *type)
+chupa_decomposer_factory_load (const gchar *dir)
 {
     if (g_file_test(dir, G_FILE_TEST_IS_DIR)) {
         modules = g_list_concat(modules, chupa_module_load_modules(dir));
@@ -135,7 +135,7 @@ chupa_decomposer_factory_load_all (const gchar *base_dir)
 }
 
 ChupaModule *
-chupa_decomposer_factory_load_module (const gchar *type, const gchar *name)
+chupa_decomposer_factory_load_module (const gchar *name)
 {
     ChupaModule *module;
 
@@ -167,34 +167,20 @@ chupa_decomposer_factory_unload (void)
 }
 
 GList *
-chupa_decomposer_factory_get_names (const gchar *type)
+chupa_decomposer_factory_get_names (void)
 {
-    GList *orig_names, *node, *names = NULL;
-
     if (!modules)
         return NULL;
 
-    orig_names = chupa_module_collect_names(modules);
-    for (node = orig_names; node; node = g_list_next(node)) {
-        const gchar *name = node->data;
-
-        if (g_str_has_suffix(name, "_factory") ||
-            g_str_has_suffix(name, "-factory")) {
-            gchar *p;
-            p = g_strrstr(name, "factory") - 1;
-            names = g_list_prepend(names, g_strndup(name, p - name));
-        }
-    }
-    g_list_free(orig_names);
-    return g_list_reverse(names);
+    return chupa_module_collect_names(modules);
 }
 
 gboolean
-chupa_decomposer_factory_exist_module (const gchar *type, const gchar *name)
+chupa_decomposer_factory_exist_module (const gchar *name)
 {
     GList *names, *list;
 
-    names = chupa_decomposer_factory_get_names(type);
+    names = chupa_decomposer_factory_get_names();
     if (!names)
         return FALSE;
     list = g_list_find_custom(names, name, (GCompareFunc)strcmp);
@@ -334,10 +320,7 @@ get_property (GObject    *object,
 }
 
 ChupaDecomposerFactory *
-chupa_decomposer_factory_new_valist(const gchar *type,
-                                    const gchar *name,
-                                    const gchar *first_property,
-                                    va_list var_args)
+chupa_decomposer_factory_new(const gchar *name)
 {
     ChupaModule *module;
     GObject *new_factory;
@@ -354,32 +337,14 @@ chupa_decomposer_factory_new_valist(const gchar *type,
         }
     }
 
-    module = chupa_decomposer_factory_load_module(type, name);
+    module = chupa_decomposer_factory_load_module(name);
     g_return_val_if_fail(module != NULL, NULL);
 
-    new_factory = chupa_module_create_factory(module, first_property, var_args);
-    g_object_set(new_factory, "name", name, NULL);
+    new_factory = chupa_module_create_factory(module, name);
     g_object_ref(new_factory);
     factories = g_list_prepend(factories, new_factory);
 
     return CHUPA_DECOMPOSER_FACTORY(new_factory);
-}
-
-ChupaDecomposerFactory *
-chupa_decomposer_factory_new(const gchar *type,
-                             const gchar *name,
-                             const gchar *first_property,
-                             ...)
-{
-    ChupaDecomposerFactory *factory;
-    va_list var_args;
-
-    va_start(var_args, first_property);
-    factory = chupa_decomposer_factory_new_valist(type, name,
-                                                  first_property, var_args);
-    va_end(var_args);
-
-    return CHUPA_DECOMPOSER_FACTORY(factory);
 }
 
 GObject *

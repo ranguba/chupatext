@@ -237,17 +237,29 @@ chupa_module_find(GList *modules, const gchar *name)
     return NULL;
 }
 
+static GObject *
+create_factory(ChupaModulePrivate *priv, const gchar *first_property, ...)
+{
+    GObject *factory;
+    va_list va_args;
+
+    va_start(va_args, first_property);
+    factory = priv->create_factory(first_property, va_args);
+    va_end(va_args);
+
+    return factory;
+}
+
 GObject *
 chupa_module_create_factory(ChupaModule *module,
-                            const gchar *first_property,
-                            va_list var_args)
+                            const gchar *name)
 {
     GObject *object = NULL;
     ChupaModulePrivate *priv;
 
     priv = CHUPA_MODULE_GET_PRIVATE(module);
     if (g_type_module_use(G_TYPE_MODULE(module))) {
-        object = priv->create_factory(first_property, var_args);
+        object = create_factory(priv, "name", name, NULL);
         g_type_module_unuse(G_TYPE_MODULE(module));
     }
 

@@ -252,8 +252,7 @@ chupa_module_description_get_factory (ChupaModuleDescription *description)
 
     priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
     if (!priv->factory) {
-        priv->factory = chupa_decomposer_factory_new("decomposer", priv->name,
-                                                     NULL);
+        priv->factory = chupa_decomposer_factory_new(priv->name);
     }
     return priv->factory;
 }
