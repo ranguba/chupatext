@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -223,3 +224,7 @@ CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property, va_list var_args)
     return g_object_new_valist(CHUPA_TYPE_TEXT_DECOMPOSER_FACTORY,
                                first_property, var_args);
 }
+
+/*
+vi:ts=4:nowrap:ai:expandtab:sw=4
+*/

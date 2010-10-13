@@ -17,8 +17,8 @@ decomposer_LTLIBRARIES =
 
 decomposer_LTLIBRARIES += text.la
 decomposer_LTLIBRARIES += tar.la
-if FALSE
 decomposer_LTLIBRARIES += zip.la
+if FALSE
 if HAVE_POPPLER_GLIB
 decomposer_LTLIBRARIES += pdf.la
 endif
