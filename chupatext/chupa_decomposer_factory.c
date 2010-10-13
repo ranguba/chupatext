@@ -146,10 +146,7 @@ chupa_decomposer_factory_load_module (const gchar *name)
     module = chupa_module_load_module(chupa_decomposer_factory_get_module_dir(),
                                       name);
     if (module) {
-        if (g_type_module_use(G_TYPE_MODULE(module))) {
-            modules = g_list_prepend(modules, module);
-            g_type_module_unuse(G_TYPE_MODULE(module));
-        }
+        modules = g_list_prepend(modules, module);
     }
 
     return module;
