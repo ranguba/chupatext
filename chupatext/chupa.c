@@ -24,17 +24,30 @@
 #include <ctype.h>
 #include <chupatext.h>
 
+struct output_info {
+    FILE *out;
+    const char *prefix;
+};
+
 static void
 output_plain(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
-    FILE *out = udata;
+    struct output_info *uinfo = udata;
+    FILE *out = uinfo->out;
     const char *name = chupa_text_input_get_filename(input);
     const char *charset = chupa_text_input_get_charset(input);
+    char *path = NULL;
     char buf[4096];
     gssize size;
 
-    fprintf(out, "File: %s\n", name ? name : "(noname)");
+    if (uinfo->prefix) {
+        path = g_build_filename(uinfo->prefix, name, NULL);
+    }
+    fprintf(out, "File: %s\n", path ? path : name ? name : "(noname)");
+    if (path) {
+        g_free(path);
+    }
     if (charset) {
         fprintf(out, "Charset: %s\n", charset);
     }
@@ -86,14 +99,22 @@ static void
 output_json(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
-    FILE *out = udata;
+    struct output_info *uinfo = udata;
+    FILE *out = uinfo->out;
     const char *name = chupa_text_input_get_filename(input);
     const char *charset = chupa_text_input_get_charset(input);
+    char *path = NULL;
     char buf[4096];
     gssize size;
 
     fputs("{\n\"_key\":\"", out);
+    if (uinfo->prefix) {
+        path = g_build_filename(uinfo->prefix, name, NULL);
+    }
     quote(name, out);
+    if (path) {
+        g_free(path);
+    }
     if (charset) {
         fputs("\",\n\"charset\":\"", out);
         quote(charset, out);
@@ -122,6 +143,7 @@ main(int argc, char **argv)
     gboolean version = FALSE;
     const struct writer_funcs *writer;
     GOptionContext *ctx;
+    struct output_info uinfo;
     GOptionEntry opts[] = {
         {
             "json", 'j', 0, G_OPTION_ARG_NONE, NULL,
@@ -132,6 +154,10 @@ main(int argc, char **argv)
             "ignore errors on input", NULL
         },
         {
+            "prefix", '\0', 0, G_OPTION_ARG_STRING, NULL,
+            "prefix for names in output", "PATH"
+        },
+        {
             "version", 'v', 0, G_OPTION_ARG_NONE, NULL,
             "show version", NULL
         },
@@ -140,8 +166,10 @@ main(int argc, char **argv)
     i = 0;
     opts[i++].arg_data = &json;
     opts[i++].arg_data = &ignore_errors;
+    opts[i++].arg_data = &uinfo.prefix;
     opts[i++].arg_data = &version;
 
+    uinfo.prefix = NULL;
     g_type_init();
     ctx = g_option_context_new(" input files...");
     g_option_context_set_description(ctx, "sample wraper of libchupatext.");
@@ -160,8 +188,9 @@ main(int argc, char **argv)
     chupa_init(&chupar);
     chupar = chupa_text_new();
     writer = json ? &json_writer : &plain_writer;
+    uinfo.out = stdout;
     g_signal_connect(chupar, chupa_text_signal_decomposed,
-                     (GCallback)writer->output, stdout);
+                     (GCallback)writer->output, &uinfo);
     --argc;
     ++argv;
     for (i = 0; i < argc; ++i) {
