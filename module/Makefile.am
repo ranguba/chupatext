@@ -1,4 +1,4 @@
-SUBDIRS = excel
+SUBDIRS = excel ruby
 
 EMPTY =
 
@@ -87,7 +87,7 @@ powerpoint_la_LIBADD = $(chupa_libs) $(GIO_UNIX_LIBS)
 ruby_la_SOURCES = ruby.c
 ruby_la_CFLAGS = $(RUBY_CFLAGS)
 ruby_la_CPPFLAGS =				\
-	-I$(top_srcdir)/binding/ruby		\
+	-I$(srcdir)/ruby			\
 	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
 	-DCHUPA_RUBY_ARCH=\"$(rubyarch)\"	\
 	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"	\
@@ -95,4 +95,8 @@ ruby_la_CPPFLAGS =				\
 	$(RUBY_CPPFLAGS)			\
 	$(GLIB_CFLAGS)				\
 	$(GSF_CFLAGS)
-ruby_la_LIBADD = $(chupa_libs) $(RUBY_LDFLAGS) $(RUBY_LIBS)
+ruby_la_LIBADD =				\
+	$(chupa_libs)				\
+	$(RUBY_LDFLAGS)				\
+	$(RUBY_LIBS)				\
+	$(builddir)/ruby/libchuparuby.la

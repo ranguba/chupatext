@@ -205,8 +205,8 @@ AC_CONFIG_FILES([Makefile
 		 test/fixtures/Makefile
 		 module/Makefile
 		 module/excel/Makefile
+		 module/ruby/Makefile
 		 binding/Makefile
-		 binding/ruby/Makefile
 		 license/Makefile
 		 apt/Makefile])
 AC_OUTPUT

@@ -73,28 +73,13 @@ if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
-ruby_src_dir=$TOP_SRC_DIR/binding/ruby
-ruby_dir=$TOP_BUILD_DIR/binding/ruby
+ruby_src_dir=$TOP_SRC_DIR/module/ruby
+ruby_dir=$TOP_BUILD_DIR/module/ruby
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/.libs
 CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
-CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/src/toolkit/.libs
-CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/src/manager/.libs
-ruby_glib2_dir=
-for dir in $(for dir in $ruby_dir/glib-*; do echo $dir; done | sort -r); do
-    if [ -f $dir/src/glib2.so ]; then
-	ruby_glib2_dir=$dir
-	break
-    fi
-done
-if [ "$ruby_glib2_dir" != "" ]; then
-    CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_glib2_dir/src/lib
-    CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_glib2_dir/src
-fi
 RUBYLIB=$CHUPATEXT_RUBYLIB:$RUBYLIB
 export CHUPATEXT_RUBYLIB
 export RUBYLIB
-export CHUPATEXT_CONFIGURATION_MODULE_DIR=$TOP_BUILD_DIR/module/configuration/ruby/.libs
-export CHUPATEXT_CONFIG_DIR=$TOP_SRC_DIR/test/fixtures/configuration
 export CHUPA_DECOMPOSER_DIR=$TOP_BUILD_DIR/module/.libs
 export CHUPA_DESCRIPTIONS_DIR=$TOP_SRC_DIR/data/descriptions
 

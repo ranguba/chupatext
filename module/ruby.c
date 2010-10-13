@@ -20,7 +20,7 @@
  */
 
 #define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
-#include "chupa_ruby.h"
+#include <chupa_ruby.h>
 
 #include <chupatext/chupa_decomposer_factory.h>
 
@@ -41,6 +41,7 @@ chupa_ruby_init(void)
     ID id_Chupa;
 
     if (!outer_klass || !*outer_klass) {
+        void Init_chupa(void);
         int argc;
         const char *args[6];
         char **argv;
@@ -60,10 +61,10 @@ chupa_ruby_init(void)
         g_free(rubyarchdir);
         g_free(rubydir);
         argc = 1;
-        args[argc++] = "-rchupa";
         args[argc++] = "-e;";
         args[argc] = NULL;
         (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
+        Init_chupa();
     }
     CONST_ID(id_Chupa, "Chupa");
     return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
