@@ -70,11 +70,11 @@ chupa_ruby_init(void)
     const VALUE *outer_klass = &rb_cObject;
     ID id_Chupa;
 
-    {
-	int state;
-	if (!RTEST(rb_protect(chupa_ruby_call_init, (VALUE)chupa_stack_base, &state))) {
-	    return Qnil;
-	}
+    if (!outer_klass || !*outer_klass) {
+        int state;
+        if (!RTEST(rb_protect(chupa_ruby_call_init, (VALUE)chupa_stack_base, &state))) {
+            return Qnil;
+        }
     }
     CONST_ID(id_Chupa, "Chupa");
     return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
@@ -103,10 +103,10 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
             chupa_ruby_feed(DATA_PTR(receiver), g_error);
         }
 
-	return RTEST(result);
+        return RTEST(result);
     }
     else {
-	return FALSE;
+        return FALSE;
     }
 }
 
