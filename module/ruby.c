@@ -34,15 +34,7 @@ struct main_args {
     char **argv;
 };
 
-static VALUE
-chupa_ruby_process_options(VALUE args)
-{
-    struct main_args *ap = (struct main_args *)args;
-    int argc = ap->argc;
-    char **argv = ap->argv;
-    (void)ruby_process_options(argc, argv); /* ignore the insns which does nothing */
-    return Qtrue;
-}
+int ruby_executable_node(void *n, int *status); /* prototype was missing in 1.9.2 */
 
 VALUE
 chupa_ruby_init(void)
@@ -52,11 +44,12 @@ chupa_ruby_init(void)
     ID id_Chupa;
 
     if (!outer_klass || !*outer_klass) {
-        int state;
+        int status;
         int argc;
         const char *args[6];
         char **argv;
         gchar *rubydir, *rubyarchdir;
+        void *node;
 
         argv = (char **)args;
         argc = 0;
@@ -75,13 +68,10 @@ chupa_ruby_init(void)
         args[argc++] = "-rchupa";
         args[argc++] = "-e;";
         args[argc] = NULL;
-        {
-            struct main_args a;
-            a.argc = argc;
-            a.argv = argv;
-            if (!RTEST(rb_protect(chupa_ruby_process_options, (VALUE)&a, &state))) {
-                return Qnil;
-            }
+        node = ruby_options(argc, argv);
+        if (!ruby_executable_node(node, &status)) {
+            ruby_cleanup(status);
+            return Qnil;
         }
     }
     CONST_ID(id_Chupa, "Chupa");
