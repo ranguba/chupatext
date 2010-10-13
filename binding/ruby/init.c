@@ -155,6 +155,7 @@ chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input)
 
     if (klassname) {
         GString *libname = g_string_new("chupa/");
+        klassname = "HTML"; /* FIXME */
         g_string_append(libname, klassname);
         g_string_ascii_down(libname);
         rb_protect(chupa_require, (VALUE)libname->str, &state);

@@ -1,9 +1,4 @@
 [Ruby]
 
 name = ruby
-mime_types = application/ruby
-
-[HTML]
-
-name = ruby
-mime_types = text/html
+mime_types = x-chupatext/x-dynamic
