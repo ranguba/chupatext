@@ -21,10 +21,10 @@ decomposer_LTLIBRARIES += zip.la
 if HAVE_POPPLER_GLIB
 decomposer_LTLIBRARIES += pdf.la
 endif
-if FALSE
 if HAVE_WV
 decomposer_LTLIBRARIES += word.la
 endif
+if FALSE
 if HAVE_GOFFICE
 decomposer_LTLIBRARIES += excel.la
 endif
