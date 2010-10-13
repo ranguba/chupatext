@@ -24,10 +24,10 @@ endif
 if HAVE_WV
 decomposer_LTLIBRARIES += word.la
 endif
-if FALSE
 if HAVE_GOFFICE
 decomposer_LTLIBRARIES += excel.la
 endif
+if FALSE
 decomposer_LTLIBRARIES += powerpoint.la
 if HAVE_RUBY
 decomposer_LTLIBRARIES += ruby.la
