@@ -1,6 +1,24 @@
 #!/bin/sh
 
 : ${GROONGA=groonga} ${CHUPA=chupa}
+
+until test $0 = 0; do
+    case "$1" in
+	--)
+	    shift
+	    break
+	    ;;
+	-*)
+	    echo "$0: unknown option $1" 1>&2
+	    exit 1
+	    ;;
+	*)
+	    break
+	    ;;
+    esac
+    shift
+done
+
 db="$1"
 shift
 
