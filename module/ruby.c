@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,7 +22,10 @@
 #define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
 #include "chupa_ruby.h"
 
+#include <chupatext/chupa_decomposer_factory.h>
+
 static GType chupa_type_ruby_decomposer = 0;
+static ChupaRubyDecomposerClass *decomposer_parent_class;
 
 enum {
     PROP_0,
@@ -96,21 +100,23 @@ chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 }
 
 static void
-chupa_ruby_decomposer_init(ChupaRubyDecomposer *obj)
+decomposer_init(ChupaRubyDecomposer *decomposer)
 {
-    obj->label = NULL;
+    decomposer->label = NULL;
 }
 
 static void
 dispose(GObject *object)
 {
-    ChupaRubyDecomposer *obj = (ChupaRubyDecomposer *)object;
-    if (obj->label) {
-        g_free(obj->label);
-        obj->label = NULL;
+    ChupaRubyDecomposer *decomposer;
+
+    decomposer = CHUPA_RUBY_DECOMPOSER(object);
+    if (decomposer->label) {
+        g_free(decomposer->label);
+        decomposer->label = NULL;
     }
 
-    G_OBJECT_CLASS(g_type_class_peek_parent(G_OBJECT_GET_CLASS(object)))->dispose(object);
+    G_OBJECT_CLASS(decomposer_parent_class)->dispose(object);
 }
 
 static void
@@ -151,11 +157,13 @@ get_property (GObject    *object,
 }
 
 static void
-chupa_ruby_decomposer_class_init(ChupaRubyDecomposerClass *klass)
+decomposer_class_init(ChupaRubyDecomposerClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GParamSpec *spec;
     ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
+
+    decomposer_parent_class = g_type_class_peek_parent(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
@@ -176,36 +184,139 @@ chupa_ruby_decomposer_class_init(ChupaRubyDecomposerClass *klass)
 }
 
 static void
-register_type(GTypeModule *type_module)
+decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 {
     static const GTypeInfo info = {
         sizeof(ChupaRubyDecomposerClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) chupa_ruby_decomposer_class_init,
+        (GClassInitFunc)decomposer_class_init,
         NULL,           /* class_finalize */
         NULL,           /* class_data */
         sizeof(ChupaRubyDecomposer),
         0,
-        (GInstanceInitFunc) chupa_ruby_decomposer_init,
+        (GInstanceInitFunc)decomposer_init,
     };
+    const gchar *type_name = "ChupaRubyDecomposer";
 
     chupa_type_ruby_decomposer =
         g_type_module_register_type(type_module,
                                     CHUPA_TYPE_DECOMPOSER,
-                                    "ChupaRubyDecomposer",
+                                    type_name,
                                     &info, 0);
+
+    *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
 
+/* ChupaRubyDecomposerFactory */
+#define CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY \
+    (chupa_type_ruby_decomposer_factory)
+#define CHUPA_RUBY_DECOMPOSER_FACTORY(obj)                              \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj),                                  \
+                                CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY,     \
+                                ChupaRubyDecomposerFactory))
+#define CHUPA_RUBY_DECOMPOSER_FACTORY_CLASS(klass)                      \
+    (G_TYPE_CHECK_CLASS_CAST((klass),                                   \
+                             CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY,        \
+                             ChupaRubyDecomposerFactoryClass))
+#define CHUPA_IS_RUBY_DECOMPOSER_FACTORY(obj)                           \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj),                                  \
+                                CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY))
+#define CHUPA_IS_RUBY_DECOMPOSER_FACTORY_CLASS(klass)                   \
+    (G_TYPE_CHECK_CLASS_TYPE((klass),                                   \
+                             CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY))
+#define CHUPA_RUBY_DECOMPOSER_FACTORY_GET_CLASS(obj)                    \
+    (G_TYPE_INSTANCE_GET_CLASS((obj),                                   \
+                               CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY,      \
+                               ChupaRubyDecomposerFactoryClass))
+
+typedef struct _ChupaRubyDecomposerFactory ChupaRubyDecomposerFactory;
+typedef struct _ChupaRubyDecomposerFactoryClass ChupaRubyDecomposerFactoryClass;
+
+struct _ChupaRubyDecomposerFactory
+{
+    ChupaDecomposerFactory     object;
+};
+
+struct _ChupaRubyDecomposerFactoryClass
+{
+    ChupaDecomposerFactoryClass parent_class;
+};
+
+static GType chupa_type_ruby_decomposer_factory = 0;
+static ChupaDecomposerFactoryClass *factory_parent_class;
+
+static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
+static GObject   *create           (ChupaDecomposerFactory *factory,
+                                    const gchar            *label);
+
+static void
+factory_class_init(ChupaDecomposerFactoryClass *klass)
+{
+    GObjectClass *gobject_class;
+    ChupaDecomposerFactoryClass *factory_class;
+
+    factory_parent_class = g_type_class_peek_parent(klass);
+
+    gobject_class = G_OBJECT_CLASS(klass);
+    factory_class = CHUPA_DECOMPOSER_FACTORY_CLASS(klass);
+
+    factory_class->get_mime_types   = get_mime_types;
+    factory_class->create           = create;
+}
+
+static void
+factory_register_type(GTypeModule *type_module, GList **registered_types)
+{
+    static const GTypeInfo info =
+        {
+            sizeof (ChupaRubyDecomposerFactoryClass),
+            (GBaseInitFunc)NULL,
+            (GBaseFinalizeFunc)NULL,
+            (GClassInitFunc)factory_class_init,
+            NULL,           /* class_finalize */
+            NULL,           /* class_data */
+            sizeof(ChupaRubyDecomposerFactory),
+            0,
+            (GInstanceInitFunc)NULL,
+        };
+    const gchar *type_name = "ChupaRubyDecomposerFactory";
+
+    chupa_type_ruby_decomposer_factory =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_DECOMPOSER_FACTORY,
+                                    type_name,
+                                    &info, 0);
+
+    *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
+}
+
+static GList *
+get_mime_types(ChupaDecomposerFactory *factory)
+{
+    GList *mime_types = NULL;
+
+    mime_types = g_list_prepend(mime_types, g_strdup("text/html"));
+
+    return mime_types;
+}
+
+static GObject *
+create(ChupaDecomposerFactory *factory, const gchar *label)
+{
+    return g_object_new(CHUPA_TYPE_RUBY_DECOMPOSER,
+                        "class", label,
+                        NULL);
+}
+
+/* module entry points */
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
     GList *registered_types = NULL;
-    register_type(type_module);
 
-    registered_types =
-        g_list_prepend(registered_types,
-                       (gchar *)g_type_name(chupa_type_ruby_decomposer));
+    decomposer_register_type(type_module, &registered_types);
+    factory_register_type(type_module, &registered_types);
 
     return registered_types;
 }
@@ -216,8 +327,12 @@ CHUPA_MODULE_IMPL_EXIT(void)
 }
 
 G_MODULE_EXPORT GObject *
-CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_args)
+CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property, va_list va_args)
 {
-    return g_object_new_valist(CHUPA_TYPE_RUBY_DECOMPOSER,
-                               first_property, var_args);
+    return g_object_new_valist(CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY,
+                               first_property, va_args);
 }
+
+/*
+vi:ts=4:nowrap:ai:expandtab:sw=4
+*/
