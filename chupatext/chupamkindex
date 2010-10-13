@@ -17,6 +17,6 @@ fi
 {
     echo load --table chupa
     echo [
-    $CHUPA --json "$@"
+    find "$@" -type f -exec $CHUPA --ignore-errors --json '{}' +
     echo ]
 } | $GROONGA "$db"
