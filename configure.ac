@@ -188,9 +188,6 @@ AC_SUBST(moduledir)
 decomposerdir='$(moduledir)/decomposer'
 AC_SUBST(decomposerdir)
 
-factorydir='$(moduledir)/factory'
-AC_SUBST(factorydir)
-
 descriptionsdir='$(sysconfdir)/$(PACKAGE)/descriptions'
 AC_SUBST(descriptionsdir)
 

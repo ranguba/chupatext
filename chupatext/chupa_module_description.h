@@ -23,7 +23,7 @@
 
 #include <glib-object.h>
 
-#include <chupatext/chupa_module_factory.h>
+#include <chupatext/chupa_decomposer_factory.h>
 
 G_BEGIN_DECLS
 
@@ -62,7 +62,7 @@ void         chupa_module_description_add_mime_type
                                                 (ChupaModuleDescription *description,
                                                  const gchar            *mime_type);
 
-ChupaModuleFactory *
+ChupaDecomposerFactory *
              chupa_module_description_get_factory
                                                 (ChupaModuleDescription *description);
 

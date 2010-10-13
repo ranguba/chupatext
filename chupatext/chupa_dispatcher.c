@@ -26,8 +26,7 @@
 #include <glib.h>
 
 #include "chupa_dispatcher.h"
-#include "chupa_module_factory.h"
-#include "chupa_module_factory_utils.h"
+#include "chupa_decomposer_factory.h"
 #include "chupa_module_description.h"
 
 #define CHUPA_DISPATCHER_GET_PRIVATE(obj)                  \
@@ -168,7 +167,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
 {
     ChupaDispatcherPrivate *priv;
     GList *node;
-    ChupaModuleFactory *factory = NULL;
+    ChupaDecomposerFactory *factory = NULL;
     GString *normalized_type = NULL;
     gboolean normalized = FALSE;
     const gchar *label = NULL;
@@ -218,7 +217,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     if (!factory)
         return NULL;
 
-    return CHUPA_DECOMPOSER(chupa_module_factory_create(factory, label));
+    return CHUPA_DECOMPOSER(chupa_decomposer_factory_create(factory, label));
 }
 
 /*

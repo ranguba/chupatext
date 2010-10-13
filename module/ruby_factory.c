@@ -39,15 +39,15 @@
 #define CHUPA_IS_RUBY_FACTORY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CHUPA_TYPE_RUBY_FACTORY))
 #define CHUPA_RUBY_FACTORY_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), CHUPA_TYPE_RUBY_FACTORY, ChupaRUBYFactoryClass))
 
-typedef struct _ChupaRUBYFactory ChupaRUBYFactory;
-typedef struct _ChupaRUBYFactoryClass ChupaRUBYFactoryClass;
+typedef struct _ChupaRubyFactory ChupaRubyFactory;
+typedef struct _ChupaRubyFactoryClass ChupaRubyFactoryClass;
 
-struct _ChupaRUBYFactory
+struct _ChupaRubyFactory
 {
     ChupaModuleFactory     object;
 };
 
-struct _ChupaRUBYFactoryClass
+struct _ChupaRubyFactoryClass
 {
     ChupaModuleFactoryClass parent_class;
 };
@@ -74,7 +74,7 @@ class_init (ChupaModuleFactoryClass *klass)
 }
 
 static void
-init (ChupaRUBYFactory *factory)
+init (ChupaRubyFactory *factory)
 {
 }
 
@@ -83,13 +83,13 @@ register_type (GTypeModule *type_module)
 {
     static const GTypeInfo info =
         {
-            sizeof (ChupaRUBYFactoryClass),
+            sizeof (ChupaRubyFactoryClass),
             (GBaseInitFunc) NULL,
             (GBaseFinalizeFunc) NULL,
             (GClassInitFunc) class_init,
             NULL,           /* class_finalize */
             NULL,           /* class_data */
-            sizeof(ChupaRUBYFactory),
+            sizeof(ChupaRubyFactory),
             0,
             (GInstanceInitFunc) init,
         };
@@ -97,7 +97,7 @@ register_type (GTypeModule *type_module)
     chupa_type_ruby_factory =
         g_type_module_register_type(type_module,
                                     CHUPA_TYPE_MODULE_FACTORY,
-                                    "ChupaRUBYFactory",
+                                    "ChupaRubyFactory",
                                     &info, 0);
 }
 

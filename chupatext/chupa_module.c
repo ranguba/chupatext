@@ -45,23 +45,23 @@ struct _ChupaModulePrivate
     gchar        *mod_path;
     GList        *registered_types;
 
-    ChupaModuleInitFunc         init;
-    ChupaModuleExitFunc         exit;
-    ChupaModuleInstantiateFunc  instantiate;
+    ChupaModuleInitFunc          init;
+    ChupaModuleExitFunc          exit;
+    ChupaModuleCreateFactoryFunc create_factory;
 };
 
 G_DEFINE_TYPE(ChupaModule, chupa_module, G_TYPE_TYPE_MODULE)
 
 static void     finalize(GObject     *object);
-static gboolean load(GTypeModule *module);
-static void     unload(GTypeModule *module);
+static gboolean load    (GTypeModule *module);
+static void     unload  (GTypeModule *module);
 
 static void     _chupa_module_show_error(GModule     *module);
-static GModule *_chupa_module_open(const gchar *mod_path);
-static void     _chupa_module_close(GModule     *module);
-static gboolean _chupa_module_load_func(GModule     *module,
-                                        const gchar *func_name,
-                                        gpointer    *symbol);
+static GModule *_chupa_module_open      (const gchar *mod_path);
+static void     _chupa_module_close     (GModule     *module);
+static gboolean _chupa_module_load_func (GModule     *module,
+                                         const gchar *func_name,
+                                         gpointer    *symbol);
 
 static void
 chupa_module_class_init(ChupaModuleClass *klass)
@@ -94,9 +94,9 @@ finalize(GObject *object)
 {
     ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(object);
 
-    g_print("finalize!: %p\n", object);
     g_free(priv->mod_path);
     priv->mod_path = NULL;
+    g_list_foreach(priv->registered_types, (GFunc)g_free, NULL);
     g_list_free(priv->registered_types);
     priv->registered_types = NULL;
 
@@ -119,13 +119,14 @@ load(GTypeModule *module)
                                  G_STRINGIFY(CHUPA_MODULE_IMPL_EXIT),
                                  (gpointer)&priv->exit) ||
         !_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(CHUPA_MODULE_IMPL_INSTANTIATE),
-                                 (gpointer)&priv->instantiate)) {
+                                 G_STRINGIFY(CHUPA_MODULE_IMPL_CREATE_FACTORY),
+                                 (gpointer)&priv->create_factory)) {
         _chupa_module_close(priv->library);
         priv->library = NULL;
         return FALSE;
     }
 
+    g_list_foreach(priv->registered_types, (GFunc)g_free, NULL);
     g_list_free(priv->registered_types);
     priv->registered_types = priv->init(module);
 
@@ -149,7 +150,7 @@ cleanup(ChupaModule *module)
 
     priv->init = NULL;
     priv->exit = NULL;
-    priv->instantiate = NULL;
+    priv->create_factory = NULL;
 
     g_list_free(priv->registered_types);
     priv->registered_types = NULL;
@@ -237,15 +238,16 @@ chupa_module_find(GList *modules, const gchar *name)
 }
 
 GObject *
-chupa_module_instantiate(ChupaModule *module,
-                         const gchar *first_property, va_list var_args)
+chupa_module_create_factory(ChupaModule *module,
+                            const gchar *first_property,
+                            va_list var_args)
 {
     GObject *object = NULL;
     ChupaModulePrivate *priv;
 
     priv = CHUPA_MODULE_GET_PRIVATE(module);
     if (g_type_module_use(G_TYPE_MODULE(module))) {
-        object = priv->instantiate(first_property, var_args);
+        object = priv->create_factory(first_property, var_args);
         g_type_module_unuse(G_TYPE_MODULE(module));
     }
 
@@ -313,7 +315,7 @@ ChupaModule *
 chupa_module_new(const gchar *name,
                  ChupaModuleInitFunc init,
                  ChupaModuleExitFunc exit,
-                 ChupaModuleInstantiateFunc instantiate)
+                 ChupaModuleCreateFactoryFunc create_factory)
 {
     ChupaModule *module = g_object_new(CHUPA_TYPE_MODULE, NULL);
     ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(module);
@@ -324,7 +326,7 @@ chupa_module_new(const gchar *name,
 
     priv->init = init;
     priv->exit = exit;
-    priv->instantiate = instantiate;
+    priv->create_factory = create_factory;
 
     return module;
 }

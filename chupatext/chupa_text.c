@@ -21,7 +21,6 @@
 #include "chupatext/chupa_text.h"
 #include "chupatext/chupa_decomposer.h"
 #include "chupatext/chupa_dispatcher.h"
-#include "chupatext/chupa_module_factory_utils.h"
 
 #define CHUPA_TEXT_GET_PRIVATE(obj)                        \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                    \

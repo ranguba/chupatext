@@ -21,7 +21,7 @@
 #include <glib.h>
 
 #include "chupa_private.h"
-#include "chupa_module_factory_utils.h"
+#include "chupa_decomposer_factory.h"
 #include "chupa_logger.h"
 
 void *chupa_stack_base;
@@ -82,7 +82,7 @@ chupa_init(void *address)
     delegate_glib_log_handlers();
     chupa_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("ChupaText");
 
-    chupa_module_factory_init();
+    chupa_decomposer_factory_init();
 }
 
 void
@@ -91,7 +91,7 @@ chupa_quit(void)
     if (!initialized)
         return;
 
-    chupa_module_factory_quit();
+    chupa_decomposer_factory_quit();
 
     remove_glib_log_handlers();
     g_log_remove_handler("ChupaText", chupa_log_handler_id);

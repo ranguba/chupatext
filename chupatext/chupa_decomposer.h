@@ -55,15 +55,12 @@ struct _ChupaDecomposerClass
     gboolean (*feed)(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
 };
 
-GType        chupa_decomposer_get_type(void) G_GNUC_CONST;
+GType            chupa_decomposer_get_type (void) G_GNUC_CONST;
 
-ChupaDecomposer *chupa_decomposer_new    (const gchar *name,
-                                          const gchar *first_property,
-                                          ...);
-gboolean         chupa_decomposer_feed   (ChupaDecomposer *dec,
-                                          ChupaText       *text,
-                                          ChupaTextInput  *input,
-                                          GError         **error);
+gboolean         chupa_decomposer_feed    (ChupaDecomposer *dec,
+                                           ChupaText       *text,
+                                           ChupaTextInput  *input,
+                                           GError         **error);
 
 G_END_DECLS
 

@@ -38,7 +38,7 @@ struct _ChupaModuleDescriptionPrivate
     gchar *name;
     gchar *label;
     GList *mime_types;
-    ChupaModuleFactory *factory;
+    ChupaDecomposerFactory *factory;
 };
 
 enum
@@ -87,9 +87,9 @@ chupa_module_description_class_init (ChupaModuleDescriptionClass *klass)
     g_object_class_install_property(gobject_class, PROP_LABEL, spec);
 
     spec = g_param_spec_object("factory",
-                               "The factory of the module",
-                               "The factory of the module",
-                               CHUPA_TYPE_MODULE_FACTORY,
+                               "The factory of the decomposer",
+                               "The factory of the decomposer",
+                               CHUPA_TYPE_DECOMPOSER_FACTORY,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_FACTORY, spec);
 
@@ -245,14 +245,15 @@ chupa_module_description_add_mime_type (ChupaModuleDescription *description,
     priv->mime_types = g_list_append(priv->mime_types, g_strdup(mime_type));
 }
 
-ChupaModuleFactory *
+ChupaDecomposerFactory *
 chupa_module_description_get_factory (ChupaModuleDescription *description)
 {
     ChupaModuleDescriptionPrivate *priv;
 
     priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
     if (!priv->factory) {
-        priv->factory = chupa_module_factory_new("decomposer", priv->name, NULL);
+        priv->factory = chupa_decomposer_factory_new("decomposer", priv->name,
+                                                     NULL);
     }
     return priv->factory;
 }

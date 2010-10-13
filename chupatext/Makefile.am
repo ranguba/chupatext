@@ -21,8 +21,7 @@ libchupatext_la_SOURCES =			\
 	chupa_text.c				\
 	chupa_text_input.c			\
 	chupa_module.c				\
-	chupa_module_factory.c			\
-	chupa_module_factory_utils.c		\
+	chupa_decomposer_factory.c		\
 	chupa_module_description.c		\
 	chupa_dispatcher.c			\
 	chupa_text_input_stream.c		\
@@ -54,8 +53,7 @@ chupa_public_headers =				\
 	chupa_decomposer.h			\
 	chupa_metadata.h			\
 	chupa_module.h				\
-	chupa_module_factory.h			\
-	chupa_module_factory_utils.h		\
+	chupa_decomposer_factory.h		\
 	chupa_module_description.h		\
 	chupa_module_impl.h			\
 	chupa_dispatcher.h			\

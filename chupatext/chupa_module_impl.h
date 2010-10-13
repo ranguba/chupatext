@@ -29,14 +29,14 @@ G_BEGIN_DECLS
 
 typedef GList   *(*ChupaModuleInitFunc)(GTypeModule *module);
 typedef void     (*ChupaModuleExitFunc)(void);
-typedef GObject *(*ChupaModuleInstantiateFunc)(const gchar *first_property,
-                                               va_list      var_args);
+typedef GObject *(*ChupaModuleCreateFactoryFunc)(const gchar *first_property,
+                                                 va_list      var_args);
 
 ChupaModule *
 chupa_module_new(const gchar *name,
                  ChupaModuleInitFunc init,
                  ChupaModuleExitFunc exit,
-                 ChupaModuleInstantiateFunc instantiate);
+                 ChupaModuleCreateFactoryFunc create_factory);
 
 G_END_DECLS
 
