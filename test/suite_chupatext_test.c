@@ -34,5 +34,5 @@ chupatext_test_warmup(void)
 void
 chupatext_test_cooldown(void)
 {
-    chupa_cleanup();
+    chupa_quit();
 }

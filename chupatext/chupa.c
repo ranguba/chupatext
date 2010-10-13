@@ -94,6 +94,6 @@ main(int argc, char **argv)
         g_object_unref(input);
     }
     g_object_unref(chupar);
-    chupa_cleanup();
+    chupa_quit();
     return rc;
 }

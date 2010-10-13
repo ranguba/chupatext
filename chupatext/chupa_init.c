@@ -86,7 +86,7 @@ chupa_init(void *address)
 }
 
 void
-chupa_cleanup(void)
+chupa_quit(void)
 {
     if (!initialized)
         return;

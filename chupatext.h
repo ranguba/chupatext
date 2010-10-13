@@ -12,7 +12,7 @@
 G_BEGIN_DECLS
 
 void chupa_init(void *address);
-void chupa_cleanup(void);
+void chupa_quit(void);
 
 int chupa_version(void) G_GNUC_CONST;
 int chupa_commits(void) G_GNUC_CONST;
