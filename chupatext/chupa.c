@@ -151,7 +151,7 @@ main(int argc, char **argv)
         },
         {
             "ignore-errors", 'i', 0, G_OPTION_ARG_NONE, NULL,
-            "ignore errors on input", NULL
+            "ignore errors while extracting", NULL
         },
         {
             "prefix", '\0', 0, G_OPTION_ARG_STRING, NULL,
@@ -203,7 +203,7 @@ main(int argc, char **argv)
             fprintf(stderr, "%s: %s\n", argv[0], err->message);
             g_error_free(err);
             err = NULL;
-            if (!ignore_errors) {
+            if (!input || !ignore_errors) {
                 rc = EXIT_FAILURE;
                 break;
             }
