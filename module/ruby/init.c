@@ -164,6 +164,8 @@ chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input)
     }
     receiver = rb_protect(chupa_ruby_allocate, (VALUE)klassid, &state);
     ptr = DATA_PTR(receiver);
+    g_object_ref(chupar);
+    g_object_ref(input);
     ptr->chupar = chupar;
     ptr->source.input = input;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
