@@ -1,0 +1,22 @@
+#!/bin/sh
+
+: ${GROONGA=groonga} ${CHUPA=chupa}
+db="$1"
+shift
+
+if ! test -f "$db"; then
+    colflags='--flags COLUMN_INDEX|WITH_POSITION'
+    cat <<EOF | $GROONGA -n "$db" 
+table_create chupa --flags TABLE_PAT_KEY|KEY_NORMALIZE --key_type ShortText --default_tokenizer TokenBigram
+column_create --table chupa --name title $colflags --type ShortText
+column_create --table chupa --name charset $colflags --type ShortText
+column_create --table chupa --name body $colflags --type LongText
+EOF
+fi
+
+{
+    echo load --table chupa
+    echo [
+    $CHUPA --json "$@"
+    echo ]
+} | $GROONGA "$db"
