@@ -55,6 +55,7 @@ ChupaTextはPDFやオフィス文書からテキストとメタデータを抽�
   * Poppler
   * wv
   * OpenOffice.org
+  * ruby >= 1.9.2
 
 == 入手方法
 
@@ -72,11 +73,17 @@ tar.gz: ((<URL:http://rubyforge.org/frs/?group_id=8073>))
 
 == 使い方
 
-  % chupa [オプション ...] ファイル
+  % chupa [オプション ...] ファイル ...
 
 ファイルにテキストを抽出したいファイルを指定します。
 
-詳細は((<cutter|"doc/cutter.rd.ja">))を見てください。
+詳細は((<chupa|"doc/chupa.rd.ja">))を見てください。
+
+  % chupamkindex [オプション ...] dbパス ファイル ...
+
+((<groonga|url:http://groonga.org/>))を使って全文検索用データベースを作ります。
+
+詳細は((<chupamkindex|"doc/chupamkindex.rd.ja">))を見てください。
 
 == 感謝
 
