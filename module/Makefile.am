@@ -18,10 +18,10 @@ decomposer_LTLIBRARIES =
 decomposer_LTLIBRARIES += text.la
 decomposer_LTLIBRARIES += tar.la
 decomposer_LTLIBRARIES += zip.la
-if FALSE
 if HAVE_POPPLER_GLIB
 decomposer_LTLIBRARIES += pdf.la
 endif
+if FALSE
 if HAVE_WV
 decomposer_LTLIBRARIES += word.la
 endif

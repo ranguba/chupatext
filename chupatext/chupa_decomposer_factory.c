@@ -34,16 +34,20 @@ static GList *modules = NULL;
 #ifdef G_OS_WIN32
 static gchar *win32_module_dir = NULL;
 #endif
+static GList *factories = NULL;
 
 void
 chupa_decomposer_factory_init (void)
 {
     modules = NULL;
+    factories = NULL;
 }
 
 void
 chupa_decomposer_factory_quit (void)
 {
+    g_list_foreach(factories, (GFunc)g_object_unref, NULL);
+    g_list_free(factories);
     chupa_decomposer_factory_unload();
     chupa_decomposer_factory_set_default_module_dir(NULL);
 }
@@ -209,7 +213,14 @@ chupa_decomposer_factory_exist_module (const gchar *type, const gchar *name)
 typedef struct _ChupaDecomposerFactoryPrivate ChupaDecomposerFactoryPrivate;
 struct _ChupaDecomposerFactoryPrivate
 {
+    gchar *name;
     GList *mime_types;
+};
+
+enum
+{
+    PROP_0,
+    PROP_NAME
 };
 
 #define chupa_decomposer_factory_init init
@@ -219,17 +230,36 @@ G_DEFINE_ABSTRACT_TYPE(ChupaDecomposerFactory,
 #undef chupa_decomposer_factory_init
 
 static void dispose        (GObject         *object);
+static void set_property   (GObject         *object,
+                            guint            prop_id,
+                            const GValue    *value,
+                            GParamSpec      *pspec);
+static void get_property   (GObject         *object,
+                            guint            prop_id,
+                            GValue          *value,
+                            GParamSpec      *pspec);
 
 static void
 chupa_decomposer_factory_class_init (ChupaDecomposerFactoryClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
 
-    g_type_class_add_private(gobject_class, sizeof(ChupaDecomposerFactoryPrivate));
+    spec = g_param_spec_string("name",
+                               "The name of the module",
+                               "The name of the module",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_NAME, spec);
+
+    g_type_class_add_private(gobject_class,
+                             sizeof(ChupaDecomposerFactoryPrivate));
 }
 
 static void
@@ -238,6 +268,7 @@ init (ChupaDecomposerFactory *factory)
     ChupaDecomposerFactoryPrivate *priv;
 
     priv = CHUPA_DECOMPOSER_FACTORY_GET_PRIVATE(factory);
+    priv->name = NULL;
     priv->mime_types = NULL;
 }
 
@@ -247,6 +278,12 @@ dispose(GObject *object)
     ChupaDecomposerFactoryPrivate *priv;
 
     priv = CHUPA_DECOMPOSER_FACTORY_GET_PRIVATE(object);
+
+    if (priv->name) {
+        g_free(priv->name);
+        priv->name = NULL;
+    }
+
     if (priv->mime_types) {
         g_list_foreach(priv->mime_types, (GFunc)g_free, NULL);
         g_list_free(priv->mime_types);
@@ -256,35 +293,90 @@ dispose(GObject *object)
     G_OBJECT_CLASS(chupa_decomposer_factory_parent_class)->dispose(object);
 }
 
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    ChupaDecomposerFactoryPrivate *priv;
+
+    priv = CHUPA_DECOMPOSER_FACTORY_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_NAME:
+        if (priv->name)
+            g_free(priv->name);
+        priv->name = g_value_dup_string(value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    ChupaDecomposerFactoryPrivate *priv;
+
+    priv = CHUPA_DECOMPOSER_FACTORY_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_NAME:
+        g_value_set_string(value, priv->name);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
 ChupaDecomposerFactory *
-chupa_decomposer_factory_new_valist (const gchar *type, const gchar *name,
-                                 const gchar *first_property, va_list var_args)
+chupa_decomposer_factory_new_valist(const gchar *type,
+                                    const gchar *name,
+                                    const gchar *first_property,
+                                    va_list var_args)
 {
     ChupaModule *module;
-    GObject *factory;
+    GObject *new_factory;
+    GList *node;
+
+    for (node = factories; node; node = g_list_next(node)) {
+        ChupaDecomposerFactory *factory = node->data;
+        ChupaDecomposerFactoryPrivate *priv;
+
+        priv = CHUPA_DECOMPOSER_FACTORY_GET_PRIVATE(factory);
+        if (g_str_equal(priv->name, name)) {
+            g_object_ref(factory);
+            return factory;
+        }
+    }
 
     module = chupa_decomposer_factory_load_module(type, name);
     g_return_val_if_fail(module != NULL, NULL);
 
-    factory = chupa_module_create_factory(module, first_property, var_args);
+    new_factory = chupa_module_create_factory(module, first_property, var_args);
+    g_object_set(new_factory, "name", name, NULL);
+    g_object_ref(new_factory);
+    factories = g_list_prepend(factories, new_factory);
 
-    return CHUPA_DECOMPOSER_FACTORY(factory);
+    return CHUPA_DECOMPOSER_FACTORY(new_factory);
 }
 
 ChupaDecomposerFactory *
-chupa_decomposer_factory_new (const gchar *type, const gchar *name,
-                          const gchar *first_property, ...)
+chupa_decomposer_factory_new(const gchar *type,
+                             const gchar *name,
+                             const gchar *first_property,
+                             ...)
 {
-    ChupaModule *module;
-    GObject *factory;
+    ChupaDecomposerFactory *factory;
     va_list var_args;
 
-    module = chupa_decomposer_factory_load_module(type, name);
-    if (!module)
-        return NULL;
-
     va_start(var_args, first_property);
-    factory = chupa_module_create_factory(module, first_property, var_args);
+    factory = chupa_decomposer_factory_new_valist(type, name,
+                                                  first_property, var_args);
     va_end(var_args);
 
     return CHUPA_DECOMPOSER_FACTORY(factory);
