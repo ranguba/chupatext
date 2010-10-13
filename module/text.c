@@ -89,7 +89,7 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
         NULL,           /* class_data */
         sizeof(ChupaTextDecomposer),
         0,
-        (GInstanceInitFunc) NULL,
+        (GInstanceInitFunc)NULL,
     };
     const gchar *type_name = "ChupaTextDecomposer";
 
