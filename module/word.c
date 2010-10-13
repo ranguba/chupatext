@@ -20,6 +20,7 @@
 
 #include <chupatext/chupa_decomposer.h>
 #include <chupatext/chupa_module.h>
+#include <ctype.h>
 #include <glib.h>
 #include <wv.h>
 
@@ -108,6 +109,9 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         return 0;
 
     default:
+        if (eachchar < 256 && iscntrl(eachchar)) {
+            eachchar = ' ';
+        }
         break;
     }
 
