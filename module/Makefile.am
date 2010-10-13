@@ -27,9 +27,7 @@ endif
 if HAVE_GOFFICE
 decomposer_LTLIBRARIES += excel.la
 endif
-if FALSE
 decomposer_LTLIBRARIES += powerpoint.la
-endif
 if HAVE_RUBY
 decomposer_LTLIBRARIES += ruby.la
 endif
