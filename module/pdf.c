@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,21 +20,31 @@
  */
 
 #include <chupatext/chupa_decomposer.h>
+#include <chupatext/chupa_decomposer_factory.h>
 #include <chupatext/chupa_module.h>
 #include <glib.h>
 #include <glib/poppler.h>
 
-#define CHUPA_TYPE_PDF_DECOMPOSER            chupa_type_pdf_decomposer
-#define CHUPA_PDF_DECOMPOSER(obj)            \
-  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_PDF_DECOMPOSER, ChupaPDFDecomposer)
-#define CHUPA_PDF_DECOMPOSER_CLASS(klass)    \
-  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_PDF_DECOMPOSER, ChupaPDFDecomposerClass)
-#define CHUPA_IS_PDF_DECOMPOSER(obj)         \
-  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_PDF_DECOMPOSER)
-#define CHUPA_IS_PDF_DECOMPOSER_CLASS(klass) \
-  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_PDF_DECOMPOSER)
-#define CHUPA_PDF_DECOMPOSER_GET_CLASS(obj)  \
-  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_PDF_DECOMPOSER, ChupaPDFDecomposerClass)
+#define CHUPA_TYPE_PDF_DECOMPOSER \
+    (chupa_type_pdf_decomposer)
+#define CHUPA_PDF_DECOMPOSER(obj)                               \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj),                          \
+                                CHUPA_TYPE_PDF_DECOMPOSER,      \
+                                ChupaPDFDecomposer))
+#define CHUPA_PDF_DECOMPOSER_CLASS(klass)               \
+    (G_TYPE_CHECK_CLASS_CAST((klass),                   \
+                             CHUPA_TYPE_PDF_DECOMPOSER, \
+                             ChupaPDFDecomposerClass)
+#define CHUPA_IS_PDF_DECOMPOSER(obj)                            \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj),                          \
+                                CHUPA_TYPE_PDF_DECOMPOSER))
+#define CHUPA_IS_PDF_DECOMPOSER_CLASS(klass)                    \
+    (G_TYPE_CHECK_CLASS_TYPE((klass),                           \
+                             CHUPA_TYPE_PDF_DECOMPOSER))
+#define CHUPA_PDF_DECOMPOSER_GET_CLASS(obj)                     \
+    (G_TYPE_INSTANCE_GET_CLASS((obj),                           \
+                               CHUPA_TYPE_PDF_DECOMPOSER,       \
+                               ChupaPDFDecomposerClass)
 
 typedef struct _ChupaPDFDecomposer ChupaPDFDecomposer;
 typedef struct _ChupaPDFDecomposerClass ChupaPDFDecomposerClass;
@@ -51,8 +62,8 @@ struct _ChupaPDFDecomposerClass
 static GType chupa_type_pdf_decomposer = 0;
 
 static gboolean
-chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
-                          ChupaTextInput *input, GError **err)
+feed(ChupaDecomposer *dec, ChupaText *chupar,
+     ChupaTextInput *input, GError **err)
 {
     PopplerDocument *doc;
     GMemoryInputStream *mem = NULL;
@@ -111,44 +122,147 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
 }
 
 static void
-chupa_pdf_decomposer_class_init(ChupaPDFDecomposerClass *klass)
+decomposer_class_init(ChupaPDFDecomposerClass *klass)
 {
-    ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
-    super->feed = chupa_pdf_decomposer_feed;
+    ChupaDecomposerClass *decomposer_class;
+
+    decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
+    decomposer_class->feed = feed;
 }
 
-
 static void
-register_type(GTypeModule *type_module)
+decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 {
     static const GTypeInfo info = {
         sizeof(ChupaPDFDecomposerClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) chupa_pdf_decomposer_class_init,
+        (GClassInitFunc)decomposer_class_init,
         NULL,           /* class_finalize */
         NULL,           /* class_data */
         sizeof(ChupaPDFDecomposer),
         0,
-        (GInstanceInitFunc) NULL,
+        (GInstanceInitFunc)NULL,
     };
+    const gchar *type_name = "ChupaPDFDecomposer";
 
     chupa_type_pdf_decomposer =
         g_type_module_register_type(type_module,
                                     CHUPA_TYPE_DECOMPOSER,
-                                    "ChupaPDFDecomposer",
+                                    type_name,
                                     &info, 0);
+
+    *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
 
+
+/* ChupaPDFFactory */
+#define CHUPA_TYPE_PDF_DECOMPOSER_FACTORY \
+    (chupa_type_pdf_decomposer_factory)
+#define CHUPA_PDF_DECOMPOSER_FACTORY(obj)                               \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj),                                  \
+                                CHUPA_TYPE_PDF_DECOMPOSER_FACTORY,      \
+                                ChupaPDFDecomposerFactory))
+#define CHUPA_PDF_DECOMPOSER_FACTORY_CLASS(klass)               \
+    (G_TYPE_CHECK_CLASS_CAST((klass),                           \
+                             CHUPA_TYPE_PDF_DECOMPOSER_FACTORY, \
+                             ChupaPDFDecomposerFactoryClass))
+#define CHUPA_IS_PDF_DECOMPOSER_FACTORY(obj)                            \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj),                                  \
+                                CHUPA_TYPE_PDF_DECOMPOSER_FACTORY))
+#define CHUPA_IS_PDF_DECOMPOSER_FACTORY_CLASS(klass)                    \
+    (G_TYPE_CHECK_CLASS_TYPE((klass),                                   \
+                             CHUPA_TYPE_PDF_DECOMPOSER_FACTORY))
+#define CHUPA_PDF_DECOMPOSER_FACTORY_GET_CLASS(obj)                     \
+    (G_TYPE_INSTANCE_GET_CLASS((obj),                                   \
+                               CHUPA_TYPE_PDF_DECOMPOSER_FACTORY,       \
+                               ChupaPDFDecomposerFactoryClass))
+
+typedef struct _ChupaPDFDecomposerFactory ChupaPDFDecomposerFactory;
+typedef struct _ChupaPDFDecomposerFactoryClass ChupaPDFDecomposerFactoryClass;
+
+struct _ChupaPDFDecomposerFactory
+{
+    ChupaDecomposerFactory     object;
+};
+
+struct _ChupaPDFDecomposerFactoryClass
+{
+    ChupaDecomposerFactoryClass parent_class;
+};
+
+static GType chupa_type_pdf_decomposer_factory = 0;
+static ChupaDecomposerFactoryClass *factory_parent_class;
+
+static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
+static GObject   *create           (ChupaDecomposerFactory *factory,
+                                    const gchar            *label);
+
+static void
+factory_class_init(ChupaDecomposerFactoryClass *klass)
+{
+    GObjectClass *gobject_class;
+    ChupaDecomposerFactoryClass *factory_class;
+
+    factory_parent_class = g_type_class_peek_parent(klass);
+
+    gobject_class = G_OBJECT_CLASS(klass);
+    factory_class = CHUPA_DECOMPOSER_FACTORY_CLASS(klass);
+
+    factory_class->get_mime_types   = get_mime_types;
+    factory_class->create           = create;
+}
+
+static void
+factory_register_type(GTypeModule *type_module, GList **registered_types)
+{
+    static const GTypeInfo info =
+        {
+            sizeof (ChupaPDFDecomposerFactoryClass),
+            (GBaseInitFunc)NULL,
+            (GBaseFinalizeFunc)NULL,
+            (GClassInitFunc)factory_class_init,
+            NULL,           /* class_finalize */
+            NULL,           /* class_data */
+            sizeof(ChupaPDFDecomposerFactory),
+            0,
+            (GInstanceInitFunc)NULL,
+        };
+    const gchar *type_name = "ChupaPDFDecomposerFactory";
+
+    chupa_type_pdf_decomposer_factory =
+        g_type_module_register_type(type_module,
+                                    CHUPA_TYPE_DECOMPOSER_FACTORY,
+                                    type_name,
+                                    &info, 0);
+
+    *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
+}
+
+static GList *
+get_mime_types(ChupaDecomposerFactory *factory)
+{
+    GList *mime_types = NULL;
+
+    mime_types = g_list_prepend(mime_types, g_strdup("application/pdf"));
+
+    return mime_types;
+}
+
+static GObject *
+create(ChupaDecomposerFactory *factory, const gchar *label)
+{
+    return g_object_new(CHUPA_TYPE_PDF_DECOMPOSER, NULL);
+}
+
+/* module entry points */
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
     GList *registered_types = NULL;
 
-    register_type(type_module);
-    registered_types =
-        g_list_prepend(registered_types,
-                       (gchar *)g_type_name(chupa_type_pdf_decomposer));
+    decomposer_register_type(type_module, &registered_types);
+    factory_register_type(type_module, &registered_types);
 
     return registered_types;
 }
@@ -159,8 +273,12 @@ CHUPA_MODULE_IMPL_EXIT(void)
 }
 
 G_MODULE_EXPORT GObject *
-CHUPA_MODULE_IMPL_INSTANTIATE(const gchar *first_property, va_list var_args)
+CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property, va_list var_args)
 {
-    return g_object_new_valist(CHUPA_TYPE_PDF_DECOMPOSER,
+    return g_object_new_valist(CHUPA_TYPE_PDF_DECOMPOSER_FACTORY,
                                first_property, var_args);
 }
+
+/*
+vi:ts=4:nowrap:ai:expandtab:sw=4
+*/
