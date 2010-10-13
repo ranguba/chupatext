@@ -69,7 +69,7 @@ chupa_pdf_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
         g_string_append_len(str, buffer, count);
         if (count < bufsize) break;
     }
-    if (count < 0) {
+    if (count < 0 || !str->len) {
         g_string_free(str, TRUE);
         return FALSE;
     }
