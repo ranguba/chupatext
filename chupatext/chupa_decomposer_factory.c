@@ -32,7 +32,7 @@
 static gchar *module_dir = NULL;
 static GList *modules = NULL;
 #ifdef G_OS_WIN32
-static gchar *win32_factory_module_dir = NULL;
+static gchar *win32_module_dir = NULL;
 #endif
 
 void
@@ -73,17 +73,16 @@ chupa_decomposer_factory_get_module_dir (void)
     if (module_dir)
         return module_dir;
 
-    dir = g_getenv("CHUPA_FACTORY_DIR");
+    dir = g_getenv("CHUPA_DECOMPOSER_DIR");
     if (dir)
         return dir;
 
 #ifdef G_OS_WIN32
-    if (!win32_factory_module_dir)
-        win32_factory_module_dir =
-            chupa_win32_build_factory_module_dir_name(NULL);
-    return win32_factory_module_dir;
+    if (!win32_module_dir)
+        win32_module_dir = chupa_win32_build_factory_module_dir_name(NULL);
+    return win32_module_dir;
 #else
-    return FACTORY_MODULE_DIR;
+    return CHUPA_DECOMPOSER_MODULE_DIR;
 #endif
 }
 

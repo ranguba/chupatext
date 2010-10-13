@@ -35,13 +35,12 @@ libchupatext_la_SOURCES =			\
 	version.c				\
 	$(EMPTY)
 
-AM_CPPFLAGS =						\
-	-DG_LOG_DOMAIN=\"ChupaText\"			\
-	-DCHUPA_LOG_DOMAIN=\"ChupaText\"		\
-	-DCHUPA_MODULE_DIR=\"$(moduledir)\"		\
-	-DDECOMPOSER_MODULE_DIR=\"$(decomposerdir)\"	\
-	-DFACTORY_MODULE_DIR=\"$(factorydir)\"		\
-	-DDESCRIPTIONS_DIR=\"$(descriptionsdir)\"	\
+AM_CPPFLAGS =							\
+	-DG_LOG_DOMAIN=\"ChupaText\"				\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText\"			\
+	-DCHUPA_MODULE_DIR=\"$(moduledir)\"			\
+	-DCHUPA_DECOMPOSER_MODULE_DIR=\"$(decomposerdir)\"	\
+	-DDESCRIPTIONS_DIR=\"$(descriptionsdir)\"		\
 	-D_GNU_SOURCE
 AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
 AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)

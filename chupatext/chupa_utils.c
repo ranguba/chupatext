@@ -127,14 +127,14 @@ chupa_win32_build_module_dir_name (const gchar *type)
 }
 
 gchar *
-chupa_win32_build_factory_module_dir_name (const gchar *type)
+chupa_win32_build_decomposer_module_dir_name (const gchar *type)
 {
-    gchar *module_dir, *factory_module_dir;
+    gchar *module_dir, *decopmoser_module_dir;
 
-    module_dir = chupa_win32_build_module_dir_name("factory");
-    factory_module_dir = g_build_filename(module_dir, type, NULL);
+    module_dir = chupa_win32_build_module_dir_name("decopmoser");
+    decopmoser_module_dir = g_build_filename(module_dir, type, NULL);
     g_free(module_dir);
-    return factory_module_dir;
+    return decopmoser_module_dir;
 }
 #endif
 
