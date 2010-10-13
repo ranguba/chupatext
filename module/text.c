@@ -70,8 +70,10 @@ chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaText *chupar,
 static void
 decomposer_class_init(ChupaTextDecomposerClass *klass)
 {
-    ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
-    super->feed = chupa_text_decomposer_feed;
+    ChupaDecomposerClass *decopmoser_class;
+
+    decopmoser_class = CHUPA_DECOMPOSER_CLASS(klass);
+    decopmoser_class->feed = chupa_text_decomposer_feed;
 }
 
 static void
@@ -198,6 +200,7 @@ create(ChupaDecomposerFactory *factory, const gchar *label)
     return g_object_new(CHUPA_TYPE_TEXT_DECOMPOSER, NULL);
 }
 
+/* module entry points */
 G_MODULE_EXPORT GList *
 CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 {
