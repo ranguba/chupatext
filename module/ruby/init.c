@@ -34,9 +34,9 @@ chupa_ruby_decomposer_get_type(void)
 {
     static volatile gsize chupa_ruby_decomposer_type_id__volatile = 0;
     if (g_once_init_enter(&chupa_ruby_decomposer_type_id__volatile)) {
-        GObject *ruby = G_OBJECT(chupa_decomposer_new("ruby", NULL));
+        GType ruby_decomposer_type = g_type_from_name("ChupaRubyDecomposer");
         g_once_init_leave(&chupa_ruby_decomposer_type_id__volatile,
-                          G_TYPE_FROM_INSTANCE(ruby));
+                          ruby_decomposer_type);
     }
     return chupa_ruby_decomposer_type_id__volatile;
 }
