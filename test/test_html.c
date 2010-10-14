@@ -58,7 +58,7 @@ test_decompose_html_charset_utf8(void)
 {
     ChupaMetadata *metadata = chupa_test_metadata_fixture("sample.html", NULL);
 
-    cut_assert_equal_string("UTF-8", chupa_metadata_get_first_value(metadata, "charset"));
+    cut_assert_null(chupa_metadata_get_first_value(metadata, "charset"));
 }
 
 void
@@ -66,5 +66,5 @@ test_decompose_html_charset_euc_jp(void)
 {
     ChupaMetadata *metadata = chupa_test_metadata_fixture("sample_euc_jp.html", NULL);
 
-    cut_assert_equal_string("UTF-8", chupa_metadata_get_first_value(metadata, "charset"));
+    cut_assert_equal_string("euc-jp", chupa_metadata_get_first_value(metadata, "charset"));
 }
