@@ -65,6 +65,7 @@ chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaText *chupar,
                            ChupaTextInput *input, GError **err)
 {
     chupa_text_decomposed(chupar, input);
+    chupa_text_input_finished(input);
     return TRUE;
 }
 
