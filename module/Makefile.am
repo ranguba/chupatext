@@ -93,6 +93,7 @@ ruby_la_CPPFLAGS =				\
 	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"	\
 	$(RUBY_CPPFLAGS)			\
+	$(RUBY_GLIB2_CFLAGS)			\
 	$(GLIB_CFLAGS)				\
 	$(GSF_CFLAGS)
 ruby_la_LIBADD =				\

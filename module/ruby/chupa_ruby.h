@@ -22,11 +22,12 @@
 #define CHUPA_RUBY_H
 
 #include <chupatext/chupa_decomposer.h>
-#include <chupatext/chupa_module.h>
 #include <chupatext/chupa_memory_input_stream.h>
-#include <glib.h>
+
 #include <ruby.h>
 #include <ruby/encoding.h>
+
+#include <rbglib.h>
 
 /* ruby class */
 typedef struct {
@@ -51,6 +52,7 @@ VALUE chupa_ruby_metadata_new(VALUE klass, ChupaMetadata *metadata, gboolean rea
 #define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
 
 /* decomposer */
+#define CHUPA_TYPE_RUBY_DECOMPOSER            (chupa_ruby_decomposer_get_type ())
 GType chupa_ruby_decomposer_get_type(void);
 #define CHUPA_RUBY_DECOMPOSER(obj)            \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposer)
@@ -62,10 +64,6 @@ GType chupa_ruby_decomposer_get_type(void);
   G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
 #define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)  \
   G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
-
-#ifndef CHUPA_TYPE_RUBY_DECOMPOSER
-#define CHUPA_TYPE_RUBY_DECOMPOSER chupa_ruby_decomposer_get_type()
-#endif
 
 typedef struct _ChupaRubyDecomposer ChupaRubyDecomposer;
 typedef struct _ChupaRubyDecomposerClass ChupaRubyDecomposerClass;
@@ -82,5 +80,7 @@ struct _ChupaRubyDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 };
+
+GType        chupa_ruby_decomposer_get_type       (void);
 
 #endif

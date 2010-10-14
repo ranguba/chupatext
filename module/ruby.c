@@ -19,7 +19,6 @@
  *  MA  02110-1301  USA
  */
 
-#define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
 #include <chupa_ruby.h>
 
 #include <chupatext/chupa_decomposer_module.h>
@@ -32,6 +31,12 @@ enum {
     PROP_CLASS,
     PROP_DUMMY
 };
+
+GType
+chupa_ruby_decomposer_get_type(void)
+{
+    return chupa_type_ruby_decomposer;
+}
 
 typedef struct {
     GError **g_error;

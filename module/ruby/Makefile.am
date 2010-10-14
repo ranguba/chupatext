@@ -1,3 +1,5 @@
+SUBDIRS = lib
+
 AM_LDFLAGS =					\
 	-L$(top_builddir)/chupatext
 AM_CPPFLAGS =					\
@@ -7,7 +9,8 @@ AM_CPPFLAGS =					\
 	$(GLIB_CFLAGS)				\
 	$(GSF_CFLAGS)
 AM_CFLAGS =					\
-	$(RUBY_CFLAGS)
+	$(RUBY_CFLAGS)				\
+	$(RUBY_GLIB2_CFLAGS)
 ARCH_FLAG = $(RUBY_ARCH_FLAG)
 
 noinst_LTLIBRARIES = libchuparuby.la

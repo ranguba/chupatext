@@ -18,7 +18,6 @@
  *  MA  02110-1301  USA
  */
 
-#define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 #include <chupatext/chupa_metadata.h>
 

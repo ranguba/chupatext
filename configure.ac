@@ -164,6 +164,15 @@ AC_SUBST(RUBY_LIBS)
 AC_SUBST(RUBY_ARCH_FLAG)
 AC_SUBST(rubyarch)
 
+if test "$ruby_available" = "yes"; then
+  AC_MSG_CHECKING([for Ruby/GLib2 CFLAGS])
+  RUBY_GLIB2_CFLAGS=$($RUBY -e '
+    ruby_glib2_path = Gem.cache.find_name("glib2").first.full_gem_path
+    print("-I", File.join(ruby_glib2_path, "ext", "glib2"))')
+  AC_MSG_RESULT($RUBY_GLIB2_CFLAGS)
+  AC_SUBST(RUBY_GLIB2_CFLAGS)
+fi
+
 AM_CONDITIONAL([HAVE_RUBY], [test "$ruby_available" = "yes"])
 
 dnl **************************************************************
@@ -188,6 +197,12 @@ AC_SUBST(moduledir)
 decomposerdir='$(moduledir)/decomposer'
 AC_SUBST(decomposerdir)
 
+ruby_libdir='$(pkglibdir)/ruby/chupa'
+AC_SUBST(ruby_libdir)
+
+ruby_decomposerdir='$(ruby_libdir)/decomposer'
+AC_SUBST(ruby_decomposerdir)
+
 descriptionsdir='$(sysconfdir)/$(PACKAGE)/descriptions'
 AC_SUBST(descriptionsdir)
 
@@ -206,6 +221,9 @@ AC_CONFIG_FILES([Makefile
 		 module/Makefile
 		 module/excel/Makefile
 		 module/ruby/Makefile
+		 module/ruby/lib/Makefile
+		 module/ruby/lib/chupa/Makefile
+		 module/ruby/lib/chupa/decomposer/Makefile
 		 binding/Makefile
 		 license/Makefile
 		 apt/Makefile])

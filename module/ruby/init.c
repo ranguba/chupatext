@@ -18,7 +18,6 @@
  *  MA  02110-1301  USA
  */
 
-#define CHUPA_TYPE_RUBY_DECOMPOSER <<<error>>>
 #include "chupa_ruby.h"
 
 extern void Init_chupa(void);
@@ -28,18 +27,6 @@ static VALUE chupa_ruby_source_metadata(VALUE self);
 static VALUE chupa_ruby_gets(VALUE self);
 static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
 static VALUE chupa_ruby_decompose(VALUE self);
-
-GType
-chupa_ruby_decomposer_get_type(void)
-{
-    static volatile gsize chupa_ruby_decomposer_type_id__volatile = 0;
-    if (g_once_init_enter(&chupa_ruby_decomposer_type_id__volatile)) {
-        GType ruby_decomposer_type = g_type_from_name("ChupaRubyDecomposer");
-        g_once_init_leave(&chupa_ruby_decomposer_type_id__volatile,
-                          ruby_decomposer_type);
-    }
-    return chupa_ruby_decomposer_type_id__volatile;
-}
 
 static void
 chupa_ruby_mark(void *ptr)
@@ -120,7 +107,7 @@ chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input)
     ID klassid = 0;
 
     if (klassname) {
-        GString *libname = g_string_new("chupa/");
+        GString *libname = g_string_new("chupa/decomposer/");
         klassname = "HTML"; /* FIXME */
         g_string_append(libname, klassname);
         g_string_ascii_down(libname);
@@ -242,7 +229,11 @@ chupa_ruby_decompose(VALUE self)
 void
 Init_chupa(void)
 {
-    VALUE cChupa = rb_define_class("Chupa", rb_cObject);
+    VALUE cChupa;
+
+    rb_require("chupa/pre_init");
+
+    cChupa = rb_define_class("Chupa", rb_cObject);
     rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
     rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
     rb_define_method(cChupa, "read", chupa_ruby_read, -1);
