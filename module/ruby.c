@@ -33,10 +33,86 @@ enum {
     PROP_DUMMY
 };
 
-static gboolean
-chupa_ruby_feed(chupa_ruby_t *self, GError **error)
+typedef struct {
+    GError **g_error;
+    VALUE error;
+} make_error_arguments;
+
+static VALUE
+make_error_message(VALUE arg)
 {
-    return chupa_text_feed(self->chupar, self->target.input, error);
+    make_error_arguments *ptr = (make_error_arguments *)arg;
+    GError **g_error = ptr->g_error;
+    VALUE error = ptr->error;
+    GString *error_message;
+    VALUE message, class_name, backtrace;
+    long i;
+
+    error_message = g_string_new(NULL);
+    message = rb_funcall(error, rb_intern("message"), 0);
+    class_name = rb_funcall(CLASS_OF(error), rb_intern("to_s"), 0);
+    g_string_append_printf(error_message, "%s (%s)\n",
+                           StringValueCStr(message),
+                           StringValueCStr(class_name));
+    backtrace = rb_funcall(error, rb_intern("backtrace"), 0);
+    for (i = 0; i < RARRAY_LEN(backtrace); i++) {
+        VALUE line = RARRAY_PTR(backtrace)[i];
+        g_string_append_printf(error_message, "%s\n", StringValueCStr(line));
+    }
+    g_set_error(g_error,
+                CHUPA_TEXT_ERROR, CHUPA_TEXT_ERROR_UNKNOWN,
+                "unknown error is occurred: <%s>", error_message->str);
+    g_string_free(error_message, TRUE);
+
+    return Qnil;
+}
+
+typedef struct {
+    VALUE receiver;
+    ID name;
+    int argc;
+    VALUE *argv;
+} funcall_arguments;
+
+static VALUE
+invoke_rb_funcall2(VALUE data)
+{
+    funcall_arguments *arguments = (funcall_arguments *)data;
+
+    return rb_funcall2(arguments->receiver, arguments->name,
+                       arguments->argc, arguments->argv);
+}
+
+static VALUE
+chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_error)
+{
+    VALUE result, error;
+    int state = 0;
+
+    result = rb_protect(func, arg, &state);
+    if (statep) {
+        *statep = state;
+    }
+    if (state && !NIL_P(error = rb_errinfo())) {
+	make_error_arguments error_args;
+	error_args.g_error = g_error;
+	error_args.error = error;
+	rb_protect(make_error_message, (VALUE)&error_args, &state);
+    }
+
+    return result;
+}
+
+static VALUE
+chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error)
+{
+    funcall_arguments call_args;
+
+    call_args.receiver = receiver;
+    call_args.name = mid;
+    call_args.argc = argc;
+    call_args.argv = argv;
+    return chupa_ruby_protect(invoke_rb_funcall2, (VALUE)&call_args, NULL, g_error);
 }
 
 static gboolean
@@ -53,7 +129,9 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     if (!NIL_P(receiver)) {
         VALUE result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, error);
         if (RTEST(result)) {
-            chupa_ruby_feed(DATA_PTR(receiver), error);
+            chupa_ruby_t *self;
+            self = DATA_PTR(receiver);
+            chupa_text_feed(self->chupar, self->target.input, error);
         }
 
         return RTEST(result);
