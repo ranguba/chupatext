@@ -170,46 +170,37 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     GList *node;
     ChupaDecomposerFactory *factory = NULL;
     GString *normalized_type = NULL;
-    gboolean normalized = FALSE;
+    const gchar *sub_type;
     const gchar *label = NULL;
 
+    sub_type = strchr(mime_type, '/');
+    if (sub_type) {
+        sub_type++;
+        if (!g_str_has_prefix(sub_type, "x-")) {
+            normalized_type = g_string_new_len(mime_type,
+                                               sub_type - mime_type);
+            g_string_append(normalized_type, sub_type + 2);
+        }
+    }
+
     priv = CHUPA_DISPATCHER_GET_PRIVATE(dispatcher);
-    for (node = priv->descriptions; !factory && node; node = g_list_next(node)) {
+    for (node = priv->descriptions; node; node = g_list_next(node)) {
         ChupaDecomposerDescription *description = node->data;
         GList *mime_types;
-        const gchar *sub_type;
 
         mime_types = chupa_decomposer_description_get_mime_types(description);
-        for (; !factory && mime_types; mime_types = g_list_next(mime_types)) {
-            if (chupa_utils_string_equal(mime_type, mime_types->data)) {
+        for (; mime_types; mime_types = g_list_next(mime_types)) {
+            if ((chupa_utils_string_equal(mime_type, mime_types->data)) ||
+                (normalized_type &&
+                 chupa_utils_string_equal(normalized_type->str,
+                                          mime_types->data))) {
                 factory = chupa_decomposer_description_get_factory(description);
-            } else {
-                if (!normalized_type) {
-                    if (normalized)
-                        continue;
-                    normalized = TRUE;
-                    sub_type = strchr(mime_type, '/');
-                    if (!sub_type)
-                        continue;
-                    sub_type++;
-                    if (!g_str_has_prefix(sub_type, "x-"))
-                        continue;
-
-                    normalized_type = g_string_new_len(mime_type,
-                                                       sub_type - mime_type);
-                    g_string_append(normalized_type, sub_type + 2);
-
-                    if (!normalized_type)
-                        continue;
-                }
-                if (chupa_utils_string_equal(normalized_type->str,
-                                             mime_types->data)) {
-                    factory = chupa_decomposer_description_get_factory(description);
-                }
+                break;
             }
         }
         if (factory) {
             label = chupa_decomposer_description_get_label(description);
+            break;
         }
     }
 
