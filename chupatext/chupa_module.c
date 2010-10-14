@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "chupatext/config.h"
+#  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
 #include <stdlib.h>
