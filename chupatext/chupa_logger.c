@@ -211,7 +211,7 @@ get_property (GObject    *object,
 ChupaLogLevelFlags
 chupa_log_level_flags_from_string (const gchar *level_name)
 {
-    if (g_str_equal(level_name, "all")) {
+    if (chupa_utils_string_equal(level_name, "all")) {
         return CHUPA_LOG_LEVEL_ALL;
     } else {
         return chupa_utils_flags_from_string(CHUPA_TYPE_LOG_LEVEL_FLAGS,

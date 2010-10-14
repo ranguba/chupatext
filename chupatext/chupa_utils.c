@@ -53,7 +53,7 @@ chupa_utils_flags_from_string (GType        flags_type,
     names = g_strsplit(flags_string, "|", 0);
     flags_class = g_type_class_ref(flags_type);
     for (name = names; *name; name++) {
-        if (g_str_equal(*name, "all")) {
+        if (chupa_utils_string_equal(*name, "all")) {
             flags |= flags_class->mask;
             break;
         } else {
@@ -98,11 +98,19 @@ chupa_utils_guess_console_color_usability (void)
     term = g_getenv("TERM");
     if (term && (g_str_has_suffix(term, "term") ||
                  g_str_has_suffix(term, "term-color") ||
-                 g_str_equal(term, "screen") ||
-                 g_str_equal(term, "linux")))
+                 chupa_utils_string_equal(term, "screen") ||
+                 chupa_utils_string_equal(term, "linux")))
         return TRUE;
 
     return FALSE;
+}
+
+gboolean
+chupa_utils_string_equal(const gchar *string1, const gchar *string2)
+{
+    if (!string1 || !string2)
+        return FALSE;
+    return strcmp(string1, string2) == 0;
 }
 
 #ifdef G_OS_WIN32

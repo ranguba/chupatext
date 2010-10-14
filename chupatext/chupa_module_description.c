@@ -242,16 +242,16 @@ chupa_module_description_add_mime_type (ChupaModuleDescription *description,
     ChupaModuleDescriptionPrivate *priv;
 
     priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
-    if (g_str_equal(mime_type, "x-chupatext/x-dynamic")) {
+    if (chupa_utils_string_equal(mime_type, "x-chupatext/x-dynamic")) {
         ChupaDecomposerFactory *factory;
         GList *mime_types, *node;
 
         factory = chupa_module_description_get_factory(description);
         mime_types = chupa_decomposer_factory_get_mime_types(factory);
         for (node = mime_types; node; node = g_list_next(node)) {
-            const gchar *mime_type = node->data;
+            const gchar *dynamic_mime_type = node->data;
             priv->mime_types = g_list_append(priv->mime_types,
-                                             g_strdup(mime_type));
+                                             g_strdup(dynamic_mime_type));
         }
     } else {
         priv->mime_types = g_list_append(priv->mime_types, g_strdup(mime_type));

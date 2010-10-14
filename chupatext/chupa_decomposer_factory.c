@@ -328,7 +328,7 @@ chupa_decomposer_factory_new(const gchar *name)
         ChupaDecomposerFactoryPrivate *priv;
 
         priv = CHUPA_DECOMPOSER_FACTORY_GET_PRIVATE(factory);
-        if (g_str_equal(priv->name, name)) {
+        if (chupa_utils_string_equal(priv->name, name)) {
             g_object_ref(factory);
             return factory;
         }

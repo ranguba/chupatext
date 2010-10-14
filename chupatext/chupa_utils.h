@@ -32,6 +32,8 @@ gint         chupa_utils_enum_from_string
                                               const gchar *enum_string);
 gboolean     chupa_utils_guess_console_color_usability
                                              (void);
+gboolean     chupa_utils_string_equal        (const gchar *string1,
+                                              const gchar *string2);
 
 #ifdef G_OS_WIN32
 const gchar *chupa_win32_base_path           (void);

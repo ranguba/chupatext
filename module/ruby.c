@@ -84,26 +84,26 @@ chupa_ruby_init(void)
 }
 
 static gboolean
-chupa_ruby_feed(chupa_ruby_t *self, GError **g_error)
+chupa_ruby_feed(chupa_ruby_t *self, GError **error)
 {
-    return chupa_text_feed(self->chupar, self->target.input, g_error);
+    return chupa_text_feed(self->chupar, self->target.input, error);
 }
 
 static gboolean
-chupa_ruby_decomposer_feed(ChupaDecomposer *dec, ChupaText *chupar,
-                           ChupaTextInput *input, GError **g_error)
+feed(ChupaDecomposer *decomposer, ChupaText *chupar,
+     ChupaTextInput *input, GError **error)
 {
     VALUE receiver;
     ID id_decompose;
-    ChupaRubyDecomposer *rubydec = CHUPA_RUBY_DECOMPOSER(dec);
+    ChupaRubyDecomposer *rubydec = CHUPA_RUBY_DECOMPOSER(decomposer);
     chupa_ruby_funcs_t *funcs = CHUPA_RUBY_DECOMPOSER_GET_CLASS(rubydec)->funcs;
     CONST_ID(id_decompose, "decompose");
 
     receiver = funcs->new(rubydec->label, chupar, input);
     if (!NIL_P(receiver)) {
-        VALUE result = funcs->funcall(receiver, id_decompose, 0, 0, g_error);
+        VALUE result = funcs->funcall(receiver, id_decompose, 0, 0, error);
         if (RTEST(result)) {
-            chupa_ruby_feed(DATA_PTR(receiver), g_error);
+            chupa_ruby_feed(DATA_PTR(receiver), error);
         }
 
         return RTEST(result);
@@ -173,17 +173,20 @@ get_property (GObject    *object,
 static void
 decomposer_class_init(ChupaRubyDecomposerClass *klass)
 {
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+    GObjectClass *gobject_class;
     GParamSpec *spec;
-    ChupaDecomposerClass *super = CHUPA_DECOMPOSER_CLASS(klass);
+    ChupaDecomposerClass *decomposer_class;
     VALUE cChupa;
 
     decomposer_parent_class = g_type_class_peek_parent(klass);
 
+    gobject_class = G_OBJECT_CLASS(klass);
+    decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
+
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
-    super->feed = chupa_ruby_decomposer_feed;
+    decomposer_class->feed = feed;
 
     spec = g_param_spec_string("class",
                                "The class of the module",

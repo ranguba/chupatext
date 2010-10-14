@@ -27,8 +27,10 @@
 
 #include <gmodule.h>
 
-#include "chupatext/chupa_module.h"
-#include "chupatext/chupa_module_impl.h"
+#include "chupa_module.h"
+#include "chupa_module_impl.h"
+#include "chupa_utils.h"
+
 #if !defined G_PLATFORM_WIN32 && defined HAVE_DLFCN_H
 #include <dlfcn.h>
 #endif
@@ -230,7 +232,7 @@ chupa_module_find(GList *modules, const gchar *name)
     GList *node;
 
     for (node = modules; node; node = g_list_next(node)) {
-        if (strcmp(G_TYPE_MODULE(node->data)->name, name) == 0)
+        if (chupa_utils_string_equal(G_TYPE_MODULE(node->data)->name, name))
             return node->data;
     }
 

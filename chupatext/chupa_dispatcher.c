@@ -28,6 +28,7 @@
 #include "chupa_dispatcher.h"
 #include "chupa_decomposer_factory.h"
 #include "chupa_module_description.h"
+#include "chupa_utils.h"
 
 #define CHUPA_DISPATCHER_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                    \
@@ -180,7 +181,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
 
         mime_types = chupa_module_description_get_mime_types(description);
         for (; !factory && mime_types; mime_types = g_list_next(mime_types)) {
-            if (strcmp(mime_type, mime_types->data) == 0) {
+            if (chupa_utils_string_equal(mime_type, mime_types->data)) {
                 factory = chupa_module_description_get_factory(description);
             } else {
                 if (!normalized_type) {
@@ -201,7 +202,8 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
                     if (!normalized_type)
                         continue;
                 }
-                if (strcmp(normalized_type->str, mime_types->data) == 0) {
+                if (chupa_utils_string_equal(normalized_type->str,
+                                             mime_types->data)) {
                     factory = chupa_module_description_get_factory(description);
                 }
             }
