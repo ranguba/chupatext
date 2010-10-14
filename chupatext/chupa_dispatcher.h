@@ -23,7 +23,7 @@
 
 #include <glib-object.h>
 
-#include "chupatext/chupa_decomposer.h"
+#include "chupa_decomposer.h"
 
 G_BEGIN_DECLS
 

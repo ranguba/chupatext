@@ -23,7 +23,7 @@
 
 #include <gio/gio.h>
 #include <glib-object.h>
-#include "chupatext/chupa_text_input.h"
+#include "chupa_text_input.h"
 
 G_BEGIN_DECLS
 

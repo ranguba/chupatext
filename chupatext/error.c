@@ -18,7 +18,7 @@
  *  MA  02110-1301  USA
  */
 
-#include "chupatext/chupa_text.h"
+#include <chupatext/chupa_text.h>
 
 
 GQuark

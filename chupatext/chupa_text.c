@@ -18,9 +18,9 @@
  *  MA  02110-1301  USA
  */
 
-#include "chupatext/chupa_text.h"
-#include "chupatext/chupa_decomposer.h"
-#include "chupatext/chupa_dispatcher.h"
+#include "chupa_text.h"
+#include "chupa_decomposer.h"
+#include "chupa_dispatcher.h"
 
 #define CHUPA_TEXT_GET_PRIVATE(obj)                        \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                    \

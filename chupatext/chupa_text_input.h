@@ -26,7 +26,7 @@
 #include <gio/gio.h>
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-input-impl.h>
-#include "chupatext/chupa_metadata.h"
+#include <chupatext/chupa_metadata.h>
 
 G_BEGIN_DECLS
 

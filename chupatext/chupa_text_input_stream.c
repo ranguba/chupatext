@@ -18,7 +18,7 @@
  *  MA  02110-1301  USA
  */
 
-#include "chupatext/chupa_text_input_stream.h"
+#include "chupa_text_input_stream.h"
 
 G_DEFINE_TYPE(ChupaTextInputStream, chupa_text_input_stream, G_TYPE_INPUT_STREAM)
 

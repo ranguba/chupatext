@@ -26,11 +26,11 @@
 #include <chupatext/chupa_module.h>
 #include <chupatext/chupa_decomposer_factory.h>
 #include <chupatext/chupa_logger.h>
+#include <chupatext/chupa_memory_input_stream.h>
 #include <goffice/goffice.h>
 #include <gsf/gsf-output-memory.h>
 #include "excel/workbook-view.h"
 #include "excel/command-context-stderr.h"
-#include "chupatext/chupa_memory_input_stream.h"
 
 /* ChupaExcelDecomposer */
 #define CHUPA_TYPE_EXCEL_DECOMPOSER \

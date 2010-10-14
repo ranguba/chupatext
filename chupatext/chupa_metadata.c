@@ -18,7 +18,7 @@
  *  MA  02110-1301  USA
  */
 
-#include "chupatext/chupa_metadata.h"
+#include "chupa_metadata.h"
 
 #define CHUPA_METADATA_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \

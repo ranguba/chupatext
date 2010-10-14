@@ -21,7 +21,7 @@
 #ifndef CHUPATEXT_ARCHIVE_DECOMPOSER_H
 #define CHUPATEXT_ARCHIVE_DECOMPOSER_H
 
-#include "chupatext/chupa_decomposer.h"
+#include <chupatext/chupa_decomposer.h>
 #include <glib.h>
 #include <gsf/gsf-infile.h>
 

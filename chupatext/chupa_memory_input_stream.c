@@ -18,7 +18,7 @@
  *  MA  02110-1301  USA
  */
 
-#include "chupatext/chupa_memory_input_stream.h"
+#include "chupa_memory_input_stream.h"
 #include <string.h>
 
 typedef struct _ChupaMemoryInputStreamPrivate ChupaMemoryInputStreamPrivate;

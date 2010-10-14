@@ -18,8 +18,8 @@
  *  MA  02110-1301  USA
  */
 
-#include "chupatext/chupa_text_input.h"
-#include "chupatext/chupa_text_input_stream.h"
+#include "chupa_text_input.h"
+#include "chupa_text_input_stream.h"
 #include <gio/gio.h>
 #include <gsf/gsf-input-gio.h>
 
