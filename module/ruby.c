@@ -95,11 +95,13 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
 {
     VALUE receiver;
     ID id_decompose;
-    ChupaRubyDecomposer *rubydec = CHUPA_RUBY_DECOMPOSER(decomposer);
-    chupa_ruby_funcs_t *funcs = CHUPA_RUBY_DECOMPOSER_GET_CLASS(rubydec)->funcs;
-    CONST_ID(id_decompose, "decompose");
+    ChupaRubyDecomposer *ruby_decomposer;
+    chupa_ruby_funcs_t *funcs;
 
-    receiver = funcs->new(rubydec->label, chupar, input);
+    CONST_ID(id_decompose, "decompose");
+    ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
+    funcs = CHUPA_RUBY_DECOMPOSER_GET_CLASS(ruby_decomposer)->funcs;
+    receiver = funcs->new(ruby_decomposer->label, chupar, input);
     if (!NIL_P(receiver)) {
         VALUE result = funcs->funcall(receiver, id_decompose, 0, 0, error);
         if (RTEST(result)) {
