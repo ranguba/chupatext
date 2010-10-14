@@ -27,7 +27,7 @@
 
 #include "chupa_dispatcher.h"
 #include "chupa_decomposer_factory.h"
-#include "chupa_module_description.h"
+#include "chupa_decomposer_description.h"
 #include "chupa_utils.h"
 
 #define CHUPA_DISPATCHER_GET_PRIVATE(obj)                  \
@@ -57,7 +57,7 @@ chupa_dispatcher_class_init (ChupaDispatcherClass *klass)
 }
 
 static void
-load_module_descriptions (ChupaDispatcherPrivate *priv)
+load_decomposer_descriptions (ChupaDispatcherPrivate *priv)
 {
     GDir *dir;
     GSList *sorted_paths = NULL;
@@ -82,7 +82,7 @@ load_module_descriptions (ChupaDispatcherPrivate *priv)
     sorted_paths = g_slist_sort(sorted_paths, (GCompareFunc)strcmp);
 
     for (node = sorted_paths; node; node = g_slist_next(node)) {
-        ChupaModuleDescription *description;
+        ChupaDecomposerDescription *description;
         GKeyFile *key_file;
         const gchar *path;
         gchar **groups, **group;
@@ -108,9 +108,9 @@ load_module_descriptions (ChupaDispatcherPrivate *priv)
                 g_error_free(error);
                 continue;
             }
-            description = chupa_module_description_new(name);
+            description = chupa_decomposer_description_new(name);
             g_free(name);
-            chupa_module_description_set_label(description, *group);
+            chupa_decomposer_description_set_label(description, *group);
             mime_types = g_key_file_get_string_list(key_file, *group,
                                                     "mime_types", NULL, &error);
             if (error) {
@@ -119,7 +119,7 @@ load_module_descriptions (ChupaDispatcherPrivate *priv)
                 continue;
             }
             for (mime_type = mime_types; *mime_type; mime_type++) {
-                chupa_module_description_add_mime_type(description, *mime_type);
+                chupa_decomposer_description_add_mime_type(description, *mime_type);
             }
             g_strfreev(mime_types);
             priv->descriptions = g_list_append(priv->descriptions, description);
@@ -139,7 +139,7 @@ chupa_dispatcher_init (ChupaDispatcher *dispatcher)
 
     priv = CHUPA_DISPATCHER_GET_PRIVATE(dispatcher);
     priv->descriptions = NULL;
-    load_module_descriptions(priv);
+    load_decomposer_descriptions(priv);
 }
 
 static void
@@ -175,14 +175,14 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
 
     priv = CHUPA_DISPATCHER_GET_PRIVATE(dispatcher);
     for (node = priv->descriptions; !factory && node; node = g_list_next(node)) {
-        ChupaModuleDescription *description = node->data;
+        ChupaDecomposerDescription *description = node->data;
         GList *mime_types;
         const gchar *sub_type;
 
-        mime_types = chupa_module_description_get_mime_types(description);
+        mime_types = chupa_decomposer_description_get_mime_types(description);
         for (; !factory && mime_types; mime_types = g_list_next(mime_types)) {
             if (chupa_utils_string_equal(mime_type, mime_types->data)) {
-                factory = chupa_module_description_get_factory(description);
+                factory = chupa_decomposer_description_get_factory(description);
             } else {
                 if (!normalized_type) {
                     if (normalized)
@@ -204,12 +204,12 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
                 }
                 if (chupa_utils_string_equal(normalized_type->str,
                                              mime_types->data)) {
-                    factory = chupa_module_description_get_factory(description);
+                    factory = chupa_decomposer_description_get_factory(description);
                 }
             }
         }
         if (factory) {
-            label = chupa_module_description_get_label(description);
+            label = chupa_decomposer_description_get_label(description);
         }
     }
 

@@ -22,18 +22,16 @@
 #  include <chupatext/config.h>
 #endif /* HAVE_CONFIG_H */
 
-#include <string.h>
-#include <glib.h>
+#include "chupa_decomposer_description.h"
+#include "chupa_utils.h"
 
-#include "chupa_module_description.h"
+#define CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(obj)                   \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
+                                 CHUPA_TYPE_DECOMPOSER_DESCRIPTION,     \
+                                 ChupaDecomposerDescriptionPrivate))
 
-#define CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(obj)                  \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                            \
-                                 CHUPA_TYPE_MODULE_DESCRIPTION,    \
-                                 ChupaModuleDescriptionPrivate))
-
-typedef struct _ChupaModuleDescriptionPrivate    ChupaModuleDescriptionPrivate;
-struct _ChupaModuleDescriptionPrivate
+typedef struct _ChupaDecomposerDescriptionPrivate ChupaDecomposerDescriptionPrivate;
+struct _ChupaDecomposerDescriptionPrivate
 {
     gchar *name;
     gchar *label;
@@ -49,7 +47,7 @@ enum
     PROP_FACTORY
 };
 
-G_DEFINE_TYPE(ChupaModuleDescription, chupa_module_description, G_TYPE_OBJECT)
+G_DEFINE_TYPE(ChupaDecomposerDescription, chupa_decomposer_description, G_TYPE_OBJECT)
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -61,7 +59,7 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 static void
-chupa_module_description_class_init (ChupaModuleDescriptionClass *klass)
+chupa_decomposer_description_class_init (ChupaDecomposerDescriptionClass *klass)
 {
     GObjectClass *gobject_class;
     GParamSpec *spec;
@@ -73,15 +71,15 @@ chupa_module_description_class_init (ChupaModuleDescriptionClass *klass)
     gobject_class->get_property = get_property;
 
     spec = g_param_spec_string("name",
-                               "The name of the module",
-                               "The name of the module",
+                               "The name of the decomposer",
+                               "The name of the decomposer",
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
     spec = g_param_spec_string("label",
-                               "The label of the module",
-                               "The label of the module",
+                               "The label of the decomposer",
+                               "The label of the decomposer",
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_LABEL, spec);
@@ -94,15 +92,15 @@ chupa_module_description_class_init (ChupaModuleDescriptionClass *klass)
     g_object_class_install_property(gobject_class, PROP_FACTORY, spec);
 
     g_type_class_add_private(gobject_class,
-                             sizeof(ChupaModuleDescriptionPrivate));
+                             sizeof(ChupaDecomposerDescriptionPrivate));
 }
 
 static void
-chupa_module_description_init (ChupaModuleDescription *description)
+chupa_decomposer_description_init (ChupaDecomposerDescription *description)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description);
     priv->name = NULL;
     priv->label = NULL;
     priv->mime_types = NULL;
@@ -112,9 +110,10 @@ chupa_module_description_init (ChupaModuleDescription *description)
 static void
 dispose(GObject *object)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(object);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(object);
+
     if (priv->name) {
         g_free(priv->name);
         priv->name = NULL;
@@ -136,7 +135,7 @@ dispose(GObject *object)
         priv->factory = NULL;
     }
 
-    G_OBJECT_CLASS(chupa_module_description_parent_class)->dispose(object);
+    G_OBJECT_CLASS(chupa_decomposer_description_parent_class)->dispose(object);
 }
 
 static void
@@ -145,9 +144,9 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(object);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_NAME:
         if (priv->name)
@@ -178,9 +177,9 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(object);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_NAME:
         g_value_set_string(value, priv->name);
@@ -197,56 +196,56 @@ get_property (GObject    *object,
     }
 }
 
-ChupaModuleDescription *
-chupa_module_description_new(const gchar *name)
+ChupaDecomposerDescription *
+chupa_decomposer_description_new(const gchar *name)
 {
-    return g_object_new(CHUPA_TYPE_MODULE_DESCRIPTION,
+    return g_object_new(CHUPA_TYPE_DECOMPOSER_DESCRIPTION,
                         "name", name,
                         NULL);
 }
 
 const gchar *
-chupa_module_description_get_name (ChupaModuleDescription *description)
+chupa_decomposer_description_get_name (ChupaDecomposerDescription *description)
 {
-    return CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description)->name;
+    return CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description)->name;
 }
 
 const gchar *
-chupa_module_description_get_label (ChupaModuleDescription *description)
+chupa_decomposer_description_get_label (ChupaDecomposerDescription *description)
 {
-    return CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description)->label;
+    return CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description)->label;
 }
 
 void
-chupa_module_description_set_label (ChupaModuleDescription *description,
-                                    const gchar *label)
+chupa_decomposer_description_set_label (ChupaDecomposerDescription *description,
+                                        const gchar *label)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description);
     if (priv->label)
         g_free(priv->label);
     priv->label = g_strdup(label);
 }
 
 GList *
-chupa_module_description_get_mime_types (ChupaModuleDescription *description)
+chupa_decomposer_description_get_mime_types (ChupaDecomposerDescription *description)
 {
-    return CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description)->mime_types;
+    return CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description)->mime_types;
 }
 
 void
-chupa_module_description_add_mime_type (ChupaModuleDescription *description,
-                                        const gchar *mime_type)
+chupa_decomposer_description_add_mime_type (ChupaDecomposerDescription *description,
+                                            const gchar *mime_type)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description);
     if (chupa_utils_string_equal(mime_type, "x-chupatext/x-dynamic")) {
         ChupaDecomposerFactory *factory;
         GList *mime_types, *node;
 
-        factory = chupa_module_description_get_factory(description);
+        factory = chupa_decomposer_description_get_factory(description);
         mime_types = chupa_decomposer_factory_get_mime_types(factory);
         for (node = mime_types; node; node = g_list_next(node)) {
             const gchar *dynamic_mime_type = node->data;
@@ -259,11 +258,11 @@ chupa_module_description_add_mime_type (ChupaModuleDescription *description,
 }
 
 ChupaDecomposerFactory *
-chupa_module_description_get_factory (ChupaModuleDescription *description)
+chupa_decomposer_description_get_factory (ChupaDecomposerDescription *description)
 {
-    ChupaModuleDescriptionPrivate *priv;
+    ChupaDecomposerDescriptionPrivate *priv;
 
-    priv = CHUPA_MODULE_DESCRIPTION_GET_PRIVATE(description);
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description);
     if (!priv->factory) {
         priv->factory = chupa_decomposer_factory_new(priv->name);
     }
