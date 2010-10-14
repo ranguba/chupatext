@@ -28,6 +28,7 @@
 
 #include "chupa_module.h"
 #include "chupa_decomposer_factory.h"
+#include "chupa_utils.h"
 
 static gchar *module_dir = NULL;
 static GList *modules = NULL;
@@ -337,7 +338,7 @@ chupa_decomposer_factory_new(const gchar *name)
     module = chupa_decomposer_factory_load_module(name);
     g_return_val_if_fail(module != NULL, NULL);
 
-    new_factory = chupa_module_create_factory(module, name);
+    new_factory = chupa_module_instantiate(module, name);
     g_object_ref(new_factory);
     factories = g_list_prepend(factories, new_factory);
 
