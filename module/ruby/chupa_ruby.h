@@ -45,7 +45,7 @@ typedef struct {
 VALUE chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input);
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 
-VALUE chupa_ruby_metadata_init(VALUE cChupa);
+VALUE chupa_ruby_metadata_init(VALUE mChupa);
 VALUE chupa_ruby_metadata_new(ChupaMetadata *metadata, gboolean readonly);
 
 #define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())

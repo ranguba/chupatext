@@ -225,17 +225,21 @@ chupa_ruby_decompose(VALUE self)
 void
 Init_chupa(void)
 {
-    VALUE cChupa;
+    VALUE mChupa, cBaseDecomposer;
 
     rb_require("chupa/pre_init");
 
-    cChupa = rb_define_class("Chupa", rb_cObject);
-    rb_define_method(cChupa, "decomposed", chupa_ruby_decomposed, 1);
-    rb_define_method(cChupa, "gets", chupa_ruby_gets, 0);
-    rb_define_method(cChupa, "read", chupa_ruby_read, -1);
-    rb_define_method(cChupa, "decompose", chupa_ruby_decompose, 0);
-    rb_define_method(cChupa, "metadata", chupa_ruby_target_metadata, 0);
-    rb_define_method(cChupa, "target_metadata", chupa_ruby_target_metadata, 0);
-    rb_define_method(cChupa, "source_metadata", chupa_ruby_source_metadata, 0);
-    chupa_ruby_metadata_init(cChupa);
+    mChupa = rb_define_module("Chupa");
+    cBaseDecomposer = rb_define_class_under(mChupa, "BaseDecomposer",
+                                            rb_cObject);
+    rb_define_method(cBaseDecomposer, "decomposed", chupa_ruby_decomposed, 1);
+    rb_define_method(cBaseDecomposer, "gets", chupa_ruby_gets, 0);
+    rb_define_method(cBaseDecomposer, "read", chupa_ruby_read, -1);
+    rb_define_method(cBaseDecomposer, "decompose", chupa_ruby_decompose, 0);
+    rb_define_method(cBaseDecomposer, "metadata", chupa_ruby_target_metadata, 0);
+    rb_define_method(cBaseDecomposer, "target_metadata",
+                     chupa_ruby_target_metadata, 0);
+    rb_define_method(cBaseDecomposer, "source_metadata",
+                     chupa_ruby_source_metadata, 0);
+    chupa_ruby_metadata_init(mChupa);
 }

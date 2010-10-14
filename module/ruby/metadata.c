@@ -122,11 +122,11 @@ chupa_metadata_add(VALUE self, VALUE name, VALUE value)
 }
 
 VALUE
-chupa_ruby_metadata_init(VALUE cChupa)
+chupa_ruby_metadata_init(VALUE mChupa)
 {
     VALUE cMetadata;
 
-    cMetadata = G_DEF_CLASS(CHUPA_TYPE_METADATA, "Metadata", cChupa);
+    cMetadata = G_DEF_CLASS(CHUPA_TYPE_METADATA, "Metadata", mChupa);
     rb_define_method(cMetadata, "[]", chupa_metadata_get, 1);
     rb_define_method(cMetadata, "[]=", chupa_metadata_set, 2);
     rb_define_method(cMetadata, "set", chupa_metadata_set, 2);
