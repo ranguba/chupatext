@@ -137,11 +137,7 @@ chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonl
 {
     if (!input->metadata) {
         ChupaMetadata *metadata = chupa_text_input_get_metadata(input->input);
-        VALUE metadata_klass;
-        ID id_Meta;
-        CONST_ID(id_Meta, "Metadata");
-        metadata_klass = rb_const_get(rb_obj_class(self), id_Meta);
-        input->metadata = chupa_ruby_metadata_new(metadata_klass, metadata, readonly);
+        input->metadata = chupa_ruby_metadata_new(metadata, readonly);
     }
     return input->metadata;
 }

@@ -27,7 +27,7 @@
 #include <ruby.h>
 #include <ruby/encoding.h>
 
-#include <rbglib.h>
+#include <rbgobject.h>
 
 /* ruby class */
 typedef struct {
@@ -46,7 +46,7 @@ VALUE chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 
 VALUE chupa_ruby_metadata_init(VALUE cChupa);
-VALUE chupa_ruby_metadata_new(VALUE klass, ChupaMetadata *metadata, gboolean readonly);
+VALUE chupa_ruby_metadata_new(ChupaMetadata *metadata, gboolean readonly);
 
 #define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
 #define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())

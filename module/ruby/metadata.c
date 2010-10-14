@@ -21,76 +21,58 @@
 #include "chupa_ruby.h"
 #include <chupatext/chupa_metadata.h>
 
+#define SELF(self) (CHUPA_METADATA(RVAL2GOBJ(self)))
+
 static VALUE chupa_metadata_get(VALUE self, VALUE name);
 static VALUE chupa_metadata_set(VALUE self, VALUE name, VALUE value);
 static VALUE chupa_metadata_add(VALUE self, VALUE name, VALUE value);
 
-static size_t
-chupa_metadata_memsize(const void *ptr)
-{
-    return ptr ? sizeof(ChupaMetadata) : 0;
-}
-
-static const rb_data_type_t chupa_metadata_type = {
-    "chupa",
-#ifdef HAVE_RB_DATA_TYPE_T_FUNCTION
-    {
-#endif
-        0, g_object_unref, chupa_metadata_memsize,
-#ifdef HAVE_RB_DATA_TYPE_T_FUNCTION
-    },
-#endif
-};
-
-static VALUE
-chupa_metadata_s_allocate(VALUE klass)
-{
-    return TypedData_Wrap_Struct(klass, &chupa_metadata_type, NULL);
-}
-
 #define CHUPA_RUBY_METADATA_READONLY FL_USER1
 
 VALUE
-chupa_ruby_metadata_new(VALUE klass, ChupaMetadata *meta, gboolean readonly)
+chupa_ruby_metadata_new(ChupaMetadata *metadata, gboolean readonly)
 {
-    VALUE obj;
-    g_object_ref(meta);
-    obj = TypedData_Wrap_Struct(klass, &chupa_metadata_type, meta);
+    VALUE self;
+
+    self = GOBJ2RVAL(metadata);
     if (readonly) {
-        FL_SET(obj, CHUPA_RUBY_METADATA_READONLY);
+        FL_SET(self, CHUPA_RUBY_METADATA_READONLY);
     }
-    return obj;
+
+    return self;
 }
 
 static void
-chupa_metadata_writable(VALUE obj)
+chupa_metadata_writable(VALUE self)
 {
-    rb_check_frozen(obj);
-    if (FL_TEST(obj, CHUPA_RUBY_METADATA_READONLY)) {
-        rb_raise(rb_eRuntimeError, "can't modify readonly %s", rb_obj_classname(obj));
+    rb_check_frozen(self);
+    if (FL_TEST(self, CHUPA_RUBY_METADATA_READONLY)) {
+        rb_raise(rb_eRuntimeError, "can't modify readonly %s", rb_obj_classname(self));
     }
 }
 
 VALUE
 chupa_metadata_get(VALUE self, VALUE name)
 {
-    ChupaMetadata *metadata = rb_check_typeddata(self, &chupa_metadata_type);
-    const char *namestr = StringValueCStr(name);
-    const char *valuestr = chupa_metadata_get_first_value(metadata, namestr);
+    ChupaMetadata *metadata;
+    const char *value;
 
-    if (!valuestr) {
+    metadata = SELF(self);
+    value = chupa_metadata_get_first_value(metadata, StringValueCStr(name));
+    if (!value) {
         return Qnil;
     }
-    return rb_utf8_str_new_cstr(valuestr);
+    return rb_utf8_str_new_cstr(value);
 }
 
 VALUE
 chupa_metadata_set(VALUE self, VALUE name, VALUE value)
 {
-    ChupaMetadata *metadata = rb_check_typeddata(self, &chupa_metadata_type);
+    ChupaMetadata *metadata;
     const char *namestr;
     VALUE aryvalue;
 
+    metadata = SELF(self);
     chupa_metadata_writable(self);
     StringValueCStr(name);
     name = rb_str_new_frozen(name);
@@ -116,10 +98,11 @@ chupa_metadata_set(VALUE self, VALUE name, VALUE value)
 VALUE
 chupa_metadata_add(VALUE self, VALUE name, VALUE value)
 {
-    ChupaMetadata *metadata = rb_check_typeddata(self, &chupa_metadata_type);
+    ChupaMetadata *metadata;
     const char *namestr;
     VALUE aryvalue;
 
+    metadata = SELF(self);
     chupa_metadata_writable(self);
     StringValueCStr(name);
     name = rb_str_new_frozen(name);
@@ -141,11 +124,12 @@ chupa_metadata_add(VALUE self, VALUE name, VALUE value)
 VALUE
 chupa_ruby_metadata_init(VALUE cChupa)
 {
-    VALUE cMeta = rb_define_class_under(cChupa, "Metadata", rb_cObject);
-    rb_define_alloc_func(cMeta, chupa_metadata_s_allocate);
-    rb_define_method(cMeta, "[]", chupa_metadata_get, 1);
-    rb_define_method(cMeta, "[]=", chupa_metadata_set, 2);
-    rb_define_method(cMeta, "set", chupa_metadata_set, 2);
-    rb_define_method(cMeta, "add", chupa_metadata_add, 2);
-    return cMeta;
+    VALUE cMetadata;
+
+    cMetadata = G_DEF_CLASS(CHUPA_TYPE_METADATA, "Metadata", cChupa);
+    rb_define_method(cMetadata, "[]", chupa_metadata_get, 1);
+    rb_define_method(cMetadata, "[]=", chupa_metadata_set, 2);
+    rb_define_method(cMetadata, "set", chupa_metadata_set, 2);
+    rb_define_method(cMetadata, "add", chupa_metadata_add, 2);
+    return cMetadata;
 }
