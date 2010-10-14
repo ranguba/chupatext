@@ -32,6 +32,11 @@ G_BEGIN_DECLS
 #define CHUPA_IS_MODULE_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_MODULE)
 #define CHUPA_MODULE_GET_CLASS(obj)  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_MODULE, ChupaModuleClass)
 
+typedef GList   *(*ChupaModuleInitFunc)        (GTypeModule *module);
+typedef void     (*ChupaModuleQuitFunc)        (void);
+typedef GObject *(*ChupaModuleInstantiateFunc) (const gchar *first_property,
+                                                va_list      va_args);
+
 typedef struct _ChupaModule ChupaModule;
 typedef struct _ChupaModuleClass ChupaModuleClass;
 
@@ -45,32 +50,31 @@ struct _ChupaModuleClass
     GTypeModuleClass parent_class;
 };
 
-GType        chupa_module_get_type(void) G_GNUC_CONST;
+GType        chupa_module_get_type       (void) G_GNUC_CONST;
 
-ChupaModule *chupa_module_load_module(const gchar *base_dir,
-                                      const gchar *name);
-GList       *chupa_module_load_modules(const gchar *base_dir);
-GList       *chupa_module_load_modules_unique(const gchar *base_dir,
-                                              GList *modules);
-ChupaModule *chupa_module_find(GList *modules,
-                               const gchar *name);
-
-GObject     *chupa_module_create_factory (ChupaModule *module,
+ChupaModule *chupa_module_load_module    (const gchar *base_dir,
                                           const gchar *name);
+GList       *chupa_module_load_modules   (const gchar *base_dir);
+GList       *chupa_module_load_modules_unique
+                                         (const gchar *base_dir,
+                                          GList       *modules);
+ChupaModule *chupa_module_find           (GList       *modules,
+                                          const gchar *name);
+
 GList       *chupa_module_collect_registered_types
                                          (GList *modules);
 GList       *chupa_module_collect_names  (GList *modules);
 void         chupa_module_unload         (ChupaModule *module);
 gchar       *chupa_module_dir            (void);
 
-#define CHUPA_MODULE_IMPL_INIT           chupa_module_impl_init
-#define CHUPA_MODULE_IMPL_EXIT           chupa_module_impl_exit
-#define CHUPA_MODULE_IMPL_CREATE_FACTORY chupa_module_impl_create_factory
 
-GList   *CHUPA_MODULE_IMPL_INIT          (GTypeModule *module);
-void     CHUPA_MODULE_IMPL_EXIT          (void);
-GObject *CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property,
-                                          va_list      va_args);
+ChupaModule *chupa_module_new            (const gchar *name,
+                                          ChupaModuleInitFunc init,
+                                          ChupaModuleQuitFunc quit,
+                                          ChupaModuleInstantiateFunc instantiate);
+
+GObject     *chupa_module_instantiate    (ChupaModule *module,
+                                          const gchar *name);
 
 G_END_DECLS
 

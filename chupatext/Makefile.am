@@ -54,7 +54,7 @@ chupa_public_headers =				\
 	chupa_module.h				\
 	chupa_decomposer_factory.h		\
 	chupa_decomposer_description.h		\
-	chupa_module_impl.h			\
+	chupa_decomposer_module.h		\
 	chupa_dispatcher.h			\
 	chupa_private.h				\
 	chupa_text.h				\

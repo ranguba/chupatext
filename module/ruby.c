@@ -22,7 +22,7 @@
 #define CHUPA_TYPE_RUBY_DECOMPOSER chupa_type_ruby_decomposer
 #include <chupa_ruby.h>
 
-#include <chupatext/chupa_decomposer_factory.h>
+#include <chupatext/chupa_decomposer_module.h>
 
 static GType chupa_type_ruby_decomposer = 0;
 static ChupaRubyDecomposerClass *decomposer_parent_class;
@@ -330,7 +330,7 @@ create(ChupaDecomposerFactory *factory, const gchar *label)
 
 /* module entry points */
 G_MODULE_EXPORT GList *
-CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
+CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 {
     GList *registered_types = NULL;
 
@@ -341,12 +341,12 @@ CHUPA_MODULE_IMPL_INIT(GTypeModule *type_module)
 }
 
 G_MODULE_EXPORT void
-CHUPA_MODULE_IMPL_EXIT(void)
+CHUPA_DECOMPOSER_QUIT(void)
 {
 }
 
 G_MODULE_EXPORT GObject *
-CHUPA_MODULE_IMPL_CREATE_FACTORY(const gchar *first_property, va_list va_args)
+CHUPA_DECOMPOSER_CREATE_FACTORY(const gchar *first_property, va_list va_args)
 {
     return g_object_new_valist(CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY,
                                first_property, va_args);

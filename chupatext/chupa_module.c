@@ -28,17 +28,21 @@
 #include <gmodule.h>
 
 #include "chupa_module.h"
-#include "chupa_module_impl.h"
+#include "chupa_decomposer_module.h"
 #include "chupa_utils.h"
 
 #if !defined G_PLATFORM_WIN32 && defined HAVE_DLFCN_H
 #include <dlfcn.h>
 #endif
 
-#define CHUPA_MODULE_GET_PRIVATE(obj) \
-    (G_TYPE_INSTANCE_GET_PRIVATE(obj, \
-                                 CHUPA_TYPE_MODULE, \
+#define CHUPA_MODULE_GET_PRIVATE(obj)                   \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
+                                 CHUPA_TYPE_MODULE,     \
                                  ChupaModulePrivate))
+
+#define INIT_FUNC        CHUPA_DECOMPOSER_INIT
+#define QUIT_FUNC        CHUPA_DECOMPOSER_QUIT
+#define INSTANTIATE_FUNC CHUPA_DECOMPOSER_CREATE_FACTORY
 
 typedef struct _ChupaModulePrivate  ChupaModulePrivate;
 struct _ChupaModulePrivate
@@ -48,8 +52,8 @@ struct _ChupaModulePrivate
     GList        *registered_types;
 
     ChupaModuleInitFunc          init;
-    ChupaModuleExitFunc          exit;
-    ChupaModuleCreateFactoryFunc create_factory;
+    ChupaModuleQuitFunc          quit;
+    ChupaModuleInstantiateFunc   instantiate;
 };
 
 G_DEFINE_TYPE(ChupaModule, chupa_module, G_TYPE_TYPE_MODULE)
@@ -115,14 +119,14 @@ load(GTypeModule *module)
         return FALSE;
 
     if (!_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(CHUPA_MODULE_IMPL_INIT),
+                                 G_STRINGIFY(INIT_FUNC),
                                  (gpointer)&priv->init) ||
         !_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(CHUPA_MODULE_IMPL_EXIT),
-                                 (gpointer)&priv->exit) ||
+                                 G_STRINGIFY(QUIT_FUNC),
+                                 (gpointer)&priv->quit) ||
         !_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(CHUPA_MODULE_IMPL_CREATE_FACTORY),
-                                 (gpointer)&priv->create_factory)) {
+                                 G_STRINGIFY(INSTANTIATE_FUNC),
+                                 (gpointer)&priv->instantiate)) {
         _chupa_module_close(priv->library);
         priv->library = NULL;
         return FALSE;
@@ -142,17 +146,17 @@ cleanup(ChupaModule *module)
 
     priv = CHUPA_MODULE_GET_PRIVATE(module);
 
-    if (!priv->exit)
+    if (!priv->quit)
         return;
 
-    priv->exit();
+    priv->quit();
 
     _chupa_module_close(priv->library);
     priv->library  = NULL;
 
     priv->init = NULL;
-    priv->exit = NULL;
-    priv->create_factory = NULL;
+    priv->quit = NULL;
+    priv->instantiate = NULL;
 
     g_list_free(priv->registered_types);
     priv->registered_types = NULL;
@@ -240,20 +244,20 @@ chupa_module_find(GList *modules, const gchar *name)
 }
 
 static GObject *
-create_factory(ChupaModulePrivate *priv, const gchar *first_property, ...)
+instantiate(ChupaModulePrivate *priv, const gchar *first_property, ...)
 {
     GObject *factory;
     va_list va_args;
 
     va_start(va_args, first_property);
-    factory = priv->create_factory(first_property, va_args);
+    factory = priv->instantiate(first_property, va_args);
     va_end(va_args);
 
     return factory;
 }
 
 GObject *
-chupa_module_create_factory(ChupaModule *module,
+chupa_module_instantiate(ChupaModule *module,
                             const gchar *name)
 {
     GObject *object = NULL;
@@ -261,7 +265,7 @@ chupa_module_create_factory(ChupaModule *module,
 
     priv = CHUPA_MODULE_GET_PRIVATE(module);
     if (g_type_module_use(G_TYPE_MODULE(module))) {
-        object = create_factory(priv, "name", name, NULL);
+        object = instantiate(priv, "name", name, NULL);
         g_type_module_unuse(G_TYPE_MODULE(module));
     }
 
@@ -328,8 +332,8 @@ chupa_module_stem_name(const gchar *name)
 ChupaModule *
 chupa_module_new(const gchar *name,
                  ChupaModuleInitFunc init,
-                 ChupaModuleExitFunc exit,
-                 ChupaModuleCreateFactoryFunc create_factory)
+                 ChupaModuleQuitFunc quit,
+                 ChupaModuleInstantiateFunc instantiate)
 {
     ChupaModule *module = g_object_new(CHUPA_TYPE_MODULE, NULL);
     ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(module);
@@ -339,8 +343,8 @@ chupa_module_new(const gchar *name,
     g_free(mod_name);
 
     priv->init = init;
-    priv->exit = exit;
-    priv->create_factory = create_factory;
+    priv->quit = quit;
+    priv->instantiate = instantiate;
 
     return module;
 }

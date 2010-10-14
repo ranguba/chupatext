@@ -18,29 +18,28 @@
  *  MA  02110-1301  USA
  */
 
-#ifndef CHUPA_MODULE_IMPL_H
-#define CHUPA_MODULE_IMPL_H
+#ifndef CHUPA_DECOMPOSER_MODULE_H
+#define CHUPA_DECOMPOSER_MODULE_H
 
 #include <glib-object.h>
 
+#include <chupatext/chupa_decomposer.h>
+#include <chupatext/chupa_decomposer_factory.h>
+
 G_BEGIN_DECLS
 
-#include <chupatext/chupa_module.h>
+#define CHUPA_DECOMPOSER_INIT           chupa_decomposer_init
+#define CHUPA_DECOMPOSER_QUIT           chupa_decomposer_quit
+#define CHUPA_DECOMPOSER_CREATE_FACTORY chupa_decomposer_create_factory
 
-typedef GList   *(*ChupaModuleInitFunc)(GTypeModule *module);
-typedef void     (*ChupaModuleExitFunc)(void);
-typedef GObject *(*ChupaModuleCreateFactoryFunc)(const gchar *first_property,
-                                                 va_list      va_args);
-
-ChupaModule *
-chupa_module_new(const gchar *name,
-                 ChupaModuleInitFunc init,
-                 ChupaModuleExitFunc exit,
-                 ChupaModuleCreateFactoryFunc create_factory);
+GList   *CHUPA_DECOMPOSER_INIT          (GTypeModule *module);
+void     CHUPA_DECOMPOSER_QUIT          (void);
+GObject *CHUPA_DECOMPOSER_CREATE_FACTORY(const gchar *first_property,
+                                         va_list      va_args);
 
 G_END_DECLS
 
-#endif /* CHUPA_MODULE_IMPL_H */
+#endif /* CHUPA_DECOMPOSER_MODULE_H */
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
