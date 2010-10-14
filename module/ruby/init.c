@@ -321,18 +321,6 @@ chupa_ruby_decompose(VALUE self)
 }
 #endif
 
-static const chupa_ruby_funcs_t funcs = {
-    chupa_ruby_new,
-    chupa_ruby_protect,
-    chupa_ruby_funcall,
-};
-
-static VALUE
-make_funcs(void)
-{
-    return Data_Wrap_Struct(rb_cObject, 0, 0, (void *)&funcs);
-}
-
 void
 Init_chupa(void)
 {
@@ -345,5 +333,4 @@ Init_chupa(void)
     rb_define_method(cChupa, "target_metadata", chupa_ruby_target_metadata, 0);
     rb_define_method(cChupa, "source_metadata", chupa_ruby_source_metadata, 0);
     chupa_ruby_metadata_init(cChupa);
-    rb_iv_set(cChupa, "funcs", make_funcs());
 }

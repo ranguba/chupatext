@@ -33,56 +33,6 @@ enum {
     PROP_DUMMY
 };
 
-struct main_args {
-    int argc;
-    char **argv;
-};
-
-int ruby_executable_node(void *n, int *status); /* prototype was missing in 1.9.2 */
-
-VALUE
-chupa_ruby_init(void)
-{
-    extern void *chupa_stack_base;
-    const VALUE *outer_klass = &rb_cObject;
-    ID id_Chupa;
-
-    if (!outer_klass || !*outer_klass) {
-        void Init_chupa(void);
-        int status;
-        int argc;
-        const char *args[6];
-        char **argv;
-        gchar *rubydir, *rubyarchdir;
-        void *node;
-
-        argv = (char **)args;
-        argc = 0;
-        args[argc++] = "chupa";
-        args[argc] = NULL;
-        ruby_sysinit(&argc, &argv);
-        ruby_init_stack(chupa_stack_base);
-        ruby_init();
-        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
-        rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
-        ruby_incpush(rubyarchdir);
-        ruby_incpush(rubydir);
-        g_free(rubyarchdir);
-        g_free(rubydir);
-        argc = 1;
-        args[argc++] = "-e;";
-        args[argc] = NULL;
-        node = ruby_options(argc, argv);
-        if (!ruby_executable_node(node, &status)) {
-            ruby_cleanup(status);
-            return Qnil;
-        }
-        Init_chupa();
-    }
-    CONST_ID(id_Chupa, "Chupa");
-    return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
-}
-
 static gboolean
 chupa_ruby_feed(chupa_ruby_t *self, GError **error)
 {
@@ -96,14 +46,12 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     VALUE receiver;
     ID id_decompose;
     ChupaRubyDecomposer *ruby_decomposer;
-    chupa_ruby_funcs_t *funcs;
 
     CONST_ID(id_decompose, "decompose");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
-    funcs = CHUPA_RUBY_DECOMPOSER_GET_CLASS(ruby_decomposer)->funcs;
-    receiver = funcs->new(ruby_decomposer->label, chupar, input);
+    receiver = chupa_ruby_new(ruby_decomposer->label, chupar, input);
     if (!NIL_P(receiver)) {
-        VALUE result = funcs->funcall(receiver, id_decompose, 0, 0, error);
+        VALUE result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, error);
         if (RTEST(result)) {
             chupa_ruby_feed(DATA_PTR(receiver), error);
         }
@@ -178,7 +126,6 @@ decomposer_class_init(ChupaRubyDecomposerClass *klass)
     GObjectClass *gobject_class;
     GParamSpec *spec;
     ChupaDecomposerClass *decomposer_class;
-    VALUE cChupa;
 
     decomposer_parent_class = g_type_class_peek_parent(klass);
 
@@ -196,12 +143,6 @@ decomposer_class_init(ChupaRubyDecomposerClass *klass)
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CLASS, spec);
-
-    g_return_if_fail(!NIL_P(cChupa = chupa_ruby_init()));
-    {
-        VALUE funcs = rb_iv_get(cChupa, "funcs");
-        klass->funcs = DATA_PTR(funcs);
-    }
 }
 
 static void
@@ -330,6 +271,64 @@ create(ChupaDecomposerFactory *factory, const gchar *label)
                         NULL);
 }
 
+struct main_args {
+    int argc;
+    char **argv;
+};
+
+int ruby_executable_node(void *n, int *status); /* prototype was missing in 1.9.2 */
+
+static VALUE
+chupa_ruby_init(void)
+{
+    extern void *chupa_stack_base;
+    const VALUE *outer_klass = &rb_cObject;
+    ID id_Chupa;
+
+    if (!outer_klass || !*outer_klass) {
+        void Init_chupa(void);
+        int status;
+        int argc;
+        const char *args[6];
+        char **argv;
+        gchar *rubydir, *rubyarchdir;
+        void *node;
+
+        argv = (char **)args;
+        argc = 0;
+        args[argc++] = "chupa";
+        args[argc] = NULL;
+        ruby_sysinit(&argc, &argv);
+        ruby_init_stack(chupa_stack_base);
+        ruby_init();
+        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
+        rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
+        ruby_incpush(rubyarchdir);
+        ruby_incpush(rubydir);
+        g_free(rubyarchdir);
+        g_free(rubydir);
+        argc = 1;
+        args[argc++] = "-e;";
+        args[argc] = NULL;
+        node = ruby_options(argc, argv);
+        if (!ruby_executable_node(node, &status)) {
+            ruby_cleanup(status);
+            return Qnil;
+        }
+        Init_chupa();
+    }
+    CONST_ID(id_Chupa, "Chupa");
+    return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
+}
+
+static void
+init_ruby(void)
+{
+    VALUE cChupa;
+
+    cChupa = chupa_ruby_init();
+}
+
 /* module entry points */
 G_MODULE_EXPORT GList *
 CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
@@ -338,6 +337,8 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 
     decomposer_register_type(type_module, &registered_types);
     factory_register_type(type_module, &registered_types);
+
+    init_ruby();
 
     return registered_types;
 }
