@@ -362,7 +362,6 @@ init_ruby(void)
     const VALUE *outer_klass = &rb_cObject;
 
     if (!outer_klass || !*outer_klass) {
-        void Init_chupa(void);
         int status;
         int argc;
         const char *args[6];
@@ -394,6 +393,7 @@ init_ruby(void)
             return;
         }
         chupa_ruby_init();
+        rb_provide("chupa.so");
     }
 }
 
