@@ -29,28 +29,14 @@
 
 #include <rbgobject.h>
 
-/* ruby class */
-typedef struct {
-    ChupaTextInput *input;
-    VALUE metadata;
-} chupa_ruby_input_t;
-
-typedef struct {
-    ChupaMemoryInputStream *stream;
-    GsfOutputMemory *sink;
-    chupa_ruby_input_t target, source;
-} chupa_ruby_t;
-
-VALUE chupa_ruby_new(const gchar *klassname, ChupaFeeder *feeder, ChupaTextInput *input);
-VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
-
-VALUE chupa_ruby_metadata_init(VALUE mChupa);
-VALUE chupa_ruby_metadata_new(ChupaMetadata *metadata, gboolean readonly);
-
 void  chupa_ruby_init             (void);
 VALUE chupa_ruby_gsf_output_init  (VALUE mGsf);
 VALUE chupa_ruby_feeder_init      (VALUE mChupa);
 VALUE chupa_ruby_text_input_init  (VALUE mChupa);
+VALUE chupa_ruby_metadata_init    (VALUE mChupa);
+
+VALUE chupa_ruby_metadata_new     (ChupaMetadata *metadata,
+                                   gboolean readonly);
 
 #define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
 #define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
