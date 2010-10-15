@@ -20,7 +20,6 @@
 
 #include "chupa_ruby.h"
 
-extern void Init_chupa(void);
 static VALUE chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly);
 static VALUE chupa_ruby_target_metadata(VALUE self);
 static VALUE chupa_ruby_source_metadata(VALUE self);
@@ -155,7 +154,7 @@ chupa_ruby_source_metadata(VALUE self)
 }
 
 void
-Init_chupa(void)
+chupa_ruby_init(void)
 {
     VALUE mGsf, mChupa, cBaseDecomposer;
 

@@ -355,12 +355,11 @@ struct main_args {
 
 int ruby_executable_node(void *n, int *status); /* prototype was missing in 1.9.2 */
 
-static VALUE
-chupa_ruby_init(void)
+static void
+init_ruby(void)
 {
     extern void *chupa_stack_base;
     const VALUE *outer_klass = &rb_cObject;
-    ID id_Chupa;
 
     if (!outer_klass || !*outer_klass) {
         void Init_chupa(void);
@@ -390,20 +389,10 @@ chupa_ruby_init(void)
         node = ruby_options(argc, argv);
         if (!ruby_executable_node(node, &status)) {
             ruby_cleanup(status);
-            return Qnil;
+            return;
         }
-        Init_chupa();
+        chupa_ruby_init();
     }
-    CONST_ID(id_Chupa, "Chupa");
-    return rb_const_get_at(*outer_klass, rb_intern("Chupa"));
-}
-
-static void
-init_ruby(void)
-{
-    VALUE cChupa;
-
-    cChupa = chupa_ruby_init();
 }
 
 /* module entry points */
