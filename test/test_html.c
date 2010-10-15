@@ -65,7 +65,7 @@ test_decompose_html_utf8(void)
 void
 test_decompose_html_euc_jp(void)
 {
-    cut_assert_equal_string("This is a sample.\nサンプル", decompose_fixture("sample_utf8.html", NULL));
+    cut_assert_equal_string("This is a sample.\nサンプル", decompose_fixture("sample_euc_jp.html", NULL));
 }
 
 void
