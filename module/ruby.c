@@ -125,20 +125,14 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaTextInput *input, GError **error)
 {
     VALUE receiver;
-    ID id_decompose;
+    ID id_feed;
     ChupaRubyDecomposer *ruby_decomposer;
 
-    CONST_ID(id_decompose, "decompose");
+    CONST_ID(id_feed, "feed");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
     receiver = chupa_ruby_new(ruby_decomposer->label, feeder, input);
     if (!NIL_P(receiver)) {
-        VALUE result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, error);
-        if (RTEST(result)) {
-            chupa_ruby_t *self;
-            self = DATA_PTR(receiver);
-            chupa_feeder_feed(self->feeder, self->target.input, error);
-        }
-
+        VALUE result = chupa_ruby_funcall(receiver, id_feed, 0, 0, error);
         return RTEST(result);
     }
     else {

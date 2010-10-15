@@ -47,7 +47,6 @@ chupa_ruby_dispose(void *ptr)
 #define DISPOSE(member) \
         (!(obj = (gpointer)ch->member) ? (void)0 : \
          (void)(ch->member = 0, g_object_unref(obj)))
-        DISPOSE(feeder);
         DISPOSE(source.input);
         DISPOSE(target.input);
         DISPOSE(stream);
@@ -120,13 +119,13 @@ chupa_ruby_new(const gchar *klassname, ChupaFeeder *feeder, ChupaTextInput *inpu
         return receiver;
     }
     ptr = rb_check_typeddata(receiver, &chupa_ruby_type);
-    g_object_ref(feeder);
     g_object_ref(input);
-    ptr->feeder = feeder;
+    rb_iv_set(receiver, "@feeder", GOBJ2RVAL(feeder));
     ptr->source.input = input;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
     ptr->stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(ptr->sink));
     ptr->target.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
+    rb_iv_set(receiver, "@target_input", GOBJ2RVAL(ptr->target.input));
     chupa_text_input_set_mime_type(ptr->target.input, "text/plain");
 
     return receiver;
@@ -241,5 +240,8 @@ Init_chupa(void)
                      chupa_ruby_target_metadata, 0);
     rb_define_method(cBaseDecomposer, "source_metadata",
                      chupa_ruby_source_metadata, 0);
+    chupa_ruby_feeder_init(mChupa);
     chupa_ruby_metadata_init(mChupa);
+
+    rb_require("chupa/post_init");
 }

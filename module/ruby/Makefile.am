@@ -18,6 +18,7 @@ noinst_LTLIBRARIES = libchuparuby.la
 libchuparuby_la_SOURCES =			\
 	init.c					\
 	metadata.c				\
+	feeder.c				\
 	chupa_ruby.h
 libchuparuby_la_LIBADD =				\
 	$(RUBY_LDFLAGS)					\
