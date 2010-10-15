@@ -20,7 +20,7 @@ require 'stringio'
 
 class Chupa::HTML < Chupa::BaseDecomposer
   def decompose
-    doc = Nokogiri::HTML.parse(StringIO.new(read, 'rb'))
+    doc = Nokogiri::HTML.parse(StringIO.new(@source.read, "rb"))
     self.metadata["title"] = (doc % "head/title").text
     if encoding = doc.encoding
       self.metadata["charset"] = encoding.downcase

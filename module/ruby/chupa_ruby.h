@@ -49,6 +49,7 @@ VALUE chupa_ruby_metadata_new(ChupaMetadata *metadata, gboolean readonly);
 
 VALUE chupa_ruby_gsf_output_init  (VALUE mGsf);
 VALUE chupa_ruby_feeder_init      (VALUE mChupa);
+VALUE chupa_ruby_text_input_init  (VALUE mChupa);
 
 #define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
 #define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())

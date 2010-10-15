@@ -25,8 +25,6 @@ static VALUE chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gbo
 static VALUE chupa_ruby_target_metadata(VALUE self);
 static VALUE chupa_ruby_source_metadata(VALUE self);
 static VALUE chupa_ruby_gets(VALUE self);
-static VALUE chupa_ruby_read(int argc, VALUE *argv, VALUE self);
-static VALUE chupa_ruby_decompose(VALUE self);
 
 static void
 chupa_ruby_mark(void *ptr)
@@ -121,12 +119,13 @@ chupa_ruby_new(const gchar *klassname, ChupaFeeder *feeder, ChupaTextInput *inpu
     ptr = rb_check_typeddata(receiver, &chupa_ruby_type);
     g_object_ref(input);
     rb_iv_set(receiver, "@feeder", GOBJ2RVAL(feeder));
+    rb_iv_set(receiver, "@source", GOBJ2RVAL(input));
     ptr->source.input = input;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
     rb_iv_set(receiver, "@sink", GOBJ2RVAL(ptr->sink));
     ptr->stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(ptr->sink));
     ptr->target.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
-    rb_iv_set(receiver, "@target_input", GOBJ2RVAL(ptr->target.input));
+    rb_iv_set(receiver, "@target", GOBJ2RVAL(ptr->target.input));
     chupa_text_input_set_mime_type(ptr->target.input, "text/plain");
 
     return receiver;
@@ -172,46 +171,6 @@ chupa_ruby_gets(VALUE self)
     return rb_utf8_str_new(str, (long)length);
 }
 
-VALUE
-chupa_ruby_read(int argc, VALUE *argv, VALUE self)
-{
-    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    GInputStream *input_stream = chupa_text_input_get_stream(ptr->source.input);
-    GDataInputStream *data_input_stream = G_DATA_INPUT_STREAM(input_stream);
-    gsize length;
-    char *str;
-    VALUE buffer;
-    GCancellable *cancellable = NULL;
-    GError **error = NULL;
-
-    switch (argc) {
-      case 0:
-        str = g_data_input_stream_read_until(data_input_stream, "", &length, cancellable, error);
-        return rb_utf8_str_new(str, (long)length);
-        break;
-      case 1:
-        length = NUM2UINT(argv[0]);
-        buffer = rb_utf8_str_new(NULL, (long)length);
-        g_input_stream_read_all(input_stream, RSTRING_PTR(buffer), length, &length, cancellable, error);
-        rb_str_set_len(buffer, (long)length);
-        return buffer;
-      default:
-        rb_raise(rb_eArgError, "wrong number of arguments (%d for 0..1)", argc);
-        return Qnil;            /* not reached */
-    }
-}
-
-#ifdef ABSTRACT_CLASS_RUBY
-#define chupa_ruby_decompose rb_f_notimplement
-#else
-/* provisional implementation */
-VALUE
-chupa_ruby_decompose(VALUE self)
-{
-    return chupa_ruby_decomposed(self, chupa_ruby_read(0, NULL, self));
-}
-#endif
-
 void
 Init_chupa(void)
 {
@@ -226,15 +185,15 @@ Init_chupa(void)
     cBaseDecomposer = rb_define_class_under(mChupa, "BaseDecomposer",
                                             rb_cObject);
     rb_define_method(cBaseDecomposer, "gets", chupa_ruby_gets, 0);
-    rb_define_method(cBaseDecomposer, "read", chupa_ruby_read, -1);
-    rb_define_method(cBaseDecomposer, "decompose", chupa_ruby_decompose, 0);
     rb_define_method(cBaseDecomposer, "metadata", chupa_ruby_target_metadata, 0);
     rb_define_method(cBaseDecomposer, "target_metadata",
                      chupa_ruby_target_metadata, 0);
     rb_define_method(cBaseDecomposer, "source_metadata",
                      chupa_ruby_source_metadata, 0);
-    chupa_ruby_feeder_init(mChupa);
+
     chupa_ruby_metadata_init(mChupa);
+    chupa_ruby_text_input_init(mChupa);
+    chupa_ruby_feeder_init(mChupa);
 
     rb_require("chupa/post_init");
 }
