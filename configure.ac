@@ -96,15 +96,15 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
 dnl **************************************************************
 dnl Check for Packages
 dnl **************************************************************
-PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes], [:])
+PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes])
 AM_CONDITIONAL([HAVE_GSF], [test "$have_gsf" = "yes"])
-PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0, [have_gio_unix=yes], [:])
+PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0, [have_gio_unix=yes])
 AM_CONDITIONAL([HAVE_GIO_UNIX], [test "$have_gio_unix" = "yes"])
-PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes], [:])
+PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
-PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [:])
+PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes])
 AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
-PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [:])
+PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes])
 AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
 
 dnl **************************************************************
@@ -167,9 +167,17 @@ AC_SUBST(rubyarch)
 if test "$ruby_available" = "yes"; then
   AC_MSG_CHECKING([for Ruby/GLib2 CFLAGS])
   RUBY_GLIB2_CFLAGS=$($RUBY -e '
-    ruby_glib2_path = Gem.cache.find_name("glib2").first.full_gem_path
+    ruby_glib2_gem = Gem.cache.find_name("glib2").first
+    exit(false) if ruby_glib2_gem.nil?
+    ruby_glib2_path = ruby_glib2_gem.full_gem_path
     print("-I", File.join(ruby_glib2_path, "ext", "glib2"))')
+  if test $? != 0; then
+    ac_ruby_available="no"
+  fi
   AC_MSG_RESULT($RUBY_GLIB2_CFLAGS)
+  if test $ac_ruby_available = "no"; then
+    AC_MSG_ERROR([no Ruby/GLib2 available])
+  fi
   AC_SUBST(RUBY_GLIB2_CFLAGS)
 fi
 
