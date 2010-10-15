@@ -171,11 +171,11 @@ if test "$ruby_available" = "yes"; then
     exit(false) if ruby_glib2_gem.nil?
     ruby_glib2_path = ruby_glib2_gem.full_gem_path
     print("-I", File.join(ruby_glib2_path, "ext", "glib2"))')
-  if test $? != 0; then
+  if test $? -ne 0; then
     ac_ruby_available="no"
   fi
   AC_MSG_RESULT($RUBY_GLIB2_CFLAGS)
-  if test $ac_ruby_available = "no"; then
+  if test "$ac_ruby_available" = "no"; then
     AC_MSG_ERROR([no Ruby/GLib2 available])
   fi
   AC_SUBST(RUBY_GLIB2_CFLAGS)
