@@ -55,36 +55,6 @@ VALUE chupa_ruby_text_input_init  (VALUE mChupa);
 #define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
 #define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
 
-/* decomposer */
-#define CHUPA_TYPE_RUBY_DECOMPOSER            (chupa_ruby_decomposer_get_type ())
-GType chupa_ruby_decomposer_get_type(void);
-#define CHUPA_RUBY_DECOMPOSER(obj)            \
-  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposer)
-#define CHUPA_RUBY_DECOMPOSER_CLASS(klass)    \
-  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
-#define CHUPA_IS_RUBY_DECOMPOSER(obj)         \
-  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_RUBY_DECOMPOSER)
-#define CHUPA_IS_RUBY_DECOMPOSER_CLASS(klass) \
-  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
-#define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)  \
-  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
-
-typedef struct _ChupaRubyDecomposer ChupaRubyDecomposer;
-typedef struct _ChupaRubyDecomposerClass ChupaRubyDecomposerClass;
-
-struct _ChupaRubyDecomposer
-{
-    ChupaDecomposer object;
-
-    gchar *label;
-    VALUE self;
-};
-
-struct _ChupaRubyDecomposerClass
-{
-    ChupaDecomposerClass parent_class;
-};
-
 GType        chupa_ruby_decomposer_get_type       (void);
 
 #endif

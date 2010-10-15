@@ -15,39 +15,38 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-class Chupa::BaseDecomposer
-  class << self
-    def decomposers
-      @@decomposers
+require 'English'
+require 'pathname'
+
+module Chupa
+  class Loader
+    def initialize
+      @decomposers = []
     end
 
-    @@decomposers = {}
-    def mime_types(*types)
-      types.each do |type|
-        @@decomposers[type] = self
+    def load
+      $LOAD_PATH.each do |path|
+        path = Pathname(path)
+        chupa_decomposer_directory = path + "chupa" + "decomposer"
+        next unless chupa_decomposer_directory.exist?
+        Pathname.glob((chupa_decomposer_directory + "*.rb").to_s).each do |file|
+          if /\.rb\z/ =~ file.basename.to_s
+            require "chupa/decomposer/#{$PREMATCH}"
+          end
+        end
       end
-    end
-  end
-
-  def feed
-    begin
-      success = decompose
-      @feeder.feed(@target) if success
-      success
     rescue Exception
       puts "#{$!.class}:#{$!.message}"
       puts $@
       raise
-      false
     end
-  end
 
-  private
-  def decomposed(data)
-    @sink.write(data)
-  end
-
-  def metadata
-    @target.metadata
+    def decomposer(mime_type)
+      BaseDecomposer.decomposers[mime_type]
+    rescue Exception
+      puts "#{$!.class}:#{$!.message}"
+      puts $@
+      raise
+    end
   end
 end

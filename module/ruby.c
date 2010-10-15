@@ -23,12 +23,42 @@
 
 #include <chupatext/chupa_decomposer_module.h>
 
+/* ChupaRubyDecomposer */
+#define CHUPA_TYPE_RUBY_DECOMPOSER            (chupa_ruby_decomposer_get_type ())
+GType chupa_ruby_decomposer_get_type(void);
+#define CHUPA_RUBY_DECOMPOSER(obj)            \
+  G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposer)
+#define CHUPA_RUBY_DECOMPOSER_CLASS(klass)    \
+  G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
+#define CHUPA_IS_RUBY_DECOMPOSER(obj)         \
+  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_RUBY_DECOMPOSER)
+#define CHUPA_IS_RUBY_DECOMPOSER_CLASS(klass) \
+  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
+#define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)  \
+  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
+
+typedef struct _ChupaRubyDecomposer ChupaRubyDecomposer;
+typedef struct _ChupaRubyDecomposerClass ChupaRubyDecomposerClass;
+
+struct _ChupaRubyDecomposer
+{
+    ChupaDecomposer object;
+
+    VALUE decomposer;
+    gchar *mime_type;
+};
+
+struct _ChupaRubyDecomposerClass
+{
+    ChupaDecomposerClass parent_class;
+};
+
 static GType chupa_type_ruby_decomposer = 0;
 static ChupaRubyDecomposerClass *decomposer_parent_class;
 
 enum {
     PROP_0,
-    PROP_CLASS,
+    PROP_MIME_TYPE,
     PROP_DUMMY
 };
 
@@ -124,26 +154,35 @@ static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaTextInput *input, GError **error)
 {
-    VALUE receiver;
     ID id_feed;
     ChupaRubyDecomposer *ruby_decomposer;
+    VALUE result;
+    VALUE rb_decomposer;
+    GsfOutputMemory *sink;
+    GInputStream *stream;
+    ChupaTextInput *target_input;
 
     CONST_ID(id_feed, "feed");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
-    receiver = chupa_ruby_new(ruby_decomposer->label, feeder, input);
-    if (!NIL_P(receiver)) {
-        VALUE result = chupa_ruby_funcall(receiver, id_feed, 0, 0, error);
-        return RTEST(result);
-    }
-    else {
-        return FALSE;
-    }
+    rb_decomposer = rb_funcall(ruby_decomposer->decomposer, rb_intern("new"), 0, NULL);
+    rb_iv_set(rb_decomposer, "@feeder", GOBJ2RVAL(feeder));
+    rb_iv_set(rb_decomposer, "@source", GOBJ2RVAL(input));
+    sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
+    rb_iv_set(rb_decomposer, "@sink", GOBJ2RVAL(sink));
+    stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(sink));
+    target_input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(stream), chupa_text_input_get_filename(input));
+    rb_iv_set(rb_decomposer, "@target", GOBJ2RVAL(target_input));
+    chupa_text_input_set_mime_type(target_input, "text/plain");
+
+    result = chupa_ruby_funcall(rb_decomposer, id_feed, 0, 0, error);
+    
+    return RTEST(result);
 }
 
 static void
 decomposer_init(ChupaRubyDecomposer *decomposer)
 {
-    decomposer->label = NULL;
+    decomposer->mime_type = NULL;
 }
 
 static void
@@ -152,9 +191,9 @@ dispose(GObject *object)
     ChupaRubyDecomposer *decomposer;
 
     decomposer = CHUPA_RUBY_DECOMPOSER(object);
-    if (decomposer->label) {
-        g_free(decomposer->label);
-        decomposer->label = NULL;
+    if (decomposer->mime_type) {
+        g_free(decomposer->mime_type);
+        decomposer->mime_type = NULL;
     }
 
     G_OBJECT_CLASS(decomposer_parent_class)->dispose(object);
@@ -168,10 +207,10 @@ set_property(GObject *object,
 {
     ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
     switch (prop_id) {
-    case PROP_CLASS:
-        if (obj->label)
-            g_free(obj->label);
-        obj->label = g_value_dup_string(value);
+    case PROP_MIME_TYPE:
+        if (obj->mime_type)
+            g_free(obj->mime_type);
+        obj->mime_type = g_value_dup_string(value);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -188,8 +227,8 @@ get_property (GObject    *object,
     ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
 
     switch (prop_id) {
-    case PROP_CLASS:
-        g_value_set_string(value, obj->label);
+    case PROP_MIME_TYPE:
+        g_value_set_string(value, obj->mime_type);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -214,12 +253,12 @@ decomposer_class_init(ChupaRubyDecomposerClass *klass)
     gobject_class->get_property = get_property;
     decomposer_class->feed = feed;
 
-    spec = g_param_spec_string("class",
-                               "The class of the module",
-                               "The class of the module",
+    spec = g_param_spec_string("mime-type",
+                               "MIME type of the module",
+                               "MIME type of the module",
                                NULL,
                                G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_CLASS, spec);
+    g_object_class_install_property(gobject_class, PROP_MIME_TYPE, spec);
 }
 
 static void
@@ -246,6 +285,15 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 
     *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
+
+static void
+load_decomposer(ChupaRubyDecomposer *decomposer, VALUE loader)
+{
+    VALUE args[1];
+    args[0] = CSTR2RVAL(decomposer->mime_type);
+    decomposer->decomposer = rb_funcall2(loader, rb_intern("decomposer"), 1, args);
+}
+
 
 /* ChupaRubyDecomposerFactory */
 #define CHUPA_TYPE_RUBY_DECOMPOSER_FACTORY \
@@ -275,6 +323,8 @@ typedef struct _ChupaRubyDecomposerFactoryClass ChupaRubyDecomposerFactoryClass;
 struct _ChupaRubyDecomposerFactory
 {
     ChupaDecomposerFactory     object;
+
+    VALUE loader;
 };
 
 struct _ChupaRubyDecomposerFactoryClass
@@ -287,7 +337,8 @@ static ChupaDecomposerFactoryClass *factory_parent_class;
 
 static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
 static GObject   *create           (ChupaDecomposerFactory *factory,
-                                    const gchar            *label);
+                                    const gchar            *label,
+                                    const gchar            *mime_type);
 
 static void
 factory_class_init(ChupaDecomposerFactoryClass *klass)
@@ -305,6 +356,16 @@ factory_class_init(ChupaDecomposerFactoryClass *klass)
 }
 
 static void
+factory_init(ChupaRubyDecomposerFactory *factory)
+{
+    VALUE cLoader;
+    cLoader = rb_const_get(rb_const_get(rb_cObject, rb_intern("Chupa")),
+                           rb_intern("Loader"));
+    factory->loader = rb_funcall2(cLoader, rb_intern("new"), 0, NULL);
+    rb_funcall2(factory->loader, rb_intern("load"), 0, NULL);
+}
+
+static void
 factory_register_type(GTypeModule *type_module, GList **registered_types)
 {
     static const GTypeInfo info =
@@ -317,7 +378,7 @@ factory_register_type(GTypeModule *type_module, GList **registered_types)
             NULL,           /* class_data */
             sizeof(ChupaRubyDecomposerFactory),
             0,
-            (GInstanceInitFunc)NULL,
+            (GInstanceInitFunc)factory_init,
         };
     const gchar *type_name = "ChupaRubyDecomposerFactory";
 
@@ -341,11 +402,14 @@ get_mime_types(ChupaDecomposerFactory *factory)
 }
 
 static GObject *
-create(ChupaDecomposerFactory *factory, const gchar *label)
+create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_type)
 {
-    return g_object_new(CHUPA_TYPE_RUBY_DECOMPOSER,
-                        "class", label,
-                        NULL);
+    GObject *object;
+    object = g_object_new(CHUPA_TYPE_RUBY_DECOMPOSER,
+                          "mime-type", mime_type,
+                          NULL);
+    load_decomposer(CHUPA_RUBY_DECOMPOSER(object), CHUPA_RUBY_DECOMPOSER_FACTORY(factory)->loader);
+    return object;
 }
 
 struct main_args {
@@ -388,10 +452,10 @@ init_ruby(void)
         args[argc++] = "-e;";
         args[argc] = NULL;
         node = ruby_options(argc, argv);
-        if (!ruby_executable_node(node, &status)) {
-            ruby_cleanup(status);
-            return;
-        }
+        /* if (!ruby_executable_node(node, &status)) { */
+        /*     ruby_cleanup(status); */
+        /*     return; */
+        /* } */
         chupa_ruby_init();
         rb_provide("chupa.so");
     }

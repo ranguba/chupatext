@@ -196,7 +196,8 @@ static ChupaDecomposerFactoryClass *factory_parent_class;
 
 static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
 static GObject   *create           (ChupaDecomposerFactory *factory,
-                                    const gchar            *label);
+                                    const gchar            *label,
+                                    const gchar            *mime_type);
 
 static void
 factory_class_init(ChupaDecomposerFactoryClass *klass)
@@ -250,7 +251,7 @@ get_mime_types(ChupaDecomposerFactory *factory)
 }
 
 static GObject *
-create(ChupaDecomposerFactory *factory, const gchar *label)
+create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_type)
 {
     return g_object_new(CHUPA_TYPE_PDF_DECOMPOSER, NULL);
 }

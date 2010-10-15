@@ -173,9 +173,11 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     ChupaDispatcherPrivate *priv;
     GList *node;
     ChupaDecomposerFactory *factory = NULL;
+    GObject *decomposer = NULL;
     GString *normalized_type = NULL;
     const gchar *sub_type;
     const gchar *label = NULL;
+    const gchar *real_mime_type = NULL;
 
     sub_type = strchr(mime_type, '/');
     if (sub_type) {
@@ -194,11 +196,15 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
 
         mime_types = chupa_decomposer_description_get_mime_types(description);
         for (; mime_types; mime_types = g_list_next(mime_types)) {
-            if ((chupa_utils_string_equal(mime_type, mime_types->data)) ||
-                (normalized_type &&
-                 chupa_utils_string_equal(normalized_type->str,
-                                          mime_types->data))) {
+            if ((chupa_utils_string_equal(mime_type, mime_types->data))) {
                 factory = chupa_decomposer_description_get_factory(description);
+                real_mime_type = mime_type;
+                break;
+            } else if (normalized_type &&
+                       chupa_utils_string_equal(normalized_type->str,
+                                                mime_types->data)) {
+                factory = chupa_decomposer_description_get_factory(description);
+                real_mime_type = normalized_type->str;
                 break;
             }
         }
@@ -208,13 +214,18 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
         }
     }
 
+    if (factory) {
+        decomposer = chupa_decomposer_factory_create(factory, label,
+                                                     real_mime_type);
+    }
+
     if (normalized_type)
         g_string_free(normalized_type, TRUE);
 
-    if (!factory)
+    if (!decomposer)
         return NULL;
 
-    return CHUPA_DECOMPOSER(chupa_decomposer_factory_create(factory, label));
+    return CHUPA_DECOMPOSER(decomposer);
 }
 
 /*

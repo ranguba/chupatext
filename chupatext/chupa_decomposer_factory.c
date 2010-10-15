@@ -346,7 +346,9 @@ chupa_decomposer_factory_new(const gchar *name)
 }
 
 GObject *
-chupa_decomposer_factory_create(ChupaDecomposerFactory *factory, const gchar *label)
+chupa_decomposer_factory_create(ChupaDecomposerFactory *factory,
+                                const gchar *label,
+                                const gchar *mime_type)
 {
     ChupaDecomposerFactoryClass *klass;
 
@@ -355,7 +357,7 @@ chupa_decomposer_factory_create(ChupaDecomposerFactory *factory, const gchar *la
     klass = CHUPA_DECOMPOSER_FACTORY_GET_CLASS(factory);
     g_return_val_if_fail(klass->create, NULL);
 
-    return klass->create(factory, label);
+    return klass->create(factory, label, mime_type);
 }
 
 GList *

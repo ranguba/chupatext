@@ -18,6 +18,8 @@
 require 'nokogiri'
 
 class Chupa::HTML < Chupa::BaseDecomposer
+  mime_types "text/html"
+
   def decompose
     doc = Nokogiri::HTML.parse(@source)
     metadata["title"] = (doc % "head/title").text

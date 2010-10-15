@@ -16,3 +16,4 @@
 # MA  02110-1301  USA
 
 require 'chupa/base_decomposer'
+require 'chupa/loader'
