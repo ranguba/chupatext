@@ -24,7 +24,6 @@ extern void Init_chupa(void);
 static VALUE chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly);
 static VALUE chupa_ruby_target_metadata(VALUE self);
 static VALUE chupa_ruby_source_metadata(VALUE self);
-static VALUE chupa_ruby_gets(VALUE self);
 
 static void
 chupa_ruby_mark(void *ptr)
@@ -155,22 +154,6 @@ chupa_ruby_source_metadata(VALUE self)
     return chupa_ruby_make_metadata(self, &ptr->source, TRUE);
 }
 
-VALUE
-chupa_ruby_gets(VALUE self)
-{
-    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    GDataInputStream *input_stream = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(ptr->source.input));
-    gsize length;
-    GCancellable *cancellable = NULL;
-    GError **error = NULL;
-    char *str = g_data_input_stream_read_line(input_stream, &length, cancellable, error);
-
-    if (!str) {
-        return Qnil;
-    }
-    return rb_utf8_str_new(str, (long)length);
-}
-
 void
 Init_chupa(void)
 {
@@ -184,7 +167,6 @@ Init_chupa(void)
     mChupa = rb_define_module("Chupa");
     cBaseDecomposer = rb_define_class_under(mChupa, "BaseDecomposer",
                                             rb_cObject);
-    rb_define_method(cBaseDecomposer, "gets", chupa_ruby_gets, 0);
     rb_define_method(cBaseDecomposer, "metadata", chupa_ruby_target_metadata, 0);
     rb_define_method(cBaseDecomposer, "target_metadata",
                      chupa_ruby_target_metadata, 0);

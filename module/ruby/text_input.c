@@ -23,7 +23,37 @@
 #define SELF(self) (CHUPA_TEXT_INPUT(RVAL2GOBJ(self)))
 
 static VALUE
-read(int argc, VALUE *argv, VALUE self)
+text_input_gets(VALUE self)
+{
+    ChupaTextInput *input;
+    GInputStream *input_stream;
+    GDataInputStream *data_input_stream;
+    VALUE rb_data;
+    gchar *data;
+    gsize length;
+    GCancellable *cancellable = NULL;
+    GError *error = NULL;
+
+    input = SELF(self);
+    input_stream = chupa_text_input_get_stream(input);
+    data_input_stream = G_DATA_INPUT_STREAM(input_stream);
+
+    data = g_data_input_stream_read_line(data_input_stream, &length,
+                                         cancellable, &error);
+    if (error)
+        RAISE_GERROR(error);
+
+    if (!data)
+        return Qnil;
+
+    rb_data = rb_external_str_new_with_enc(data, (long)length,
+                                           rb_ascii8bit_encoding());
+    g_free(data);
+    return rb_data;
+}
+
+static VALUE
+text_input_read(int argc, VALUE *argv, VALUE self)
 {
     ChupaTextInput *input;
     GInputStream *input_stream;
@@ -62,7 +92,7 @@ read(int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
-get_metadata(VALUE self)
+text_input_get_metadata(VALUE self)
 {
     ChupaTextInput *input;
 
@@ -77,8 +107,9 @@ chupa_ruby_text_input_init(VALUE mChupa)
 
     cTextInput = G_DEF_CLASS(CHUPA_TYPE_TEXT_INPUT, "TextInput", mChupa);
 
-    rb_define_method(cTextInput, "read", read, -1);
-    rb_define_method(cTextInput, "metadata", get_metadata, 0);
+    rb_define_method(cTextInput, "gets", text_input_gets, 0);
+    rb_define_method(cTextInput, "read", text_input_read, -1);
+    rb_define_method(cTextInput, "metadata", text_input_get_metadata, 0);
 
     return cTextInput;
 }
