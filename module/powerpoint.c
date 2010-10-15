@@ -120,7 +120,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     input = chupa_text_input_new_from_stream(NULL, in_tmpfile, filename);
     g_object_unref(in_tmpfile);
     chupa_text_input_set_mime_type(input, "application/pdf");
-    result = chupa_text_feed(feeder, input, error);
+    result = chupa_feeder_feed(feeder, input, error);
     g_object_unref(input);
     return result;
 }
