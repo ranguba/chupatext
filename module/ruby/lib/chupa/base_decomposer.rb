@@ -17,9 +17,16 @@
 
 class Chupa::BaseDecomposer
   def feed
-    success = decompose
-    @feeder.feed(@target_input) if success
-    success
+    begin
+      success = decompose
+      @feeder.feed(@target) if success
+      success
+    rescue Exception
+      puts "#{$!.class}:#{$!.message}"
+      puts $@
+      raise
+      false
+    end
   end
 
   private
