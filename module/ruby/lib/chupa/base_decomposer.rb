@@ -33,4 +33,8 @@ class Chupa::BaseDecomposer
   def decomposed(data)
     @sink.write(data)
   end
+
+  def metadata
+    @target.metadata
+  end
 end

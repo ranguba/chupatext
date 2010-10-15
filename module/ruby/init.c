@@ -20,10 +20,6 @@
 
 #include "chupa_ruby.h"
 
-static VALUE chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly);
-static VALUE chupa_ruby_target_metadata(VALUE self);
-static VALUE chupa_ruby_source_metadata(VALUE self);
-
 static void
 chupa_ruby_mark(void *ptr)
 {
@@ -129,34 +125,10 @@ chupa_ruby_new(const gchar *klassname, ChupaFeeder *feeder, ChupaTextInput *inpu
     return receiver;
 }
 
-VALUE
-chupa_ruby_make_metadata(VALUE self, chupa_ruby_input_t *input, gboolean readonly)
-{
-    if (!input->metadata) {
-        ChupaMetadata *metadata = chupa_text_input_get_metadata(input->input);
-        input->metadata = chupa_ruby_metadata_new(metadata, readonly);
-    }
-    return input->metadata;
-}
-
-VALUE
-chupa_ruby_target_metadata(VALUE self)
-{
-    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    return chupa_ruby_make_metadata(self, &ptr->target, FALSE);
-}
-
-VALUE
-chupa_ruby_source_metadata(VALUE self)
-{
-    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-    return chupa_ruby_make_metadata(self, &ptr->source, TRUE);
-}
-
 void
 chupa_ruby_init(void)
 {
-    VALUE mGsf, mChupa, cBaseDecomposer;
+    VALUE mGsf, mChupa;
 
     rb_require("chupa/pre_init");
 
@@ -164,14 +136,6 @@ chupa_ruby_init(void)
     chupa_ruby_gsf_output_init(mGsf);
 
     mChupa = rb_define_module("Chupa");
-    cBaseDecomposer = rb_define_class_under(mChupa, "BaseDecomposer",
-                                            rb_cObject);
-    rb_define_method(cBaseDecomposer, "metadata", chupa_ruby_target_metadata, 0);
-    rb_define_method(cBaseDecomposer, "target_metadata",
-                     chupa_ruby_target_metadata, 0);
-    rb_define_method(cBaseDecomposer, "source_metadata",
-                     chupa_ruby_source_metadata, 0);
-
     chupa_ruby_metadata_init(mChupa);
     chupa_ruby_text_input_init(mChupa);
     chupa_ruby_feeder_init(mChupa);

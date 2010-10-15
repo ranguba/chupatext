@@ -20,9 +20,9 @@ require 'nokogiri'
 class Chupa::HTML < Chupa::BaseDecomposer
   def decompose
     doc = Nokogiri::HTML.parse(@source)
-    self.metadata["title"] = (doc % "head/title").text
+    metadata["title"] = (doc % "head/title").text
     if encoding = doc.encoding
-      self.metadata["charset"] = encoding.downcase
+      metadata["charset"] = encoding.downcase
     end
     decomposed((doc % "body").text.gsub(/^\s+|\s+$/, ''))
   end
