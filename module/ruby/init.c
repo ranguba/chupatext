@@ -123,6 +123,7 @@ chupa_ruby_new(const gchar *klassname, ChupaFeeder *feeder, ChupaTextInput *inpu
     rb_iv_set(receiver, "@feeder", GOBJ2RVAL(feeder));
     ptr->source.input = input;
     ptr->sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
+    rb_iv_set(receiver, "@sink", GOBJ2RVAL(ptr->sink));
     ptr->stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(ptr->sink));
     ptr->target.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(ptr->stream), filename);
     rb_iv_set(receiver, "@target_input", GOBJ2RVAL(ptr->target.input));
@@ -200,16 +201,6 @@ chupa_ruby_read(int argc, VALUE *argv, VALUE self)
     }
 }
 
-VALUE
-chupa_ruby_decomposed(VALUE self, VALUE data)
-{
-    chupa_ruby_t *ptr = rb_check_typeddata(self, &chupa_ruby_type);
-
-    StringValue(data);
-    gsf_output_write(GSF_OUTPUT(ptr->sink), RSTRING_LEN(data), (const guchar *)RSTRING_PTR(data));
-    return data;
-}
-
 #ifdef ABSTRACT_CLASS_RUBY
 #define chupa_ruby_decompose rb_f_notimplement
 #else
@@ -224,14 +215,16 @@ chupa_ruby_decompose(VALUE self)
 void
 Init_chupa(void)
 {
-    VALUE mChupa, cBaseDecomposer;
+    VALUE mGsf, mChupa, cBaseDecomposer;
 
     rb_require("chupa/pre_init");
+
+    mGsf = rb_define_module("Gsf");
+    chupa_ruby_gsf_output_init(mGsf);
 
     mChupa = rb_define_module("Chupa");
     cBaseDecomposer = rb_define_class_under(mChupa, "BaseDecomposer",
                                             rb_cObject);
-    rb_define_method(cBaseDecomposer, "decomposed", chupa_ruby_decomposed, 1);
     rb_define_method(cBaseDecomposer, "gets", chupa_ruby_gets, 0);
     rb_define_method(cBaseDecomposer, "read", chupa_ruby_read, -1);
     rb_define_method(cBaseDecomposer, "decompose", chupa_ruby_decompose, 0);

@@ -21,4 +21,9 @@ class Chupa::BaseDecomposer
     @feeder.feed(@target_input) if success
     success
   end
+
+  private
+  def decomposed(data)
+    @sink.write(data)
+  end
 end
