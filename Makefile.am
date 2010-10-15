@@ -2,6 +2,18 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = build tool data chupatext test binding module license po apt
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA =				\
+	chupatext.pc				\
+	chupatext-excel.pc			\
+	chupatext-pdf.pc			\
+	chupatext-powerpoint.pc			\
+	chupatext-ruby.pc			\
+	chupatext-tar.pc			\
+	chupatext-text.pc			\
+	chupatext-word.pc			\
+	chupatext-zip.pc
+
 pkginclude_HEADERS = chupatext.h
 
 EXTRA_DIST =					\

@@ -218,6 +218,15 @@ AC_SUBST(build_includedir, '$(top_build_prefix)')
 AC_SUBST(top_includedir, '$(top_srcdir)')
 
 AC_CONFIG_FILES([Makefile
+		 chupatext.pc
+		 chupatext-excel.pc
+		 chupatext-pdf.pc
+		 chupatext-powerpoint.pc
+		 chupatext-ruby.pc
+		 chupatext-tar.pc
+		 chupatext-text.pc
+		 chupatext-word.pc
+		 chupatext-zip.pc
 		 po/Makefile.in
 		 build/Makefile
 		 tool/Makefile

@@ -35,3 +35,4 @@ strace.out
 /apt/ubuntu/
 .gdb_history
 /*.tar.gz
+/*.pc
