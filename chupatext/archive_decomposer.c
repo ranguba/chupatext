@@ -80,7 +80,7 @@ constructed(GObject *object)
 #endif
 
 static gboolean
-feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **err)
+feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **err)
 {
     GsfInfile *infile;
     GsfInput *inp;
@@ -105,7 +105,7 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
         if (name) {
             chupa_text_input_set_filename(t, name);
         }
-        result = arch_class->feed_component(chupar, t, err);
+        result = arch_class->feed_component(feeder, t, err);
         g_object_unref(t);
         if (!result) {
             break;
@@ -135,5 +135,5 @@ chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
         ChupaDecomposerClass *decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
         decomposer_class->feed = feed;
     }
-    CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass)->feed_component = chupa_text_feed;
+    CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass)->feed_component = chupa_feeder_feed;
 }

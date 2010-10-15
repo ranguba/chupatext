@@ -59,10 +59,10 @@ struct _ChupaTextDecomposerClass
 static GType chupa_type_text_decomposer = 0;
 
 static gboolean
-chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaText *chupar,
+chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                            ChupaTextInput *input, GError **err)
 {
-    chupa_text_decomposed(chupar, input);
+    chupa_feeder_decomposed(feeder, input);
     chupa_text_input_finished(input);
     return TRUE;
 }

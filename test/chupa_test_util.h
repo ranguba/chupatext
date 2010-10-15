@@ -21,7 +21,7 @@
 #ifndef CHUPA_TEST_UTIL_H
 #define CHUPA_TEST_UTIL_H
 
-#include <chupatext/chupa_text.h>
+#include <chupatext/chupa_feeder.h>
 #include <gio/gio.h>
 
 #include <gcutter.h>
@@ -29,12 +29,12 @@
 
 void chupa_test_setup(void);
 void chupa_test_teardown(void);
-char *chupa_test_decompose_fixture(const char *fixture, GError **err);
-char *chupa_test_decompose_data(const char *text, gsize size, GError **err);
-ChupaTextInput *chupa_test_decomposer_from_data(const char *text, gsize size, GError **err);
-ChupaTextInput *chupa_test_decomposer_from_fixture(const char *fixture, GError **err);
-char *chupa_test_decompose_all(ChupaTextInput *text_input, GError **err);
-ChupaMetadata *chupa_test_decompose_metadata(ChupaTextInput *text_input, GError **err);
-ChupaMetadata *chupa_test_metadata_fixture(const char *fixture, GError **err);
+const gchar *chupa_test_decompose_fixture(const char *fixture, GError **error);
+const gchar *chupa_test_decompose_data(const char *text, gsize size, GError **error);
+ChupaTextInput *chupa_test_decomposer_from_data(const char *text, gsize size, GError **error);
+ChupaTextInput *chupa_test_decomposer_from_fixture(const char *fixture, GError **error);
+const gchar *chupa_test_decompose_all(ChupaTextInput *text_input, GError **error);
+ChupaMetadata *chupa_test_decompose_metadata(ChupaTextInput *text_input, GError **error);
+ChupaMetadata *chupa_test_metadata_fixture(const char *fixture, GError **error);
 
 #endif

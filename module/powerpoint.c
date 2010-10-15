@@ -61,7 +61,7 @@ static GType chupa_type_power_point_decomposer = 0;
 
 #define TMPFILE_BASE "chupa-XXXXXX"
 static gboolean
-feed(ChupaDecomposer *decomposer, ChupaText *chupar,
+feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaTextInput *input, GError **error)
 {
     const char *filename = chupa_text_input_get_filename(input);
@@ -120,7 +120,7 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     input = chupa_text_input_new_from_stream(NULL, in_tmpfile, filename);
     g_object_unref(in_tmpfile);
     chupa_text_input_set_mime_type(input, "application/pdf");
-    result = chupa_text_feed(chupar, input, error);
+    result = chupa_text_feed(feeder, input, error);
     g_object_unref(input);
     return result;
 }

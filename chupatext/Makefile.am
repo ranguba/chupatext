@@ -18,7 +18,7 @@ libchupatext_la_SOURCES =			\
 	chupa_marshalers.h			\
 	chupa_init.c				\
 	chupa_metadata.c			\
-	chupa_text.c				\
+	chupa_feeder.c				\
 	chupa_text_input.c			\
 	chupa_module.c				\
 	chupa_decomposer_factory.c		\
@@ -27,7 +27,6 @@ libchupatext_la_SOURCES =			\
 	chupa_text_input_stream.c		\
 	chupa_memory_input_stream.c		\
 	chupa_logger.c				\
-	error.c					\
 	chupa_decomposer.c			\
 	archive_decomposer.c			\
 	external_decomposer.c			\
@@ -57,7 +56,7 @@ chupa_public_headers =				\
 	chupa_decomposer_module.h		\
 	chupa_dispatcher.h			\
 	chupa_private.h				\
-	chupa_text.h				\
+	chupa_feeder.h				\
 	chupa_text_input.h			\
 	chupa_text_input_stream.h		\
 	chupa_memory_input_stream.h		\

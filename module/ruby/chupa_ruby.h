@@ -36,13 +36,13 @@ typedef struct {
 } chupa_ruby_input_t;
 
 typedef struct {
-    ChupaText *chupar;
+    ChupaFeeder *feeder;
     ChupaMemoryInputStream *stream;
     GsfOutputMemory *sink;
     chupa_ruby_input_t target, source;
 } chupa_ruby_t;
 
-VALUE chupa_ruby_new(const gchar *klassname, ChupaText *chupar, ChupaTextInput *input);
+VALUE chupa_ruby_new(const gchar *klassname, ChupaFeeder *feeder, ChupaTextInput *input);
 VALUE chupa_ruby_decomposed(VALUE self, VALUE data);
 
 VALUE chupa_ruby_metadata_init(VALUE mChupa);

@@ -118,7 +118,7 @@ constructed(GObject *object)
 #endif
 
 static gboolean
-feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **err)
+feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **err)
 {
     GInputStream *inp, *sout = NULL;
     GOutputStream *sin = NULL;
@@ -133,7 +133,7 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
     self_class = CHUPA_EXTERNAL_DECOMPOSER_GET_CLASS(extdec);
     priv = extdec->priv;
     inp = G_INPUT_STREAM(chupa_text_input_get_stream(input));
-    g_return_val_if_fail(self_class->spawn(extdec, chupar, &sin, &sout, err), FALSE);
+    g_return_val_if_fail(self_class->spawn(extdec, feeder, &sin, &sout, err), FALSE);
     if (sin) {
         g_output_stream_splice_async(sin, inp,
                                      G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE|
@@ -147,7 +147,7 @@ feed(ChupaDecomposer *dec, ChupaText *chupar, ChupaTextInput *input, GError **er
                                              chupa_text_input_get_filename(input));
     g_object_unref(sout);
     self_class->set_metadata(extdec, input);
-    result = chupa_text_feed(chupar, input, err);
+    result = chupa_feeder_feed(feeder, input, err);
     g_object_unref(input);
     return result;
 }

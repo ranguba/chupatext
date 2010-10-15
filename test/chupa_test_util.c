@@ -34,15 +34,15 @@ chupa_test_teardown(void)
 #define TAKE_OBJECT(obj) gcut_take_object(G_OBJECT(obj))
 #define TAKE_STRING(str) cut_take_string(str)
 
-char *
-chupa_test_decompose_data(const char *text, gsize size, GError **err)
+const gchar *
+chupa_test_decompose_data(const char *text, gsize size, GError **error)
 {
-    ChupaTextInput *input = chupa_test_decomposer_from_data(text, size, err);
-    return chupa_test_decompose_all(input, err);
+    ChupaTextInput *input = chupa_test_decomposer_from_data(text, size, error);
+    return chupa_test_decompose_all(input, error);
 }
 
 ChupaTextInput *
-chupa_test_decomposer_from_data(const char *text, gsize size, GError **err)
+chupa_test_decomposer_from_data(const char *text, gsize size, GError **error)
 {
     ChupaTextInput *text_input;
     GInputStream *mem;
@@ -52,15 +52,15 @@ chupa_test_decomposer_from_data(const char *text, gsize size, GError **err)
     return text_input;
 }
 
-char *
-chupa_test_decompose_fixture(const char *fixture, GError **err)
+const gchar *
+chupa_test_decompose_fixture(const char *fixture, GError **error)
 {
-    ChupaTextInput *input = chupa_test_decomposer_from_fixture(fixture, err);
-    return chupa_test_decompose_all(input, err);
+    ChupaTextInput *input = chupa_test_decomposer_from_fixture(fixture, error);
+    return chupa_test_decompose_all(input, error);
 }
 
 ChupaTextInput *
-chupa_test_decomposer_from_fixture(const char *fixture, GError **err)
+chupa_test_decomposer_from_fixture(const char *fixture, GError **error)
 {
     ChupaTextInput *text_input;
     gchar *sample_path;
@@ -68,48 +68,48 @@ chupa_test_decomposer_from_fixture(const char *fixture, GError **err)
 
     TAKE_STRING(sample_path = cut_build_fixture_data_path(fixture, NULL));
     TAKE_OBJECT(sample_file = g_file_new_for_path(sample_path));
-    TAKE_OBJECT(text_input = chupa_text_input_new_from_file(NULL, sample_file, err));
+    TAKE_OBJECT(text_input = chupa_text_input_new_from_file(NULL, sample_file,
+                                                            error));
     return text_input;
 }
 
-char *
-chupa_test_decompose_all(ChupaTextInput *text_input, GError **err)
+const gchar *
+chupa_test_decompose_all(ChupaTextInput *text_input, GError **error)
 {
-    ChupaText *chupar;
-    char *str;
+    ChupaFeeder *feeder;
 
     if (!text_input) {
         return NULL;
     }
-    TAKE_OBJECT(chupar = chupa_text_new());
-    TAKE_STRING(str = chupa_text_decompose_all(chupar, text_input, err));
-    return str;
+    feeder = CHUPA_FEEDER(TAKE_OBJECT(chupa_feeder_new()));
+    return TAKE_STRING(chupa_feeder_decompose_all(feeder, text_input, error));
 }
 
 static void
-decomposed_metadata(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+decomposed_metadata(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
 {
     *(ChupaMetadata **)udata = chupa_text_input_get_metadata(input);
 }
 
 ChupaMetadata *
-chupa_test_decompose_metadata(ChupaTextInput *text_input, GError **err)
+chupa_test_decompose_metadata(ChupaTextInput *text_input, GError **error)
 {
-    ChupaText *chupar;
+    ChupaFeeder *feeder;
     ChupaMetadata *metadata = NULL;
 
     if (!text_input) {
         return NULL;
     }
-    TAKE_OBJECT(chupar = chupa_text_new());
-    chupa_text_decompose(chupar, text_input, decomposed_metadata, &metadata, err);
+    feeder = CHUPA_FEEDER(TAKE_OBJECT(chupa_feeder_new()));
+    chupa_feeder_decompose(feeder, text_input, decomposed_metadata,
+                           &metadata, error);
     TAKE_OBJECT(metadata);
     return metadata;
 }
 
 ChupaMetadata *
-chupa_test_metadata_fixture(const char *fixture, GError **err)
+chupa_test_metadata_fixture(const char *fixture, GError **error)
 {
-    ChupaTextInput *input = chupa_test_decomposer_from_fixture(fixture, err);
-    return chupa_test_decompose_metadata(input, err);
+    ChupaTextInput *input = chupa_test_decomposer_from_fixture(fixture, error);
+    return chupa_test_decompose_metadata(input, error);
 }

@@ -53,8 +53,12 @@ chupa_decomposer_class_init(ChupaDecomposerClass *klass)
 }
 
 gboolean
-chupa_decomposer_feed(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err)
+chupa_decomposer_feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
+                      ChupaTextInput *input, GError **error)
 {
-    g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
-    return (*CHUPA_DECOMPOSER_GET_CLASS(dec)->feed)(dec, text, input, err);
+    ChupaDecomposerClass *decomposer_class;
+
+    g_return_val_if_fail(CHUPA_IS_DECOMPOSER(decomposer), FALSE);
+    decomposer_class = CHUPA_DECOMPOSER_GET_CLASS(decomposer);
+    return decomposer_class->feed(decomposer, feeder, input, error);
 }

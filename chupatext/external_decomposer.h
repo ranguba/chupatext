@@ -55,7 +55,7 @@ struct _ChupaExternalDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 
-    gboolean (*spawn)(ChupaExternalDecomposer *dec, ChupaText *chupar,
+    gboolean (*spawn)(ChupaExternalDecomposer *dec, ChupaFeeder *feeder,
                       GOutputStream **stdinput, GInputStream **stdoutput,
                       GError **error);
     void (*set_metadata)(ChupaExternalDecomposer *dec, ChupaTextInput *input);

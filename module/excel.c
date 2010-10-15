@@ -95,7 +95,7 @@ chupa_excel_plain_file_p(GsfInput *source)
 }
 
 static gboolean
-feed(ChupaDecomposer *decomposer, ChupaText *chupar,
+feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaTextInput *input, GError **error)
 {
     GOFileSaver *fs = NULL;
@@ -139,7 +139,7 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     g_object_unref(tmpout);
     input = chupa_text_input_new_from_stream(NULL, tmpinp, chupa_text_input_get_filename(input));
     g_object_unref(tmpinp);
-    chupa_text_decomposed(chupar, input);
+    chupa_feeder_decomposed(feeder, input);
     return TRUE;
 }
 

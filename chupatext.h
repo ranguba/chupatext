@@ -6,7 +6,7 @@
 #ifndef CHUPATEXT_H
 #define CHUPATEXT_H
 
-#include <chupatext/chupa_text.h>
+#include <chupatext/chupa_feeder.h>
 #include <chupatext/chupa_logger.h>
 
 G_BEGIN_DECLS

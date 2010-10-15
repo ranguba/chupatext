@@ -30,7 +30,7 @@ struct output_info {
 };
 
 static void
-output_plain(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+output_plain(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
     struct output_info *uinfo = udata;
@@ -96,7 +96,7 @@ write_quote(const char *str, gsize len, FILE *out)
         write_quote(string, (string) ? strlen(string) : 0, out)
 
 static void
-output_json(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
+output_json(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
 {
     GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
     struct output_info *uinfo = udata;
@@ -127,7 +127,7 @@ output_json(ChupaText *chupar, ChupaTextInput *input, gpointer udata)
 }
 
 static const struct writer_funcs {
-    void (*output)(ChupaText *chupar, ChupaTextInput *input, gpointer udata);
+    void (*output)(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata);
 } plain_writer = {output_plain},
     json_writer = {output_json};
 
@@ -136,7 +136,7 @@ main(int argc, char **argv)
 {
     int i;
     int rc = EXIT_SUCCESS;
-    ChupaText *chupar;
+    ChupaFeeder *feeder;
     GError *err = NULL;
     gboolean json = FALSE;
     gboolean ignore_errors = FALSE;
@@ -185,11 +185,11 @@ main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
 
-    chupa_init(&chupar);
-    chupar = chupa_text_new();
+    chupa_init(&feeder);
+    feeder = chupa_feeder_new();
     writer = json ? &json_writer : &plain_writer;
     uinfo.out = stdout;
-    g_signal_connect(chupar, chupa_text_signal_decomposed,
+    g_signal_connect(feeder, chupa_feeder_signal_decomposed,
                      (GCallback)writer->output, &uinfo);
     --argc;
     ++argv;
@@ -199,7 +199,7 @@ main(int argc, char **argv)
         file = g_file_new_for_commandline_arg(argv[i]);
         input = chupa_text_input_new_from_file(NULL, file, &err);
         g_object_unref(file);
-        if (!input || !chupa_text_feed(chupar, input, &err)) {
+        if (!input || !chupa_feeder_feed(feeder, input, &err)) {
             fprintf(stderr, "%s: %s\n", argv[0], err->message);
             g_error_free(err);
             err = NULL;
@@ -210,7 +210,7 @@ main(int argc, char **argv)
         }
         g_object_unref(input);
     }
-    g_object_unref(chupar);
+    g_object_unref(feeder);
     chupa_quit();
     return rc;
 }

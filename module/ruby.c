@@ -65,7 +65,7 @@ make_error_message(VALUE arg)
         g_string_append_printf(error_message, "%s\n", StringValueCStr(line));
     }
     g_set_error(g_error,
-                CHUPA_TEXT_ERROR, CHUPA_TEXT_ERROR_UNKNOWN,
+                CHUPA_FEEDER_ERROR, CHUPA_FEEDER_ERROR_UNKNOWN,
                 "unknown error is occurred: <%s>", error_message->str);
     g_string_free(error_message, TRUE);
 
@@ -121,7 +121,7 @@ chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_err
 }
 
 static gboolean
-feed(ChupaDecomposer *decomposer, ChupaText *chupar,
+feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaTextInput *input, GError **error)
 {
     VALUE receiver;
@@ -130,13 +130,13 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
 
     CONST_ID(id_decompose, "decompose");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
-    receiver = chupa_ruby_new(ruby_decomposer->label, chupar, input);
+    receiver = chupa_ruby_new(ruby_decomposer->label, feeder, input);
     if (!NIL_P(receiver)) {
         VALUE result = chupa_ruby_funcall(receiver, id_decompose, 0, 0, error);
         if (RTEST(result)) {
             chupa_ruby_t *self;
             self = DATA_PTR(receiver);
-            chupa_text_feed(self->chupar, self->target.input, error);
+            chupa_feeder_feed(self->feeder, self->target.input, error);
         }
 
         return RTEST(result);

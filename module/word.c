@@ -65,7 +65,7 @@ static GType chupa_type_word_decomposer = 0;
 struct char_proc_arg {
     GString *buffer;
     GMemoryInputStream *dest;
-    ChupaText *chupar;
+    ChupaFeeder *feeder;
     ChupaTextInput *input;
     const char *encoding;
 };
@@ -149,15 +149,15 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         g_memory_input_stream_add_data(stream, s->str, s->len, g_free);
         g_string_free(s, FALSE);
         arg->buffer = NULL;
-        if (arg->chupar) {
-            chupa_text_decomposed(arg->chupar, arg->input);
+        if (arg->feeder) {
+            chupa_feeder_decomposed(arg->feeder, arg->input);
         }
     }
     return 0;
 }
 
 static gboolean
-feed(ChupaDecomposer *decomposer, ChupaText *chupar,
+feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaTextInput *input, GError **error)
 {
     struct char_proc_arg arg;
@@ -167,7 +167,7 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
 
     arg.buffer = NULL;
     arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
-    arg.chupar = chupar;
+    arg.feeder = feeder;
     arg.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(arg.dest),
                                                  gsf_input_name(gi));
     arg.encoding = NULL;
@@ -175,9 +175,9 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
     gsf_input_seek(gi, 0, G_SEEK_SET);
     if ((ret = wvInitParser_gsf(&ps, gi)) != 0) {
         g_propagate_error(error,
-                          chupa_text_error_new(CHUPA_TEXT_ERROR_INVALID_INPUT,
-                                               "wvInitParser_gsf failed: %d",
-                                               ret));
+                          chupa_feeder_error_new(CHUPA_FEEDER_ERROR_INVALID_INPUT,
+                                                 "wvInitParser_gsf failed: %d",
+                                                 ret));
         return FALSE;
     }
     ps.userData = &arg;
@@ -193,8 +193,8 @@ feed(ChupaDecomposer *decomposer, ChupaText *chupar,
             ChupaMetadata *meta = chupa_text_input_get_metadata(arg.input);
             chupa_metadata_add_value(meta, "charset", "US-ASCII");
         }
-        if (arg.chupar) {
-            chupa_text_decomposed(chupar, arg.input);
+        if (arg.feeder) {
+            chupa_feeder_decomposed(feeder, arg.input);
         }
     }
     g_object_unref(arg.dest);

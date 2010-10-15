@@ -23,7 +23,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <chupatext/chupa_text.h>
+#include <chupatext/chupa_feeder.h>
 
 G_BEGIN_DECLS
 
@@ -52,13 +52,13 @@ struct _ChupaDecomposerClass
     GObjectClass parent_class;
 
     gboolean (*can_handle)(ChupaDecomposerClass *dec, ChupaTextInput *input, const char *mime_type);
-    gboolean (*feed)(ChupaDecomposer *dec, ChupaText *text, ChupaTextInput *input, GError **err);
+    gboolean (*feed)(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **err);
 };
 
 GType            chupa_decomposer_get_type (void) G_GNUC_CONST;
 
 gboolean         chupa_decomposer_feed    (ChupaDecomposer *dec,
-                                           ChupaText       *text,
+                                           ChupaFeeder     *feeder,
                                            ChupaTextInput  *input,
                                            GError         **error);
 
