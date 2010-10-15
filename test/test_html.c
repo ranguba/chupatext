@@ -22,6 +22,9 @@
 
 void test_decompose_html(void);
 void test_decompose_html_title(void);
+void test_decompose_html_utf8(void);
+void test_decompose_html_euc_jp(void);
+void test_decompose_html_charset_none(void);
 void test_decompose_html_charset_utf8(void);
 void test_decompose_html_charset_euc_jp(void);
 
@@ -42,7 +45,7 @@ teardown(void)
 void
 test_decompose_html(void)
 {
-    cut_assert_equal_string("This is a sample.\nサンプル", decompose_fixture("sample.html", NULL));
+    cut_assert_equal_string("This is a sample.", decompose_fixture("sample.html", NULL));
 }
 
 void
@@ -54,11 +57,31 @@ test_decompose_html_title(void)
 }
 
 void
-test_decompose_html_charset_utf8(void)
+test_decompose_html_utf8(void)
+{
+    cut_assert_equal_string("This is a sample.\nサンプル", decompose_fixture("sample_utf8.html", NULL));
+}
+
+void
+test_decompose_html_euc_jp(void)
+{
+    cut_assert_equal_string("This is a sample.\nサンプル", decompose_fixture("sample_utf8.html", NULL));
+}
+
+void
+test_decompose_html_charset_none(void)
 {
     ChupaMetadata *metadata = chupa_test_metadata_fixture("sample.html", NULL);
 
     cut_assert_null(chupa_metadata_get_first_value(metadata, "charset"));
+}
+
+void
+test_decompose_html_charset_utf8(void)
+{
+    ChupaMetadata *metadata = chupa_test_metadata_fixture("sample_utf8.html", NULL);
+
+    cut_assert_equal_string("utf-8", chupa_metadata_get_first_value(metadata, "charset"));
 }
 
 void
