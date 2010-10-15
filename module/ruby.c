@@ -367,7 +367,7 @@ init_ruby(void)
         int argc;
         const char *args[6];
         char **argv;
-        gchar *rubydir, *rubyarchdir;
+        gchar *basedir, *rubydir, *rubyarchdir;
         void *node;
 
         argv = (char **)args;
@@ -377,7 +377,9 @@ init_ruby(void)
         ruby_sysinit(&argc, &argv);
         ruby_init_stack(chupa_stack_base);
         ruby_init();
-        rubydir = g_build_path("/", chupa_module_dir(), "ruby", NULL);
+        basedir = chupa_module_dir();
+        rubydir = g_build_path("/", basedir, "ruby", NULL);
+        g_free(basedir);
         rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
         ruby_incpush(rubyarchdir);
         ruby_incpush(rubydir);
