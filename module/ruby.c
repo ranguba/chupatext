@@ -159,12 +159,12 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     VALUE result;
     VALUE rb_decomposer;
     GsfOutputMemory *sink;
-    GInputStream *stream;
+    ChupaMemoryInputStream *stream;
     ChupaTextInput *target_input;
 
     CONST_ID(id_feed, "feed");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
-    rb_decomposer = rb_funcall(ruby_decomposer->decomposer, rb_intern("new"), 0, NULL);
+    rb_decomposer = rb_funcall(ruby_decomposer->decomposer, rb_intern("new"), 0);
     rb_iv_set(rb_decomposer, "@feeder", GOBJ2RVAL(feeder));
     rb_iv_set(rb_decomposer, "@source", GOBJ2RVAL(input));
     sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
@@ -395,8 +395,18 @@ static GList *
 get_mime_types(ChupaDecomposerFactory *factory)
 {
     GList *mime_types = NULL;
+    VALUE rb_loader;
+    VALUE rb_mime_types;
+    long i, length;
 
-    mime_types = g_list_prepend(mime_types, g_strdup("text/html"));
+    rb_loader = CHUPA_RUBY_DECOMPOSER_FACTORY(factory)->loader;
+    rb_mime_types = rb_funcall(rb_loader, rb_intern("mime_types"), 0);
+    length = RARRAY_LEN(rb_mime_types);
+    for (i = 0; i < length; i++) {
+        VALUE rb_mime_type;
+        rb_mime_type = RARRAY_PTR(rb_mime_types)[i];
+        mime_types = g_list_prepend(mime_types, g_strdup(StringValueCStr(rb_mime_type)));
+    }
 
     return mime_types;
 }

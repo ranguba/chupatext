@@ -48,5 +48,9 @@ module Chupa
       puts $@
       raise
     end
+
+    def mime_types
+      BaseDecomposer.decomposers.keys
+    end
   end
 end
