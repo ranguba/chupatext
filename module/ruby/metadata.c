@@ -23,10 +23,6 @@
 
 #define SELF(self) (CHUPA_METADATA(RVAL2GOBJ(self)))
 
-static VALUE chupa_metadata_get(VALUE self, VALUE name);
-static VALUE chupa_metadata_set(VALUE self, VALUE name, VALUE value);
-static VALUE chupa_metadata_add(VALUE self, VALUE name, VALUE value);
-
 #define CHUPA_RUBY_METADATA_READONLY FL_USER1
 
 VALUE
@@ -51,7 +47,7 @@ chupa_metadata_writable(VALUE self)
     }
 }
 
-VALUE
+static VALUE
 chupa_metadata_get(VALUE self, VALUE name)
 {
     ChupaMetadata *metadata;
@@ -65,7 +61,7 @@ chupa_metadata_get(VALUE self, VALUE name)
     return rb_utf8_str_new_cstr(value);
 }
 
-VALUE
+static VALUE
 chupa_metadata_set(VALUE self, VALUE name, VALUE value)
 {
     ChupaMetadata *metadata;
@@ -95,7 +91,7 @@ chupa_metadata_set(VALUE self, VALUE name, VALUE value)
     return value;
 }
 
-VALUE
+static VALUE
 chupa_metadata_add(VALUE self, VALUE name, VALUE value)
 {
     ChupaMetadata *metadata;
