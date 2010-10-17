@@ -3,7 +3,6 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@
-cutter=${bindir}/cutter@EXEEXT@
 
 Name: ChupaTextRuby
 Description: Ruby module of ChupaText: a text extraction utility.

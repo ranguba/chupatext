@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@
-cutter=${bindir}/cutter@EXEEXT@
+chupatext=${bindir}/chupatext@EXEEXT@
 
 Name: ChupaText
 Description: ChupaText is a text extraction utility from various format data.
