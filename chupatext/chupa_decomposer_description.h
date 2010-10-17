@@ -47,6 +47,11 @@ struct _ChupaDecomposerDescriptionClass
     GObjectClass parent_class;
 };
 
+void         chupa_decomposer_description_init      (void);
+void         chupa_decomposer_description_quit      (void);
+GList       *chupa_decomposer_description_get_list  (void);
+
+
 GType        chupa_decomposer_description_get_type  (void) G_GNUC_CONST;
 
 ChupaDecomposerDescription *

@@ -83,6 +83,7 @@ chupa_init(void *address)
     chupa_log_handler_id = CHUPA_GLIB_LOG_DELEGATE("ChupaText");
 
     chupa_decomposer_factory_init();
+    chupa_decomposer_description_init();
 }
 
 void
@@ -91,6 +92,7 @@ chupa_quit(void)
     if (!initialized)
         return;
 
+    chupa_decomposer_description_quit();
     chupa_decomposer_factory_quit();
 
     remove_glib_log_handlers();
