@@ -7,4 +7,4 @@ includedir=@includedir@
 Name: ChupaTextRuby
 Description: Ruby module of ChupaText: a text extraction utility.
 Version: @VERSION@
-Requires: chupatext
+Requires: chupatext >= @VERSION@

@@ -7,4 +7,4 @@ includedir=@includedir@
 Name: ChupaTextPowerpoint
 Description: Powerpoint module of ChupaText: a text extraction utility.
 Version: @VERSION@
-Requires: chupatext
+Requires: chupatext >= @VERSION@

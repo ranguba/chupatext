@@ -7,4 +7,4 @@ includedir=@includedir@
 Name: ChupaTextZip
 Description: Zip module of ChupaText: a text extraction utility.
 Version: @VERSION@
-Requires: chupatext
+Requires: chupatext >= @VERSION@

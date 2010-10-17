@@ -8,4 +8,4 @@ chupatext=${bindir}/chupatext@EXEEXT@
 Name: ChupaText
 Description: ChupaText is a text extraction utility from various format data.
 Version: @VERSION@
-Requires: chupatext
+Requires: gobject-2.0 >= @GLIB_REQUIRED@, gio-unix-2.0 >= @GLIB_REQUIRED@, libgsf-1

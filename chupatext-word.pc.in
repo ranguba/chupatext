@@ -7,4 +7,4 @@ includedir=@includedir@
 Name: ChupaTextWord
 Description: Word module of ChupaText: a text extraction utility.
 Version: @VERSION@
-Requires: chupatext
+Requires: chupatext >= @VERSION@, wv-1.0
