@@ -86,15 +86,14 @@ powerpoint_la_LIBADD = $(chupa_libs) $(GIO_UNIX_LIBS)
 
 ruby_la_SOURCES = ruby.c
 ruby_la_CFLAGS = $(RUBY_CFLAGS)
-ruby_la_CPPFLAGS =				\
-	-I$(srcdir)/ruby			\
-	-DCHUPA_RUBY_DIR=\"$(rubydir)\"		\
-	-DCHUPA_RUBY_ARCH=\"$(rubyarch)\"	\
-	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"	\
-	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"	\
-	$(RUBY_CPPFLAGS)			\
-	$(RUBY_GLIB2_CFLAGS)			\
-	$(GLIB_CFLAGS)				\
+ruby_la_CPPFLAGS =					\
+	-I$(srcdir)/ruby				\
+	-DCHUPA_RUBY_LIBRARY_DIR=\"$(ruby_libdir)\"	\
+	-DG_LOG_DOMAIN=\"ChupaText-Ruby\"		\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"		\
+	$(RUBY_CPPFLAGS)				\
+	$(RUBY_GLIB2_CFLAGS)				\
+	$(GLIB_CFLAGS)					\
 	$(GSF_CFLAGS)
 ruby_la_LIBADD =				\
 	$(chupa_libs)				\

@@ -205,10 +205,13 @@ AC_SUBST(moduledir)
 decomposerdir='$(moduledir)/decomposer'
 AC_SUBST(decomposerdir)
 
-ruby_libdir='$(pkglibdir)/ruby/chupa'
+ruby_libdir='$(pkglibdir)/ruby'
 AC_SUBST(ruby_libdir)
 
-ruby_decomposerdir='$(ruby_libdir)/decomposer'
+ruby_lib_chupadir='$(pkglibdir)/ruby/chupa'
+AC_SUBST(ruby_lib_chupadir)
+
+ruby_decomposerdir='$(ruby_lib_chupadir)/decomposer'
 AC_SUBST(ruby_decomposerdir)
 
 descriptionsdir='$(sysconfdir)/$(PACKAGE)/descriptions'

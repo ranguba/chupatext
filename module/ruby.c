@@ -422,53 +422,61 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
     return object;
 }
 
-struct main_args {
-    int argc;
-    char **argv;
-};
-
 int ruby_executable_node(void *n, int *status); /* prototype was missing in 1.9.2 */
+
+static void
+add_load_path(void)
+{
+    const gchar *ruby_library_dir;
+
+    ruby_library_dir = g_getenv("CHUPA_RUBY_LIBRARY_DIR");
+    if (!ruby_library_dir)
+        ruby_library_dir = CHUPA_RUBY_LIBRARY_DIR;
+    ruby_incpush(ruby_library_dir);
+}
+
+static gboolean
+init_ruby_interpreter(void)
+{
+    extern void *chupa_stack_base;
+    const VALUE *outer_klass = &rb_cObject;
+    int argc;
+    const char *args[6];
+    char **argv;
+    void *node;
+
+    if (outer_klass && *outer_klass) {
+        add_load_path();
+        return TRUE;
+    }
+
+    argv = (char **)args;
+    argc = 0;
+    args[argc++] = "chupa";
+    args[argc] = NULL;
+    ruby_sysinit(&argc, &argv);
+    ruby_init_stack(chupa_stack_base);
+    ruby_init();
+    add_load_path();
+    argc = 1;
+    args[argc++] = "-e;";
+    args[argc] = NULL;
+    node = ruby_options(argc, argv);
+    /* if (!ruby_executable_node(node, &status)) { */
+    /*     ruby_cleanup(status); */
+    /*     return FALSE; */
+    /* } */
+
+    return TRUE;
+}
 
 static void
 init_ruby(void)
 {
-    extern void *chupa_stack_base;
-    const VALUE *outer_klass = &rb_cObject;
+    if (!init_ruby_interpreter())
+        return;
 
-    if (!outer_klass || !*outer_klass) {
-        int status;
-        int argc;
-        const char *args[6];
-        char **argv;
-        gchar *basedir, *rubydir, *rubyarchdir;
-        void *node;
-
-        argv = (char **)args;
-        argc = 0;
-        args[argc++] = "chupa";
-        args[argc] = NULL;
-        ruby_sysinit(&argc, &argv);
-        ruby_init_stack(chupa_stack_base);
-        ruby_init();
-        basedir = chupa_module_dir();
-        rubydir = g_build_path("/", basedir, "ruby", NULL);
-        g_free(basedir);
-        rubyarchdir = g_build_path("/", rubydir, CHUPA_RUBY_ARCH, NULL);
-        ruby_incpush(rubyarchdir);
-        ruby_incpush(rubydir);
-        g_free(rubyarchdir);
-        g_free(rubydir);
-        argc = 1;
-        args[argc++] = "-e;";
-        args[argc] = NULL;
-        node = ruby_options(argc, argv);
-        /* if (!ruby_executable_node(node, &status)) { */
-        /*     ruby_cleanup(status); */
-        /*     return; */
-        /* } */
-        chupa_ruby_init();
-        rb_provide("chupa.so");
-    }
+    chupa_ruby_init();
 }
 
 /* module entry points */

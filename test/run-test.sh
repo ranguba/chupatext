@@ -74,12 +74,7 @@ if test x"$USE_GTK" = x"yes"; then
 fi
 
 ruby_src_dir=$TOP_SRC_DIR/module/ruby
-ruby_dir=$TOP_BUILD_DIR/module/ruby
-CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_dir/.libs
-CHUPATEXT_RUBYLIB=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
-RUBYLIB=$CHUPATEXT_RUBYLIB:$RUBYLIB
-export CHUPATEXT_RUBYLIB
-export RUBYLIB
+export CHUPA_RUBY_LIBRARY_DIR=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
 export CHUPA_DECOMPOSER_DIR=$TOP_BUILD_DIR/module/.libs
 export CHUPA_DESCRIPTIONS_DIR=$TOP_SRC_DIR/data/descriptions
 
