@@ -20,6 +20,7 @@ libchuparuby_la_SOURCES =			\
 	metadata.c				\
 	feeder.c				\
 	text_input.c				\
+	decomposer.c				\
 	gsf_output.c				\
 	chupa_ruby.h
 libchuparuby_la_LIBADD =				\

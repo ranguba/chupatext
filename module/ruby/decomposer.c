@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,21 +20,12 @@
 
 #include "chupa_ruby.h"
 
-void
-chupa_ruby_init(void)
+VALUE
+chupa_ruby_decomposer_init(VALUE cChupa)
 {
-    VALUE mGsf, mChupa;
+    VALUE cDecomposer;
 
-    rb_require("chupa/pre_init");
+    cDecomposer = G_DEF_CLASS(CHUPA_TYPE_DECOMPOSER, "Decomposer", cChupa);
 
-    mGsf = rb_define_module("Gsf");
-    chupa_ruby_gsf_output_init(mGsf);
-
-    mChupa = rb_define_module("Chupa");
-    chupa_ruby_metadata_init(mChupa);
-    chupa_ruby_text_input_init(mChupa);
-    chupa_ruby_feeder_init(mChupa);
-    chupa_ruby_decomposer_init(mChupa);
-
-    rb_require("chupa/post_init");
+    return cDecomposer;
 }
