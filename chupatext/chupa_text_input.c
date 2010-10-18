@@ -19,7 +19,7 @@
  */
 
 #include "chupa_text_input.h"
-#include "chupa_text_input_stream.h"
+#include "chupa_gsf_input_stream.h"
 #include <gio/gio.h>
 #include <gsf/gsf-input-gio.h>
 
@@ -108,7 +108,7 @@ constructed(GObject *object)
         path = chupa_metadata_get_first_value(priv->metadata, meta_filename);
     }
     if (!stream) {
-        stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
+        stream = G_INPUT_STREAM(chupa_gsf_input_stream_new(priv->input));
     }
     if (G_IS_DATA_INPUT_STREAM(stream)) {
         priv->stream = G_DATA_INPUT_STREAM(stream);

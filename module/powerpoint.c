@@ -21,7 +21,7 @@
 
 #include <chupatext/chupa_decomposer_module.h>
 #include <chupatext/external_decomposer.h>
-#include <chupatext/chupa_text_input_stream.h>
+#include <chupatext/chupa_gsf_input_stream.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <gio/gunixinputstream.h>

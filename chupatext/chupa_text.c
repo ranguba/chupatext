@@ -19,7 +19,7 @@
  */
 
 #include "chupa_text.h"
-#include "chupa_text_input_stream.h"
+#include "chupa_gsf_input_stream.h"
 #include <gio/gio.h>
 #include <gsf/gsf-input-gio.h>
 
@@ -31,7 +31,7 @@ G_DEFINE_TYPE(ChupaText, chupa_text, G_TYPE_OBJECT)
 
 #define CHUPA_TEXT_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), \
-                                 CHUPA_TYPE_TEXT_INPUT, \
+                                 CHUPA_TYPE_TEXT, \
                                  ChupaTextPrivate))
 
 typedef struct _ChupaTextPrivate ChupaTextPrivate;
@@ -90,7 +90,7 @@ chupa_text_init(ChupaText *input)
 static void
 constructed(GObject *object)
 {
-    ChupaText *input = CHUPA_TEXT(object);
+    GsfInput *input = GSF_INPUT(object);
     ChupaTextPrivate *priv = CHUPA_TEXT_GET_PRIVATE(input);
     const gchar *mime_type;
     GInputStream *stream = (GInputStream *)priv->stream;
@@ -108,7 +108,7 @@ constructed(GObject *object)
         path = chupa_metadata_get_first_value(priv->metadata, meta_filename);
     }
     if (!stream) {
-        stream = G_INPUT_STREAM(chupa_text_input_stream_new(input));
+        stream = G_INPUT_STREAM(chupa_gsf_input_stream_new(input));
     }
     if (G_IS_DATA_INPUT_STREAM(stream)) {
         priv->stream = G_DATA_INPUT_STREAM(stream);
@@ -257,7 +257,7 @@ chupa_text_new(ChupaMetadata *metadata, GsfInput *input)
         }
         chupa_metadata_add_value(metadata, meta_filename, path);
     }
-    return g_object_new(CHUPA_TYPE_TEXT_INPUT,
+    return g_object_new(CHUPA_TYPE_TEXT,
                         "input", input,
                         "metadata", metadata,
                         NULL);
@@ -273,7 +273,7 @@ chupa_text_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const 
         }
         chupa_metadata_add_value(metadata, meta_filename, path);
     }
-    return g_object_new(CHUPA_TYPE_TEXT_INPUT,
+    return g_object_new(CHUPA_TYPE_TEXT,
                         "stream", stream,
                         "metadata", metadata,
                         NULL);
