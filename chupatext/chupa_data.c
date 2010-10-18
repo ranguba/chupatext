@@ -90,11 +90,13 @@ chupa_data_init(ChupaData *data)
 static void
 constructed(GObject *object)
 {
-    GsfInput *input = GSF_INPUT(object);
-    ChupaDataPrivate *priv = CHUPA_DATA_GET_PRIVATE(input);
+    ChupaDataPrivate *priv;
     const gchar *mime_type;
-    GInputStream *stream = (GInputStream *)priv->stream;
+    GInputStream *stream;
     const char *path = NULL;
+
+    priv = CHUPA_DATA_GET_PRIVATE(object);
+    stream = G_INPUT_STREAM(priv->stream);
 
     g_return_if_fail(stream || priv->input);
 
@@ -108,7 +110,7 @@ constructed(GObject *object)
         path = chupa_metadata_get_first_value(priv->metadata, meta_filename);
     }
     if (!stream) {
-        stream = G_INPUT_STREAM(chupa_gsf_input_stream_new(input));
+        stream = G_INPUT_STREAM(chupa_gsf_input_stream_new(priv->input));
     }
     if (G_IS_DATA_INPUT_STREAM(stream)) {
         priv->stream = G_DATA_INPUT_STREAM(stream);
