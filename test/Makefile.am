@@ -3,8 +3,11 @@ EMPTY =
 
 if WITH_CUTTER
 TESTS = run-test.sh
-TESTS_ENVIRONMENT = NO_MAKE=yes CUTTER="$(CUTTER)" \
-	TOP_BUILD_DIR="$(top_builddir)" TOP_SRC_DIR="$(top_srcdir)"
+TESTS_ENVIRONMENT =				\
+	NO_MAKE=yes				\
+	CUTTER="$(CUTTER)"			\
+	TOP_BUILD_DIR="$(top_builddir)"		\
+	TOP_SRC_DIR="$(top_srcdir)"
 
 noinst_LTLIBRARIES =				\
 	suite_chupatext_test.la			\
