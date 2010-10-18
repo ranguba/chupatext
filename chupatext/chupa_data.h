@@ -27,6 +27,7 @@
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-input-impl.h>
 #include <chupatext/chupa_metadata.h>
+#include <chupatext/chupa_utils.h>
 
 G_BEGIN_DECLS
 
@@ -78,6 +79,7 @@ void           chupa_data_set_charset      (ChupaData *data, const char *charset
 GsfInput      *chupa_data_get_input        (ChupaData *data);
 GInputStream  *chupa_data_get_stream       (ChupaData *data);
 void           chupa_data_finished         (ChupaData *data);
+gboolean       chupa_data_is_text          (ChupaData *data);
 
 G_END_DECLS
 

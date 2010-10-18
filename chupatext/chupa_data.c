@@ -368,3 +368,9 @@ chupa_data_finished(ChupaData *data)
 {
     g_signal_emit_by_name(data, chupa_data_signal_finished);
 }
+
+gboolean
+chupa_data_is_text(ChupaData *data)
+{
+    return chupa_utils_string_equal("text/plain", chupa_data_get_mime_type(data));
+}
