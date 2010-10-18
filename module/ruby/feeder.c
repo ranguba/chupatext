@@ -22,6 +22,8 @@
 
 #define SELF(self) (CHUPA_FEEDER(RVAL2GOBJ(self)))
 
+static VALUE rb_cGLibObject;
+
 static VALUE
 feed(VALUE self, VALUE input)
 {
@@ -30,6 +32,19 @@ feed(VALUE self, VALUE input)
     gboolean success;
 
     feeder = SELF(self);
+    if (!rb_obj_is_kind_of(input, rb_cGLibObject)) {
+        GFile *file;
+        ChupaData *data;
+
+        StringValueCStr(input);
+        file = g_file_new_for_commandline_arg(RVAL2CSTR(input));
+        data = chupa_data_new_from_file(NULL, file, &error);
+        if (error) {
+            RAISE_GERROR(error);
+        }
+        input = GOBJ2RVAL(data);
+        g_object_unref(data);
+    }
     success = chupa_feeder_feed(feeder, RVAL2GOBJ(input), &error);
     if (error) {
         RAISE_GERROR(error);
@@ -42,6 +57,9 @@ VALUE
 chupa_ruby_feeder_init(VALUE mChupa)
 {
     VALUE cFeeder;
+
+    rb_cGLibObject = rb_const_get(rb_const_get(rb_cObject, rb_intern("GLib")),
+                                  rb_intern("Object"));
 
     cFeeder = G_DEF_CLASS(CHUPA_TYPE_FEEDER, "Feeder", mChupa);
 
