@@ -116,12 +116,6 @@ chupa_feeder_error_new(ChupaFeederError code, const char *format, ...)
     return error;
 }
 
-GError *
-chupa_feeder_error_new_literal(ChupaFeederError code, const char *message)
-{
-    return g_error_new_literal(CHUPA_FEEDER_ERROR, code, message);
-}
-
 /**
  * chupa_feeder_new:
  *
@@ -166,31 +160,29 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaData *data, GError **error)
     ChupaFeederPrivate *priv;
     const char *mime_type = NULL;
     ChupaDecomposer *dec;
-    GError *e;
     gboolean result;
 
     g_return_val_if_fail(feeder != NULL, FALSE);
     g_return_val_if_fail(data != NULL, FALSE);
-    g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
     priv = CHUPA_FEEDER_GET_PRIVATE(feeder);
     mime_type = chupa_data_get_mime_type(data);
 
     if (!mime_type) {
-        e = chupa_feeder_error_new_literal(CHUPA_FEEDER_ERROR_UNKNOWN_CONTENT,
-                                         "can't determin mime-type");
-        g_propagate_error(error, e);
+        g_set_error(error,
+                    CHUPA_FEEDER_ERROR,
+                    CHUPA_FEEDER_ERROR_UNKNOWN_CONTENT,
+                    "can't determin mime-type");
         result = FALSE;
-    }
-    else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
+    } else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
         result = chupa_decomposer_feed(dec, feeder, data, error);
         g_object_unref(dec);
         result = TRUE;
-    }
-    else {
-        e = chupa_feeder_error_new(CHUPA_FEEDER_ERROR_UNKNOWN_MIMETYPE,
-                                 "unknown mime-type %s", mime_type);
-        g_propagate_error(error, e);
+    } else {
+        g_set_error(error,
+                    CHUPA_FEEDER_ERROR,
+                    CHUPA_FEEDER_ERROR_UNKNOWN_MIME_TYPE,
+                    "unknown mime-type %s", mime_type);
         result = FALSE;
     }
     return result;

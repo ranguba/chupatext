@@ -82,10 +82,9 @@ char *chupa_feeder_decompose_all     (ChupaFeeder *feeder, ChupaData *feeder_dat
 typedef enum {
     CHUPA_FEEDER_ERROR_NONE,
     CHUPA_FEEDER_ERROR_UNKNOWN_CONTENT,
-    CHUPA_FEEDER_ERROR_UNKNOWN_MIMETYPE,
+    CHUPA_FEEDER_ERROR_UNKNOWN_MIME_TYPE,
     CHUPA_FEEDER_ERROR_INVALID_INPUT,
-    CHUPA_FEEDER_ERROR_UNKNOWN,
-    CHUPA_FEEDER_ERROR_MAX_
+    CHUPA_FEEDER_ERROR_UNKNOWN
 } ChupaFeederError;
 
 #define CHUPA_FEEDER_ERROR chupa_feeder_error_quark()
@@ -93,6 +92,5 @@ typedef enum {
 GQuark chupa_feeder_error_quark(void) G_GNUC_CONST;
 GError *chupa_feeder_error_new_valist(ChupaFeederError code, const char *format, va_list args);
 GError *chupa_feeder_error_new(ChupaFeederError code, const char *format, ...);
-GError *chupa_feeder_error_new_literal(ChupaFeederError code, const char *message);
 
 #endif
