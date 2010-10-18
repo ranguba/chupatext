@@ -103,13 +103,13 @@ data_get_metadata(VALUE self)
 VALUE
 chupa_ruby_data_init(VALUE mChupa)
 {
-    VALUE cTextInput;
+    VALUE cData;
 
-    cTextInput = G_DEF_CLASS(CHUPA_TYPE_DATA, "TextInput", mChupa);
+    cData = G_DEF_CLASS(CHUPA_TYPE_DATA, "Data", mChupa);
 
-    rb_define_method(cTextInput, "gets", data_gets, 0);
-    rb_define_method(cTextInput, "read", data_read, -1);
-    rb_define_method(cTextInput, "metadata", data_get_metadata, 0);
+    rb_define_method(cData, "gets", data_gets, 0);
+    rb_define_method(cData, "read", data_read, -1);
+    rb_define_method(cData, "metadata", data_get_metadata, 0);
 
-    return cTextInput;
+    return cData;
 }
