@@ -27,6 +27,8 @@
 
 G_BEGIN_DECLS
 
+#define CHUPA_FEEDER_ERROR chupa_feeder_error_quark()
+
 #define CHUPA_TYPE_FEEDER            chupa_feeder_get_type()
 #define CHUPA_FEEDER(obj)            G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_FEEDER, ChupaFeeder)
 #define CHUPA_FEEDER_CLASS(klass)    G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_FEEDER, ChupaFeederClass)
@@ -64,21 +66,6 @@ struct ChupaFeederClass
     void (*decomposed)(GObject *object, ChupaData *data);
 };
 
-/**
- * ChupaFeederCallback:
- *
- * The type used for callback functions when extracting the feeder portion.
- */
-typedef void (*ChupaFeederCallback)(ChupaFeeder *, ChupaData *, gpointer);
-
-GType        chupa_feeder_get_type   (void) G_GNUC_CONST;
-ChupaFeeder *chupa_feeder_new        (void);
-gboolean     chupa_feeder_feed       (ChupaFeeder *feeder, ChupaData *data, GError **err);
-void         chupa_feeder_decomposed (ChupaFeeder *feeder, ChupaData *data);
-void         chupa_feeder_decompose  (ChupaFeeder *feeder, ChupaData *feeder_data,
-                                      ChupaFeederCallback func, gpointer arg, GError **error);
-char *chupa_feeder_decompose_all     (ChupaFeeder *feeder, ChupaData *feeder_data, GError **error);
-
 typedef enum {
     CHUPA_FEEDER_ERROR_NONE,
     CHUPA_FEEDER_ERROR_UNKNOWN_CONTENT,
@@ -87,10 +74,21 @@ typedef enum {
     CHUPA_FEEDER_ERROR_UNKNOWN
 } ChupaFeederError;
 
-#define CHUPA_FEEDER_ERROR chupa_feeder_error_quark()
+/**
+ * ChupaFeederCallback:
+ *
+ * The type used for callback functions when extracting the feeder portion.
+ */
+typedef void (*ChupaFeederCallback)(ChupaFeeder *, ChupaData *, gpointer);
 
-GQuark chupa_feeder_error_quark(void) G_GNUC_CONST;
-GError *chupa_feeder_error_new_valist(ChupaFeederError code, const char *format, va_list args);
-GError *chupa_feeder_error_new(ChupaFeederError code, const char *format, ...);
+GQuark       chupa_feeder_error_quark(void) G_GNUC_CONST;
+
+GType        chupa_feeder_get_type   (void) G_GNUC_CONST;
+ChupaFeeder *chupa_feeder_new        (void);
+gboolean     chupa_feeder_feed       (ChupaFeeder *feeder, ChupaData *data, GError **err);
+void         chupa_feeder_decomposed (ChupaFeeder *feeder, ChupaData *data);
+void         chupa_feeder_decompose  (ChupaFeeder *feeder, ChupaData *feeder_data,
+                                      ChupaFeederCallback func, gpointer arg, GError **error);
+gchar       *chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaData *feeder_data, GError **error);
 
 #endif

@@ -98,24 +98,6 @@ chupa_feeder_error_quark(void)
     return error_quark;
 }
 
-GError *
-chupa_feeder_error_new_valist(ChupaFeederError code, const char *format, va_list args)
-{
-    return g_error_new_valist(CHUPA_FEEDER_ERROR, code, format, args);
-}
-
-GError *
-chupa_feeder_error_new(ChupaFeederError code, const char *format, ...)
-{
-    va_list args;
-    GError *error;
-
-    va_start(args, format);
-    error = chupa_feeder_error_new_valist(code, format, args);
-    va_end(args);
-    return error;
-}
-
 /**
  * chupa_feeder_new:
  *

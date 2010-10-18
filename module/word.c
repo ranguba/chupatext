@@ -174,10 +174,11 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
 
     gsf_input_seek(gi, 0, G_SEEK_SET);
     if ((ret = wvInitParser_gsf(&ps, gi)) != 0) {
-        g_propagate_error(error,
-                          chupa_feeder_error_new(CHUPA_FEEDER_ERROR_INVALID_INPUT,
-                                                 "wvInitParser_gsf failed: %d",
-                                                 ret));
+        g_set_error(error,
+                    CHUPA_FEEDER_ERROR,
+                    CHUPA_FEEDER_ERROR_INVALID_INPUT,
+                    "wvInitParser_gsf failed: %d",
+                    ret));
         return FALSE;
     }
     ps.userData = &arg;
