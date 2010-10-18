@@ -43,7 +43,6 @@ G_BEGIN_DECLS
   G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_TEXT_INPUT, ChupaTextInputClass)
 
 #define CHUPA_TEXT_SIGNAL_FINISHED chupa_text_signal_finished
-extern const char chupa_text_signal_finished[];
 
 typedef struct _ChupaTextInput ChupaTextInput;
 typedef struct _ChupaTextInputClass ChupaTextInputClass;
