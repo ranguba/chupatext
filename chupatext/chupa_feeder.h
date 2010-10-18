@@ -43,7 +43,7 @@ typedef struct ChupaFeederClass ChupaFeederClass;
 /**
  * ChupaFeeder:
  *
- * The class to decompose an input and extract feeder portions. 
+ * The class to decompose an input and extract feeder portions.
  */
 struct ChupaFeeder
 {
