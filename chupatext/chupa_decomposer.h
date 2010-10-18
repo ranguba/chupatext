@@ -51,15 +51,15 @@ struct _ChupaDecomposerClass
 {
     GObjectClass parent_class;
 
-    gboolean (*can_handle)(ChupaDecomposerClass *dec, ChupaTextInput *input, const char *mime_type);
-    gboolean (*feed)(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **err);
+    gboolean (*can_handle)(ChupaDecomposerClass *dec, ChupaData *data, const char *mime_type);
+    gboolean (*feed)(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err);
 };
 
 GType            chupa_decomposer_get_type (void) G_GNUC_CONST;
 
 gboolean         chupa_decomposer_feed    (ChupaDecomposer *dec,
                                            ChupaFeeder     *feeder,
-                                           ChupaTextInput  *input,
+                                           ChupaData       *data,
                                            GError         **error);
 
 G_END_DECLS

@@ -152,7 +152,7 @@ chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_err
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-     ChupaTextInput *input, GError **error)
+     ChupaData *data, GError **error)
 {
     ID id_feed;
     ChupaRubyDecomposer *ruby_decomposer;
@@ -160,19 +160,19 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     VALUE rb_decomposer;
     GsfOutputMemory *sink;
     ChupaMemoryInputStream *stream;
-    ChupaTextInput *target_input;
+    ChupaData *target_data;
 
     CONST_ID(id_feed, "feed");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
     rb_decomposer = rb_funcall(ruby_decomposer->decomposer, rb_intern("new"), 0);
     rb_iv_set(rb_decomposer, "@feeder", GOBJ2RVAL(feeder));
-    rb_iv_set(rb_decomposer, "@source", GOBJ2RVAL(input));
+    rb_iv_set(rb_decomposer, "@source", GOBJ2RVAL(data));
     sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
     rb_iv_set(rb_decomposer, "@sink", GOBJ2RVAL(sink));
     stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(sink));
-    target_input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(stream), chupa_text_input_get_filename(input));
-    rb_iv_set(rb_decomposer, "@target", GOBJ2RVAL(target_input));
-    chupa_text_input_set_mime_type(target_input, "text/plain");
+    target_data = chupa_data_new_from_stream(NULL, G_INPUT_STREAM(stream), chupa_data_get_filename(data));
+    rb_iv_set(rb_decomposer, "@target", GOBJ2RVAL(target_data));
+    chupa_data_set_mime_type(target_data, "text/plain");
 
     result = chupa_ruby_funcall(rb_decomposer, id_feed, 0, 0, error);
     

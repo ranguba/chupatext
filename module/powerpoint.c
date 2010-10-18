@@ -62,9 +62,9 @@ static GType chupa_type_power_point_decomposer = 0;
 #define TMPFILE_BASE "chupa-XXXXXX"
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-     ChupaTextInput *input, GError **error)
+     ChupaData *data, GError **error)
 {
-    const char *filename = chupa_text_input_get_filename(input);
+    const char *filename = chupa_data_get_filename(data);
     gchar *tmp_power_point_name, *tmp_pdf_name;
     gint fd_ppt, fd_pdf;
     GOutputStream *out_tmpfile;
@@ -79,9 +79,9 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
 
     fd_ppt = g_file_open_tmp(TMPFILE_BASE".ppt", &tmp_power_point_name, error);
     out_tmpfile = g_unix_output_stream_new(fd_ppt, TRUE);
-    base_input = chupa_text_input_get_base_input(input);
+    base_input = chupa_data_get_input(data);
     gsf_input_seek(base_input, 0, G_SEEK_SET);
-    in_tmpfile = chupa_text_input_get_stream(input);
+    in_tmpfile = chupa_data_get_stream(data);
     in_tmpfile = g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(in_tmpfile));
     size = g_output_stream_splice(out_tmpfile, in_tmpfile,
                                   G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE|
@@ -117,11 +117,11 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         return FALSE;
     }
     in_tmpfile = g_unix_input_stream_new(fd_pdf, TRUE);
-    input = chupa_text_input_new_from_stream(NULL, in_tmpfile, filename);
+    data = chupa_data_new_from_stream(NULL, in_tmpfile, filename);
     g_object_unref(in_tmpfile);
-    chupa_text_input_set_mime_type(input, "application/pdf");
-    result = chupa_feeder_feed(feeder, input, error);
-    g_object_unref(input);
+    chupa_data_set_mime_type(data, "application/pdf");
+    result = chupa_feeder_feed(feeder, data, error);
+    g_object_unref(data);
     return result;
 }
 

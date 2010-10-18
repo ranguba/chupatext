@@ -23,7 +23,7 @@
 
 #include <gio/gio.h>
 #include <glib-object.h>
-#include <chupatext/chupa_text_input.h>
+#include <chupatext/chupa_data.h>
 
 G_BEGIN_DECLS
 
@@ -61,7 +61,7 @@ struct ChupaFeederClass
     GObjectClass parent_class;
 
     /* signals */
-    void (*decomposed)(GObject *object, ChupaTextInput *input);
+    void (*decomposed)(GObject *object, ChupaData *data);
 };
 
 /**
@@ -69,15 +69,15 @@ struct ChupaFeederClass
  *
  * The type used for callback functions when extracting the feeder portion.
  */
-typedef void (*ChupaFeederCallback)(ChupaFeeder *, ChupaTextInput *, gpointer);
+typedef void (*ChupaFeederCallback)(ChupaFeeder *, ChupaData *, gpointer);
 
-GType chupa_feeder_get_type(void) G_GNUC_CONST;
-ChupaFeeder *chupa_feeder_new(void);
-gboolean chupa_feeder_feed(ChupaFeeder *feeder, ChupaTextInput *input, GError **err);
-void chupa_feeder_decomposed(ChupaFeeder *feeder, ChupaTextInput *input);
-void chupa_feeder_decompose(ChupaFeeder *feeder, ChupaTextInput *feeder_input,
-                          ChupaFeederCallback func, gpointer arg, GError **error);
-char *chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaTextInput *feeder_input, GError **error);
+GType        chupa_feeder_get_type   (void) G_GNUC_CONST;
+ChupaFeeder *chupa_feeder_new        (void);
+gboolean     chupa_feeder_feed       (ChupaFeeder *feeder, ChupaData *data, GError **err);
+void         chupa_feeder_decomposed (ChupaFeeder *feeder, ChupaData *data);
+void         chupa_feeder_decompose  (ChupaFeeder *feeder, ChupaData *feeder_data,
+                                      ChupaFeederCallback func, gpointer arg, GError **error);
+char *chupa_feeder_decompose_all     (ChupaFeeder *feeder, ChupaData *feeder_data, GError **error);
 
 typedef enum {
     CHUPA_FEEDER_ERROR_NONE,

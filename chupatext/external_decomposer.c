@@ -61,7 +61,7 @@ chupa_external_decomposer_spawn(ChupaExternalDecomposer *dec, gchar **argv, GOut
 }
 
 void
-chupa_external_decomposer_set_metadata(ChupaExternalDecomposer *dec, ChupaTextInput *input)
+chupa_external_decomposer_set_metadata(ChupaExternalDecomposer *dec, ChupaData *data)
 {
 }
 
@@ -118,7 +118,7 @@ constructed(GObject *object)
 #endif
 
 static gboolean
-feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **err)
+feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
 {
     GInputStream *inp, *sout = NULL;
     GOutputStream *sin = NULL;
@@ -128,11 +128,11 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **
     gboolean result;
 
     g_return_val_if_fail(CHUPA_IS_EXTERNAL_DECOMPOSER(dec), FALSE);
-    g_return_val_if_fail(CHUPA_IS_TEXT_INPUT(input), FALSE);
+    g_return_val_if_fail(CHUPA_IS_DATA(data), FALSE);
     extdec = CHUPA_EXTERNAL_DECOMPOSER(dec);
     self_class = CHUPA_EXTERNAL_DECOMPOSER_GET_CLASS(extdec);
     priv = extdec->priv;
-    inp = G_INPUT_STREAM(chupa_text_input_get_stream(input));
+    inp = chupa_data_get_stream(data);
     g_return_val_if_fail(self_class->spawn(extdec, feeder, &sin, &sout, err), FALSE);
     if (sin) {
         g_output_stream_splice_async(sin, inp,
@@ -143,12 +143,12 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **
         g_object_unref(sin);
     }
     g_return_val_if_fail(sout, FALSE);
-    input = chupa_text_input_new_from_stream(NULL, sout,
-                                             chupa_text_input_get_filename(input));
+    data = chupa_data_new_from_stream(NULL, sout,
+                                      chupa_data_get_filename(data));
     g_object_unref(sout);
-    self_class->set_metadata(extdec, input);
-    result = chupa_feeder_feed(feeder, input, err);
-    g_object_unref(input);
+    self_class->set_metadata(extdec, data);
+    result = chupa_feeder_feed(feeder, data, err);
+    g_object_unref(data);
     return result;
 }
 

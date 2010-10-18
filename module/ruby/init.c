@@ -32,7 +32,7 @@ chupa_ruby_init(void)
 
     mChupa = rb_define_module("Chupa");
     chupa_ruby_metadata_init(mChupa);
-    chupa_ruby_text_input_init(mChupa);
+    chupa_ruby_data_init(mChupa);
     chupa_ruby_feeder_init(mChupa);
     chupa_ruby_decomposer_init(mChupa);
 

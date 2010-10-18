@@ -60,7 +60,7 @@ chupa_feeder_class_init(ChupaFeederClass *klass)
                      G_STRUCT_OFFSET(ChupaFeederClass, decomposed),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
-                     G_TYPE_NONE, 1, CHUPA_TYPE_TEXT_INPUT);
+                     G_TYPE_NONE, 1, CHUPA_TYPE_DATA);
 }
 
 static void
@@ -147,9 +147,9 @@ chupa_feeder_new(void)
  * #ChupaFeederDecomposer only.
  */
 void
-chupa_feeder_decomposed(ChupaFeeder *feeder, ChupaTextInput *input)
+chupa_feeder_decomposed(ChupaFeeder *feeder, ChupaData *data)
 {
-    g_signal_emit_by_name(feeder, chupa_feeder_signal_decomposed, input);
+    g_signal_emit_by_name(feeder, chupa_feeder_signal_decomposed, data);
 }
 
 /**
@@ -161,7 +161,7 @@ chupa_feeder_decomposed(ChupaFeeder *feeder, ChupaTextInput *input)
  * Feeds @input to @feeder, to extract feeder portions.
  */
 gboolean
-chupa_feeder_feed(ChupaFeeder *feeder, ChupaTextInput *input, GError **error)
+chupa_feeder_feed(ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
     ChupaFeederPrivate *priv;
     const char *mime_type = NULL;
@@ -170,11 +170,11 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaTextInput *input, GError **error)
     gboolean result;
 
     g_return_val_if_fail(feeder != NULL, FALSE);
-    g_return_val_if_fail(input != NULL, FALSE);
+    g_return_val_if_fail(data != NULL, FALSE);
     g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
     priv = CHUPA_FEEDER_GET_PRIVATE(feeder);
-    mime_type = chupa_text_input_get_mime_type(input);
+    mime_type = chupa_data_get_mime_type(data);
 
     if (!mime_type) {
         e = chupa_feeder_error_new_literal(CHUPA_FEEDER_ERROR_UNKNOWN_CONTENT,
@@ -183,7 +183,7 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaTextInput *input, GError **error)
         result = FALSE;
     }
     else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
-        result = chupa_decomposer_feed(dec, feeder, input, error);
+        result = chupa_decomposer_feed(dec, feeder, data, error);
         g_object_unref(dec);
         result = TRUE;
     }
@@ -208,11 +208,11 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaTextInput *input, GError **error)
  * Feeds @input to @feeder, with @func
  */
 void
-chupa_feeder_decompose(ChupaFeeder *feeder, ChupaTextInput *input,
+chupa_feeder_decompose(ChupaFeeder *feeder, ChupaData *data,
                        ChupaFeederCallback func, gpointer arg, GError **error)
 {
     g_signal_connect(feeder, chupa_feeder_signal_decomposed, (GCallback)func, arg);
-    chupa_feeder_feed(feeder, input, error);
+    chupa_feeder_feed(feeder, data, error);
 }
 
 struct decompose_arg {
@@ -222,12 +222,12 @@ struct decompose_arg {
 };
 
 static void
-feeder_decomposed(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
+feeder_decomposed(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
 {
-    GDataInputStream *data = G_DATA_INPUT_STREAM(chupa_text_input_get_stream(input));
+    GDataInputStream *data_stream = G_DATA_INPUT_STREAM(chupa_data_get_stream(data));
     struct decompose_arg *arg = udata;
 
-    arg->read_data = g_data_input_stream_read_until(data, "", &arg->length, NULL, arg->error);
+    arg->read_data = g_data_input_stream_read_until(data_stream, "", &arg->length, NULL, arg->error);
 }
 
 /**
@@ -242,12 +242,12 @@ feeder_decomposed(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
  * are combined.
  */
 char *
-chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaTextInput *input, GError **error)
+chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
     struct decompose_arg arg;
     arg.read_data = NULL;
     arg.length = 0;
     arg.error = error;
-    chupa_feeder_decompose(feeder, input, feeder_decomposed, &arg, error);
+    chupa_feeder_decompose(feeder, data, feeder_decomposed, &arg, error);
     return arg.read_data;
 }

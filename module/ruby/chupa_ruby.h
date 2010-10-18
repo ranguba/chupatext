@@ -32,7 +32,7 @@
 void  chupa_ruby_init             (void);
 VALUE chupa_ruby_gsf_output_init  (VALUE mGsf);
 VALUE chupa_ruby_feeder_init      (VALUE mChupa);
-VALUE chupa_ruby_text_input_init  (VALUE mChupa);
+VALUE chupa_ruby_data_init        (VALUE mChupa);
 VALUE chupa_ruby_decomposer_init  (VALUE mChupa);
 VALUE chupa_ruby_metadata_init    (VALUE mChupa);
 

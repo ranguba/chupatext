@@ -60,10 +60,10 @@ static GType chupa_type_text_decomposer = 0;
 
 static gboolean
 chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-                           ChupaTextInput *input, GError **err)
+                           ChupaData *data, GError **err)
 {
-    chupa_feeder_decomposed(feeder, input);
-    chupa_text_input_finished(input);
+    chupa_feeder_decomposed(feeder, data);
+    chupa_data_finished(data);
     return TRUE;
 }
 

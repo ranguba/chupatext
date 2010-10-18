@@ -52,7 +52,7 @@ struct _ChupaArchiveDecomposerClass
     ChupaDecomposerClass parent_class;
 
     GsfInfile *(*get_infile)(GsfInput *input, GError **error);
-    gboolean (*feed_component)(ChupaFeeder *feeder, ChupaTextInput *input, GError **error);
+    gboolean (*feed_component)(ChupaFeeder *feeder, ChupaData *data, GError **error);
 };
 
 GType chupa_archive_decomposer_get_type(void) G_GNUC_CONST;

@@ -58,14 +58,14 @@ struct _ChupaExternalDecomposerClass
     gboolean (*spawn)(ChupaExternalDecomposer *dec, ChupaFeeder *feeder,
                       GOutputStream **stdinput, GInputStream **stdoutput,
                       GError **error);
-    void (*set_metadata)(ChupaExternalDecomposer *dec, ChupaTextInput *input);
+    void (*set_metadata)(ChupaExternalDecomposer *dec, ChupaData *data);
 };
 
 GType chupa_external_decomposer_get_type(void) G_GNUC_CONST;
 GsfInfile *chupa_external_decomoser_get_infile(ChupaExternalDecomposer *);
 gboolean chupa_external_decomposer_spawn(ChupaExternalDecomposer *, gchar **, GOutputStream **,
                                          GInputStream **, GError **);
-void chupa_external_decomposer_set_metadata(ChupaExternalDecomposer *, ChupaTextInput *);
+void chupa_external_decomposer_set_metadata(ChupaExternalDecomposer *, ChupaData *);
 
 G_END_DECLS
 

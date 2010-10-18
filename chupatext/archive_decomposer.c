@@ -80,7 +80,7 @@ constructed(GObject *object)
 #endif
 
 static gboolean
-feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **err)
+feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
 {
     GsfInfile *infile;
     GsfInput *inp;
@@ -89,9 +89,9 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **
     int i, num;
 
     g_return_val_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec), FALSE);
-    g_return_val_if_fail(CHUPA_IS_TEXT_INPUT(input), FALSE);
+    g_return_val_if_fail(CHUPA_IS_DATA(data), FALSE);
     arch_class = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(dec);
-    inp = chupa_text_input_get_base_input(input);
+    inp = chupa_data_get_input(data);
     infile = arch_class->get_infile(inp, err);
     if (!infile) {
         return FALSE;
@@ -100,10 +100,10 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaTextInput *input, GError **
     for (i = 0; i < num; ++i) {
         const char *name = gsf_infile_name_by_index(infile, i);
         GsfInput *inp = gsf_infile_child_by_index(infile, i);
-        ChupaTextInput *t = chupa_text_input_new(NULL, inp);
+        ChupaData *t = chupa_data_new(NULL, inp);
         g_object_unref(inp);
         if (name) {
-            chupa_text_input_set_filename(t, name);
+            chupa_data_set_filename(t, name);
         }
         result = arch_class->feed_component(feeder, t, err);
         g_object_unref(t);

@@ -19,7 +19,7 @@ libchuparuby_la_SOURCES =			\
 	init.c					\
 	metadata.c				\
 	feeder.c				\
-	text_input.c				\
+	data.c					\
 	decomposer.c				\
 	gsf_output.c				\
 	chupa_ruby.h

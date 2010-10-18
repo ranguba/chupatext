@@ -96,16 +96,16 @@ chupa_excel_plain_file_p(GsfInput *source)
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-     ChupaTextInput *input, GError **error)
+     ChupaData *input, GError **error)
 {
     GOFileSaver *fs = NULL;
     GOFileOpener *fo = NULL;
     GOIOContext *io_context = go_io_context_new(cc);
     WorkbookView *wbv = NULL;
-    GsfInput *source = chupa_text_input_get_base_input(input);
+    GsfInput *source = chupa_data_get_input(input);
     GsfOutput *tmpout;
     GInputStream *tmpinp;
-    const char *filename = chupa_text_input_get_filename(input);
+    const char *filename = chupa_data_get_filename(input);
     GPrintFunc old_print_error_func;
 
     fs = go_file_saver_for_id(export_id);
@@ -137,7 +137,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     tmpinp = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
     g_object_unref(io_context);
     g_object_unref(tmpout);
-    input = chupa_text_input_new_from_stream(NULL, tmpinp, chupa_text_input_get_filename(input));
+    input = chupa_data_new_from_stream(NULL, tmpinp, chupa_data_get_filename(input));
     g_object_unref(tmpinp);
     chupa_feeder_decomposed(feeder, input);
     return TRUE;

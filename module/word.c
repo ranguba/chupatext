@@ -66,7 +66,7 @@ struct char_proc_arg {
     GString *buffer;
     GMemoryInputStream *dest;
     ChupaFeeder *feeder;
-    ChupaTextInput *input;
+    ChupaData *text;
     const char *encoding;
 };
 
@@ -77,7 +77,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
     GString *s = arg->buffer;
 
     if (!arg->encoding) {
-        ChupaMetadata *meta = chupa_text_input_get_metadata(arg->input);
+        ChupaMetadata *meta = chupa_data_get_metadata(arg->text);
         if (chartype) {
             arg->encoding = wvLIDToCodePageConverter(lid);
         }
@@ -150,7 +150,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         g_string_free(s, FALSE);
         arg->buffer = NULL;
         if (arg->feeder) {
-            chupa_feeder_decomposed(arg->feeder, arg->input);
+            chupa_feeder_decomposed(arg->feeder, arg->text);
         }
     }
     return 0;
@@ -158,17 +158,17 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-     ChupaTextInput *input, GError **error)
+     ChupaData *text, GError **error)
 {
     struct char_proc_arg arg;
     wvParseStruct ps;
-    GsfInput *gi = chupa_text_input_get_base_input(input);
+    GsfInput *gi = chupa_data_get_input(text);
     int ret;
 
     arg.buffer = NULL;
     arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
     arg.feeder = feeder;
-    arg.input = chupa_text_input_new_from_stream(NULL, G_INPUT_STREAM(arg.dest),
+    arg.text = chupa_data_new_from_stream(NULL, G_INPUT_STREAM(arg.dest),
                                                  gsf_input_name(gi));
     arg.encoding = NULL;
 
@@ -190,15 +190,15 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_string_free(s, FALSE);
         arg.buffer = NULL;
         if (!arg.encoding) {
-            ChupaMetadata *meta = chupa_text_input_get_metadata(arg.input);
+            ChupaMetadata *meta = chupa_data_get_metadata(arg.text);
             chupa_metadata_add_value(meta, "charset", "US-ASCII");
         }
         if (arg.feeder) {
-            chupa_feeder_decomposed(feeder, arg.input);
+            chupa_feeder_decomposed(feeder, arg.text);
         }
     }
     g_object_unref(arg.dest);
-    g_object_unref(arg.input);
+    g_object_unref(arg.text);
 
     return TRUE;
 }

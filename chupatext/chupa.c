@@ -30,13 +30,13 @@ struct output_info {
 };
 
 static void
-output_plain(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
+output_plain(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
 {
-    GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
+    GInputStream *inst = chupa_data_get_stream(data);
     struct output_info *uinfo = udata;
     FILE *out = uinfo->out;
-    const char *name = chupa_text_input_get_filename(input);
-    const char *charset = chupa_text_input_get_charset(input);
+    const char *name = chupa_data_get_filename(data);
+    const char *charset = chupa_data_get_charset(data);
     char *path = NULL;
     char buf[4096];
     gssize size;
@@ -96,13 +96,13 @@ write_quote(const char *str, gsize len, FILE *out)
         write_quote(string, (string) ? strlen(string) : 0, out)
 
 static void
-output_json(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
+output_json(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
 {
-    GInputStream *inst = G_INPUT_STREAM(chupa_text_input_get_stream(input));
+    GInputStream *inst = chupa_data_get_stream(data);
     struct output_info *uinfo = udata;
     FILE *out = uinfo->out;
-    const char *name = chupa_text_input_get_filename(input);
-    const char *charset = chupa_text_input_get_charset(input);
+    const char *name = chupa_data_get_filename(data);
+    const char *charset = chupa_data_get_charset(data);
     char *path = NULL;
     char buf[4096];
     gssize size;
@@ -127,7 +127,7 @@ output_json(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata)
 }
 
 static const struct writer_funcs {
-    void (*output)(ChupaFeeder *feeder, ChupaTextInput *input, gpointer udata);
+    void (*output)(ChupaFeeder *feeder, ChupaData *data, gpointer udata);
 } plain_writer = {output_plain},
     json_writer = {output_json};
 
@@ -195,20 +195,20 @@ main(int argc, char **argv)
     ++argv;
     for (i = 0; i < argc; ++i) {
         GFile *file;
-        ChupaTextInput *input;
+        ChupaData *data;
         file = g_file_new_for_commandline_arg(argv[i]);
-        input = chupa_text_input_new_from_file(NULL, file, &err);
+        data = chupa_data_new_from_file(NULL, file, &err);
         g_object_unref(file);
-        if (!input || !chupa_feeder_feed(feeder, input, &err)) {
+        if (!data || !chupa_feeder_feed(feeder, data, &err)) {
             fprintf(stderr, "%s: %s\n", argv[0], err->message);
             g_error_free(err);
             err = NULL;
-            if (!input || !ignore_errors) {
+            if (!data || !ignore_errors) {
                 rc = EXIT_FAILURE;
                 break;
             }
         }
-        g_object_unref(input);
+        g_object_unref(data);
     }
     g_object_unref(feeder);
     chupa_quit();

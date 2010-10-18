@@ -54,11 +54,11 @@ chupa_decomposer_class_init(ChupaDecomposerClass *klass)
 
 gboolean
 chupa_decomposer_feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-                      ChupaTextInput *input, GError **error)
+                      ChupaData *data, GError **error)
 {
     ChupaDecomposerClass *decomposer_class;
 
     g_return_val_if_fail(CHUPA_IS_DECOMPOSER(decomposer), FALSE);
     decomposer_class = CHUPA_DECOMPOSER_GET_CLASS(decomposer);
-    return decomposer_class->feed(decomposer, feeder, input, error);
+    return decomposer_class->feed(decomposer, feeder, data, error);
 }
