@@ -24,9 +24,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gio/gio.h>
-
-#include "chupa_metadata.h"
-#include "chupa_text.h"
+#include <gsf/gsf-input.h>
 
 G_BEGIN_DECLS
 
