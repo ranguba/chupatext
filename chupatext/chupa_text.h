@@ -68,16 +68,16 @@ ChupaText     *chupa_text_new_from_stream  (ChupaMetadata *metadata,
                                             GInputStream *stream,
                                             const char *path);
 ChupaText     *chupa_text_new_from_file    (ChupaMetadata *metadata, GFile *file, GError **err);
-ChupaMetadata *chupa_text_get_metadata     (ChupaText *input);
-const gchar   *chupa_text_get_mime_type    (ChupaText *input);
-void           chupa_text_set_mime_type    (ChupaText *input, const char *mime_type);
-const gchar   *chupa_text_get_filename     (ChupaText *input);
-void           chupa_text_set_filename     (ChupaText *input, const char *filename);
-const gchar   *chupa_text_get_charset      (ChupaText *input);
-void           chupa_text_set_charset      (ChupaText *input, const char *charset);
-GsfInput      *chupa_text_get_base_input   (ChupaText *input);
-GInputStream  *chupa_text_get_stream       (ChupaText *input);
-void           chupa_text_finished         (ChupaText *input);
+ChupaMetadata *chupa_text_get_metadata     (ChupaText *text);
+const gchar   *chupa_text_get_mime_type    (ChupaText *text);
+void           chupa_text_set_mime_type    (ChupaText *text, const char *mime_type);
+const gchar   *chupa_text_get_filename     (ChupaText *text);
+void           chupa_text_set_filename     (ChupaText *text, const char *filename);
+const gchar   *chupa_text_get_charset      (ChupaText *text);
+void           chupa_text_set_charset      (ChupaText *text, const char *charset);
+GsfInput      *chupa_text_get_input        (ChupaText *text);
+GInputStream  *chupa_text_get_stream       (ChupaText *text);
+void           chupa_text_finished         (ChupaText *text);
 
 G_END_DECLS
 

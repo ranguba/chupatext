@@ -78,11 +78,11 @@ guess_mime_type(const char *name, GBufferedInputStream *buffered, gboolean *unce
 }
 
 static void
-chupa_text_init(ChupaText *input)
+chupa_text_init(ChupaText *text)
 {
     ChupaTextPrivate *priv;
 
-    priv = CHUPA_TEXT_GET_PRIVATE(input);
+    priv = CHUPA_TEXT_GET_PRIVATE(text);
     priv->stream = NULL;
     priv->metadata = NULL;
 }
@@ -293,76 +293,76 @@ chupa_text_new_from_file(ChupaMetadata *metadata, GFile *file, GError **err)
 }
 
 GsfInput *
-chupa_text_get_base_input(ChupaText *input)
+chupa_text_get_input(ChupaText *text)
 {
     ChupaTextPrivate *priv;
 
-    priv = CHUPA_TEXT_GET_PRIVATE(input);
+    priv = CHUPA_TEXT_GET_PRIVATE(text);
     return priv->input;
 }
 
 GInputStream *
-chupa_text_get_stream(ChupaText *input)
+chupa_text_get_stream(ChupaText *text)
 {
     ChupaTextPrivate *priv;
 
-    priv = CHUPA_TEXT_GET_PRIVATE(input);
+    priv = CHUPA_TEXT_GET_PRIVATE(text);
     return G_INPUT_STREAM(priv->stream);
 }
 
 ChupaMetadata *
-chupa_text_get_metadata(ChupaText *input)
+chupa_text_get_metadata(ChupaText *text)
 {
     ChupaTextPrivate *priv;
 
-    priv = CHUPA_TEXT_GET_PRIVATE(input);
+    priv = CHUPA_TEXT_GET_PRIVATE(text);
     return priv->metadata;
 }
 
 const gchar *
-chupa_text_get_mime_type(ChupaText *input)
+chupa_text_get_mime_type(ChupaText *text)
 {
-    ChupaMetadata *meta = chupa_text_get_metadata(input);
+    ChupaMetadata *meta = chupa_text_get_metadata(text);
     return chupa_metadata_get_first_value(meta, "mime-type");
 }
 
 void
-chupa_text_set_mime_type(ChupaText *input, const gchar *mime_type)
+chupa_text_set_mime_type(ChupaText *text, const gchar *mime_type)
 {
-    ChupaMetadata *meta = chupa_text_get_metadata(input);
+    ChupaMetadata *meta = chupa_text_get_metadata(text);
     chupa_metadata_replace_value(meta, "mime-type", mime_type);
 }
 
 const gchar *
-chupa_text_get_filename(ChupaText *input)
+chupa_text_get_filename(ChupaText *text)
 {
-    ChupaMetadata *meta = chupa_text_get_metadata(input);
+    ChupaMetadata *meta = chupa_text_get_metadata(text);
     return chupa_metadata_get_first_value(meta, meta_filename);
 }
 
 void
-chupa_text_set_filename(ChupaText *input, const char *filename)
+chupa_text_set_filename(ChupaText *text, const char *filename)
 {
-    ChupaMetadata *meta = chupa_text_get_metadata(input);
+    ChupaMetadata *meta = chupa_text_get_metadata(text);
     chupa_metadata_add_value(meta, meta_filename, filename);
 }
 
 const gchar *
-chupa_text_get_charset(ChupaText *input)
+chupa_text_get_charset(ChupaText *text)
 {
-    ChupaMetadata *meta = chupa_text_get_metadata(input);
+    ChupaMetadata *meta = chupa_text_get_metadata(text);
     return chupa_metadata_get_first_value(meta, meta_charset);
 }
 
 void
-chupa_text_set_charset(ChupaText *input, const char *charset)
+chupa_text_set_charset(ChupaText *text, const char *charset)
 {
-    ChupaMetadata *meta = chupa_text_get_metadata(input);
+    ChupaMetadata *meta = chupa_text_get_metadata(text);
     chupa_metadata_add_value(meta, meta_charset, charset);
 }
 
 void
-chupa_text_finished(ChupaText *input)
+chupa_text_finished(ChupaText *text)
 {
-    g_signal_emit_by_name(input, chupa_text_signal_finished);
+    g_signal_emit_by_name(text, chupa_text_signal_finished);
 }
