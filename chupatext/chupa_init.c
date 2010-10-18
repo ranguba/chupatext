@@ -22,6 +22,7 @@
 
 #include "chupa_private.h"
 #include "chupa_decomposer_factory.h"
+#include "chupa_decomposer_description.h"
 #include "chupa_logger.h"
 
 void *chupa_stack_base;
