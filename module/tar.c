@@ -193,7 +193,9 @@ get_mime_types(ChupaDecomposerFactory *factory)
 static GObject *
 create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_type)
 {
-    return g_object_new(CHUPA_TYPE_TAR_DECOMPOSER, NULL);
+    return g_object_new(CHUPA_TYPE_TAR_DECOMPOSER,
+                        "mime-type", mime_type,
+                        NULL);
 }
 
 /* module entry points */

@@ -45,7 +45,6 @@ struct _ChupaRubyDecomposer
     ChupaDecomposer object;
 
     VALUE decomposer;
-    gchar *mime_type;
 };
 
 struct _ChupaRubyDecomposerClass
@@ -55,12 +54,6 @@ struct _ChupaRubyDecomposerClass
 
 static GType chupa_type_ruby_decomposer = 0;
 static ChupaRubyDecomposerClass *decomposer_parent_class;
-
-enum {
-    PROP_0,
-    PROP_MIME_TYPE,
-    PROP_DUMMY
-};
 
 GType
 chupa_ruby_decomposer_get_type(void)
@@ -182,65 +175,27 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
 static void
 decomposer_init(ChupaRubyDecomposer *decomposer)
 {
-    decomposer->mime_type = NULL;
+    decomposer->decomposer = Qnil;
 }
 
 static void
-dispose(GObject *object)
+decomposer_dispose(GObject *object)
 {
     ChupaRubyDecomposer *decomposer;
 
     decomposer = CHUPA_RUBY_DECOMPOSER(object);
-    if (decomposer->mime_type) {
-        g_free(decomposer->mime_type);
-        decomposer->mime_type = NULL;
+    if (!NIL_P(decomposer->decomposer)) {
+        rb_gc_unregister_address(&(decomposer->decomposer));
+        decomposer->decomposer = Qnil;
     }
 
     G_OBJECT_CLASS(decomposer_parent_class)->dispose(object);
 }
 
 static void
-set_property(GObject *object,
-             guint prop_id,
-             const GValue *value,
-             GParamSpec *pspec)
-{
-    ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
-    switch (prop_id) {
-    case PROP_MIME_TYPE:
-        if (obj->mime_type)
-            g_free(obj->mime_type);
-        obj->mime_type = g_value_dup_string(value);
-        break;
-    default:
-        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-        break;
-    }
-}
-
-static void
-get_property (GObject    *object,
-              guint       prop_id,
-              GValue     *value,
-              GParamSpec *pspec)
-{
-    ChupaRubyDecomposer *obj = CHUPA_RUBY_DECOMPOSER(object);
-
-    switch (prop_id) {
-    case PROP_MIME_TYPE:
-        g_value_set_string(value, obj->mime_type);
-        break;
-    default:
-        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-        break;
-    }
-}
-
-static void
 decomposer_class_init(ChupaRubyDecomposerClass *klass)
 {
     GObjectClass *gobject_class;
-    GParamSpec *spec;
     ChupaDecomposerClass *decomposer_class;
 
     decomposer_parent_class = g_type_class_peek_parent(klass);
@@ -248,17 +203,9 @@ decomposer_class_init(ChupaRubyDecomposerClass *klass)
     gobject_class = G_OBJECT_CLASS(klass);
     decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
 
-    gobject_class->dispose      = dispose;
-    gobject_class->set_property = set_property;
-    gobject_class->get_property = get_property;
-    decomposer_class->feed = feed;
+    gobject_class->dispose = decomposer_dispose;
 
-    spec = g_param_spec_string("mime-type",
-                               "MIME type of the module",
-                               "MIME type of the module",
-                               NULL,
-                               G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_MIME_TYPE, spec);
+    decomposer_class->feed = feed;
 }
 
 static void
@@ -289,9 +236,12 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 static void
 load_decomposer(ChupaRubyDecomposer *decomposer, VALUE loader)
 {
-    VALUE args[1];
-    args[0] = CSTR2RVAL(decomposer->mime_type);
-    decomposer->decomposer = rb_funcall2(loader, rb_intern("decomposer"), 1, args);
+    const gchar *mime_type;
+
+    mime_type = chupa_decomposer_get_mime_type(CHUPA_DECOMPOSER(decomposer));
+    decomposer->decomposer = rb_funcall(loader, rb_intern("decomposer"),
+                                        1, CSTR2RVAL(mime_type));
+    rb_gc_register_address(&(decomposer->decomposer));
 }
 
 
@@ -335,6 +285,7 @@ struct _ChupaRubyDecomposerFactoryClass
 static GType chupa_type_ruby_decomposer_factory = 0;
 static ChupaDecomposerFactoryClass *factory_parent_class;
 
+static void       factory_dispose  (GObject                *object);
 static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
 static GObject   *create           (ChupaDecomposerFactory *factory,
                                     const gchar            *label,
@@ -351,6 +302,8 @@ factory_class_init(ChupaDecomposerFactoryClass *klass)
     gobject_class = G_OBJECT_CLASS(klass);
     factory_class = CHUPA_DECOMPOSER_FACTORY_CLASS(klass);
 
+    gobject_class->dispose = factory_dispose;
+
     factory_class->get_mime_types   = get_mime_types;
     factory_class->create           = create;
 }
@@ -359,10 +312,23 @@ static void
 factory_init(ChupaRubyDecomposerFactory *factory)
 {
     VALUE cLoader;
+
     cLoader = rb_const_get(rb_const_get(rb_cObject, rb_intern("Chupa")),
                            rb_intern("Loader"));
     factory->loader = rb_funcall2(cLoader, rb_intern("new"), 0, NULL);
+    rb_gc_register_address(&(factory->loader));
     rb_funcall2(factory->loader, rb_intern("load"), 0, NULL);
+}
+
+static void
+factory_dispose(GObject *object)
+{
+    ChupaRubyDecomposerFactory *factory;
+
+    factory = CHUPA_RUBY_DECOMPOSER_FACTORY(object);
+    rb_gc_unregister_address(&(factory->loader));
+
+    G_OBJECT_CLASS(factory_parent_class)->dispose(object);
 }
 
 static void
@@ -415,10 +381,12 @@ static GObject *
 create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_type)
 {
     GObject *object;
+
     object = g_object_new(CHUPA_TYPE_RUBY_DECOMPOSER,
                           "mime-type", mime_type,
                           NULL);
-    load_decomposer(CHUPA_RUBY_DECOMPOSER(object), CHUPA_RUBY_DECOMPOSER_FACTORY(factory)->loader);
+    load_decomposer(CHUPA_RUBY_DECOMPOSER(object),
+                    CHUPA_RUBY_DECOMPOSER_FACTORY(factory)->loader);
     return object;
 }
 

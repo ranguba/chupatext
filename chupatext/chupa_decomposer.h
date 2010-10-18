@@ -61,6 +61,8 @@ gboolean         chupa_decomposer_feed    (ChupaDecomposer *dec,
                                            ChupaFeeder     *feeder,
                                            ChupaData       *data,
                                            GError         **error);
+const gchar     *chupa_decomposer_get_mime_type
+                                          (ChupaDecomposer *decomposer);
 
 G_END_DECLS
 
