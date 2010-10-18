@@ -15,6 +15,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-require 'chupa/base_decomposer'
-require 'chupa/loader'
-require 'chupa/data'
+module Chupa
+  class Data
+    class << self
+      def decompose(path)
+        feeder = Chupa::Feeder.new
+        data = nil
+        feeder.signal_connect("decomposed") do |_feeder, _data|
+          data = _data
+        end
+        feeder.feed(path)
+        data
+      end
+    end
+  end
+end
