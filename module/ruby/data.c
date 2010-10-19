@@ -71,7 +71,7 @@ data_read(int argc, VALUE *argv, VALUE self)
     rb_scan_args(argc, argv, "01", &rb_length);
     if (NIL_P(rb_length)) {
         read_data = g_data_input_stream_read_until(data_input_stream, "",
-                                              &length, cancellable, &error);
+                                                   &length, cancellable, &error);
         if (error)
             RAISE_GERROR(error);
         rb_data = rb_external_str_new_with_enc(read_data, (long)length,
@@ -100,6 +100,24 @@ data_get_metadata(VALUE self)
     return GOBJ2RVAL(chupa_data_get_metadata(data));
 }
 
+static VALUE
+data_is_text(VALUE self)
+{
+    return CBOOL2RVAL(chupa_data_is_text(SELF(self)));
+}
+
+static VALUE
+data_is_finished(VALUE self)
+{
+    return CBOOL2RVAL(chupa_data_is_finished(SELF(self)));
+}
+
+static VALUE
+data_is_succeeded(VALUE self)
+{
+    return CBOOL2RVAL(chupa_data_is_succeeded(SELF(self)));
+}
+
 VALUE
 chupa_ruby_data_init(VALUE mChupa)
 {
@@ -110,6 +128,10 @@ chupa_ruby_data_init(VALUE mChupa)
     rb_define_method(cData, "gets", data_gets, 0);
     rb_define_method(cData, "read", data_read, -1);
     rb_define_method(cData, "metadata", data_get_metadata, 0);
+
+    rb_define_method(cData, "text?", data_is_text, 0);
+    rb_define_method(cData, "finished?", data_is_finished, 0);
+    rb_define_method(cData, "succeeded?", data_is_succeeded, 0);
 
     return cData;
 }

@@ -400,6 +400,12 @@ chupa_data_finished(ChupaData *data, GError *error)
 gboolean
 chupa_data_is_text(ChupaData *data)
 {
+    ChupaDataPrivate *priv;
+
+    priv = CHUPA_DATA_GET_PRIVATE(data);
+    if (!priv->metadata)
+        return FALSE;
+
     return chupa_utils_string_equal("text/plain", chupa_data_get_mime_type(data));
 }
 
