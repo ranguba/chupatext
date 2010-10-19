@@ -1,4 +1,4 @@
-SUBDIRS = fixtures
+SUBDIRS = fixtures ruby
 EMPTY =
 
 if WITH_CUTTER
@@ -88,3 +88,6 @@ echo-top-srcdir:
 
 echo-cutter:
 	@echo $(CUTTER)
+
+echo-ruby:
+	@echo $(RUBY)

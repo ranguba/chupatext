@@ -238,6 +238,7 @@ AC_CONFIG_FILES([Makefile
 		 chupatext/Makefile
 		 test/Makefile
 		 test/fixtures/Makefile
+		 test/ruby/Makefile
 		 module/Makefile
 		 module/excel/Makefile
 		 module/ruby/Makefile
