@@ -31,6 +31,10 @@
 #include "excel/workbook-view.h"
 #include "excel/command-context-stderr.h"
 
+static const gchar EXCEL_MIME_TYPE[] = "application/vnd.ms-excel";
+static const gchar OFFICE_OPEN_XML_WORKBOOK_MIME_TYPE[] =               \
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
 /* ChupaExcelDecomposer */
 #define CHUPA_TYPE_EXCEL_DECOMPOSER             \
     (chupa_type_excel_decomposer)
@@ -111,7 +115,9 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
     g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
-    if (!chupa_excel_plain_file_p(source)) {
+    if (chupa_utils_string_equal(chupa_decomposer_get_mime_type(decomposer),
+                                 EXCEL_MIME_TYPE) &&
+        !chupa_excel_plain_file_p(source)) {
         /* encrypted file, skip */
         return FALSE;
     }
@@ -268,9 +274,9 @@ get_mime_types(ChupaDecomposerFactory *factory)
     GList *mime_types = NULL;
 
     mime_types = g_list_prepend(mime_types,
-                                g_strdup("application/vnd.ms-excel"));
+                                g_strdup(EXCEL_MIME_TYPE));
     mime_types = g_list_prepend(mime_types,
-                                g_strdup("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                                g_strdup(OFFICE_OPEN_XML_WORKBOOK_MIME_TYPE));
 
     return mime_types;
 }
