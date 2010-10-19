@@ -1,6 +1,8 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
+ *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  *  Copyright (C) 2010  Yuto HAYAMIZU <y.hayamizu@gmail.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -58,7 +60,7 @@ struct _ChupaDataClass
     GObjectClass parent_class;
 
     /* signals */
-    void (*finished)(GObject *object);
+    void (*finished)(ChupaData *data, gboolean success);
 };
 
 typedef void (*ChupaDataCallback)(ChupaData *, gpointer);
@@ -78,8 +80,11 @@ const gchar   *chupa_data_get_charset      (ChupaData *data);
 void           chupa_data_set_charset      (ChupaData *data, const char *charset);
 GsfInput      *chupa_data_get_input        (ChupaData *data);
 GInputStream  *chupa_data_get_stream       (ChupaData *data);
-void           chupa_data_finished         (ChupaData *data);
+void           chupa_data_finished         (ChupaData *data,
+                                            gboolean   success);
 gboolean       chupa_data_is_text          (ChupaData *data);
+gboolean       chupa_data_is_succeeded     (ChupaData *data);
+gboolean       chupa_data_is_finished      (ChupaData *data);
 
 G_END_DECLS
 

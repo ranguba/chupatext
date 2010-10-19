@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -26,6 +27,8 @@
 void test_new (void);
 void test_new_with_metadata (void);
 void test_is_text (void);
+void test_is_succeeded (void);
+void test_is_finished (void);
 
 static ChupaData *data;
 static GsfInput *memory_input;
@@ -73,7 +76,6 @@ test_is_text (void)
 {
     const char text_data[] = "plain\n\0text\nfoo\0bar";
     ChupaMetadata *meta;
-    ChupaData *data;
 
     memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
                                                   sizeof(text_data) - 1,
@@ -84,6 +86,38 @@ test_is_text (void)
     cut_assert_false(chupa_data_is_text(data));
     chupa_data_set_mime_type(data, "text/plain");
     cut_assert_true(chupa_data_is_text(data));
+}
+
+void
+test_is_succeeded (void)
+{
+    const char text_data[] = "plain\n\0text\nfoo\0bar";
+
+    memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
+                                                  sizeof(text_data) - 1,
+                                                  FALSE));
+    data = chupa_data_new(NULL, memory_input);
+
+    cut_assert_false(chupa_data_is_succeeded(data));
+    chupa_data_finished(data, TRUE);
+    cut_assert_true(chupa_data_is_succeeded(data));
+}
+
+void
+test_is_finished (void)
+{
+    const char text_data[] = "plain\n\0text\nfoo\0bar";
+
+    memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
+                                                  sizeof(text_data) - 1,
+                                                  FALSE));
+    data = chupa_data_new(NULL, memory_input);
+
+    cut_assert_false(chupa_data_is_succeeded(data));
+    cut_assert_false(chupa_data_is_finished(data));
+    chupa_data_finished(data, FALSE);
+    cut_assert_false(chupa_data_is_succeeded(data));
+    cut_assert_true(chupa_data_is_finished(data));
 }
 
 /*

@@ -13,7 +13,7 @@ noinst_LTLIBRARIES =				\
 	suite_chupatext_test.la			\
 	test_metadata.la			\
 	test_text.la				\
-	test_data.la			\
+	test_data.la				\
 	test_gsf_input_stream.la		\
 	test_decomposer.la			\
 	test_tar.la				\
@@ -40,16 +40,16 @@ EXTRA_DIST =					\
 	run-test.sh				\
 	chupa_test_util.h
 
-INCLUDES =		\
-	-I$(srcdir)	\
-	-I$(top_srcdir) \
-	-I$(top_includedir) \
+INCLUDES =					\
+	-I$(srcdir)				\
+	-I$(top_srcdir)				\
+	-I$(top_includedir)			\
 	-I$(build_includedir)
 
-AM_CFLAGS = 				\
-	$(CHUPATEXT_CFLAGS) \
-	$(GCUTTER_CFLAGS) \
-	$(GSF_CFLAGS) \
+AM_CFLAGS =					\
+	$(CHUPATEXT_CFLAGS)			\
+	$(GCUTTER_CFLAGS)			\
+	$(GSF_CFLAGS)				\
 	$(EMPTY)
 
 AM_LDFLAGS =			\
@@ -58,10 +58,10 @@ AM_LDFLAGS =			\
 	-avoid-version		\
 	-no-undefined
 
-LIBS =					\
-	$(top_builddir)/chupatext/libchupatext.la \
-	$(GCUTTER_LIBS) \
-	$(GSF_LIBS) \
+LIBS =							\
+	$(top_builddir)/chupatext/libchupatext.la	\
+	$(GCUTTER_LIBS)					\
+	$(GSF_LIBS)					\
 	$(EMPTY)
 
 suite_chupatext_test_la_SOURCES = suite_chupatext_test.c chupa_test_util.c

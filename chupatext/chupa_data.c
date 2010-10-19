@@ -1,6 +1,8 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
+ *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
  *  Copyright (C) 2010  Yuto HAYAMIZU <y.hayamizu@gmail.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -29,9 +31,9 @@ static const char meta_charset[] = "charset";
 /* ChupaData */
 G_DEFINE_TYPE(ChupaData, chupa_data, G_TYPE_OBJECT)
 
-#define CHUPA_DATA_GET_PRIVATE(obj) \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj), \
-                                 CHUPA_TYPE_DATA, \
+#define CHUPA_DATA_GET_PRIVATE(obj)                     \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
+                                 CHUPA_TYPE_DATA,       \
                                  ChupaDataPrivate))
 
 typedef struct _ChupaDataPrivate ChupaDataPrivate;
@@ -41,6 +43,8 @@ struct _ChupaDataPrivate
     GsfInput *input;
     ChupaMetadata *metadata;
     GDataInputStream *stream;
+    gboolean succeeded;
+    gboolean finished;
 };
 
 enum {
@@ -51,14 +55,12 @@ enum {
     PROP_DUMMY
 };
 
-static const char chupa_data_signal_finished[] = "finished";
-
 enum {
     FINISHED,
     LAST_SIGNAL
 };
 
-static gint gsignals[LAST_SIGNAL] = {0};
+static gint signals[LAST_SIGNAL] = {0};
 
 enum {
     peek_buffer_size = 1024
@@ -85,6 +87,8 @@ chupa_data_init(ChupaData *data)
     priv = CHUPA_DATA_GET_PRIVATE(data);
     priv->stream = NULL;
     priv->metadata = NULL;
+    priv->succeeded = FALSE;
+    priv->finished = FALSE;
 }
 
 static void
@@ -201,6 +205,17 @@ get_property(GObject *object,
 }
 
 static void
+finished(ChupaData *data, gboolean success)
+{
+    ChupaDataPrivate *priv;
+
+    priv = CHUPA_DATA_GET_PRIVATE(data);
+
+    priv->succeeded = success;
+    priv->finished = TRUE;
+}
+
+static void
 chupa_data_class_init(ChupaDataClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
@@ -210,6 +225,8 @@ chupa_data_class_init(ChupaDataClass *klass)
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    klass->finished = finished;
 
     spec = g_param_spec_object("input",
                                "Input",
@@ -237,14 +254,14 @@ chupa_data_class_init(ChupaDataClass *klass)
 
     g_type_class_add_private(gobject_class, sizeof(ChupaDataPrivate));
 
-    gsignals[FINISHED] =
-        g_signal_new(chupa_data_signal_finished,
+    signals[FINISHED] =
+        g_signal_new("finished",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(ChupaDataClass, finished),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
-                     G_TYPE_NONE, 0);
+                     g_cclosure_marshal_VOID__BOOLEAN,
+                     G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 }
 
 ChupaData *
@@ -364,13 +381,25 @@ chupa_data_set_charset(ChupaData *data, const char *charset)
 }
 
 void
-chupa_data_finished(ChupaData *data)
+chupa_data_finished(ChupaData *data, gboolean success)
 {
-    g_signal_emit_by_name(data, chupa_data_signal_finished);
+    g_signal_emit(data, signals[FINISHED], 0, success);
 }
 
 gboolean
 chupa_data_is_text(ChupaData *data)
 {
     return chupa_utils_string_equal("text/plain", chupa_data_get_mime_type(data));
+}
+
+gboolean
+chupa_data_is_succeeded(ChupaData *data)
+{
+    return CHUPA_DATA_GET_PRIVATE(data)->succeeded;
+}
+
+gboolean
+chupa_data_is_finished(ChupaData *data)
+{
+    return CHUPA_DATA_GET_PRIVATE(data)->finished;
 }
