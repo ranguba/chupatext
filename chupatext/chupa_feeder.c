@@ -88,13 +88,7 @@ dispose (GObject *object)
 GQuark
 chupa_feeder_error_quark(void)
 {
-    static GQuark error_quark = 0;
-
-    if (G_UNLIKELY(error_quark == 0)) {
-        error_quark = g_quark_from_static_string("chupa-feeder-error-quark");
-    }
-
-    return error_quark;
+    return g_quark_from_static_string("chupa-feeder-error-quark");
 }
 
 /**
