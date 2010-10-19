@@ -18,7 +18,6 @@ noinst_LTLIBRARIES =				\
 	test_decomposer.la			\
 	test_tar.la				\
 	test_zip.la				\
-	test_ruby.la				\
 	test_html.la				\
 	$(EMPTY)
 
@@ -77,7 +76,6 @@ test_excel_la_SOURCES = test_excel.c
 test_powerpoint_la_SOURCES = test_powerpoint.c
 test_tar_la_SOURCES = test_tar.c
 test_zip_la_SOURCES = test_zip.c
-test_ruby_la_SOURCES = test_ruby.c
 test_html_la_SOURCES = test_html.c
 
 echo-top-builddir:
