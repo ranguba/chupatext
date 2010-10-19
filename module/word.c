@@ -198,6 +198,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
             chupa_feeder_accepted(feeder, arg.text);
         }
     }
+    chupa_data_finished(arg.text, NULL);
     g_object_unref(arg.dest);
     g_object_unref(arg.text);
 
