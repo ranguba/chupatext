@@ -217,7 +217,11 @@ finished(ChupaData *data, GError *error)
 
     priv = CHUPA_DATA_GET_PRIVATE(data);
 
-    priv->error = g_error_copy(error);
+    if (error) {
+        priv->error = g_error_copy(error);
+    } else {
+        priv->error = NULL;
+    }
     priv->finished = TRUE;
 }
 
