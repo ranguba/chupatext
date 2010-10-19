@@ -77,18 +77,42 @@ const gchar *
 chupa_test_decompose_all(ChupaData *data, GError **error)
 {
     ChupaFeeder *feeder;
+    ChupaData *text_data;
+    GInputStream *input;
+    GString *text;
+    gssize count;
+    gchar buffer[1024];
+    gsize buffer_size;
 
     if (!data) {
         return NULL;
     }
-    feeder = CHUPA_FEEDER(TAKE_OBJECT(chupa_feeder_new()));
-    return TAKE_STRING(chupa_feeder_decompose_all(feeder, data, error));
+    feeder = chupa_feeder_new();
+    TAKE_OBJECT(feeder);
+    text_data = chupa_feeder_decompose(feeder, data, error);
+    if (!text_data) {
+        return NULL;
+    }
+
+    text = g_string_new(NULL);
+    input = chupa_data_get_stream(text_data);
+    buffer_size = sizeof(buffer);
+    while ((count = g_input_stream_read(input, buffer, buffer_size,
+                                        NULL, error)) > 0) {
+        g_string_append_len(text, buffer, count);
+        if (count < buffer_size)
+            break;
+    }
+    g_object_unref(text_data);
+    return TAKE_STRING(g_string_free(text, FALSE));
 }
 
 static void
-decomposed_metadata(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
+decomposed_metadata(ChupaFeeder *feeder, ChupaData *data, gpointer user_data)
 {
-    *(ChupaMetadata **)udata = chupa_data_get_metadata(data);
+    ChupaMetadata **metadata = user_data;
+
+    *metadata = chupa_data_get_metadata(data);
 }
 
 ChupaMetadata *
@@ -101,8 +125,9 @@ chupa_test_decompose_metadata(ChupaData *data, GError **error)
         return NULL;
     }
     feeder = CHUPA_FEEDER(TAKE_OBJECT(chupa_feeder_new()));
-    chupa_feeder_decompose(feeder, data, decomposed_metadata,
-                           &metadata, error);
+    g_signal_connect(feeder, "decomposed",
+                     (GCallback)decomposed_metadata, &metadata);
+    chupa_feeder_feed(feeder, data, error);
     TAKE_OBJECT(metadata);
     return metadata;
 }

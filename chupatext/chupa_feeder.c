@@ -163,58 +163,30 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaData *data, GError **error)
     return result;
 }
 
-/**
- * chupa_feeder_decompose:
- *
- * @feeder: the #ChupaFeeder instance.
- * @input: the input to extract from.
- * @func: the callback function to be called with extracted feeder
- * input.
- * @arg: arbitrary user data.
- *
- * Feeds @input to @feeder, with @func
- */
-void
-chupa_feeder_decompose(ChupaFeeder *feeder, ChupaData *data,
-                       ChupaFeederCallback func, gpointer arg, GError **error)
-{
-    g_signal_connect(feeder, "accepted", (GCallback)func, arg);
-    chupa_feeder_feed(feeder, data, error);
-}
-
-struct decompose_arg {
-    char *read_data;
-    gsize length;
-    GError **error;
-};
-
 static void
-feeder_accepted(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
+cb_accepted(ChupaFeeder *feeder, ChupaData *data, gpointer user_data)
 {
-    GDataInputStream *data_stream = G_DATA_INPUT_STREAM(chupa_data_get_stream(data));
-    struct decompose_arg *arg = udata;
+    ChupaData **text_data = user_data;
 
-    arg->read_data = g_data_input_stream_read_until(data_stream, "", &arg->length, NULL, arg->error);
+    *text_data = g_object_ref(data);
 }
 
 /**
  * chupa_feeder_decompose:
  *
  * @feeder: the #ChupaFeeder instance.
- * @input: the input to extract from.
+ * @data: the input to extract from.
+ * @error: return location for an error, or %NULL.
  *
- * Extracts all feeder portions from @input.
+ * Feeds @data to @feeder and returns extracted text data.
  *
- * Returns: pointer to the feeder data that all feeder portion in @input
- * are combined.
+ * Returns: a text data as #ChupaData.
  */
-char *
-chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaData *data, GError **error)
+ChupaData *
+chupa_feeder_decompose(ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
-    struct decompose_arg arg;
-    arg.read_data = NULL;
-    arg.length = 0;
-    arg.error = error;
-    chupa_feeder_decompose(feeder, data, feeder_accepted, &arg, error);
-    return arg.read_data;
+    ChupaData *text_data = NULL;
+    g_signal_connect(feeder, "accepted", (GCallback)cb_accepted, &text_data);
+    chupa_feeder_feed(feeder, data, error);
+    return text_data;
 }

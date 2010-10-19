@@ -72,21 +72,17 @@ typedef enum {
     CHUPA_FEEDER_ERROR_UNKNOWN
 } ChupaFeederError;
 
-/**
- * ChupaFeederCallback:
- *
- * The type used for callback functions when extracting the feeder portion.
- */
-typedef void (*ChupaFeederCallback)(ChupaFeeder *, ChupaData *, gpointer);
-
 GQuark       chupa_feeder_error_quark(void) G_GNUC_CONST;
 
 GType        chupa_feeder_get_type   (void) G_GNUC_CONST;
 ChupaFeeder *chupa_feeder_new        (void);
-gboolean     chupa_feeder_feed       (ChupaFeeder *feeder, ChupaData *data, GError **err);
-void         chupa_feeder_accepted   (ChupaFeeder *feeder, ChupaData *data);
-void         chupa_feeder_decompose  (ChupaFeeder *feeder, ChupaData *feeder_data,
-                                      ChupaFeederCallback func, gpointer arg, GError **error);
-gchar       *chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaData *feeder_data, GError **error);
+gboolean     chupa_feeder_feed       (ChupaFeeder *feeder,
+                                      ChupaData   *data,
+                                      GError     **error);
+void         chupa_feeder_accepted   (ChupaFeeder *feeder,
+                                      ChupaData   *data);
+ChupaData   *chupa_feeder_decompose  (ChupaFeeder *feeder,
+                                      ChupaData   *data,
+                                      GError     **error);
 
 #endif

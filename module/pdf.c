@@ -62,8 +62,7 @@ struct _ChupaPDFDecomposerClass
 static GType chupa_type_pdf_decomposer = 0;
 
 static gboolean
-feed(ChupaDecomposer *dec, ChupaFeeder *feeder,
-     ChupaData *data, GError **error)
+feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
     PopplerDocument *doc;
     GMemoryInputStream *mem = NULL;
@@ -115,6 +114,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder,
     }
     g_object_unref(doc);
     g_string_free(str, TRUE);
+    chupa_data_finished(pdf_text, NULL);
     g_object_unref(mem);
     g_object_unref(pdf_text);
     return TRUE;
