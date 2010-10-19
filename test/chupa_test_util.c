@@ -92,7 +92,7 @@ chupa_test_decompose_all(ChupaData *data, GError **error)
 }
 
 static void
-decomposed_metadata(ChupaFeeder *feeder, ChupaData *data, gpointer user_data)
+cb_accepted(ChupaFeeder *feeder, ChupaData *data, gpointer user_data)
 {
     ChupaMetadata **metadata = user_data;
 
@@ -109,8 +109,7 @@ chupa_test_decompose_metadata(ChupaData *data, GError **error)
         return NULL;
     }
     feeder = CHUPA_FEEDER(TAKE_OBJECT(chupa_feeder_new()));
-    g_signal_connect(feeder, "decomposed",
-                     (GCallback)decomposed_metadata, &metadata);
+    g_signal_connect(feeder, "accepted", (GCallback)cb_accepted, &metadata);
     chupa_feeder_feed(feeder, data, error);
     TAKE_OBJECT(metadata);
     return metadata;
