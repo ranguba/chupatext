@@ -63,7 +63,7 @@ static GType chupa_type_pdf_decomposer = 0;
 
 static gboolean
 feed(ChupaDecomposer *dec, ChupaFeeder *feeder,
-     ChupaData *data, GError **err)
+     ChupaData *data, GError **error)
 {
     PopplerDocument *doc;
     GMemoryInputStream *mem = NULL;
@@ -76,7 +76,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder,
     ChupaData *pdf_text = NULL;
     int n, i;
 
-    while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, err)) > 0) {
+    while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, error)) > 0) {
         g_string_append_len(str, buffer, count);
         if (count < bufsize) break;
     }
@@ -84,7 +84,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder,
         g_string_free(str, TRUE);
         return FALSE;
     }
-    doc = poppler_document_new_from_data(str->str, str->len, NULL, err);
+    doc = poppler_document_new_from_data(str->str, str->len, NULL, error);
     if (!doc) {
         g_string_free(str, TRUE);
         return FALSE;
