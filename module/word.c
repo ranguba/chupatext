@@ -178,7 +178,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                     CHUPA_FEEDER_ERROR,
                     CHUPA_FEEDER_ERROR_INVALID_INPUT,
                     "wvInitParser_gsf failed: %d",
-                    ret));
+                    ret);
         return FALSE;
     }
     ps.userData = &arg;
