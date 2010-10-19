@@ -40,10 +40,13 @@ teardown(void)
 void
 test_decompose_ppt(void)
 {
-    cut_assert_equal_string("Sample Title\n\n", decompose_msppt("sample.ppt", NULL));
+    cut_assert_equal_string("Sample Title",
+                            decompose_msppt("sample.ppt", NULL));
 }
 
 void
 test_decompose_ppt_ja(void)
 {
+    cut_assert_equal_string("Sample Title\n こんにちゅぱ\n",
+                            decompose_msppt("sample_ja.ppt", NULL));
 }
