@@ -64,8 +64,6 @@ struct _ChupaDataClass
                      GError    *error);
 };
 
-typedef void (*ChupaDataCallback)(ChupaData *, gpointer);
-
 GType          chupa_data_get_type         (void) G_GNUC_CONST;
 ChupaData     *chupa_data_new              (ChupaMetadata *metadata, GsfInput *inpt);
 ChupaData     *chupa_data_new_from_stream  (ChupaMetadata *metadata,
@@ -88,6 +86,9 @@ gboolean       chupa_data_is_text          (ChupaData *data);
 gboolean       chupa_data_is_succeeded     (ChupaData *data);
 gboolean       chupa_data_is_finished      (ChupaData *data);
 GError        *chupa_data_get_error        (ChupaData *data);
+const gchar   *chupa_data_get_raw_data     (ChupaData *data,
+                                            gsize     *length,
+                                            GError   **error);
 
 G_END_DECLS
 

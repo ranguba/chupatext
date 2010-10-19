@@ -45,6 +45,7 @@ struct _ChupaDataPrivate
     GDataInputStream *stream;
     gboolean finished;
     GError *error;
+    GString *raw_data;
 };
 
 enum {
@@ -421,4 +422,38 @@ GError *
 chupa_data_get_error(ChupaData *data)
 {
     return CHUPA_DATA_GET_PRIVATE(data)->error;
+}
+
+const gchar *
+chupa_data_get_raw_data(ChupaData *data, gsize *length, GError **error)
+{
+    ChupaDataPrivate *priv;
+
+    priv = CHUPA_DATA_GET_PRIVATE(data);
+    if (!priv->finished || priv->error) {
+        if (length)
+            *length = 0;
+        return NULL;
+    }
+
+    if (!priv->raw_data) {
+        GInputStream *input;
+        gssize count;
+        gchar buffer[1024];
+        gsize buffer_size;
+
+        priv->raw_data = g_string_new(NULL);
+        input = G_INPUT_STREAM(priv->stream);
+        buffer_size = sizeof(buffer);
+        while ((count = g_input_stream_read(input, buffer, buffer_size,
+                                            NULL, error)) > 0) {
+            g_string_append_len(priv->raw_data, buffer, count);
+            if (count < buffer_size)
+                break;
+        }
+    }
+
+    if (length)
+        *length = priv->raw_data->len;
+    return priv->raw_data->str;
 }

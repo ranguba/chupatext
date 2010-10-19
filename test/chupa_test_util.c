@@ -78,11 +78,6 @@ chupa_test_decompose_all(ChupaData *data, GError **error)
 {
     ChupaFeeder *feeder;
     ChupaData *text_data;
-    GInputStream *input;
-    GString *text;
-    gssize count;
-    gchar buffer[1024];
-    gsize buffer_size;
 
     if (!data) {
         return NULL;
@@ -93,18 +88,7 @@ chupa_test_decompose_all(ChupaData *data, GError **error)
     if (!text_data) {
         return NULL;
     }
-
-    text = g_string_new(NULL);
-    input = chupa_data_get_stream(text_data);
-    buffer_size = sizeof(buffer);
-    while ((count = g_input_stream_read(input, buffer, buffer_size,
-                                        NULL, error)) > 0) {
-        g_string_append_len(text, buffer, count);
-        if (count < buffer_size)
-            break;
-    }
-    g_object_unref(text_data);
-    return TAKE_STRING(g_string_free(text, FALSE));
+    return chupa_data_get_raw_data(text_data, NULL, error);
 }
 
 static void
