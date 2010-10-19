@@ -60,7 +60,8 @@ struct _ChupaDataClass
     GObjectClass parent_class;
 
     /* signals */
-    void (*finished)(ChupaData *data, gboolean success);
+    void (*finished)(ChupaData *data,
+                     GError    *error);
 };
 
 typedef void (*ChupaDataCallback)(ChupaData *, gpointer);
@@ -81,10 +82,12 @@ void           chupa_data_set_charset      (ChupaData *data, const char *charset
 GsfInput      *chupa_data_get_input        (ChupaData *data);
 GInputStream  *chupa_data_get_stream       (ChupaData *data);
 void           chupa_data_finished         (ChupaData *data,
-                                            gboolean   success);
+                                            GError    *error);
+
 gboolean       chupa_data_is_text          (ChupaData *data);
 gboolean       chupa_data_is_succeeded     (ChupaData *data);
 gboolean       chupa_data_is_finished      (ChupaData *data);
+GError        *chupa_data_get_error        (ChupaData *data);
 
 G_END_DECLS
 

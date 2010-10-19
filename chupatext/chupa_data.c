@@ -43,8 +43,8 @@ struct _ChupaDataPrivate
     GsfInput *input;
     ChupaMetadata *metadata;
     GDataInputStream *stream;
-    gboolean succeeded;
     gboolean finished;
+    GError *error;
 };
 
 enum {
@@ -87,8 +87,8 @@ chupa_data_init(ChupaData *data)
     priv = CHUPA_DATA_GET_PRIVATE(data);
     priv->stream = NULL;
     priv->metadata = NULL;
-    priv->succeeded = FALSE;
     priv->finished = FALSE;
+    priv->error = NULL;
 }
 
 static void
@@ -135,9 +135,15 @@ dispose(GObject *object)
     ChupaDataPrivate *priv;
 
     priv = CHUPA_DATA_GET_PRIVATE(object);
+
     if (priv->metadata) {
         g_object_unref(priv->metadata);
         priv->metadata = NULL;
+    }
+
+    if (priv->error) {
+        g_error_free(priv->error);
+        priv->error = NULL;
     }
 
     G_OBJECT_CLASS(chupa_data_parent_class)->dispose(object);
@@ -205,13 +211,13 @@ get_property(GObject *object,
 }
 
 static void
-finished(ChupaData *data, gboolean success)
+finished(ChupaData *data, GError *error)
 {
     ChupaDataPrivate *priv;
 
     priv = CHUPA_DATA_GET_PRIVATE(data);
 
-    priv->succeeded = success;
+    priv->error = g_error_copy(error);
     priv->finished = TRUE;
 }
 
@@ -381,9 +387,9 @@ chupa_data_set_charset(ChupaData *data, const char *charset)
 }
 
 void
-chupa_data_finished(ChupaData *data, gboolean success)
+chupa_data_finished(ChupaData *data, GError *error)
 {
-    g_signal_emit(data, signals[FINISHED], 0, success);
+    g_signal_emit(data, signals[FINISHED], 0, error);
 }
 
 gboolean
@@ -395,11 +401,20 @@ chupa_data_is_text(ChupaData *data)
 gboolean
 chupa_data_is_succeeded(ChupaData *data)
 {
-    return CHUPA_DATA_GET_PRIVATE(data)->succeeded;
+    ChupaDataPrivate *priv;
+
+    priv = CHUPA_DATA_GET_PRIVATE(data);
+    return priv->finished && priv->error == NULL;
 }
 
 gboolean
 chupa_data_is_finished(ChupaData *data)
 {
     return CHUPA_DATA_GET_PRIVATE(data)->finished;
+}
+
+GError *
+chupa_data_get_error(ChupaData *data)
+{
+    return CHUPA_DATA_GET_PRIVATE(data)->error;
 }

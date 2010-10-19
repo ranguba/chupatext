@@ -21,6 +21,7 @@
 
 #include <gsf/gsf-input-memory.h>
 #include <chupatext/chupa_data.h>
+#include <chupatext/chupa_feeder.h>
 
 #include <gcutter.h>
 
@@ -99,7 +100,7 @@ test_is_succeeded (void)
     data = chupa_data_new(NULL, memory_input);
 
     cut_assert_false(chupa_data_is_succeeded(data));
-    chupa_data_finished(data, TRUE);
+    chupa_data_finished(data, NULL);
     cut_assert_true(chupa_data_is_succeeded(data));
 }
 
@@ -107,6 +108,7 @@ void
 test_is_finished (void)
 {
     const char text_data[] = "plain\n\0text\nfoo\0bar";
+    GError *error;
 
     memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
                                                   sizeof(text_data) - 1,
@@ -115,7 +117,11 @@ test_is_finished (void)
 
     cut_assert_false(chupa_data_is_succeeded(data));
     cut_assert_false(chupa_data_is_finished(data));
-    chupa_data_finished(data, FALSE);
+    error = g_error_new(CHUPA_FEEDER_ERROR,
+                        CHUPA_FEEDER_ERROR_UNKNOWN_MIME_TYPE,
+                        "unknown mime-type: <image/png>");
+    chupa_data_finished(data, error);
+    g_error_free(error);
     cut_assert_false(chupa_data_is_succeeded(data));
     cut_assert_true(chupa_data_is_finished(data));
 }
