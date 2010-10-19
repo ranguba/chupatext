@@ -43,7 +43,7 @@ class Chupa::BaseDecomposer
   end
 
   private
-  def decomposed(data)
+  def accepted(data)
     @sink.write(data)
   end
 

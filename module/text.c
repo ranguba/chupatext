@@ -62,7 +62,7 @@ static gboolean
 chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                            ChupaData *data, GError **err)
 {
-    chupa_feeder_decomposed(feeder, data);
+    chupa_feeder_accepted(feeder, data);
     chupa_data_finished(data);
     return TRUE;
 }

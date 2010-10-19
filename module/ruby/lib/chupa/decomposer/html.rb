@@ -26,6 +26,6 @@ class Chupa::HTML < Chupa::BaseDecomposer
     if encoding = doc.encoding
       metadata["charset"] = encoding.downcase
     end
-    decomposed((doc % "body").text.gsub(/^\s+|\s+$/, ''))
+    accepted((doc % "body").text.gsub(/^\s+|\s+$/, ''))
   end
 end

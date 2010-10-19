@@ -103,13 +103,12 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder,
         if (mem) {
             g_memory_input_stream_add_data(mem, "\f", 1, NULL);
             g_memory_input_stream_add_data(mem, text, -1, g_free);
-        }
-        else {
+        } else {
             GsfInput *base_input = chupa_data_get_input(data);
             const char *name = base_input ? gsf_input_name(base_input) : NULL;
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
             pdf_text = chupa_data_new_from_stream(meta, inp, name);
-            chupa_feeder_decomposed(feeder, pdf_text);
+            chupa_feeder_accepted(feeder, pdf_text);
             mem = (GMemoryInputStream *)inp;
         }
         g_object_unref(page);

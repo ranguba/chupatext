@@ -21,7 +21,7 @@ module Chupa
       def decompose(path)
         feeder = Chupa::Feeder.new
         data = nil
-        feeder.signal_connect("decomposed") do |_feeder, _data|
+        feeder.signal_connect("accepted") do |_feeder, _data|
           data = _data
         end
         feeder.feed(path)

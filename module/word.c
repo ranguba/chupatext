@@ -150,7 +150,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         g_string_free(s, FALSE);
         arg->buffer = NULL;
         if (arg->feeder) {
-            chupa_feeder_decomposed(arg->feeder, arg->text);
+            chupa_feeder_accepted(arg->feeder, arg->text);
         }
     }
     return 0;
@@ -195,7 +195,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
             chupa_metadata_add_value(meta, "charset", "US-ASCII");
         }
         if (arg.feeder) {
-            chupa_feeder_decomposed(feeder, arg.text);
+            chupa_feeder_accepted(feeder, arg.text);
         }
     }
     g_object_unref(arg.dest);

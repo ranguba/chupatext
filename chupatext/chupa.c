@@ -189,8 +189,7 @@ main(int argc, char **argv)
     feeder = chupa_feeder_new();
     writer = json ? &json_writer : &plain_writer;
     uinfo.out = stdout;
-    g_signal_connect(feeder, chupa_feeder_signal_decomposed,
-                     (GCallback)writer->output, &uinfo);
+    g_signal_connect(feeder, "accepted", (GCallback)writer->output, &uinfo);
     --argc;
     ++argv;
     for (i = 0; i < argc; ++i) {

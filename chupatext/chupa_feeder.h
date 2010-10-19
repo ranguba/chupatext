@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -36,9 +37,6 @@ G_BEGIN_DECLS
 #define IS_CHUPA_FEEDER_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_FEEDER)
 #define CHUPA_FEEDER_GET_CLASS(obj)  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_FEEDER, ChupaFeederClass)
 
-#define CHUPA_FEEDER_SIGNAL_DECOMPOSED chupa_feeder_signal_decomposed
-extern const char chupa_feeder_signal_decomposed[];
-
 typedef struct ChupaFeeder ChupaFeeder;
 typedef struct ChupaFeederClass ChupaFeederClass;
 
@@ -49,13 +47,13 @@ typedef struct ChupaFeederClass ChupaFeederClass;
  */
 struct ChupaFeeder
 {
-    GObject parent_instance;
+    GObject object;
 };
 
 /**
  * ChupaFeederClass:
  *
- * @decomposed: the callback function called when each feeder portion is
+ * @accepted: the callback function called when each feeder portion is
  * found.
  */
 struct ChupaFeederClass
@@ -63,7 +61,7 @@ struct ChupaFeederClass
     GObjectClass parent_class;
 
     /* signals */
-    void (*decomposed)(GObject *object, ChupaData *data);
+    void (*accepted)(ChupaFeeder *feeder, ChupaData *data);
 };
 
 typedef enum {
@@ -86,7 +84,7 @@ GQuark       chupa_feeder_error_quark(void) G_GNUC_CONST;
 GType        chupa_feeder_get_type   (void) G_GNUC_CONST;
 ChupaFeeder *chupa_feeder_new        (void);
 gboolean     chupa_feeder_feed       (ChupaFeeder *feeder, ChupaData *data, GError **err);
-void         chupa_feeder_decomposed (ChupaFeeder *feeder, ChupaData *data);
+void         chupa_feeder_accepted   (ChupaFeeder *feeder, ChupaData *data);
 void         chupa_feeder_decompose  (ChupaFeeder *feeder, ChupaData *feeder_data,
                                       ChupaFeederCallback func, gpointer arg, GError **error);
 gchar       *chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaData *feeder_data, GError **error);

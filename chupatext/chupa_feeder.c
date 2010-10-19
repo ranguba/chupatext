@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -33,14 +34,12 @@ typedef struct ChupaFeederPrivate {
     ChupaDispatcher *dispatcher;
 } ChupaFeederPrivate;
 
-const char chupa_feeder_signal_decomposed[] = "decomposed";
-
 enum {
-    DECOMPOSED,
+    ACCEPTED,
     LAST_SIGNAL
 };
 
-static gint gsignals[LAST_SIGNAL] = {0};
+static gint signals[LAST_SIGNAL] = {0};
 
 static void dispose        (GObject         *object);
 
@@ -53,11 +52,11 @@ chupa_feeder_class_init(ChupaFeederClass *klass)
 
     gobject_class->dispose      = dispose;
 
-    gsignals[DECOMPOSED] =
-        g_signal_new(chupa_feeder_signal_decomposed,
+    signals[ACCEPTED] =
+        g_signal_new("accepted",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(ChupaFeederClass, decomposed),
+                     G_STRUCT_OFFSET(ChupaFeederClass, accepted),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
                      G_TYPE_NONE, 1, CHUPA_TYPE_DATA);
@@ -115,17 +114,17 @@ chupa_feeder_new(void)
 }
 
 /**
- * chupa_feeder_decomposed:
+ * chupa_feeder_accepted:
  * @feeder: the #ChupaFeeder instance to be signaled.
- * @input: the input to extract from.
+ * @data: the input to extract from.
  *
  * This function is protected, and should be called from subclass of
  * #ChupaFeederDecomposer only.
  */
 void
-chupa_feeder_decomposed(ChupaFeeder *feeder, ChupaData *data)
+chupa_feeder_accepted(ChupaFeeder *feeder, ChupaData *data)
 {
-    g_signal_emit_by_name(feeder, chupa_feeder_signal_decomposed, data);
+    g_signal_emit(feeder, signals[ACCEPTED], 0, data);
 }
 
 /**
@@ -185,7 +184,7 @@ void
 chupa_feeder_decompose(ChupaFeeder *feeder, ChupaData *data,
                        ChupaFeederCallback func, gpointer arg, GError **error)
 {
-    g_signal_connect(feeder, chupa_feeder_signal_decomposed, (GCallback)func, arg);
+    g_signal_connect(feeder, "accepted", (GCallback)func, arg);
     chupa_feeder_feed(feeder, data, error);
 }
 
@@ -196,7 +195,7 @@ struct decompose_arg {
 };
 
 static void
-feeder_decomposed(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
+feeder_accepted(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
 {
     GDataInputStream *data_stream = G_DATA_INPUT_STREAM(chupa_data_get_stream(data));
     struct decompose_arg *arg = udata;
@@ -222,6 +221,6 @@ chupa_feeder_decompose_all(ChupaFeeder *feeder, ChupaData *data, GError **error)
     arg.read_data = NULL;
     arg.length = 0;
     arg.error = error;
-    chupa_feeder_decompose(feeder, data, feeder_decomposed, &arg, error);
+    chupa_feeder_decompose(feeder, data, feeder_accepted, &arg, error);
     return arg.read_data;
 }

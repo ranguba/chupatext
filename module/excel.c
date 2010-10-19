@@ -139,7 +139,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     g_object_unref(tmpout);
     input = chupa_data_new_from_stream(NULL, tmpinp, chupa_data_get_filename(input));
     g_object_unref(tmpinp);
-    chupa_feeder_decomposed(feeder, input);
+    chupa_feeder_accepted(feeder, input);
     return TRUE;
 }
 
