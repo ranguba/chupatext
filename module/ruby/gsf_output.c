@@ -23,7 +23,7 @@
 #define SELF(self) (GSF_OUTPUT(RVAL2GOBJ(self)))
 
 static VALUE
-write(VALUE self, VALUE data)
+output_write(VALUE self, VALUE data)
 {
     GsfOutput *output;
     gboolean success;
@@ -44,7 +44,7 @@ chupa_ruby_gsf_output_init(VALUE mGsf)
 
     cOutput = G_DEF_CLASS(GSF_OUTPUT_TYPE, "Output", mGsf);
 
-    rb_define_method(cOutput, "write", write, 1);
+    rb_define_method(cOutput, "write", output_write, 1);
 
     G_DEF_CLASS(GSF_OUTPUT_MEMORY_TYPE, "OutputMemory", mGsf);
 
