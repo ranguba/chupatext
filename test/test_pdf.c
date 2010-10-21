@@ -40,14 +40,14 @@ teardown(void)
 void
 test_decompose_pdf(void)
 {
-    cut_assert_equal_string("sample", decompose_pdf("sample.pdf", NULL));
+    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf", NULL));
 }
 
 void
 test_decompose_pdf_multi_pages(void)
 {
-    cut_assert_equal_string("page1\f"
-                            "2 ページ目\f"
-                            "page3",
+    cut_assert_equal_string("page1\n\f"
+                            "2 ページ目\n\f"
+                            "page3\n",
                             decompose_pdf("sample_multi_pages.pdf", NULL));
 }
