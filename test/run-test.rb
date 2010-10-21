@@ -22,7 +22,7 @@ rubyforge_download_base_url = "http://rubyforge.org/frs/download.php"
 tgz_uris = ["#{rubyforge_download_base_url}/71835/test-unit-2.1.1.tgz",
             "#{rubyforge_download_base_url}/71705/test-unit-notify-0.0.1.tgz"]
 tgz_uris.each do |tgz_uri|
-  package = File.basename(tgz_uri, ".tgz") 
+  package = File.basename(tgz_uri, ".tgz")
   package_dir = test_lib_dir + package
   unless package_dir.exist?
     tgz = test_lib_dir + File.basename(tgz_uri)
