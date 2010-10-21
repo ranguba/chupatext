@@ -92,7 +92,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     for (i = 0; i < n; ++i) {
         PopplerPage *page = poppler_document_get_page(doc, i);
         gchar *text;
-#if POPPLER_CHECK_VERSION(0, 14, 0)
+#if POPPLER_CHECK_VERSION(0, 15, 0)
         text = poppler_page_get_text(page);
 #else
         PopplerRectangle rectangle = {0, 0, 0, 0};
