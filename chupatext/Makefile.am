@@ -20,6 +20,7 @@ libchupatext_la_SOURCES =			\
 	chupa_metadata.c			\
 	chupa_feeder.c				\
 	chupa_data.c				\
+	chupa_data_input.c			\
 	chupa_module.c				\
 	chupa_decomposer_factory.c		\
 	chupa_decomposer_description.c		\
@@ -58,6 +59,7 @@ chupa_public_headers =				\
 	chupa_private.h				\
 	chupa_feeder.h				\
 	chupa_data.h				\
+	chupa_data_input.h			\
 	chupa_gsf_input_stream.h		\
 	chupa_memory_input_stream.h		\
 	chupa_logger.h				\
