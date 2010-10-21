@@ -168,7 +168,17 @@ if test "$ruby_available" = "yes"; then
   AC_MSG_CHECKING([for Ruby/GLib2 CFLAGS])
   RUBY_GLIB2_CFLAGS=$($RUBY -e '
     ruby_glib2_gem = Gem.cache.find_name("glib2").first
-    exit(false) if ruby_glib2_gem.nil?
+    if ruby_glib2_gem.nil?
+      begin
+        require "glib2"
+        ruby_glib2_path = $".grep(/glib2\.(?!rb\z)\w+\z/).first
+        exit(false) if ruby_glib2_path.nil?
+        print("-I", File.dirname(ruby_glib2_path))
+        exit(true)
+      rescue LoadError
+        exit(false)
+      end
+    end
     ruby_glib2_path = ruby_glib2_gem.full_gem_path
     print("-I", File.join(ruby_glib2_path, "ext", "glib2"))')
   if test $? -ne 0; then
