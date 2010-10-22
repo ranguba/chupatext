@@ -35,7 +35,6 @@ endif
 text_la_SOURCES = text.c
 text_la_CPPFLAGS =				\
 	$(GLIB_CFLAGS)				\
-	$(GSF_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-Text\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Text\"
 text_la_LIBADD = $(chupa_libs)
@@ -57,7 +56,6 @@ zip_la_LIBADD = $(chupa_libs)
 pdf_la_SOURCES = pdf.c
 pdf_la_CPPFLAGS =				\
 	$(POPPLER_GLIB_CFLAGS)			\
-	$(GSF_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-PDF\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PDF\"
 pdf_la_LIBADD = $(chupa_libs) $(POPPLER_GLIB_LIBS)
@@ -79,7 +77,6 @@ excel_la_LIBADD = $(chupa_libs) $(GOFFICE_LIBS) -lspreadsheet
 powerpoint_la_SOURCES = powerpoint.c
 powerpoint_la_CPPFLAGS =				\
 	$(GIO_UNIX_CFLAGS)				\
-	$(GSF_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"ChupaText-PowerPoint\"		\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPoint\"
 powerpoint_la_LIBADD = $(chupa_libs) $(GIO_UNIX_LIBS)
@@ -93,8 +90,7 @@ ruby_la_CPPFLAGS =					\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Ruby\"		\
 	$(RUBY_CPPFLAGS)				\
 	$(RUBY_GLIB2_CFLAGS)				\
-	$(GLIB_CFLAGS)					\
-	$(GSF_CFLAGS)
+	$(GLIB_CFLAGS)
 ruby_la_LIBADD =				\
 	$(chupa_libs)				\
 	$(RUBY_LDFLAGS)				\

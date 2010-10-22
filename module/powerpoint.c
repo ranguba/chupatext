@@ -21,14 +21,10 @@
 
 #include <chupatext/chupa_decomposer_module.h>
 #include <chupatext/external_decomposer.h>
-#include <chupatext/chupa_gsf_input_stream.h>
-#include <chupatext/chupa_data_input.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <gio/gunixinputstream.h>
 #include <gio/gunixoutputstream.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-infile-msole.h>
 #include <glib/gstdio.h>
 #include <memory.h>
 #include <unistd.h>
@@ -75,15 +71,11 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     char *argv[5];
     gsize size;
     gboolean result;
-    GsfInput *base_input;
     gint ooo_status;
     struct stat st;
 
     fd_ppt = g_file_open_tmp(TMPFILE_BASE".ppt", &tmp_power_point_name, error);
     out_tmpfile = g_unix_output_stream_new(fd_ppt, TRUE);
-    base_input = chupa_data_input_new(data);
-    gsf_input_seek(base_input, 0, G_SEEK_SET);
-    g_object_unref(base_input);
     in_tmpfile = chupa_data_get_stream(data);
     size = g_output_stream_splice(out_tmpfile, in_tmpfile,
                                   G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE|
