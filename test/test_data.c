@@ -33,12 +33,14 @@ void test_is_finished (void);
 
 static ChupaData *data;
 static GsfInput *memory_input;
+static GInputStream *stream;
 
 void
 setup (void)
 {
     data = NULL;
     memory_input = NULL;
+    stream = NULL;
 }
 
 void
@@ -48,14 +50,17 @@ teardown (void)
         g_object_unref(data);
     if (memory_input)
         g_object_unref(memory_input);
+    if (stream)
+        g_object_unref(stream);
 }
 
 void
 test_new (void)
 {
     ChupaMetadata *meta;
-    GInputStream *memstream = g_memory_input_stream_new();
-    data = chupa_data_new_from_stream(NULL, memstream, NULL);
+
+    stream = g_memory_input_stream_new();
+    data = chupa_data_new(stream, NULL);
     meta = chupa_data_get_metadata(data);
     cut_assert_not_null(meta);
     cut_assert_equal_int(1, chupa_metadata_size(meta));
@@ -65,24 +70,26 @@ test_new (void)
 void
 test_new_with_metadata (void)
 {
-    ChupaMetadata *meta = chupa_metadata_new();
-    GInputStream *memstream = g_memory_input_stream_new();
-    data = chupa_data_new_from_stream(meta, memstream, NULL);
-    gcut_assert_equal_object(meta, chupa_data_get_metadata(data));
-    cut_assert_equal_uint(1, chupa_metadata_size(meta));
+    ChupaMetadata *metadata = chupa_metadata_new();
+
+    stream = g_memory_input_stream_new();
+    data = chupa_data_new(stream, metadata);
+    gcut_assert_equal_object(metadata, chupa_data_get_metadata(data));
+    cut_assert_equal_uint(1, chupa_metadata_size(metadata));
 }
 
 void
 test_is_text (void)
 {
     const char text_data[] = "plain\n\0text\nfoo\0bar";
-    ChupaMetadata *meta;
+    ChupaMetadata *metadata;
 
-    memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
-                                                  sizeof(text_data) - 1,
-                                                  FALSE));
-    meta = chupa_metadata_new();
-    data = chupa_data_new(meta, memory_input);
+    stream = g_memory_input_stream_new_from_data(text_data,
+                                                 sizeof(text_data) - 1,
+                                                 NULL);
+    metadata = chupa_metadata_new();
+    data = chupa_data_new(stream, metadata);
+    g_object_unref(metadata);
 
     cut_assert_false(chupa_data_is_text(data));
     chupa_data_set_mime_type(data, "text/plain");
@@ -94,10 +101,10 @@ test_is_succeeded (void)
 {
     const char text_data[] = "plain\n\0text\nfoo\0bar";
 
-    memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
-                                                  sizeof(text_data) - 1,
-                                                  FALSE));
-    data = chupa_data_new(NULL, memory_input);
+    stream = g_memory_input_stream_new_from_data(text_data,
+                                                 sizeof(text_data) - 1,
+                                                 NULL);
+    data = chupa_data_new(stream, NULL);
 
     cut_assert_false(chupa_data_is_succeeded(data));
     chupa_data_finished(data, NULL);
@@ -110,10 +117,10 @@ test_is_finished (void)
     const char text_data[] = "plain\n\0text\nfoo\0bar";
     GError *error;
 
-    memory_input = GSF_INPUT(gsf_input_memory_new((guint8 const *) text_data,
-                                                  sizeof(text_data) - 1,
-                                                  FALSE));
-    data = chupa_data_new(NULL, memory_input);
+    stream = g_memory_input_stream_new_from_data(text_data,
+                                                 sizeof(text_data) - 1,
+                                                 NULL);
+    data = chupa_data_new(stream, NULL);
 
     cut_assert_false(chupa_data_is_succeeded(data));
     cut_assert_false(chupa_data_is_finished(data));

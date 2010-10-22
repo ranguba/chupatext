@@ -36,9 +36,8 @@ feed(VALUE self, VALUE input)
         GFile *file;
         ChupaData *data;
 
-        StringValueCStr(input);
         file = g_file_new_for_commandline_arg(RVAL2CSTR(input));
-        data = chupa_data_new_from_file(NULL, file, &error);
+        data = chupa_data_new_from_file(file, NULL, &error);
         if (error) {
             RAISE_GERROR(error);
         }

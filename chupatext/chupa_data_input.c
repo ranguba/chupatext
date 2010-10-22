@@ -31,7 +31,17 @@
 #include "chupa_data_input.h"
 #include <gsf/gsf-input-impl.h>
 
-/* ChupaData */
+/* ChupaDataInput */
+struct _ChupaDataInput
+{
+    GsfInput parent_instance;
+};
+
+struct _ChupaDataInputClass
+{
+    GsfInputClass parent_class;
+};
+
 G_DEFINE_TYPE(ChupaDataInput, chupa_data_input, GSF_INPUT_TYPE)
 
 #define CHUPA_DATA_INPUT_GET_PRIVATE(obj)                       \
@@ -82,6 +92,34 @@ constructed(GObject *object)
         content_length = strtol(content_length_string, &end, 10);
         if (content_length_string + strlen(content_length_string) == end) {
             gsf_input_set_size(input, content_length);
+        }
+    } else {
+        GInputStream *stream;
+
+        stream = chupa_data_get_stream(priv->data);
+        if (G_IS_SEEKABLE(stream)) {
+            GSeekable *seekable;
+            gsize content_length;
+            GError *error = NULL;
+
+            seekable = G_SEEKABLE(stream);
+            g_seekable_seek(seekable, 0, G_SEEK_END, NULL, &error);
+            if (error) {
+                chupa_error("failed to seek to the end "
+                            "to determine content length: %s",
+                            error->message);
+                g_error_free(error);
+            } else {
+                content_length = g_seekable_tell(seekable);
+                gsf_input_set_size(input, content_length);
+                g_seekable_seek(seekable, 0, G_SEEK_SET, NULL, &error);
+                if (error) {
+                    chupa_error("failed to seek to the head "
+                                "to determine content length: %s",
+                                error->message);
+                    g_error_free(error);
+                }
+            }
         }
     }
 }
@@ -210,9 +248,9 @@ input_seek(GsfInput *input, gsf_off_t offset, GSeekType whence)
             if (error) {
                 chupa_error("failed to seek: %s", error->message);
                 g_error_free(error);
-                return FALSE;
-            } else {
                 return TRUE;
+            } else {
+                return FALSE;
             }
         }
 
@@ -223,7 +261,7 @@ input_seek(GsfInput *input, gsf_off_t offset, GSeekType whence)
         stream = g_filter_input_stream_get_base_stream(filter_stream);
     }
 
-    return FALSE;
+    return TRUE;
 }
 
 static void

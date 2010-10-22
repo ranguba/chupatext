@@ -22,6 +22,7 @@
 #include <chupatext/chupa_decomposer_module.h>
 #include <chupatext/external_decomposer.h>
 #include <chupatext/chupa_gsf_input_stream.h>
+#include <chupatext/chupa_data_input.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <gio/gunixinputstream.h>
@@ -69,6 +70,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     gint fd_ppt, fd_pdf;
     GOutputStream *out_tmpfile;
     GInputStream *in_tmpfile;
+    ChupaMetadata *metadata;
     int argc;
     char *argv[5];
     gsize size;
@@ -79,10 +81,10 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
 
     fd_ppt = g_file_open_tmp(TMPFILE_BASE".ppt", &tmp_power_point_name, error);
     out_tmpfile = g_unix_output_stream_new(fd_ppt, TRUE);
-    base_input = chupa_data_get_input(data);
+    base_input = chupa_data_input_new(data);
     gsf_input_seek(base_input, 0, G_SEEK_SET);
+    g_object_unref(base_input);
     in_tmpfile = chupa_data_get_stream(data);
-    in_tmpfile = g_filter_input_stream_get_base_stream(G_FILTER_INPUT_STREAM(in_tmpfile));
     size = g_output_stream_splice(out_tmpfile, in_tmpfile,
                                   G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE|
                                   G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET,
@@ -117,7 +119,10 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         return FALSE;
     }
     in_tmpfile = g_unix_input_stream_new(fd_pdf, TRUE);
-    data = chupa_data_new_from_stream(NULL, in_tmpfile, filename);
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, "filename", filename);
+    data = chupa_data_new(in_tmpfile, metadata);
+    g_object_unref(metadata);
     g_object_unref(in_tmpfile);
     chupa_data_set_mime_type(data, "application/pdf");
     result = chupa_feeder_feed(feeder, data, error);

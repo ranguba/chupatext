@@ -69,7 +69,7 @@ test_read(void)
     chupa_metadata_add_value(metadata,
                              "content-length", content_length_string->str);
     g_string_free(content_length_string, TRUE);
-    data = chupa_data_new_from_stream(metadata, memory_stream, NULL);
+    data = chupa_data_new(memory_stream, metadata);
     input = chupa_data_input_new(data);
     actual = gsf_input_read(input, length, NULL);
     cut_assert_not_null(actual);

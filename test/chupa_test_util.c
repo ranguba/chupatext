@@ -48,7 +48,7 @@ chupa_test_decomposer_from_data(const char *text, gsize size, GError **error)
     GInputStream *mem;
 
     TAKE_OBJECT(mem = g_memory_input_stream_new_from_data(text, size, NULL));
-    TAKE_OBJECT(data = chupa_data_new_from_stream(NULL, mem, NULL));
+    TAKE_OBJECT(data = chupa_data_new(mem, NULL));
     return data;
 }
 
@@ -68,8 +68,7 @@ chupa_test_decomposer_from_fixture(const char *fixture, GError **error)
 
     TAKE_STRING(sample_path = cut_build_fixture_data_path(fixture, NULL));
     TAKE_OBJECT(sample_file = g_file_new_for_path(sample_path));
-    TAKE_OBJECT(data = chupa_data_new_from_file(NULL, sample_file,
-                                                            error));
+    TAKE_OBJECT(data = chupa_data_new_from_file(sample_file, NULL, error));
     return data;
 }
 

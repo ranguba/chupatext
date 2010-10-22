@@ -20,6 +20,7 @@
  */
 
 #include <chupatext/chupa_decomposer_module.h>
+#include <chupatext/chupa_data_input.h>
 
 #include <ctype.h>
 #include <glib.h>
@@ -158,22 +159,26 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-     ChupaData *text, GError **error)
+     ChupaData *data, GError **error)
 {
     struct char_proc_arg arg;
     wvParseStruct ps;
-    GsfInput *gi = chupa_data_get_input(text);
+    GsfInput *input;
+    ChupaMetadata *metadata;
     int ret;
 
     arg.buffer = NULL;
     arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
     arg.feeder = feeder;
-    arg.text = chupa_data_new_from_stream(NULL, G_INPUT_STREAM(arg.dest),
-                                                 gsf_input_name(gi));
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, "filename",
+                             chupa_data_get_filename(data));
+    arg.text = chupa_data_new(G_INPUT_STREAM(arg.dest), metadata);
+    g_object_unref(metadata);
     arg.encoding = NULL;
 
-    gsf_input_seek(gi, 0, G_SEEK_SET);
-    if ((ret = wvInitParser_gsf(&ps, gi)) != 0) {
+    input = chupa_data_input_new(data);
+    if ((ret = wvInitParser_gsf(&ps, input)) != 0) {
         g_set_error(error,
                     CHUPA_FEEDER_ERROR,
                     CHUPA_FEEDER_ERROR_INVALID_INPUT,

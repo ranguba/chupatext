@@ -26,6 +26,7 @@
 #include <chupatext/external_decomposer.h>
 #include <chupatext/chupa_logger.h>
 #include <chupatext/chupa_memory_input_stream.h>
+#include <chupatext/chupa_data_input.h>
 #include <goffice/goffice.h>
 #include <gsf/gsf-output-memory.h>
 #include "excel/workbook-view.h"
@@ -100,20 +101,23 @@ chupa_excel_plain_file_p(GsfInput *source)
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
-     ChupaData *input, GError **error)
+     ChupaData *data, GError **error)
 {
     GOFileSaver *fs = NULL;
     GOFileOpener *fo = NULL;
     GOIOContext *io_context = go_io_context_new(cc);
     WorkbookView *wbv = NULL;
-    GsfInput *source = chupa_data_get_input(input);
+    GsfInput *source;
     GsfOutput *tmpout;
     GInputStream *tmpinp;
-    const char *filename = chupa_data_get_filename(input);
+    ChupaData *next_data;
+    const char *filename = chupa_data_get_filename(data);
     GPrintFunc old_print_error_func;
+    ChupaMetadata *metadata;
 
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
+    source = chupa_data_input_new(data);
     g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
     if (chupa_utils_string_equal(chupa_decomposer_get_mime_type(decomposer),
                                  EXCEL_MIME_TYPE) &&
@@ -126,6 +130,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     g_return_val_if_fail(tmpout, FALSE);
     old_print_error_func = g_set_printerr_handler(printerr_to_log_delegator);
     wbv = wb_view_new_from_input(source, filename, fo, io_context, NULL);
+    g_object_unref(source);
     g_set_printerr_handler(old_print_error_func);
     if (go_io_error_occurred(io_context)) {
         go_io_error_display(io_context);
@@ -140,13 +145,22 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         return FALSE;
     }
 
-    tmpinp = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
+    tmpinp = g_memory_input_stream_new_from_data(
+        g_memdup(gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(tmpout)),
+                 gsf_output_size(tmpout)),
+        gsf_output_size(tmpout),
+        g_free);
     g_object_unref(io_context);
     g_object_unref(tmpout);
-    input = chupa_data_new_from_stream(NULL, tmpinp, chupa_data_get_filename(input));
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, "filename", filename);
+    next_data = chupa_data_new(tmpinp, metadata);
+    g_object_unref(metadata);
     g_object_unref(tmpinp);
-    chupa_feeder_accepted(feeder, input);
-    chupa_data_finished(input, NULL);
+    chupa_feeder_accepted(feeder, next_data);
+    chupa_data_finished(next_data, NULL);
+    g_object_unref(next_data);
+
     return TRUE;
 }
 

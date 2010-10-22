@@ -196,7 +196,7 @@ main(int argc, char **argv)
         GFile *file;
         ChupaData *data;
         file = g_file_new_for_commandline_arg(argv[i]);
-        data = chupa_data_new_from_file(NULL, file, &err);
+        data = chupa_data_new_from_file(file, NULL, &err);
         g_object_unref(file);
         if (!data || !chupa_feeder_feed(feeder, data, &err)) {
             fprintf(stderr, "%s: %s\n", argv[0], err->message);

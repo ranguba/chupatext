@@ -19,6 +19,8 @@
  */
 
 #include "archive_decomposer.h"
+#include "chupa_data_input.h"
+#include "chupa_gsf_input_stream.h"
 
 #ifdef USE_CHUPA_ARCHIVE_DECOMPOSER_PRIVATE
 #define CHUPA_ARCHIVE_DECOMPOSER_GET_PRIVATE(obj) \
@@ -83,7 +85,7 @@ static gboolean
 feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
 {
     GsfInfile *infile;
-    GsfInput *inp;
+    GsfInput *input;
     gboolean result = TRUE;
     ChupaArchiveDecomposerClass *arch_class;
     int i, num;
@@ -91,22 +93,28 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     g_return_val_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(dec), FALSE);
     g_return_val_if_fail(CHUPA_IS_DATA(data), FALSE);
     arch_class = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(dec);
-    inp = chupa_data_get_input(data);
-    infile = arch_class->get_infile(inp, err);
+    input = chupa_data_input_new(data);
+    infile = arch_class->get_infile(input, err);
     if (!infile) {
         return FALSE;
     }
     num = gsf_infile_num_children(infile);
     for (i = 0; i < num; ++i) {
         const char *name = gsf_infile_name_by_index(infile, i);
-        GsfInput *inp = gsf_infile_child_by_index(infile, i);
-        ChupaData *t = chupa_data_new(NULL, inp);
-        g_object_unref(inp);
-        if (name) {
-            chupa_data_set_filename(t, name);
-        }
-        result = arch_class->feed_component(feeder, t, err);
-        g_object_unref(t);
+        GsfInput *input = gsf_infile_child_by_index(infile, i);
+        ChupaGsfInputStream *stream;
+        ChupaData *data;
+        ChupaMetadata *metadata;
+
+        stream = chupa_gsf_input_stream_new(input);
+        g_object_unref(input);
+        metadata = chupa_metadata_new();
+        chupa_metadata_add_value(metadata, "filename", name);
+        data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
+        g_object_unref(stream);
+        g_object_unref(metadata);
+        result = arch_class->feed_component(feeder, data, err);
+        g_object_unref(data);
         if (!result) {
             break;
         }

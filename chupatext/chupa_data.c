@@ -20,10 +20,10 @@
  *  MA  02110-1301  USA
  */
 
+#include "chupa_logger.h"
 #include "chupa_data.h"
 #include "chupa_gsf_input_stream.h"
 #include <gio/gio.h>
-#include <gsf/gsf-input-gio.h>
 
 static const char meta_filename[] = "filename";
 static const char meta_charset[] = "charset";
@@ -40,9 +40,8 @@ typedef struct _ChupaDataPrivate ChupaDataPrivate;
 
 struct _ChupaDataPrivate
 {
-    GsfInput *input;
     ChupaMetadata *metadata;
-    GDataInputStream *stream;
+    GInputStream *stream;
     gboolean finished;
     GError *error;
     GString *raw_data;
@@ -50,7 +49,6 @@ struct _ChupaDataPrivate
 
 enum {
     PROP_0,
-    PROP_INPUT,
     PROP_STREAM,
     PROP_METADATA,
     PROP_DUMMY
@@ -63,20 +61,51 @@ enum {
 
 static gint signals[LAST_SIGNAL] = {0};
 
-enum {
-    peek_buffer_size = 1024
-};
-
 static const char *
-guess_mime_type(const char *name, GBufferedInputStream *buffered, gboolean *uncertain)
+guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
 {
-    const char *content_type;
-    gsize len;
-    const guchar *buf;
+    const char *content_type = NULL;
 
-    g_buffered_input_stream_fill(buffered, peek_buffer_size, NULL, NULL);
-    buf = g_buffered_input_stream_peek_buffer(buffered, &len);
-    content_type = g_content_type_guess(name, buf, len, uncertain);
+    if (G_IS_SEEKABLE(stream)) {
+        GSeekable *seekable;
+        gsize original_position, length;
+        guchar buffer[1024];
+        GError *error = NULL;
+
+        seekable = G_SEEKABLE(stream);
+        original_position = g_seekable_tell(seekable);
+        g_seekable_seek(seekable, 0, G_SEEK_SET, NULL, &error);
+        if (error) {
+            chupa_error("failed to seek to the head to guess content-type: %s",
+                        error->message);
+            g_error_free(error);
+        } else {
+            length = g_input_stream_read(stream, buffer, sizeof(buffer),
+                                         NULL, &error);
+            if (error) {
+                chupa_error("failed to read data to guess content-type: %s",
+                            error->message);
+                g_error_free(error);
+                error = NULL;
+            } else {
+                content_type = g_content_type_guess(name, buffer, length,
+                                                    uncertain);
+            }
+            g_seekable_seek(seekable, original_position, G_SEEK_SET,
+                            NULL, &error);
+            if (error) {
+                chupa_error("failed to re-seek to the original position "
+                            "to reset position to guess content-type: %s",
+                            error->message);
+                g_error_free(error);
+            }
+        }
+    }
+
+    if (!content_type) {
+        content_type = g_content_type_guess(name, NULL, 0, uncertain);
+    }
+
     return g_content_type_get_mime_type(content_type);
 }
 
@@ -97,36 +126,16 @@ constructed(GObject *object)
 {
     ChupaDataPrivate *priv;
     const gchar *mime_type;
-    GInputStream *stream;
-    const char *path = NULL;
+    const gchar *filename = NULL;
 
     priv = CHUPA_DATA_GET_PRIVATE(object);
-    stream = G_INPUT_STREAM(priv->stream);
-
-    g_return_if_fail(stream || priv->input);
+    g_return_if_fail(priv->stream);
 
     if (!priv->metadata) {
         priv->metadata = chupa_metadata_new();
-        if (priv->input) {
-            path = gsf_input_name(priv->input);
-        }
     }
-    else {
-        path = chupa_metadata_get_first_value(priv->metadata, meta_filename);
-    }
-    if (!stream) {
-        stream = G_INPUT_STREAM(chupa_gsf_input_stream_new(priv->input));
-    }
-    if (G_IS_DATA_INPUT_STREAM(stream)) {
-        priv->stream = G_DATA_INPUT_STREAM(stream);
-    }
-    else {
-        priv->stream = g_data_input_stream_new(stream);
-    }
-
-    mime_type = guess_mime_type(path,
-                                G_BUFFERED_INPUT_STREAM(priv->stream),
-                                NULL);
+    filename = chupa_metadata_get_first_value(priv->metadata, meta_filename);
+    mime_type = guess_mime_type(filename, priv->stream, NULL);
     chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);
 }
 
@@ -157,28 +166,18 @@ set_property(GObject *object,
              GParamSpec *pspec)
 {
     ChupaDataPrivate *priv;
-    GObject *obj;
 
     priv = CHUPA_DATA_GET_PRIVATE(object);
     switch (prop_id) {
-    case PROP_INPUT:
-        obj = g_value_dup_object(value);
-        priv->input = GSF_INPUT(obj);
-        break;
     case PROP_STREAM:
-        obj = g_value_dup_object(value);
-        if (obj) {
-            if (G_IS_DATA_INPUT_STREAM(obj)) {
-                priv->stream = G_DATA_INPUT_STREAM(obj);
-            }
-            else {
-                priv->stream = g_data_input_stream_new(G_INPUT_STREAM(obj));
-            }
-        }
+        if (priv->stream)
+            g_object_unref(priv->stream);
+        priv->stream = g_value_dup_object(value);
         break;
     case PROP_METADATA:
-        obj = g_value_dup_object(value);
-        priv->metadata = CHUPA_METADATA(obj);
+        if (priv->metadata)
+            g_object_unref(priv->metadata);
+        priv->metadata = g_value_dup_object(value);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -196,9 +195,6 @@ get_property(GObject *object,
 
     priv = CHUPA_DATA_GET_PRIVATE(object);
     switch (prop_id) {
-    case PROP_INPUT:
-        g_value_set_object(value, priv->input);
-        break;
     case PROP_STREAM:
         g_value_set_object(value, priv->stream);
         break;
@@ -239,14 +235,6 @@ chupa_data_class_init(ChupaDataClass *klass)
 
     klass->finished = finished;
 
-    spec = g_param_spec_object("input",
-                               "Input",
-                               "Input",
-                               GSF_INPUT_TYPE,
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-                               G_PARAM_STATIC_STRINGS);
-    g_object_class_install_property(gobject_class, PROP_INPUT, spec);
-
     spec = g_param_spec_object("stream",
                                "Stream",
                                "Stream",
@@ -263,8 +251,6 @@ chupa_data_class_init(ChupaDataClass *klass)
                                G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_METADATA, spec);
 
-    g_type_class_add_private(gobject_class, sizeof(ChupaDataPrivate));
-
     signals[FINISHED] =
         g_signal_new("finished",
                      G_TYPE_FROM_CLASS(klass),
@@ -273,36 +259,13 @@ chupa_data_class_init(ChupaDataClass *klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__BOOLEAN,
                      G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+
+    g_type_class_add_private(gobject_class, sizeof(ChupaDataPrivate));
 }
 
 ChupaData *
-chupa_data_new(ChupaMetadata *metadata, GsfInput *input)
+chupa_data_new(GInputStream *stream, ChupaMetadata *metadata)
 {
-    const char *path;
-
-    g_return_val_if_fail(input, NULL);
-    if ((path = gsf_input_name(input)) != NULL) {
-        if (!metadata) {
-            metadata = chupa_metadata_new();
-        }
-        chupa_metadata_add_value(metadata, meta_filename, path);
-    }
-    return g_object_new(CHUPA_TYPE_DATA,
-                        "input", input,
-                        "metadata", metadata,
-                        NULL);
-}
-
-ChupaData *
-chupa_data_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const char *path)
-{
-    g_return_val_if_fail(stream, NULL);
-    if (path) {
-        if (!metadata) {
-            metadata = chupa_metadata_new();
-        }
-        chupa_metadata_add_value(metadata, meta_filename, path);
-    }
     return g_object_new(CHUPA_TYPE_DATA,
                         "stream", stream,
                         "metadata", metadata,
@@ -310,43 +273,54 @@ chupa_data_new_from_stream(ChupaMetadata *metadata, GInputStream *stream, const 
 }
 
 ChupaData *
-chupa_data_new_from_file(ChupaMetadata *metadata, GFile *file, GError **err)
+chupa_data_new_from_file(GFile *file, ChupaMetadata *metadata, GError **error)
 {
     ChupaData *data;
-    GsfInput *input = gsf_input_gio_new(file, err);
-    if (!input) {
+    GInputStream *stream;
+    GFileInfo *info;
+
+    stream = G_INPUT_STREAM(g_file_read(file, NULL, error));
+    if (!stream)
         return NULL;
+
+    if (!metadata)
+        metadata = chupa_metadata_new();
+
+    info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_SIZE, 0,
+                             NULL, NULL);
+    if (info) {
+        gchar *content_length;
+        content_length = g_strdup_printf("%zd", g_file_info_get_size(info));
+        chupa_metadata_add_value(metadata, "content-length", content_length);
+        g_free(content_length);
+        g_object_unref(info);
     }
-    data = chupa_data_new(metadata, input);
-    g_object_unref(input);
+
+    info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_NAME, 0,
+                             NULL, NULL);
+    if (info) {
+        chupa_metadata_add_value(metadata,
+                                 meta_filename,
+                                 g_file_info_get_name(info));
+        g_object_unref(info);
+    }
+
+    data = chupa_data_new(stream, metadata);
+    g_object_unref(stream);
+    g_object_unref(metadata);
     return data;
-}
-
-GsfInput *
-chupa_data_get_input(ChupaData *data)
-{
-    ChupaDataPrivate *priv;
-
-    priv = CHUPA_DATA_GET_PRIVATE(data);
-    return priv->input;
 }
 
 GInputStream *
 chupa_data_get_stream(ChupaData *data)
 {
-    ChupaDataPrivate *priv;
-
-    priv = CHUPA_DATA_GET_PRIVATE(data);
-    return G_INPUT_STREAM(priv->stream);
+    return CHUPA_DATA_GET_PRIVATE(data)->stream;
 }
 
 ChupaMetadata *
 chupa_data_get_metadata(ChupaData *data)
 {
-    ChupaDataPrivate *priv;
-
-    priv = CHUPA_DATA_GET_PRIVATE(data);
-    return priv->metadata;
+    return CHUPA_DATA_GET_PRIVATE(data)->metadata;
 }
 
 const gchar *
@@ -443,15 +417,13 @@ chupa_data_get_raw_data(ChupaData *data, gsize *length, GError **error)
     }
 
     if (!priv->raw_data) {
-        GInputStream *input;
         gssize count;
         gchar buffer[1024];
         gsize buffer_size;
 
         priv->raw_data = g_string_new(NULL);
-        input = G_INPUT_STREAM(priv->stream);
         buffer_size = sizeof(buffer);
-        while ((count = g_input_stream_read(input, buffer, buffer_size,
+        while ((count = g_input_stream_read(priv->stream, buffer, buffer_size,
                                             NULL, error)) > 0) {
             g_string_append_len(priv->raw_data, buffer, count);
             if (count < buffer_size)

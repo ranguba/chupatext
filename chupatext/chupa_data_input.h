@@ -44,16 +44,6 @@ G_BEGIN_DECLS
 typedef struct _ChupaDataInput ChupaDataInput;
 typedef struct _ChupaDataInputClass ChupaDataInputClass;
 
-struct _ChupaDataInput
-{
-    GsfInput parent_instance;
-};
-
-struct _ChupaDataInputClass
-{
-    GsfInputClass parent_class;
-};
-
 GType          chupa_data_input_get_type         (void) G_GNUC_CONST;
 GsfInput      *chupa_data_input_new              (ChupaData *data);
 

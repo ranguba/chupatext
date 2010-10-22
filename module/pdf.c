@@ -103,10 +103,10 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
             g_memory_input_stream_add_data(mem, "\f", 1, NULL);
             g_memory_input_stream_add_data(mem, text, -1, g_free);
         } else {
-            GsfInput *base_input = chupa_data_get_input(data);
-            const char *name = base_input ? gsf_input_name(base_input) : NULL;
+            const gchar *filename;
+            filename = chupa_data_get_filename(data);
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
-            pdf_text = chupa_data_new_from_stream(meta, inp, name);
+            pdf_text = chupa_data_new(inp, meta);
             chupa_feeder_accepted(feeder, pdf_text);
             mem = (GMemoryInputStream *)inp;
         }

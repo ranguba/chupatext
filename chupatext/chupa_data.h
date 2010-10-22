@@ -26,8 +26,6 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gio/gio.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-input-impl.h>
 #include <chupatext/chupa_metadata.h>
 #include <chupatext/chupa_utils.h>
 
@@ -65,11 +63,11 @@ struct _ChupaDataClass
 };
 
 GType          chupa_data_get_type         (void) G_GNUC_CONST;
-ChupaData     *chupa_data_new              (ChupaMetadata *metadata, GsfInput *inpt);
-ChupaData     *chupa_data_new_from_stream  (ChupaMetadata *metadata,
-                                            GInputStream *stream,
-                                            const char *path);
-ChupaData     *chupa_data_new_from_file    (ChupaMetadata *metadata, GFile *file, GError **err);
+ChupaData     *chupa_data_new              (GInputStream  *stream,
+                                            ChupaMetadata *metadata);
+ChupaData     *chupa_data_new_from_file    (GFile         *file,
+                                            ChupaMetadata *metadata,
+                                            GError       **error);
 ChupaMetadata *chupa_data_get_metadata     (ChupaData *data);
 const gchar   *chupa_data_get_mime_type    (ChupaData *data);
 void           chupa_data_set_mime_type    (ChupaData *data, const char *mime_type);
@@ -77,7 +75,6 @@ const gchar   *chupa_data_get_filename     (ChupaData *data);
 void           chupa_data_set_filename     (ChupaData *data, const char *filename);
 const gchar   *chupa_data_get_charset      (ChupaData *data);
 void           chupa_data_set_charset      (ChupaData *data, const char *charset);
-GsfInput      *chupa_data_get_input        (ChupaData *data);
 GInputStream  *chupa_data_get_stream       (ChupaData *data);
 void           chupa_data_finished         (ChupaData *data,
                                             GError    *error);

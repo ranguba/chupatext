@@ -125,6 +125,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     ChupaExternalDecomposerClass *self_class;
     ChupaExternalDecomposer *extdec;
     ChupaExternalDecomposerPrivate *priv;
+    ChupaMetadata *metadata;
     gboolean result;
 
     g_return_val_if_fail(CHUPA_IS_EXTERNAL_DECOMPOSER(dec), FALSE);
@@ -143,8 +144,11 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
         g_object_unref(sin);
     }
     g_return_val_if_fail(sout, FALSE);
-    data = chupa_data_new_from_stream(NULL, sout,
-                                      chupa_data_get_filename(data));
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata,
+                             "filename", chupa_data_get_filename(data));
+    data = chupa_data_new(sout, metadata);
+    g_object_unref(metadata);
     g_object_unref(sout);
     self_class->set_metadata(extdec, data);
     result = chupa_feeder_feed(feeder, data, err);
