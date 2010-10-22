@@ -18,7 +18,6 @@
  *  MA  02110-1301  USA
  */
 
-#include <chupatext/chupa_text_input.h>
 #include "chupa_test_util.h"
 #include <gio/gio.h>
 
