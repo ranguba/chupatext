@@ -31,6 +31,9 @@
 #include <gsf/gsf-output-memory.h>
 #include "excel/workbook-view.h"
 #include "excel/command-context-stderr.h"
+#include "excel/libgnumeric.h"
+#include "excel/gnumeric-gconf.h"
+#include "excel/gnm-plugin.h"
 
 static const gchar EXCEL_MIME_TYPE[] = "application/vnd.ms-excel";
 static const gchar OFFICE_OPEN_XML_WORKBOOK_MIME_TYPE[] =               \
@@ -298,19 +301,6 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
                         "mime-type", mime_type,
                         NULL);
 }
-
-/* module entry points */
-/* copied from libgnumeric.h */
-char const **gnm_pre_parse_init     (int argc, gchar const **argv);
-void	     gnm_pre_parse_shutdown (void);
-void	     gnm_init		    (void);
-void	     gnm_shutdown	    (void);
-/* copied from gnumeric-gconf.h */
-void     gnm_conf_init (void);
-void     gnm_conf_shutdown (void);
-GOConfNode *gnm_conf_get_root (void);
-/* copied from gnm-plugin.h */
-void gnm_plugins_init (GOCmdContext *c);
 
 G_MODULE_EXPORT GList *
 CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
