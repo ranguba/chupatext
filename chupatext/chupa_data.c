@@ -61,50 +61,60 @@ enum {
 
 static gint signals[LAST_SIGNAL] = {0};
 
-static const char *
+static gboolean
+read_head_data(GInputStream *stream, guchar *buffer, gsize buffer_size,
+               gsize *read_bytes)
+{
+    GSeekable *seekable;
+    gsize original_position;
+    GError *error = NULL;
+
+    if (!G_IS_SEEKABLE(stream))
+        return FALSE;
+
+    seekable = G_SEEKABLE(stream);
+    original_position = g_seekable_tell(seekable);
+    g_seekable_seek(seekable, 0, G_SEEK_SET, NULL, &error);
+    if (error) {
+        chupa_error("failed to seek to the head to guess content-type: %s",
+                    error->message);
+        g_error_free(error);
+        return FALSE;
+    }
+
+    *read_bytes = g_input_stream_read(stream, buffer, buffer_size, NULL, &error);
+    if (error) {
+        chupa_error("failed to read head data to guess content-type: %s",
+                    error->message);
+        g_error_free(error);
+        g_seekable_seek(seekable, original_position, G_SEEK_SET, NULL, NULL);
+        return FALSE;
+    }
+
+    g_seekable_seek(seekable, original_position, G_SEEK_SET, NULL, &error);
+    if (error) {
+        chupa_error("failed to re-seek to the original position "
+                    "to reset position to guess content-type: %s",
+                    error->message);
+        g_error_free(error);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static const gchar *
 guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
 {
     const char *content_type = NULL;
+    guchar data[1024];
+    gsize data_length;
 
-    if (G_IS_SEEKABLE(stream)) {
-        GSeekable *seekable;
-        gsize original_position, length;
-        guchar buffer[1024];
-        GError *error = NULL;
+    if (read_head_data(stream, data, sizeof(data), &data_length))
+        content_type = g_content_type_guess(name, data, data_length, uncertain);
 
-        seekable = G_SEEKABLE(stream);
-        original_position = g_seekable_tell(seekable);
-        g_seekable_seek(seekable, 0, G_SEEK_SET, NULL, &error);
-        if (error) {
-            chupa_error("failed to seek to the head to guess content-type: %s",
-                        error->message);
-            g_error_free(error);
-        } else {
-            length = g_input_stream_read(stream, buffer, sizeof(buffer),
-                                         NULL, &error);
-            if (error) {
-                chupa_error("failed to read data to guess content-type: %s",
-                            error->message);
-                g_error_free(error);
-                error = NULL;
-            } else {
-                content_type = g_content_type_guess(name, buffer, length,
-                                                    uncertain);
-            }
-            g_seekable_seek(seekable, original_position, G_SEEK_SET,
-                            NULL, &error);
-            if (error) {
-                chupa_error("failed to re-seek to the original position "
-                            "to reset position to guess content-type: %s",
-                            error->message);
-                g_error_free(error);
-            }
-        }
-    }
-
-    if (!content_type) {
+    if (!content_type)
         content_type = g_content_type_guess(name, NULL, 0, uncertain);
-    }
 
     return g_content_type_get_mime_type(content_type);
 }
