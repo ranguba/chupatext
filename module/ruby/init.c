@@ -23,12 +23,12 @@
 void
 chupa_ruby_init(void)
 {
-    VALUE mGsf, mChupa;
+    VALUE mGLib, mChupa;
 
     rb_require("chupa/pre_init");
 
-    mGsf = rb_define_module("Gsf");
-    chupa_ruby_gsf_output_init(mGsf);
+    mGLib = rb_define_module("GLib");
+    chupa_ruby_g_memory_input_stream_init(mGLib);
 
     mChupa = rb_define_module("Chupa");
     chupa_ruby_metadata_init(mChupa);

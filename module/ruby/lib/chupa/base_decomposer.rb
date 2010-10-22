@@ -44,7 +44,7 @@ class Chupa::BaseDecomposer
 
   private
   def accepted(data)
-    @sink.write(data)
+    @sink.add_data(data)
   end
 
   def metadata

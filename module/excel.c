@@ -145,11 +145,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         return FALSE;
     }
 
-    tmpinp = g_memory_input_stream_new_from_data(
-        g_memdup(gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(tmpout)),
-                 gsf_output_size(tmpout)),
-        gsf_output_size(tmpout),
-        g_free);
+    tmpinp = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
     g_object_unref(io_context);
     g_object_unref(tmpout);
     metadata = chupa_metadata_new();

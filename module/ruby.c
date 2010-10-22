@@ -151,9 +151,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     ChupaRubyDecomposer *ruby_decomposer;
     VALUE result;
     VALUE rb_decomposer;
-    GsfOutputMemory *sink;
-    ChupaMemoryInputStream *stream;
     ChupaData *target_data;
+    GInputStream *sink;
     ChupaMetadata *metadata;
 
     CONST_ID(id_feed, "feed");
@@ -161,12 +160,12 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     rb_decomposer = rb_funcall(ruby_decomposer->decomposer, rb_intern("new"), 0);
     rb_iv_set(rb_decomposer, "@feeder", GOBJ2RVAL(feeder));
     rb_iv_set(rb_decomposer, "@source", GOBJ2RVAL(data));
-    sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
+    sink = g_memory_input_stream_new();
     rb_iv_set(rb_decomposer, "@sink", GOBJ2RVAL(sink));
-    stream = CHUPA_MEMORY_INPUT_STREAM(chupa_memory_input_stream_new(sink));
     metadata = chupa_metadata_new();
     chupa_metadata_add_value(metadata, "filename", chupa_data_get_filename(data));
-    target_data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
+    target_data = chupa_data_new(sink, metadata);
+    g_object_unref(sink);
     g_object_unref(metadata);
     rb_iv_set(rb_decomposer, "@target", GOBJ2RVAL(target_data));
     chupa_data_set_mime_type(target_data, "text/plain");

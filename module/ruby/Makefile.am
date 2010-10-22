@@ -21,7 +21,7 @@ libchuparuby_la_SOURCES =			\
 	feeder.c				\
 	data.c					\
 	decomposer.c				\
-	gsf_output.c				\
+	g_memory_input_stream.c			\
 	chupa_ruby.h
 libchuparuby_la_LIBADD =				\
 	$(RUBY_LDFLAGS)					\

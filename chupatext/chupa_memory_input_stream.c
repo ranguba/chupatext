@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,13 +22,10 @@
 #include "chupa_memory_input_stream.h"
 #include <string.h>
 
-typedef struct _ChupaMemoryInputStreamPrivate ChupaMemoryInputStreamPrivate;
-
 struct _ChupaMemoryInputStream
 {
     GMemoryInputStream parent_object;
     GsfOutputMemory *source;
-    gsize cur_offset;
 };
 
 struct _ChupaMemoryInputStreamClass
@@ -35,43 +33,22 @@ struct _ChupaMemoryInputStreamClass
     GMemoryInputStreamClass parent_class;
 };
 
-G_DEFINE_TYPE(ChupaMemoryInputStream, chupa_memory_input_stream, G_TYPE_MEMORY_INPUT_STREAM)
+G_DEFINE_TYPE(ChupaMemoryInputStream,           \
+              chupa_memory_input_stream,        \
+              G_TYPE_MEMORY_INPUT_STREAM)
 
 static void
-chupa_memory_input_stream_dispose(GObject *object)
+dispose(GObject *object)
 {
-    ChupaMemoryInputStream *stream = CHUPA_MEMORY_INPUT_STREAM(object);
+    ChupaMemoryInputStream *stream;
 
+    stream = CHUPA_MEMORY_INPUT_STREAM(object);
     if (stream->source) {
         g_object_unref(stream->source);
         stream->source = NULL;
     }
 
     G_OBJECT_CLASS(chupa_memory_input_stream_parent_class)->dispose(object);
-}
-
-static gssize
-chupa_memory_input_stream_read(GInputStream *input_stream, void *buffer, gsize count,
-                               GCancellable *cancellable, GError **error)
-{
-    ChupaMemoryInputStream *stream = CHUPA_MEMORY_INPUT_STREAM(input_stream);
-    gsize cur_size;
-
-    g_return_val_if_fail(stream->source, -1);
-    g_return_val_if_fail(count >= 0, -1);
-    cur_size = gsf_output_size(GSF_OUTPUT(stream->source));
-    if (stream->cur_offset > cur_size) {
-        return -1;
-    }
-    if (count + stream->cur_offset > cur_size) {
-        count = cur_size - stream->cur_offset;
-    }
-    if (count > 0) {
-        const guint8 *mem_buffer = gsf_output_memory_get_bytes(stream->source);
-        memcpy(buffer, mem_buffer + stream->cur_offset, count);
-        stream->cur_offset += count;
-    }
-    return count;
 }
 
 static void
@@ -83,28 +60,22 @@ chupa_memory_input_stream_init(ChupaMemoryInputStream *stream)
 static void
 chupa_memory_input_stream_class_init(ChupaMemoryInputStreamClass *klass)
 {
-    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-    gobject_class->dispose      = chupa_memory_input_stream_dispose;
-    {
-        GInputStreamClass *input_stream_class = G_INPUT_STREAM_CLASS(klass);
-        input_stream_class->read_fn = chupa_memory_input_stream_read;
-    }
+    GObjectClass *gobject_class;
+
+    gobject_class = G_OBJECT_CLASS(klass);
+    gobject_class->dispose = dispose;
 }
 
 GInputStream *
-chupa_memory_input_stream_new(GsfOutputMemory *mem)
+chupa_memory_input_stream_new(GsfOutputMemory *source)
 {
-    ChupaMemoryInputStream *stream = g_object_new(CHUPA_TYPE_MEMORY_INPUT_STREAM, NULL);
-    GsfOutput *out = GSF_OUTPUT(mem);
-    gsize size;
+    ChupaMemoryInputStream *stream;
 
-    g_object_ref(mem);
-    stream->source = mem;
-    size = gsf_output_size(out);
-    if (size > 0) {
-        g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(stream),
-                                       gsf_output_memory_get_bytes(mem),
-                                       size, NULL);
-    }
+    stream = g_object_new(CHUPA_TYPE_MEMORY_INPUT_STREAM, NULL);
+    stream->source = g_object_ref(source);
+    g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(stream),
+                                   gsf_output_memory_get_bytes(stream->source),
+                                   gsf_output_size(GSF_OUTPUT(stream->source)),
+                                   NULL);
     return G_INPUT_STREAM(stream);
 }

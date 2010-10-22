@@ -22,22 +22,21 @@
 #define CHUPA_RUBY_H
 
 #include <chupatext/chupa_decomposer.h>
-#include <chupatext/chupa_memory_input_stream.h>
 
 #include <ruby.h>
 #include <ruby/encoding.h>
 
 #include <rbgobject.h>
 
-void  chupa_ruby_init             (void);
-VALUE chupa_ruby_gsf_output_init  (VALUE mGsf);
-VALUE chupa_ruby_feeder_init      (VALUE mChupa);
-VALUE chupa_ruby_data_init        (VALUE mChupa);
-VALUE chupa_ruby_decomposer_init  (VALUE mChupa);
-VALUE chupa_ruby_metadata_init    (VALUE mChupa);
+void  chupa_ruby_init                       (void);
+VALUE chupa_ruby_g_memory_input_stream_init (VALUE mGLib);
+VALUE chupa_ruby_feeder_init                (VALUE mChupa);
+VALUE chupa_ruby_data_init                  (VALUE mChupa);
+VALUE chupa_ruby_decomposer_init            (VALUE mChupa);
+VALUE chupa_ruby_metadata_init              (VALUE mChupa);
 
-VALUE chupa_ruby_metadata_new     (ChupaMetadata *metadata,
-                                   gboolean readonly);
+VALUE chupa_ruby_metadata_new               (ChupaMetadata *metadata,
+                                             gboolean       readonly);
 
 #define rb_utf8_str_new(str, len) rb_enc_str_new(str, len, rb_utf8_encoding())
 #define rb_utf8_str_new_cstr(str) rb_enc_str_new(str, (long)strlen(str), rb_utf8_encoding())
