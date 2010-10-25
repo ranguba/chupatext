@@ -28,14 +28,17 @@ void test_get_values (void);
 void test_replace_value (void);
 void test_update_value (void);
 void test_remove_value (void);
+void test_foreach (void);
 
 static ChupaMetadata *metadata, *metadata2;
+static GString *result;
 
 void
 setup (void)
 {
     metadata = NULL;
     metadata2 = NULL;
+    result = NULL;
 }
 
 void
@@ -45,6 +48,8 @@ teardown (void)
         g_object_unref(metadata);
     if (metadata2)
         g_object_unref(metadata2);
+    if (result)
+        g_string_free(result, TRUE);
 }
 
 void
@@ -117,6 +122,47 @@ test_remove_value (void)
     cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, key));
     chupa_metadata_replace_value(metadata, key, NULL);
     cut_assert_null(chupa_metadata_get_values(metadata, key));
+}
+
+struct foreach_test_args {
+    GString *string;
+    const gchar *key;
+};
+
+static void
+test_foreach_push_values(gpointer value, gpointer user_data)
+{
+    struct foreach_test_args *args = user_data;
+    g_string_append(args->string, args->key);
+    g_string_append(args->string, ": ");
+    g_string_append(args->string, value);
+    g_string_append_c(args->string, '\n');
+}
+
+static void
+test_foreach_push(gpointer key, gpointer value_list, gpointer user_data)
+{
+    struct foreach_test_args args;
+    args.string = user_data;
+    args.key = key;
+    g_list_foreach(value_list, test_foreach_push_values, (gpointer)&args);
+}
+
+void
+test_foreach (void)
+{
+    GString *result;
+
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_value(metadata, "foo", "bar");
+    chupa_metadata_add_value(metadata, "bar", "qux");
+    chupa_metadata_add_value(metadata, "foo", "zot");
+    result = g_string_sized_new(32);
+    chupa_metadata_foreach(metadata, test_foreach_push, result);
+    cut_assert_equal_string("foo: bar\n"
+                            "foo: zot\n"
+                            "bar: qux\n",
+                            result->str);
 }
 
 /*

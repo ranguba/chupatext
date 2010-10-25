@@ -59,6 +59,7 @@ const gchar *chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar
 GList *chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key);
 void chupa_metadata_update(ChupaMetadata *metadata, ChupaMetadata *update);
 guint chupa_metadata_size(ChupaMetadata *metadata);
+void chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data);
 
 G_END_DECLS
 
