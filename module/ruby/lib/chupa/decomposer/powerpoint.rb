@@ -17,23 +17,30 @@
 
 require 'tempfile'
 
-class Chupa::PowerPoint < Chupa::BaseDecomposer
-  mime_types "application/vnd.ms-powerpoint"
+module Chupa
+  class PowerPoint < BaseDecomposer
+    mime_types "application/vnd.ms-powerpoint"
 
-  def decompose
-    pdf = Tempfile.new(["chupadata-pdf", ".pdf"])
-    FileUtils.rm(pdf.path)
-    ppt = Tempfile.new(["chupadata-ppt", ".ppt"])
-    ppt.write(@source.read)
-    ppt.close
+    def decompose
+      pdf = Tempfile.new(["chupadata-pdf", ".pdf"])
+      FileUtils.rm(pdf.path)
+      ppt = Tempfile.new(["chupadata-ppt", ".ppt"])
+      ppt.write(@source.read)
+      ppt.close
 
-    ooffice_pid = spawn("ooffice", "-headless", ppt.path,
-                        "macro:///Standard.Export.WritePDF(\"file://#{pdf.path}\")")
-    Process.waitpid(ooffice_pid)
-    while `ps aux`.include?(pdf.path)
-      sleep(0.5)
+      ooffice_pid = spawn("ooffice", "-headless", ppt.path,
+                          "macro:///Standard.Export.WritePDF(\"file://#{pdf.path}\")")
+      Process.waitpid(ooffice_pid)
+      ooffice_start_time = Time.now
+      while `ps aux`.include?(pdf.path)
+        if Time.now - ooffice_start_time > 5
+          system("killall soffice.bin")
+          raise DecomposeError.new("Timeout: PowerPoint file conversion")
+        end
+        sleep(0.5)
+      end
+      data = Chupa::Data.decompose(pdf.path)
+      accepted(data.read)
     end
-    data = Chupa::Data.decompose(pdf.path)
-    accepted(data.read)
   end
 end
