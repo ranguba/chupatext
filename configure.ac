@@ -104,6 +104,7 @@ PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
 PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes])
 AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
+PKG_CHECK_MODULES(GTK, gtk+-2.0, [have_gtk=yes])
 PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes])
 AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
 

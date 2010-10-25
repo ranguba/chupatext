@@ -70,9 +70,10 @@ word_la_LIBADD = $(chupa_libs) $(WV_LIBS)
 excel_la_SOURCES = excel.c
 excel_la_CPPFLAGS =				\
 	$(GOFFICE_CFLAGS)			\
+	$(GTK_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"ChupaText-Excel\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Excel\"
-excel_la_LIBADD = $(chupa_libs) $(GOFFICE_LIBS) -lspreadsheet
+excel_la_LIBADD = $(chupa_libs) $(GOFFICE_LIBS) $(GTK_LIBS) -lspreadsheet
 
 powerpoint_la_SOURCES = powerpoint.c
 powerpoint_la_CPPFLAGS =				\
