@@ -117,6 +117,66 @@ chupa_metadata_add(VALUE self, VALUE name, VALUE value)
     return value;
 }
 
+static void
+chupa_metadata_keys_push(gpointer key, gpointer values, gpointer user_data)
+{
+    rb_ary_push((VALUE)user_data, rb_utf8_str_new_cstr(key));
+}
+
+static VALUE
+chupa_metadata_keys(VALUE self)
+{
+    ChupaMetadata *metadata;
+    VALUE keys = rb_ary_new();
+
+    metadata = SELF(self);
+    chupa_metadata_foreach(metadata, chupa_metadata_keys_push, (gpointer)keys);
+    return keys;
+}
+
+static void
+chupa_metadata_glist_push(gpointer str, gpointer user_data)
+{
+    rb_ary_push((VALUE)user_data, rb_utf8_str_new_cstr(str));
+}
+
+static void
+chupa_metadata_values_push(gpointer key, gpointer value_list, gpointer user_data)
+{
+    VALUE values = rb_ary_new();
+    g_list_foreach(value_list, chupa_metadata_glist_push, (gpointer)values);
+    rb_ary_push((VALUE)user_data, values);
+}
+
+static VALUE
+chupa_metadata_values(VALUE self)
+{
+    ChupaMetadata *metadata;
+    VALUE values = rb_ary_new();
+
+    metadata = SELF(self);
+    chupa_metadata_foreach(metadata, chupa_metadata_values_push, (gpointer)values);
+    return values;
+}
+
+static void
+chupa_metadata_each_yield(gpointer key, gpointer value_list, gpointer user_data)
+{
+    VALUE values = rb_ary_new();
+    g_list_foreach(value_list, chupa_metadata_glist_push, (gpointer)values);
+    rb_yield_values(2, rb_utf8_str_new_cstr(key), values);
+}
+
+static VALUE
+chupa_metadata_each(VALUE self)
+{
+    ChupaMetadata *metadata;
+
+    metadata = SELF(self);
+    chupa_metadata_foreach(metadata, chupa_metadata_each_yield, NULL);
+    return self;
+}
+
 VALUE
 chupa_ruby_metadata_init(VALUE mChupa)
 {
@@ -127,5 +187,9 @@ chupa_ruby_metadata_init(VALUE mChupa)
     rb_define_method(cMetadata, "[]=", chupa_metadata_set, 2);
     rb_define_method(cMetadata, "set", chupa_metadata_set, 2);
     rb_define_method(cMetadata, "add", chupa_metadata_add, 2);
+    rb_define_method(cMetadata, "keys", chupa_metadata_keys, 0);
+    rb_define_method(cMetadata, "values", chupa_metadata_values, 0);
+    rb_define_method(cMetadata, "each", chupa_metadata_each, 0);
+    rb_include_module(cMetadata, rb_mEnumerable);
     return cMetadata;
 }
