@@ -30,31 +30,52 @@ struct output_info {
 };
 
 static void
+output_plain_header_values(gpointer value, gpointer user_data)
+{
+    struct output_info *info = user_data;
+    fprintf(info->out, "%s: %s\n", info->prefix, (const char *)value);
+}
+
+static void
+output_plain_header(gpointer key, gpointer value_list, gpointer user_data)
+{
+    struct output_info info;
+    info.out = user_data;
+    info.prefix = key;
+    g_list_foreach(value_list, output_plain_header_values, &info);
+}
+
+static void
 output_plain(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
 {
     GInputStream *inst = chupa_data_get_stream(data);
     struct output_info *uinfo = udata;
     FILE *out = uinfo->out;
     const char *name = chupa_data_get_filename(data);
-    const char *charset = chupa_data_get_charset(data);
+    ChupaMetadata *metadata = chupa_data_get_metadata(data);
     char *path = NULL;
     char buf[4096];
     gssize size;
+    gboolean header_written = FALSE;
 
-    if (uinfo->prefix) {
-        path = g_build_filename(uinfo->prefix, name, NULL);
-    }
-    fprintf(out, "File: %s\n", path ? path : name ? name : "(noname)");
-    if (path) {
-        g_free(path);
-    }
-    if (charset) {
-        fprintf(out, "Charset: %s\n", charset);
-    }
     while ((size = g_input_stream_read(inst, buf, sizeof(buf), NULL, NULL)) > 0) {
+        if (!header_written) {
+            header_written = TRUE;
+            if (uinfo->prefix) {
+                path = g_build_filename(uinfo->prefix, name, NULL);
+            }
+            fprintf(out, "URL: %s\n", path ? path : name ? name : "(noname)");
+            if (path) {
+                g_free(path);
+            }
+            if (metadata) {
+                chupa_metadata_foreach(metadata, output_plain_header, out);
+            }
+            putc('\n', out);
+        }
         fwrite(buf, 1, size, out);
     }
-    putc('\n', out);
+    fputs("\n\n", out);
 }
 
 static void
