@@ -27,10 +27,11 @@ class Chupa::PowerPoint < Chupa::BaseDecomposer
     ppt.write(@source.read)
     ppt.close
 
-    system("ooffice", "-headless", ppt.path,
-           "macro:///Standard.Export.WritePDF(\"file://#{pdf.path}\")")
-    until File.exist?(pdf.path)
-      sleep(1)
+    ooffice_pid = spawn("ooffice", "-headless", ppt.path,
+                        "macro:///Standard.Export.WritePDF(\"file://#{pdf.path}\")")
+    Process.waitpid(ooffice_pid)
+    while `ps aux`.include?(pdf.path)
+      sleep(0.5)
     end
     data = Chupa::Data.decompose(pdf.path)
     accepted(data.read)
