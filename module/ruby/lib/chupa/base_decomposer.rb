@@ -15,39 +15,44 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-class Chupa::BaseDecomposer
-  class << self
-    def decomposers
-      @@decomposers
-    end
+module Chupa
+  class DecomposeError < StandardError
+  end
 
-    @@decomposers = {}
-    def mime_types(*types)
-      types.each do |type|
-        @@decomposers[type] = self
+  class BaseDecomposer
+    class << self
+      def decomposers
+        @@decomposers
+      end
+
+      @@decomposers = {}
+      def mime_types(*types)
+        types.each do |type|
+          @@decomposers[type] = self
+        end
       end
     end
-  end
 
-  def feed
-    begin
-      success = decompose
-      @feeder.feed(@target) if success
-      success
-    rescue Exception
-      puts "#{$!.class}:#{$!.message}"
-      puts $@
-      raise
-      false
+    def feed
+      begin
+        success = decompose
+        @feeder.feed(@target) if success
+        success
+      rescue Exception
+        puts "#{$!.class}:#{$!.message}"
+        puts $@
+        raise
+        false
+      end
     end
-  end
 
-  private
-  def accepted(data)
-    @sink.add_data(data)
-  end
+    private
+    def accepted(data)
+      @sink.add_data(data)
+    end
 
-  def metadata
-    @target.metadata
+    def metadata
+      @target.metadata
+    end
   end
 end
