@@ -16,38 +16,43 @@
 # MA  02110-1301  USA
 
 require 'tempfile'
+require 'digest/md5'
 
 module Chupa
   class PowerPoint < BaseDecomposer
     mime_types "application/vnd.ms-powerpoint"
 
-    CHUPA_HOME = Pathname.new(File.expand_path("~/.chupa"))
-    OOFFICE_EXPORT_SCRIPT_DIR = CHUPA_HOME + ".openoffice.org/3/user/basic/Standard"
+    def decompose
+      ooffice = OpenOffice.new(ENV['CHUPA_HOME'])
+      ooffice.prepare()
 
-    def prepare_openoffice_environment
-      unless File.directory?(OOFFICE_EXPORT_SCRIPT_DIR)
-        id = Object.new.object_id.to_s
-        ooffice_pid = spawn({"HOME" => CHUPA_HOME.to_s},
-                            "ooffice", "-headless", "macro:///Stop", id)
-        while (ps_str = `ps aux`).include?(id)
-          sleep(0.5)
-        end
-      end
+      pdf = Tempfile.new(["chupadata-pdf", ".pdf"])
+      FileUtils.rm(pdf.path)
+      ppt = Tempfile.new(["chupadata-ppt", ".ppt"])
+      ppt.write(@source.read)
+      ppt.close
 
-      script_dir = OOFFICE_EXPORT_SCRIPT_DIR
-      scripts = [{
-                   :name => "script.xlb",
-                   :content => <<EOS
+      ooffice.convert(ppt.path, pdf.path)
+      data = Chupa::Data.decompose(pdf.path)
+      accepted(data.read)
+    end
+  end
+
+  class OpenOffice
+    SCRIPT_DIR = ".openoffice.org/3/user/basic/Standard"
+    SCRIPTS = [{
+                 :name => "script.xlb",
+                 :content => <<EOS
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE library:library PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "library.dtd">
 <library:library xmlns:library="http://openoffice.org/2000/library" library:name="Standard" library:readonly="false" library:passwordprotected="false">
  <library:element library:name="Export"/>
 </library:library>
 EOS
-                 },
-                 {
-                   :name => "Export.xba",
-                   :content => <<EOS
+               },
+               {
+                 :name => "Export.xba",
+                 :content => <<EOS
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
 <script:module xmlns:script="http://openoffice.org/2000/script" script:name="Export" script:language="StarBasic">
@@ -70,37 +75,53 @@ document.close(true)
 end sub
 </script:module>
 EOS
-                 }]
-      scripts.each do |script|
-        File.open(script_dir + script[:name], "w") do |file|
+               }]
+
+    def initialize(home_dir = nil)
+      @home_dir = Pathname.new(File.expand_path(home_dir || "~/.chupa"))
+      @script_dir = @home_dir + SCRIPT_DIR
+    end
+
+    def prepare
+      unless File.directory?(@home_dir)
+        FileUtils.mkdir_p(@home_dir)
+      end
+      unless File.directory?(@script_dir)
+        unique_key = Digest::MD5.hexdigest(Time.now.to_s + Object.new.object_id.to_s)
+        ooffice_pid = spawn({"HOME" => @home_dir.to_s},
+                            "ooffice", "-headless", "macro:///Stop", unique_key)
+        Process.waitpid(ooffice_pid)
+        while (ps_str = `ps aux`).include?(unique_key)
+          sleep(0.5)
+        end
+      end
+
+      SCRIPTS.each do |script|
+        File.open(@script_dir + script[:name], "w") do |file|
           file.puts(script[:content])
         end
       end
     end
 
-    def decompose
-      prepare_openoffice_environment()
-
-      pdf = Tempfile.new(["chupadata-pdf", ".pdf"])
-      FileUtils.rm(pdf.path)
-      ppt = Tempfile.new(["chupadata-ppt", ".ppt"])
-      ppt.write(@source.read)
-      ppt.close
-
-      ooffice_pid = spawn({"HOME" => CHUPA_HOME.to_s},
-                          "ooffice", "-headless", ppt.path,
-                          "macro:///Standard.Export.WritePDF(\"file://#{pdf.path}\")")
+    def convert(from_path, to_path)
+      ooffice_pid = spawn({"HOME" => @home_dir.to_s},
+                          "ooffice", "-headless", from_path,
+                          "macro:///Standard.Export.WritePDF(\"file://#{to_path}\")")
       Process.waitpid(ooffice_pid)
       ooffice_start_time = Time.now
-      while `ps aux`.include?(pdf.path)
-        if Time.now - ooffice_start_time > 5
+      while `ps aux`.include?(to_path)
+        if Time.now - ooffice_start_time > 30
           system("killall soffice.bin")
           raise DecomposeError.new("Timeout: PowerPoint file conversion")
         end
         sleep(0.5)
       end
-      data = Chupa::Data.decompose(pdf.path)
-      accepted(data.read)
+
+      to_path
+    end
+
+    def home_dir
+      @home_dir.to_s
     end
   end
 end
