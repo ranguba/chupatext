@@ -27,7 +27,7 @@ endif
 if HAVE_GOFFICE
 decomposer_LTLIBRARIES += excel.la
 endif
-decomposer_LTLIBRARIES += powerpoint.la
+
 if HAVE_RUBY
 decomposer_LTLIBRARIES += ruby.la
 endif
@@ -74,13 +74,6 @@ excel_la_CPPFLAGS =				\
 	-DG_LOG_DOMAIN=\"ChupaText-Excel\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Excel\"
 excel_la_LIBADD = $(chupa_libs) $(GOFFICE_LIBS) $(GTK_LIBS) -lspreadsheet
-
-powerpoint_la_SOURCES = powerpoint.c
-powerpoint_la_CPPFLAGS =				\
-	$(GIO_UNIX_CFLAGS)				\
-	-DG_LOG_DOMAIN=\"ChupaText-PowerPoint\"		\
-	-DCHUPA_LOG_DOMAIN=\"ChupaText-PowerPoint\"
-powerpoint_la_LIBADD = $(chupa_libs) $(GIO_UNIX_LIBS)
 
 ruby_la_SOURCES = ruby.c
 ruby_la_CFLAGS = $(RUBY_CFLAGS)
