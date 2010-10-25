@@ -185,6 +185,15 @@ chupa_metadata_size(ChupaMetadata *metadata)
     return g_hash_table_size(priv->data);
 }
 
+void
+chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data)
+{
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    g_hash_table_foreach(priv->data, func, user_data);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
