@@ -27,7 +27,7 @@ module Chupa
       else
         option = {}
       end
-      pid = spawn(option[:env], @command, *args)
+      pid = spawn((option[:env] || {}), @command, *args, (option[:spawn_option] || {}))
       pid, status = Process.waitpid2(pid)
       status.success?
     end
