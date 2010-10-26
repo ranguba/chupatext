@@ -2,10 +2,10 @@ lib_LTLIBRARIES = libchupatext.la
 
 EMPTY =
 
-bin_PROGRAMS = chupa
+bin_PROGRAMS = chupatext
 
-chupa_SOURCES = chupa.c
-chupa_LDADD = libchupatext.la
+chupatext_SOURCES = chupatext.c
+chupatext_LDADD = libchupatext.la
 
 BUILT_SOURCES = version.h
 DISTCLEANFILES = $(BUILT_SOURCES)
