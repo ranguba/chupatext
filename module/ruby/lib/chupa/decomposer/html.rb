@@ -28,11 +28,13 @@ class Chupa::HTML < Chupa::BaseDecomposer
     if encoding = doc.encoding
       metadata["charset"] = encoding.downcase
     end
+    metadata["encoding"] = "UTF-8"
     if body = (doc % "body")
       body = body.text.gsub(/^\s+|\s+$/, '')
     else
       body = ""
     end
+    metadata["output-length"] = body.bytesize.to_s
     accepted(body)
   end
 end
