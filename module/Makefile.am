@@ -17,6 +17,7 @@ decomposer_LTLIBRARIES =
 
 decomposer_LTLIBRARIES += text.la
 decomposer_LTLIBRARIES += tar.la
+decomposer_LTLIBRARIES += gzip.la
 decomposer_LTLIBRARIES += zip.la
 if HAVE_POPPLER_GLIB
 decomposer_LTLIBRARIES += pdf.la
@@ -45,6 +46,13 @@ tar_la_CPPFLAGS =				\
 	-DG_LOG_DOMAIN=\"ChupaText-Tar\"	\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText-Tar\"
 tar_la_LIBADD = $(chupa_libs)
+
+gzip_la_SOURCES = gzip.c
+gzip_la_CPPFLAGS =				\
+	$(GSF_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"ChupaText-Gzip\"	\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText-Gzip\"
+gzip_la_LIBADD = $(chupa_libs)
 
 zip_la_SOURCES = zip.c
 zip_la_CPPFLAGS =				\

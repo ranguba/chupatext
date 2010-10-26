@@ -18,6 +18,7 @@ noinst_LTLIBRARIES =				\
 	test_gsf_input_stream.la		\
 	test_decomposer.la			\
 	test_tar.la				\
+	test_gz.la				\
 	test_zip.la				\
 	test_html.la				\
 	test_bin_chupatext.la			\
@@ -78,6 +79,7 @@ test_word_la_SOURCES = test_word.c
 test_excel_la_SOURCES = test_excel.c
 test_powerpoint_la_SOURCES = test_powerpoint.c
 test_tar_la_SOURCES = test_tar.c
+test_gz_la_SOURCES = test_gz.c
 test_zip_la_SOURCES = test_zip.c
 test_html_la_SOURCES = test_html.c
 
