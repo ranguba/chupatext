@@ -37,3 +37,5 @@ strace.out
 .gdb_history
 /*.tar.gz
 /*.pc
+/test/temp/*
+/chupatext/chupatext

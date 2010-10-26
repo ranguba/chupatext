@@ -5,4 +5,5 @@ dist_ruby_lib_chupa_DATA =			\
 	post_init.rb				\
 	base_decomposer.rb			\
 	loader.rb				\
+	external_command.rb			\
 	data.rb
