@@ -109,7 +109,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     sub_type = strchr(mime_type, '/');
     if (sub_type) {
         sub_type++;
-        if (!g_str_has_prefix(sub_type, "x-")) {
+        if (g_str_has_prefix(sub_type, "x-")) {
             normalized_type = g_string_new_len(mime_type,
                                                sub_type - mime_type);
             g_string_append(normalized_type, sub_type + 2);
