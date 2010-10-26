@@ -51,7 +51,11 @@ fi
 export RUBY
 
 if test -z "$TOP_SRC_DIR"; then
-    TOP_SRC_DIR="$test_dir/$(${MAKE} -s -C "$test_dir" echo-top-srcdir)"
+    TOP_SRC_DIR="$(${MAKE} -s -C "$test_dir" echo-top-srcdir)"
+    case "$TOP_SRC_DIR" in
+	([/\\]*|[a-zA-Z]:[/\\]*) ;;
+	(*) TOP_SRC_DIR="$test_dir/$TOP_SRC_DIR";;
+    esac
 fi
 
 : ${LIBTOOL:=${TOP_BUILD_DIR}/libtool}
@@ -105,7 +109,7 @@ if test "$NO_RUBY" != "yes" -a -n "$RUBY"; then
     if test x"$RUBY_DEBUG" = x"yes"; then
       RUBY_WRAPPER="${LIBTOOL} --mode=execute gdb --args"
     fi
-    $RUBY_WRAPPER $RUBY $test_dir/run-test.rb $RUBY_TEST_ARGS "$@"
+    $RUBY_WRAPPER $RUBY "$TOP_SRC_DIR/test/run-test.rb" $RUBY_TEST_ARGS "$@"
     ruby_result=$?
     no_test=0
 fi
