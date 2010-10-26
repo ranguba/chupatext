@@ -17,6 +17,7 @@
 
 require 'tempfile'
 require 'digest/md5'
+require 'chupa/external_command'
 
 module Chupa
   class PowerPoint < BaseDecomposer
@@ -38,7 +39,7 @@ module Chupa
     end
   end
 
-  class OpenOffice
+  class OpenOffice < ExternalCommand
     SCRIPT_DIR = ".openoffice.org/3/user/basic/Standard"
     SCRIPTS = [{
                  :name => "script.xlb",
@@ -78,6 +79,7 @@ EOS
                }]
 
     def initialize(home_dir = nil)
+      super("ooffice")
       @home_dir = Pathname.new(File.expand_path(home_dir || "~/.chupa"))
       @script_dir = @home_dir + SCRIPT_DIR
     end
@@ -86,11 +88,11 @@ EOS
       unless File.directory?(@home_dir)
         FileUtils.mkdir_p(@home_dir)
       end
+
       unless File.directory?(@script_dir)
         unique_key = Digest::MD5.hexdigest(Time.now.to_s + Object.new.object_id.to_s)
-        ooffice_pid = spawn({"HOME" => @home_dir.to_s},
-                            "ooffice", "-headless", "macro:///Stop", unique_key)
-        Process.waitpid(ooffice_pid)
+        run("-headless", "macro:///Stop", unique_key,
+            {:env => {"HOME" => @home_dir.to_s}})
         while (ps_str = `ps aux`).include?(unique_key)
           sleep(0.5)
         end
@@ -104,10 +106,8 @@ EOS
     end
 
     def convert(from_path, to_path)
-      ooffice_pid = spawn({"HOME" => @home_dir.to_s},
-                          "ooffice", "-headless", from_path,
-                          "macro:///Standard.Export.WritePDF(\"file://#{to_path}\")")
-      Process.waitpid(ooffice_pid)
+      run("-headless", from_path, "macro:///Standard.Export.WritePDF(\"file://#{to_path}\")",
+          {:env => {"HOME" => @home_dir.to_s}})
       ooffice_start_time = Time.now
       while `ps aux`.include?(to_path)
         if Time.now - ooffice_start_time > 30
