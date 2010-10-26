@@ -23,7 +23,6 @@
 #include <glib.h>
 
 #include <chupatext/chupa_decomposer_module.h>
-#include <chupatext/external_decomposer.h>
 #include <chupatext/chupa_logger.h>
 #include <chupatext/chupa_memory_input_stream.h>
 #include <chupatext/chupa_data_input.h>
@@ -66,12 +65,12 @@ typedef struct _ChupaExcelDecomposerClass ChupaExcelDecomposerClass;
 
 struct _ChupaExcelDecomposer
 {
-    ChupaExternalDecomposer parent_object;
+    ChupaDecomposer parent_object;
 };
 
 struct _ChupaExcelDecomposerClass
 {
-    ChupaExternalDecomposerClass parent_class;
+    ChupaDecomposerClass parent_class;
 };
 
 static GOCmdContext *cc;
@@ -190,7 +189,7 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 
     chupa_type_excel_decomposer =
         g_type_module_register_type(type_module,
-                                    CHUPA_TYPE_EXTERNAL_DECOMPOSER,
+                                    CHUPA_TYPE_DECOMPOSER,
                                     type_name,
                                     &info, 0);
 

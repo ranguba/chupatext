@@ -30,7 +30,6 @@ libchupatext_la_SOURCES =			\
 	chupa_logger.c				\
 	chupa_decomposer.c			\
 	archive_decomposer.c			\
-	external_decomposer.c			\
 	chupa_utils.c				\
 	version.c				\
 	$(EMPTY)
@@ -63,7 +62,6 @@ chupa_public_headers =				\
 	chupa_gsf_input_stream.h		\
 	chupa_memory_input_stream.h		\
 	chupa_logger.h				\
-	external_decomposer.h			\
 	chupa_utils.h				\
 	version.h
 
