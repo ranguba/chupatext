@@ -89,6 +89,9 @@ echo-top-builddir:
 echo-top-srcdir:
 	@echo $(top_srcdir)
 
+echo-testdir:
+	@echo $(srcdir)
+
 echo-cutter:
 	@echo $(CUTTER)
 
