@@ -61,6 +61,16 @@ struct _ChupaPDFDecomposerClass
 
 static GType chupa_type_pdf_decomposer = 0;
 
+/* use XML Schema format string for the time being */
+static void
+metadata_add_time(ChupaMetadata *meta, const gchar *name, time_t value)
+{
+    char buf[40];
+    struct tm time;
+    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", gmtime_r(&value, &time));
+    chupa_metadata_add_value(meta, name, buf);
+}
+
 static gboolean
 feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
@@ -73,6 +83,8 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     GInputStream *inp = chupa_data_get_stream(data);
     ChupaMetadata *meta = chupa_data_get_metadata(data);
     ChupaData *pdf_text = NULL;
+    gchar *title, *author, *metadata;
+    gint creation, modtime;
     int n, i;
 
     while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, error)) > 0) {
@@ -87,6 +99,31 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     if (!doc) {
         g_string_free(str, TRUE);
         return FALSE;
+    }
+    g_object_get(doc,
+                 "title", &title,
+                 "author", &author,
+                 "creation-date", &creation,
+                 "mod-date", &modtime,
+                 "metadata", &metadata,
+                 NULL);
+    if (title) {
+        chupa_metadata_add_value(meta, "title", title);
+        g_free(title);
+    }
+    if (author) {
+        chupa_metadata_add_value(meta, "author", author);
+        g_free(author);
+    }
+    if (creation != -1 && creation != 0) {
+        metadata_add_time(meta, "creation-time", creation);
+    }
+    if (modtime != -1 && modtime != 0) {
+        metadata_add_time(meta, "mod-time", modtime);
+    }
+    if (metadata) {
+        chupa_metadata_add_value(meta, "metadata", metadata);
+        g_free(metadata);
     }
     n = poppler_document_get_n_pages(doc);
     for (i = 0; i < n; ++i) {

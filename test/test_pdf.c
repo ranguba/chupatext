@@ -22,6 +22,7 @@
 
 void test_decompose_pdf(void);
 void test_decompose_pdf_multi_pages(void);
+void test_pdf_info(void);
 
 void
 setup(void)
@@ -50,4 +51,12 @@ test_decompose_pdf_multi_pages(void)
                             "2 ページ目\n\f"
                             "page3\n",
                             decompose_pdf("sample_multi_pages.pdf", NULL));
+}
+
+void
+test_pdf_info(void)
+{
+    ChupaMetadata *meta =
+        chupa_test_metadata_fixture("sample.pdf", NULL);
+    cut_assert_match("^20[0-9][0-9]-[01][0-9]-[0-3][0-9]", chupa_metadata_get_first_value(meta, "creation-time"));
 }
