@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Yuto HAYAMIZU <y.hayamizu@gmail.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 
 #include "chupa_test_util.h"
 
-void test_decompose_tar(void);
+void test_decompose_tar_gz(void);
 
 void
 setup(void)
@@ -34,10 +34,10 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_tar chupa_test_decompose_fixture
+#define decompose_tar_gz chupa_test_decompose_fixture
 
 void
-test_decompose_tar(void)
+test_decompose_tar_gz(void)
 {
-    cut_assert_equal_string("sample\n", decompose_tar("sample.tar", NULL));
+    cut_assert_equal_string("sample\n", decompose_tar_gz("sample.tar.gz", NULL));
 }
