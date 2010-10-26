@@ -38,3 +38,4 @@ strace.out
 /*.tar.gz
 /*.pc
 /test/temp/*
+/chupatext/chupatext
