@@ -110,7 +110,6 @@ chupa_test_decompose_metadata(ChupaData *data, GError **error)
     feeder = CHUPA_FEEDER(TAKE_OBJECT(chupa_feeder_new()));
     g_signal_connect(feeder, "accepted", (GCallback)cb_accepted, &metadata);
     chupa_feeder_feed(feeder, data, error);
-    TAKE_OBJECT(metadata);
     return metadata;
 }
 
