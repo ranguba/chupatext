@@ -20,6 +20,7 @@ noinst_LTLIBRARIES =				\
 	test_tar.la				\
 	test_zip.la				\
 	test_html.la				\
+	test_bin_chupatext.la			\
 	$(EMPTY)
 
 if HAVE_POPPLER_GLIB
