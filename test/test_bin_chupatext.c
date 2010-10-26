@@ -21,7 +21,8 @@
 #include <gcutter.h>
 #include "chupa_test_util.h"
 
-void test_html (void);
+void test_html(void);
+void test_excel(void);
 
 static GCutProcess *chupatext_process;
 static GString *output_from_chupatext;
@@ -58,7 +59,22 @@ start(GCutProcess *process)
 
 #define TAKE_STRING(str) cut_take_string(str)
 #define FIXTURE(fixture) TAKE_STRING(cut_build_fixture_data_path(fixture, NULL))
-#define output_string(process) gcut_process_get_output_string(start(process))
+static GString *
+trim_newline(GString *string)
+{
+    if (string) {
+        gsize len = string->len;
+        while (len > 0 && string->str[len - 1] == '\n')
+            --len;
+        if (++len < string->len) {
+            g_string_set_size(string, len);
+        }
+    }
+    return string;
+}
+
+#define output_string(process) trim_newline(gcut_process_get_output_string(start(process)))
+
 
 void
 test_html(void)
@@ -73,7 +89,21 @@ test_html(void)
                             "output-length: 17\n"
                             "encoding: UTF-8\n"
                             "\n"
-                            "This is a sample.\n\n",
+                            "This is a sample.\n",
+                            result->str);
+}
+
+void
+test_excel(void)
+{
+    const gchar *path = FIXTURE("sample.xls");
+    GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
+    GString *result = output_string(process);
+    cut_assert_equal_string("URL: sample.xls\n"
+                            "filename: sample.xls\n"
+                            "mime-type: application/vnd.ms-excel\n"
+                            "\n"
+                            "sample\n1\n2\n3\n4\n5\n6\n7\n",
                             result->str);
 }
 
