@@ -43,4 +43,4 @@ build:
 	  '$(ARCHITECTURES)' '$(CODE_NAMES)'
 
 dist:
-	cd .. && $(MAKE) $@
+	cd $(top_builddir) && $(MAKE) $@
