@@ -71,6 +71,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     ChupaMetadata *metadata;
     const gchar *filename;
     GString *new_filename;
+    gchar *content_length;
     gboolean result;
 
     g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
@@ -95,6 +96,11 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     metadata = chupa_metadata_new();
     chupa_metadata_add_value(metadata, "filename", new_filename->str);
     g_string_free(new_filename, TRUE);
+
+    content_length = g_strdup_printf("%zu", gsf_input_size(gzip_input));
+    chupa_metadata_add_value(metadata, "content-length", content_length);
+    g_free(content_length);
+
     data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
     g_object_unref(metadata);
     g_object_unref(stream);
