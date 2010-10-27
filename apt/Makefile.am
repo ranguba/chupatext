@@ -1,7 +1,7 @@
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
-CODE_NAMES = lenny squeeze unstable hardy lucid
+CODE_NAMES = lenny squeeze unstable lucid maverick
 
 release: dist build update sign upload
 
