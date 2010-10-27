@@ -84,13 +84,13 @@ test_zip_la_SOURCES = test_zip.c
 test_html_la_SOURCES = test_html.c
 
 echo-top-builddir:
-	@echo $(top_builddir)
+	@echo $(abs_top_builddir)
 
 echo-top-srcdir:
-	@echo $(top_srcdir)
+	@echo $(abs_top_srcdir)
 
 echo-testdir:
-	@echo $(srcdir)
+	@echo $(abs_srcdir)
 
 echo-cutter:
 	@echo $(CUTTER)
