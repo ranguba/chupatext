@@ -21,7 +21,7 @@
 #include "chupa_metadata.h"
 
 #define CHUPA_METADATA_GET_PRIVATE(obj)                  \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                  \
                                  CHUPA_TYPE_METADATA,    \
                                  ChupaMetadataPrivate))
 
@@ -142,8 +142,7 @@ chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar 
         g_hash_table_steal(priv->data, keyptr);
         key = keyptr;
         values = valptr;
-    }
-    else {
+    } else {
         key = g_strdup(key);
     }
     values = g_list_append(values, g_strdup(value));
@@ -201,8 +200,7 @@ metadata_update_func(gpointer key, gpointer value, gpointer user_data)
 
     if (g_hash_table_lookup_extended(dest, key, &key, &value)) {
         g_hash_table_steal(dest, key);
-    }
-    else {
+    } else {
         key = g_strdup(key);
     }
     g_list_foreach(l2, list_copy, &l1);
@@ -245,7 +243,7 @@ field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
     field = g_hash_table_lookup(priv->fields, key);
-    if (!field){
+    if (!field) {
         g_set_error(error,
                     CHUPA_METADATA_ERROR,
                     CHUPA_METADATA_ERROR_NOT_EXIST,
@@ -277,7 +275,7 @@ chupa_metadata_get_int (ChupaMetadata *metadata, const gchar *key, GError **erro
     Field *field;
 
     field = field_lookup(metadata, key, error);
-    if (!field){
+    if (!field) {
         return 0;
     }
 
@@ -303,7 +301,7 @@ chupa_metadata_get_time_val (ChupaMetadata *metadata, const gchar *key, GError *
     Field *field;
 
     field = field_lookup(metadata, key, error);
-    if (!field){
+    if (!field) {
         return NULL;
     }
 
