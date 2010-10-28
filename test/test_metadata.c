@@ -32,7 +32,7 @@ void test_foreach (void);
 void test_int (void);
 void test_int_error (void);
 void test_time_val (void);
-
+void test_content_length (void);
 
 static ChupaMetadata *metadata, *metadata2;
 static GString *result;
@@ -215,6 +215,14 @@ test_time_val (void)
     cut_assert_not_null(actual_time_val);
     cut_assert_equal_int(expected_time_val->tv_sec, actual_time_val->tv_sec);
     cut_assert_equal_int(expected_time_val->tv_usec, actual_time_val->tv_usec);
+}
+
+void
+test_content_length (void)
+{
+    metadata = chupa_metadata_new();
+    chupa_metadata_set_content_length(metadata, 29);
+    cut_assert_equal_int(29, chupa_metadata_get_content_length(metadata));
 }
 
 /*

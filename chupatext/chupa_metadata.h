@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -73,6 +74,12 @@ void           chupa_metadata_add_int         (ChupaMetadata *metadata, const gc
 gint           chupa_metadata_get_int         (ChupaMetadata *metadata, const gchar *key, GError **error);
 void           chupa_metadata_add_time_val    (ChupaMetadata *metadata, const gchar *key, GTimeVal *time_val);
 GTimeVal      *chupa_metadata_get_time_val    (ChupaMetadata *metadata, const gchar *key, GError **error);
+
+void           chupa_metadata_set_content_length
+                                              (ChupaMetadata *metadata,
+                                               gsize          length);
+gsize          chupa_metadata_get_content_length
+                                              (ChupaMetadata *metadata);
 
 G_END_DECLS
 

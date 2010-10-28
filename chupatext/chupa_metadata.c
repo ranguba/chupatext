@@ -308,6 +308,28 @@ chupa_metadata_get_time_val (ChupaMetadata *metadata, const gchar *key, GError *
     return field->value.pointer;
 }
 
+void
+chupa_metadata_set_content_length (ChupaMetadata *metadata, gsize length)
+{
+    /* FIXME: use add_size() */
+    chupa_metadata_add_int(metadata, "content-length", length);
+}
+
+gsize
+chupa_metadata_get_content_length (ChupaMetadata *metadata)
+{
+    gsize length;
+    GError *error = NULL;
+
+    length = chupa_metadata_get_int(metadata, "content-length", &error);
+    if (error) {
+        g_error_free(error);
+        return 0;
+    } else {
+        return length;
+    }
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
