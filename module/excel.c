@@ -332,6 +332,11 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 G_MODULE_EXPORT void
 CHUPA_DECOMPOSER_QUIT(void)
 {
+    extern void gutils_init(void);
+
+    gnm_conf_shutdown();
+    gnm_shutdown();
+    gutils_shutdown();
 }
 
 G_MODULE_EXPORT GObject *
