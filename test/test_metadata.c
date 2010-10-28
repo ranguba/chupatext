@@ -204,17 +204,16 @@ test_int_error (void)
 void
 test_time_val (void)
 {
-    GTimeVal *expected_time_val, *actual_time_val;
+    GTimeVal expected_time_val, *actual_time_val;
 
     metadata = chupa_metadata_new();
-    expected_time_val = g_malloc(sizeof(GTimeVal));
-    g_get_current_time(expected_time_val);
-    chupa_metadata_add_time_val(metadata, "last-modified", expected_time_val);
+    g_get_current_time(&expected_time_val);
+    chupa_metadata_add_time_val(metadata, "last-modified", &expected_time_val);
     actual_time_val = chupa_metadata_get_time_val(metadata, "last-modified", NULL);
 
     cut_assert_not_null(actual_time_val);
-    cut_assert_equal_int(expected_time_val->tv_sec, actual_time_val->tv_sec);
-    cut_assert_equal_int(expected_time_val->tv_usec, actual_time_val->tv_usec);
+    cut_assert_equal_int(expected_time_val.tv_sec, actual_time_val->tv_sec);
+    cut_assert_equal_int(expected_time_val.tv_usec, actual_time_val->tv_usec);
 }
 
 void
