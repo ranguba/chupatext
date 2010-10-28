@@ -30,7 +30,8 @@ typedef struct _Field
     ChupaMetadata *metadata;
     GType type;
     union {
-        gint integer;
+        gint     integer;
+        gpointer pointer;
     } value;
     GDestroyNotify free_function;
 } Field;
@@ -57,6 +58,12 @@ field_new (ChupaMetadata *metadata, GType type)
 static void
 field_free (Field *field)
 {
+    if (field->value.pointer) {
+        if (field->free_function) {
+            field->free_function(field->value.pointer);
+        }
+    }
+
     g_slice_free(Field, field);
 }
 
@@ -230,19 +237,6 @@ chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data)
     g_hash_table_foreach(priv->data, func, user_data);
 }
 
-void
-chupa_metadata_add_int (ChupaMetadata *metadata, const gchar *key, gint value)
-{
-    Field *field;
-    ChupaMetadataPrivate *priv;
-
-    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-
-    field = field_new(metadata, G_TYPE_INT);
-    field->value.integer = value;
-    g_hash_table_insert(priv->fields, g_strdup(key), field);
-}
-
 static Field *
 field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
 {
@@ -263,6 +257,20 @@ field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
     return field;
 }
 
+void
+chupa_metadata_add_int (ChupaMetadata *metadata, const gchar *key, gint value)
+{
+    Field *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+
+    field = field_new(metadata, G_TYPE_INT);
+    field->value.integer = value;
+    field->free_function = NULL;
+    g_hash_table_insert(priv->fields, g_strdup(key), field);
+}
+
 gint
 chupa_metadata_get_int (ChupaMetadata *metadata, const gchar *key, GError **error)
 {
@@ -274,6 +282,32 @@ chupa_metadata_get_int (ChupaMetadata *metadata, const gchar *key, GError **erro
     }
 
     return field->value.integer;
+}
+
+void
+chupa_metadata_add_time_val (ChupaMetadata *metadata, const gchar *key, GTimeVal *time_val)
+{
+    Field *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    field = field_new(metadata, G_TYPE_POINTER);
+    field->free_function = g_free;
+    field->value.pointer = time_val;
+    g_hash_table_insert(priv->fields, g_strdup(key), field);
+}
+
+GTimeVal *
+chupa_metadata_get_time_val (ChupaMetadata *metadata, const gchar *key, GError **error)
+{
+    Field *field;
+
+    field = field_lookup(metadata, key, error);
+    if (!field){
+        return NULL;
+    }
+
+    return field->value.pointer;
 }
 
 /*
