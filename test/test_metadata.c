@@ -29,6 +29,7 @@ void test_replace_value (void);
 void test_update_value (void);
 void test_remove_value (void);
 void test_foreach (void);
+void test_int (void);
 
 static ChupaMetadata *metadata, *metadata2;
 static GString *result;
@@ -163,6 +164,14 @@ test_foreach (void)
                             "foo: zot\n"
                             "bar: qux\n",
                             result->str);
+}
+
+void
+test_int (void)
+{
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_int(metadata, "foo", 1);
+    cut_assert_equal_int(1, chupa_metadata_get_int(metadata, "foo", NULL));
 }
 
 /*

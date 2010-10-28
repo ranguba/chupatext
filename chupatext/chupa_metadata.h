@@ -51,15 +51,17 @@ struct _ChupaMetadataClass
     GObjectClass parent_class;
 };
 
-GType        chupa_metadata_get_type(void) G_GNUC_CONST;
-ChupaMetadata *chupa_metadata_new(void);
-void chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar *value);
-void chupa_metadata_replace_value(ChupaMetadata *metadata, const gchar *key, const gchar *value);
-const gchar *chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key);
-GList *chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key);
-void chupa_metadata_update(ChupaMetadata *metadata, ChupaMetadata *update);
-guint chupa_metadata_size(ChupaMetadata *metadata);
-void chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data);
+GType          chupa_metadata_get_type        (void) G_GNUC_CONST;
+ChupaMetadata *chupa_metadata_new             (void);
+void           chupa_metadata_add_value       (ChupaMetadata *metadata, const gchar *key, const gchar *value);
+void           chupa_metadata_replace_value   (ChupaMetadata *metadata, const gchar *key, const gchar *value);
+const gchar   *chupa_metadata_get_first_value (ChupaMetadata *metadata, const gchar *key);
+GList         *chupa_metadata_get_values      (ChupaMetadata *metadata, const gchar *key);
+void           chupa_metadata_update          (ChupaMetadata *metadata, ChupaMetadata *update);
+guint          chupa_metadata_size            (ChupaMetadata *metadata);
+void           chupa_metadata_foreach         (ChupaMetadata *metadata, GHFunc func, gpointer user_data);
+void           chupa_metadata_add_int         (ChupaMetadata *metadata, const gchar *key, gint value);
+gint           chupa_metadata_get_int         (ChupaMetadata *metadata, const gchar *key, GError **error);
 
 G_END_DECLS
 

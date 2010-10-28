@@ -25,11 +25,40 @@
                                  CHUPA_TYPE_METADATA,    \
                                  ChupaMetadataPrivate))
 
+typedef struct _Field
+{
+    ChupaMetadata *metadata;
+    GType type;
+    union {
+        gint integer;
+    } value;
+    GDestroyNotify free_function;
+} Field;
+
 typedef struct _ChupaMetadataPrivate	ChupaMetadataPrivate;
 struct _ChupaMetadataPrivate
 {
     GHashTable *data;
+    GHashTable *fields;
 };
+
+static Field *
+field_new (ChupaMetadata *metadata, GType type)
+{
+    Field *field;
+
+    field = g_slice_new0(Field);
+    field->metadata = metadata;
+    field->type = type;
+
+    return field;
+}
+
+static void
+field_free (Field *field)
+{
+    g_slice_free(Field, field);
+}
 
 G_DEFINE_TYPE(ChupaMetadata, chupa_metadata, G_TYPE_OBJECT);
 
@@ -63,6 +92,7 @@ chupa_metadata_init (ChupaMetadata *metadata)
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
 
     priv->data = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, data_values_free);
+    priv->fields = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify) field_free);
 }
 
 static void
@@ -192,6 +222,47 @@ chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data)
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
     g_hash_table_foreach(priv->data, func, user_data);
+}
+
+void
+chupa_metadata_add_int (ChupaMetadata *metadata, const gchar *key, gint value)
+{
+    Field *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+
+    field = field_new(metadata, G_TYPE_INT);
+    field->value.integer = value;
+    g_hash_table_insert(priv->fields, g_strdup(key), field);
+}
+
+static Field *
+field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
+{
+    ChupaMetadataPrivate *priv;
+    Field *field;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    field = g_hash_table_lookup(priv->fields, key);
+    if (!field){
+        return NULL;
+    }
+
+    return field;
+}
+
+gint
+chupa_metadata_get_int (ChupaMetadata *metadata, const gchar *key, GError **error)
+{
+    Field *field;
+
+    field = field_lookup(metadata, key, error);
+    if (!field){
+        return 0;
+    }
+
+    return field->value.integer;
 }
 
 /*
