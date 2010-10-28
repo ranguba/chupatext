@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Yuto HAYAMIZU <y.hayamizu@gmail.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -71,7 +72,6 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     ChupaMetadata *metadata;
     const gchar *filename;
     GString *new_filename;
-    gchar *content_length;
     gboolean result;
 
     g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
@@ -96,11 +96,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     metadata = chupa_metadata_new();
     chupa_metadata_add_value(metadata, "filename", new_filename->str);
     g_string_free(new_filename, TRUE);
-
-    content_length = g_strdup_printf("%zu", gsf_input_size(gzip_input));
-    chupa_metadata_add_value(metadata, "content-length", content_length);
-    g_free(content_length);
-
+    chupa_metadata_set_content_length(metadata, gsf_input_size(gzip_input));
     data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
     g_object_unref(metadata);
     g_object_unref(stream);

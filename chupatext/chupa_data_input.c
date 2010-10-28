@@ -78,28 +78,20 @@ constructed(GObject *object)
     GsfInput *input;
     ChupaDataInputPrivate *priv;
     ChupaMetadata *metadata;
-    const gchar *content_length_string;
+    gsize content_length;
 
     input = GSF_INPUT(object);
     priv = CHUPA_DATA_INPUT_GET_PRIVATE(object);
     metadata = chupa_data_get_metadata(priv->data);
-    content_length_string = chupa_metadata_get_first_value(metadata,
-                                                           "content-length");
-    if (content_length_string) {
-        gsize content_length;
-        gchar *end;
-
-        content_length = strtol(content_length_string, &end, 10);
-        if (content_length_string + strlen(content_length_string) == end) {
-            gsf_input_set_size(input, content_length);
-        }
+    content_length = chupa_metadata_get_content_length(metadata);
+    if (content_length > 0) {
+        gsf_input_set_size(input, content_length);
     } else {
         GInputStream *stream;
 
         stream = chupa_data_get_stream(priv->data);
         if (G_IS_SEEKABLE(stream)) {
             GSeekable *seekable;
-            gsize content_length;
             GError *error = NULL;
 
             seekable = G_SEEKABLE(stream);

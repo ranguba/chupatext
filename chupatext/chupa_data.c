@@ -299,10 +299,7 @@ chupa_data_new_from_file(GFile *file, ChupaMetadata *metadata, GError **error)
     info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_SIZE, 0,
                              NULL, NULL);
     if (info) {
-        gchar *content_length;
-        content_length = g_strdup_printf("%zd", g_file_info_get_size(info));
-        chupa_metadata_add_value(metadata, "content-length", content_length);
-        g_free(content_length);
+        chupa_metadata_set_content_length(metadata, g_file_info_get_size(info));
         g_object_unref(info);
     }
 
