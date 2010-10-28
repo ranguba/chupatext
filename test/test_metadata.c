@@ -30,9 +30,12 @@ void test_update_value (void);
 void test_remove_value (void);
 void test_foreach (void);
 void test_int (void);
+void test_int_error (void);
 
 static ChupaMetadata *metadata, *metadata2;
 static GString *result;
+static GError *expected_error;
+static GError *actual_error;
 
 void
 setup (void)
@@ -40,6 +43,8 @@ setup (void)
     metadata = NULL;
     metadata2 = NULL;
     result = NULL;
+    expected_error = NULL;
+    actual_error = NULL;
 }
 
 void
@@ -51,6 +56,10 @@ teardown (void)
         g_object_unref(metadata2);
     if (result)
         g_string_free(result, TRUE);
+    if (expected_error)
+        g_error_free(expected_error);
+    if (actual_error)
+        g_error_free(actual_error);
 }
 
 void
@@ -172,6 +181,22 @@ test_int (void)
     metadata = chupa_metadata_new();
     chupa_metadata_add_int(metadata, "foo", 1);
     cut_assert_equal_int(1, chupa_metadata_get_int(metadata, "foo", NULL));
+}
+
+void
+test_int_error (void)
+{
+    const gchar *key;
+
+    key = "foobarbaz";
+    metadata = chupa_metadata_new();
+    expected_error = g_error_new(CHUPA_METADATA_ERROR,
+                                 CHUPA_METADATA_ERROR_NOT_EXIST,
+                                 "requested key doesn't exist in metadata: <%s>",
+                                 "foobarbaz");
+
+    cut_assert_equal_int(0, chupa_metadata_get_int(metadata, key, &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 /*

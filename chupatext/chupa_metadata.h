@@ -26,6 +26,8 @@
 
 G_BEGIN_DECLS
 
+#define CHUPA_METADATA_ERROR           (chupa_metadata_error_quark())
+
 #define CHUPA_TYPE_METADATA            chupa_metadata_get_type()
 #define CHUPA_METADATA(obj)            \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_METADATA, ChupaMetadata)
@@ -50,6 +52,13 @@ struct _ChupaMetadataClass
 {
     GObjectClass parent_class;
 };
+
+typedef enum
+{
+    CHUPA_METADATA_ERROR_NOT_EXIST
+} ChupaMetadataError;
+
+GQuark         chupa_metadata_error_quark     (void);
 
 GType          chupa_metadata_get_type        (void) G_GNUC_CONST;
 ChupaMetadata *chupa_metadata_new             (void);

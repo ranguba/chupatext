@@ -110,6 +110,12 @@ dispose (GObject *object)
     G_OBJECT_CLASS(chupa_metadata_parent_class)->dispose(object);
 }
 
+GQuark
+chupa_metadata_error_quark (void)
+{
+    return g_quark_from_static_string("chupa-metadata-error-quark");
+}
+
 ChupaMetadata *
 chupa_metadata_new(void)
 {
@@ -246,6 +252,11 @@ field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
     field = g_hash_table_lookup(priv->fields, key);
     if (!field){
+        g_set_error(error,
+                    CHUPA_METADATA_ERROR,
+                    CHUPA_METADATA_ERROR_NOT_EXIST,
+                    "requested key doesn't exist in metadata: <%s>",
+                    key);
         return NULL;
     }
 
