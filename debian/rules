@@ -28,42 +28,30 @@ DEB_INSTALL_DIRS_chupatext-bin =		\
 
 DEB_INSTALL_DIRS_chupatext-decomposer-text =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 DEB_INSTALL_DIRS_chupatext-decomposer-excel =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 DEB_INSTALL_DIRS_chupatext-decomposer-word =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-powerpoint =	\
-	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 DEB_INSTALL_DIRS_chupatext-decomposer-pdf =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 DEB_INSTALL_DIRS_chupatext-decomposer-tar =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 DEB_INSTALL_DIRS_chupatext-decomposer-zip =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 DEB_INSTALL_DIRS_chupatext-decomposer-ruby =		\
 	/usr/lib/chupatext/module/decomposer		\
-	/usr/lib/chupatext/module/factory		\
 	/etc/chupatext/descriptions
 
 # install/chupatext-doc::
@@ -92,63 +80,47 @@ install/chupatext-bin::
 install/chupatext-decomposer-text::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/text.* \
 		debian/chupatext-decomposer-text/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/text_* \
-		debian/chupatext-decomposer-text/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/text.* \
 		debian/chupatext-decomposer-text/etc/chupatext/descriptions/
 
 install/chupatext-decomposer-excel::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/excel.* \
 		debian/chupatext-decomposer-excel/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/excel_* \
-		debian/chupatext-decomposer-excel/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/excel.* \
 		debian/chupatext-decomposer-excel/etc/chupatext/descriptions/
 
 install/chupatext-decomposer-word::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/word.* \
 		debian/chupatext-decomposer-word/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/word_* \
-		debian/chupatext-decomposer-word/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/word.* \
 		debian/chupatext-decomposer-word/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-powerpoint::
-	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/powerpoint.* \
-		debian/chupatext-decomposer-powerpoint/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/powerpoint_* \
-		debian/chupatext-decomposer-powerpoint/usr/lib/chupatext/module/factory/
-	cp -ar debian/tmp/etc/chupatext/descriptions/powerpoint.* \
-		debian/chupatext-decomposer-powerpoint/etc/chupatext/descriptions/
 
 install/chupatext-decomposer-pdf::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/pdf.* \
 		debian/chupatext-decomposer-pdf/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/pdf_* \
-		debian/chupatext-decomposer-pdf/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/pdf.* \
 		debian/chupatext-decomposer-pdf/etc/chupatext/descriptions/
 
 install/chupatext-decomposer-tar::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/tar.* \
 		debian/chupatext-decomposer-tar/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/tar_* \
-		debian/chupatext-decomposer-tar/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/tar.* \
 		debian/chupatext-decomposer-tar/etc/chupatext/descriptions/
 
 install/chupatext-decomposer-zip::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/zip.* \
 		debian/chupatext-decomposer-zip/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/zip_* \
-		debian/chupatext-decomposer-zip/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/zip.* \
+		debian/chupatext-decomposer-zip/etc/chupatext/descriptions/
+
+install/chupatext-decomposer-gzip::
+	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/gzip.* \
+		debian/chupatext-decomposer-zip/usr/lib/chupatext/module/decomposer/
+	cp -ar debian/tmp/etc/chupatext/descriptions/gzip.* \
 		debian/chupatext-decomposer-zip/etc/chupatext/descriptions/
 
 install/chupatext-decomposer-ruby::
 	cp -ar debian/tmp/usr/lib/chupatext/module/decomposer/ruby.* \
 		debian/chupatext-decomposer-ruby/usr/lib/chupatext/module/decomposer/
-	cp -ar debian/tmp/usr/lib/chupatext/module/factory/ruby_* \
-		debian/chupatext-decomposer-ruby/usr/lib/chupatext/module/factory/
 	cp -ar debian/tmp/etc/chupatext/descriptions/ruby.* \
 		debian/chupatext-decomposer-ruby/etc/chupatext/descriptions/

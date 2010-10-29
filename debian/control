@@ -23,10 +23,10 @@ Depends: chupatext-bin (= ${binary:Version}),
          chupatext-decomposer-text (= ${binary:Version}),
          chupatext-decomposer-excel (= ${binary:Version}),
          chupatext-decomposer-word (= ${binary:Version}),
-         chupatext-decomposer-powerpoint (= ${binary:Version}),
          chupatext-decomposer-pdf (= ${binary:Version}),
          chupatext-decomposer-tar (= ${binary:Version}),
          chupatext-decomposer-zip (= ${binary:Version}),
+         chupatext-decomposer-gzip (= ${binary:Version}),
          chupatext-decomposer-ruby (= ${binary:Version}),
          chupatext-doc (= ${binary:Version})
 Description: ChupaText text extractor (meta-package)
@@ -113,18 +113,6 @@ Description: ChupaText text decomposer
  .
  This package provides a decomposer for Microsoft Word file.
 
-Package: chupatext-decomposer-powerpoint
-Section: text
-Architecture: any
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
-         libchupatext (= ${binary:Version}),
-         openoffice.org
-Description: ChupaText text decomposer
- ChupaText extracts text and meta information from various file format.
- .
- This package provides a decomposer for Microsoft PowerPoint file.
-
 Package: chupatext-decomposer-pdf
 Section: text
 Architecture: any
@@ -158,6 +146,17 @@ Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
  .
  This package provides a decomposer for zip archive.
+
+Package: chupatext-decomposer-gzip
+Section: text
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libchupatext (= ${binary:Version})
+Description: ChupaText gzip decomposer
+ ChupaText extracts text and meta information from various file format.
+ .
+ This package provides a decomposer for Gzip compressed file.
 
 Package: chupatext-decomposer-ruby
 Section: text
