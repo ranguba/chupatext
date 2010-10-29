@@ -256,7 +256,6 @@ AC_CONFIG_FILES([Makefile
 		 module/ruby/lib/Makefile
 		 module/ruby/lib/chupa/Makefile
 		 module/ruby/lib/chupa/decomposers/Makefile
-		 binding/Makefile
 		 license/Makefile
 		 apt/Makefile])
 AC_OUTPUT
