@@ -78,7 +78,7 @@ chupa_decomposer_factory_get_module_dir (void)
     if (module_dir)
         return module_dir;
 
-    dir = g_getenv("CHUPA_DECOMPOSER_DIR");
+    dir = g_getenv("CHUPA_DECOMPOSERS_DIR");
     if (dir)
         return dir;
 
@@ -87,7 +87,7 @@ chupa_decomposer_factory_get_module_dir (void)
         win32_module_dir = chupa_win32_build_factory_module_dir_name(NULL);
     return win32_module_dir;
 #else
-    return CHUPA_DECOMPOSER_MODULE_DIR;
+    return CHUPA_DECOMPOSERS_MODULE_DIR;
 #endif
 }
 

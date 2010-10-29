@@ -13,24 +13,24 @@ AM_LDFLAGS =					\
 chupa_libs =						\
 	$(top_builddir)/chupatext/libchupatext.la
 
-decomposer_LTLIBRARIES =
+decomposers_LTLIBRARIES =
 
-decomposer_LTLIBRARIES += text.la
-decomposer_LTLIBRARIES += tar.la
-decomposer_LTLIBRARIES += gzip.la
-decomposer_LTLIBRARIES += zip.la
+decomposers_LTLIBRARIES += text.la
+decomposers_LTLIBRARIES += tar.la
+decomposers_LTLIBRARIES += gzip.la
+decomposers_LTLIBRARIES += zip.la
 if HAVE_POPPLER_GLIB
-decomposer_LTLIBRARIES += pdf.la
+decomposers_LTLIBRARIES += pdf.la
 endif
 if HAVE_WV
-decomposer_LTLIBRARIES += word.la
+decomposers_LTLIBRARIES += word.la
 endif
 if HAVE_GOFFICE
-decomposer_LTLIBRARIES += excel.la
+decomposers_LTLIBRARIES += excel.la
 endif
 
 if HAVE_RUBY
-decomposer_LTLIBRARIES += ruby.la
+decomposers_LTLIBRARIES += ruby.la
 endif
 
 text_la_SOURCES = text.c

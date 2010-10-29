@@ -38,7 +38,7 @@ AM_CPPFLAGS =							\
 	-DG_LOG_DOMAIN=\"ChupaText\"				\
 	-DCHUPA_LOG_DOMAIN=\"ChupaText\"			\
 	-DCHUPA_MODULE_DIR=\"$(moduledir)\"			\
-	-DCHUPA_DECOMPOSER_MODULE_DIR=\"$(decomposerdir)\"	\
+	-DCHUPA_DECOMPOSERS_MODULE_DIR=\"$(decomposersdir)\"	\
 	-DDESCRIPTIONS_DIR=\"$(descriptionsdir)\"		\
 	-D_GNU_SOURCE
 AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)

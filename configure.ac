@@ -213,8 +213,8 @@ GENHTML_OPTIONS="--title 'chupatext Code Coverage'"
 moduledir='$(pkglibdir)/module'
 AC_SUBST(moduledir)
 
-decomposerdir='$(moduledir)/decomposer'
-AC_SUBST(decomposerdir)
+decomposersdir='$(moduledir)/decomposers'
+AC_SUBST(decomposersdir)
 
 ruby_libdir='$(pkglibdir)/ruby'
 AC_SUBST(ruby_libdir)
@@ -222,8 +222,8 @@ AC_SUBST(ruby_libdir)
 ruby_lib_chupadir='$(pkglibdir)/ruby/chupa'
 AC_SUBST(ruby_lib_chupadir)
 
-ruby_decomposerdir='$(ruby_lib_chupadir)/decomposer'
-AC_SUBST(ruby_decomposerdir)
+ruby_decomposersdir='$(ruby_lib_chupadir)/decomposers'
+AC_SUBST(ruby_decomposersdir)
 
 descriptionsdir='$(sysconfdir)/$(PACKAGE)/descriptions'
 AC_SUBST(descriptionsdir)
@@ -255,7 +255,7 @@ AC_CONFIG_FILES([Makefile
 		 module/ruby/Makefile
 		 module/ruby/lib/Makefile
 		 module/ruby/lib/chupa/Makefile
-		 module/ruby/lib/chupa/decomposer/Makefile
+		 module/ruby/lib/chupa/decomposers/Makefile
 		 binding/Makefile
 		 license/Makefile
 		 apt/Makefile])

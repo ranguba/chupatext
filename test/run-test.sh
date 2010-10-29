@@ -85,7 +85,7 @@ fi
 
 ruby_src_dir=$TOP_SRC_DIR/module/ruby
 export CHUPA_RUBY_LIBRARY_DIR=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
-export CHUPA_DECOMPOSER_DIR=$TOP_BUILD_DIR/module/.libs
+export CHUPA_DECOMPOSERS_DIR=$TOP_BUILD_DIR/module/.libs
 export CHUPA_DESCRIPTIONS_DIR=$TOP_SRC_DIR/data/descriptions
 
 no_test=1

@@ -1,4 +1,4 @@
-SUBDIRS = decomposer
+SUBDIRS = decomposers
 
 dist_ruby_lib_chupa_DATA =			\
 	pre_init.rb				\
