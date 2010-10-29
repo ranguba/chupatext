@@ -35,7 +35,6 @@ fi
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
 run aptitude clean
 
-run gem1.9.1 install pkg-config
 run gem1.9.1 install glib2
 
 if ! id $USER_NAME >/dev/null 2>&1; then
