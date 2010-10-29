@@ -140,7 +140,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     g_return_val_if_fail(wbv, FALSE);
 
     wbv_save_to_output(wbv, fs, tmpout, io_context);
-    g_object_unref(wbv);
+    g_object_unref(wb_view_get_workbook(wbv));
     if (go_io_error_occurred(io_context)) {
         g_object_unref(io_context);
         g_object_unref(tmpout);
