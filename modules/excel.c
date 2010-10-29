@@ -311,7 +311,6 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
     gutils_init();
 
     gnm_init ();
-    gnm_conf_init();
     cc = cmd_context_stderr_new();
     gnm_plugins_init(GO_CMD_CONTEXT(cc));
     go_plugin_db_activate_plugin_list(go_plugins_get_available_plugins(), &plugin_errs);
@@ -332,11 +331,7 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 G_MODULE_EXPORT void
 CHUPA_DECOMPOSER_QUIT(void)
 {
-    extern void gutils_init(void);
-
-    gnm_conf_shutdown();
     gnm_shutdown();
-    gutils_shutdown();
 }
 
 G_MODULE_EXPORT GObject *
