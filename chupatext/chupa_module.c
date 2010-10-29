@@ -476,8 +476,8 @@ get_package_dir(void)
 gchar *
 chupa_module_dir(void)
 {
-    const gchar *dir = g_getenv("CHUPA_MODULE_DIR");
-    if (!dir && !g_path_is_absolute(dir = CHUPA_MODULE_DIR)) {
+    const gchar *dir = g_getenv("CHUPA_MODULES_DIR");
+    if (!dir && !g_path_is_absolute(dir = CHUPA_MODULES_DIR)) {
         gchar *base_dir;
 #if defined G_OS_WIN32
         base_dir = g_win32_get_package_installation_directory_of_module(chupa_dll);
