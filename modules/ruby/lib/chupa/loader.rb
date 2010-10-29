@@ -27,12 +27,10 @@ module Chupa
     def load
       $LOAD_PATH.each do |path|
         path = Pathname(path)
-        chupa_decomposer_directory = path + "chupa" + "decomposer"
+        chupa_decomposer_directory = path + "chupa" + "decomposers"
         next unless chupa_decomposer_directory.exist?
         Pathname.glob((chupa_decomposer_directory + "*.rb").to_s).each do |file|
-          if /\.rb\z/ =~ file.basename.to_s
-            require "chupa/decomposer/#{$PREMATCH}"
-          end
+          require file.relative_path_from(path)
         end
       end
     rescue Exception
