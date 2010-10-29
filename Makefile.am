@@ -27,14 +27,18 @@ EXTRA_DIST =					\
 
 GIT = git
 
-version.txt: $(top_builddir)/.git/
+$(top_srcdir)/version.txt: $(top_srcdir)/.git/
 	(description=$$($(GIT) describe --tags --match='[0-9][.0-9]*');		\
 	 n_commits=$$(echo $${description} | cut -d- -f2);			\
 	 echo "CHUPA_N_COMMITS=$${n_commits:-0}";				\
 	 commit_id=$$(echo $${description} | cut -d- -f3);			\
 	 echo "CHUPA_COMMIT_ID=$${commit_id}";					\
 	 date=$$($(GIT) log --max-count=1 --format=%cd --date=short | tr -d -);	\
-	 echo "CHUPA_RELEASE_DATE=$${date:-0}") > $@
+	 echo "CHUPA_RELEASE_DATE=$${date:-0}") > $@.new
+	if test ! -f $@ || ! cmp -s $@.new $@; then	\
+		touch $(top_srcdir)/configure.ac;	\
+	fi
+	mv $@.new $@
 
 up: pull
 
