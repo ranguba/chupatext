@@ -331,6 +331,7 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 G_MODULE_EXPORT void
 CHUPA_DECOMPOSER_QUIT(void)
 {
+    g_object_unref(cc);
     gnm_shutdown();
 }
 
