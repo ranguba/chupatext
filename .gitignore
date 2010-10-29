@@ -39,3 +39,4 @@ strace.out
 /*.pc
 /test/temp/*
 /chupatext/chupatext
+/version.txt
