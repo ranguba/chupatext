@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = build tool data chupatext modules test license po apt
+SUBDIRS = build data chupatext modules test license po apt
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\
@@ -16,11 +16,25 @@ pkgconfig_DATA =				\
 
 pkginclude_HEADERS = chupatext.h
 
+BUILT_SOURCES = version.txt
+DISTCLEANFILES = $(BUILT_SOURCES)
+MAINTAINERCLEANFILES = $(BUILT_SOURCES)
+CONFIGURE_DEPENDENCIES = $(BUILT_SOURCES)
 EXTRA_DIST =					\
 	COPYING					\
-	README.ja
+	README.ja				\
+	$(BUILT_SOURCES)
 
 GIT = git
+
+version.txt: $(top_builddir)/.git/
+	(description=$$($(GIT) describe --tags --match='[0-9][.0-9]*');		\
+	 n_commits=$$(echo $${description} | cut -d- -f2);			\
+	 echo "CHUPA_N_COMMITS=$${n_commits:-0}";				\
+	 commit_id=$$(echo $${description} | cut -d- -f3);			\
+	 echo "CHUPA_COMMIT_ID=$${commit_id:-0}";				\
+	 date=$$($(GIT) log --max-count=1 --format=%cd --date=short | tr -d -);	\
+	 echo "CHUPA_RELEASE_DATE=$${date:-0}") > $@
 
 up: pull
 

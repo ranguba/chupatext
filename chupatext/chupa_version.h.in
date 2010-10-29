@@ -1,0 +1,141 @@
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/*
+ *  Copyright (C) 20010  Kouhei Sutou <kou@clear-code.com>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
+ */
+
+#ifndef CHUPA_VERSION_H
+#define CHUPA_VERSION_H
+
+#include <glib.h>
+
+G_BEGIN_DECLS
+
+/**
+ * SECTION: chupa-version
+ * @title: Version Information
+ * @short_description: Variables and macros to check the ChupaText version
+ *
+ * ChupaText provides version information, primarily useful
+ * in configure checks for builds that have a configure
+ * script. Tests will not typically use the features
+ * described here.
+ */
+
+/**
+ * CHUPA_VERSION_MAJOR:
+ *
+ * The major version number of the ChupaText.
+ */
+#define CHUPA_VERSION_MAJOR @CHUPA_VERSION_MAJOR@
+
+/**
+ * CHUPA_VERSION_MINOR:
+ *
+ * The minor version number of the ChupaText.
+ */
+#define CHUPA_VERSION_MINOR @CHUPA_VERSION_MINOR@
+
+/**
+ * CHUPA_VERSION_MICRO:
+ *
+ * The micro version number of the ChupaText.
+ */
+#define CHUPA_VERSION_MICRO @CHUPA_VERSION_MICRO@
+
+/**
+ * CHUPA_VERSION:
+ *
+ * The version number of the ChupaText with (MAJOR + 1000000
+ * + MINOR + 1000 + MICRO) calculation.
+ */
+#define CHUPA_VERSION                           \
+    (CHUPA_VERSION_MAJOR * 1000000 +            \
+     CHUPA_VERSION_MINOR * 1000 +               \
+     CHUPA_VERSION_MICRO)
+
+/**
+ * CHUPA_VERSION_STRING:
+ *
+ * The version number string of the ChupaText with
+ * "#{MAJOR}.#{MINOR}.#{MICRO}" format.
+ */
+#define CHUPA_VERSION_STRING "@CHUPA_VERSION@"
+
+/**
+ * CHUPA_N_COMMITS:
+ *
+ * The number of commits since released version.
+ */
+#define CHUPA_N_COMMITS @CHUPA_N_COMMITS@
+
+/**
+ * CHUPA_COMMIT_ID:
+ *
+ * The commit ID of this version.
+ */
+#define CHUPA_COMMIT_ID @CHUPA_COMMIT_ID@
+
+/**
+ * CHUPA_RELEASE_DATE:
+ *
+ * The release date.
+ */
+#define CHUPA_RELEASE_DATE @CHUPA_RELEASE_DATE@
+
+/**
+ * CHUPA_VERSION_DESCRIPTION:
+ *
+ * The version number description of the ChupaText with
+ * "#{MAJOR}.#{MINOR}.#{MICRO}-#{N_COMMITS}-#{COMMIT_ID}
+ * #{DATE}" format.
+ */
+#define CHUPA_VERSION_DESCRIPTION                                       \
+    CHUPA_VERSION_STRING "-" G_STRINGIFY(CHUPA_N_COMMITS) "-"           \
+    G_STRINGIFY(CHUPA_COMMIT_ID) G_STRINGIFY(CHUPA_RELEASE_DATE)
+
+/**
+ * CHUPA_CHECK_VERSION:
+ * @major: the major version number.
+ * @minor: the minor version number.
+ * @micro: the micro version number.
+ *
+ * Checks the version of the ChupaText. Returns true if the
+ * version of the ChupaText header files is the same as or
+ * newer than the passed-in version.
+ */
+#define CHUPA_CHECK_VERSION(major, minor, micro)       \
+    (CHUPA_VERSION_MAJOR > (major) ||                  \
+     (CHUPA_VERSION_MAJOR == (major) &&                \
+      CHUPA_VERSION_MINOR > (minor)) ||                \
+     (CHUPA_VERSION_MAJOR == (major) &&                \
+      CHUPA_VERSION_MINOR == (minor) &&                \
+      CHUPA_VERSION_MICRO >= (micro)))
+
+gint         chupa_version             (void);
+const gchar *chupa_version_string      (void);
+gint         chupa_n_commits           (void);
+gint         chupa_release_date        (void);
+const gchar *chupa_version_description (void);
+
+G_END_DECLS
+
+#endif /* CHUPA_VERSION_H */
+
+/*
+vi:nowrap:ai:expandtab:sw=4
+*/

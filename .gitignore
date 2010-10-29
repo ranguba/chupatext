@@ -15,7 +15,7 @@ config.h.in
 /m4/
 /test/log/
 /test/lib/
-/chupatext/version.h
+/chupatext/chupa_version.h
 /chupatext/config.h
 /chupatext/stamp-h1
 /chupatext/chupa

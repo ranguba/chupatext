@@ -32,6 +32,11 @@ else
     fi
 fi
 
+if aptitude show libpoppler-glib5 > /dev/null 2>&1; then
+    DEPENDED_PACKAGES=$(echo $DEPENDED_PACKAGES | sed -e 's/libpoppler-glib4/libpoppler-glib5/')
+else
+fi
+
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
 run aptitude clean
 
@@ -59,6 +64,9 @@ else
     if ! dpkg -l libgoffice-0-8-dev > /dev/null 2>&1; then
         sed -i'' -e 's/libgoffice-0-8/libgoffice-0-6/g' debian/control
     fi
+fi
+if dpkg -l libpoppler-glib5 > /dev/null 2>&1; then
+    sed -i'' -e 's/libpoppler-glib4/libpoppler-glib5/g' debian/control
 fi
 debuild -us -uc
 EOF

@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,42 +19,36 @@
  *  MA  02110-1301  USA
  */
 
-#include "version.h"
+#include "chupa_version.h"
 
-int
+gint
 chupa_version(void)
 {
-    return CHUPA_VERSION_CODE;
+    return CHUPA_VERSION;
 }
 
-const char *
+const gchar *
 chupa_version_string(void)
 {
     return CHUPA_VERSION_STRING;
 }
 
-int
-chupa_commits(void)
+gint
+chupa_n_commits(void)
 {
-    return CHUPA_COMMITS;
+    return CHUPA_N_COMMITS;
 }
 
-int
+gint
 chupa_release_date(void)
 {
     return CHUPA_RELEASE_DATE;
 }
 
-#define STRINGIFY_ARG(x) #x
-#define STRINGIFY(x) STRINGIFY_ARG(x)
-#define CHUPA_DESCRIPTION "ChupaText " \
-    CHUPA_VERSION_STRING "-" STRINGIFY(CHUPA_COMMITS)
-
-const char *
+const gchar *
 chupa_version_description(void)
 {
-    return CHUPA_DESCRIPTION;
+    return CHUPA_VERSION_DESCRIPTION;
 }
 
-const char chupa_ident[] = "$Ident: " CHUPA_DESCRIPTION
-    " $";
+const gchar chupa_ident[] = "$Ident: " CHUPA_VERSION_DESCRIPTION " $";

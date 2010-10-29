@@ -1,15 +1,38 @@
 AC_PREREQ(2.59)
 
-AC_INIT(chupatext)
+m4_define([chupa_version_major], [0])
+m4_define([chupa_version_minor], [4])
+m4_define([chupa_version_micro], [0])
+m4_define([chupa_version],
+          [chupa_version_major.chupa_version_minor.chupa_version_micro])
+
+AC_INIT(chupatext, [chupa_version], groonga-dev@lists.sourceforge.jp)
+
+CHUPA_VERSION_MAJOR=chupa_version_major
+CHUPA_VERSION_MINOR=chupa_version_minor
+CHUPA_VERSION_MICRO=chupa_version_micro
+CHUPA_VERSION=chupa_version
+version_txt=$(dirname $0)
+if test -f "$version_txt"; then
+  source "$version_txt"
+else
+  CHUPA_N_COMMITS=0
+  CHUPA_COMMIT_ID=0
+  CHUPA_RELEASE_DATE=0
+fi
+AC_SUBST(CHUPA_VERSION_MAJOR)
+AC_SUBST(CHUPA_VERSION_MINOR)
+AC_SUBST(CHUPA_VERSION_MICRO)
+AC_SUBST(CHUPA_VERSION)
+AC_SUBST(CHUPA_N_COMMITS)
+AC_SUBST(CHUPA_COMMIT_ID)
+AC_SUBST(CHUPA_RELEASE_DATE)
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
 
 AC_CONFIG_SRCDIR([chupatext.h])
 AM_CONFIG_HEADER([chupatext/config.h])
-
-version_h="${srcdir}/chupatext/version.h"
-VERSION=`sed '[/#define CHUPA_VERSION_STRING /!d;s///;s/"//g]' $version_h`
 
 PROJECT_NAME="Ranguba"
 AC_SUBST(PROJECT_NAME)
@@ -258,10 +281,10 @@ AC_CONFIG_FILES([Makefile
 		 chupatext-zip.pc
 		 po/Makefile.in
 		 build/Makefile
-		 tool/Makefile
 		 data/Makefile
 		 data/descriptions/Makefile
 		 chupatext/Makefile
+		 chupatext/chupa_version.h
 		 test/Makefile
 		 test/fixtures/Makefile
 		 test/ruby/Makefile

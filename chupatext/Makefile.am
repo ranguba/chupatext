@@ -7,10 +7,10 @@ bin_PROGRAMS = chupatext
 chupatext_SOURCES = chupatext.c
 chupatext_LDADD = libchupatext.la
 
-BUILT_SOURCES = version.h
-DISTCLEANFILES = $(BUILT_SOURCES)
-MAINTAINERCLEANFILES = version.h
-EXTRA_DIST = version.h
+BUILT_SOURCES =
+DISTCLEANFILES =
+MAINTAINERCLEANFILES =
+EXTRA_DIST =
 
 libchupatext_la_SOURCES =			\
 	chupa_enum_types.c			\
@@ -31,7 +31,7 @@ libchupatext_la_SOURCES =			\
 	chupa_decomposer.c			\
 	archive_decomposer.c			\
 	chupa_utils.c				\
-	version.c				\
+	chupa_version.c				\
 	$(EMPTY)
 
 AM_CPPFLAGS =							\
@@ -63,7 +63,7 @@ chupa_public_headers =				\
 	chupa_memory_input_stream.h		\
 	chupa_logger.h				\
 	chupa_utils.h				\
-	version.h
+	chupa_version.h
 
 chupatext_includedir = $(pkgincludedir)/chupatext
 chupatext_include_HEADERS =			\
@@ -75,9 +75,6 @@ enum_sources_h = $(chupa_public_headers)
 
 marshal_source_prefix = chupa_marshalers
 marshal_prefix = _chupa_marshal
-
-version.h: $(top_srcdir)/tool/version-update.sh
-	$(SHELL) $(top_srcdir)/tool/version-update.sh $@
 
 include $(top_srcdir)/build/enum_types.mk
 include $(top_srcdir)/build/marshal.mk
