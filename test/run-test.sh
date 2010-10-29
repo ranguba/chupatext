@@ -83,9 +83,9 @@ if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
-ruby_src_dir=$TOP_SRC_DIR/module/ruby
+ruby_src_dir=$TOP_SRC_DIR/modules/ruby
 export CHUPA_RUBY_LIBRARY_DIR=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
-export CHUPA_DECOMPOSERS_DIR=$TOP_BUILD_DIR/module/.libs
+export CHUPA_DECOMPOSERS_DIR=$TOP_BUILD_DIR/modules/.libs
 export CHUPA_DESCRIPTIONS_DIR=$TOP_SRC_DIR/data/descriptions
 
 no_test=1

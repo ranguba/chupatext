@@ -210,10 +210,10 @@ fi
 m4_ifdef([AC_CHECK_COVERAGE], [AC_CHECK_COVERAGE])
 GENHTML_OPTIONS="--title 'chupatext Code Coverage'"
 
-moduledir='$(pkglibdir)/module'
-AC_SUBST(moduledir)
+modulesdir='$(pkglibdir)/modules'
+AC_SUBST(modulesdir)
 
-decomposersdir='$(moduledir)/decomposers'
+decomposersdir='$(modulesdir)/decomposers'
 AC_SUBST(decomposersdir)
 
 ruby_libdir='$(pkglibdir)/ruby'
@@ -250,12 +250,12 @@ AC_CONFIG_FILES([Makefile
 		 test/Makefile
 		 test/fixtures/Makefile
 		 test/ruby/Makefile
-		 module/Makefile
-		 module/excel/Makefile
-		 module/ruby/Makefile
-		 module/ruby/lib/Makefile
-		 module/ruby/lib/chupa/Makefile
-		 module/ruby/lib/chupa/decomposers/Makefile
+		 modules/Makefile
+		 modules/excel/Makefile
+		 modules/ruby/Makefile
+		 modules/ruby/lib/Makefile
+		 modules/ruby/lib/chupa/Makefile
+		 modules/ruby/lib/chupa/decomposers/Makefile
 		 license/Makefile
 		 apt/Makefile])
 AC_OUTPUT
