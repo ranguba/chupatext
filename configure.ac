@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT(chupatext, 0)
+AC_INIT(chupatext)
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
@@ -10,6 +10,9 @@ AM_CONFIG_HEADER([chupatext/config.h])
 
 version_h="${srcdir}/chupatext/version.h"
 VERSION=`sed '[/#define CHUPA_VERSION_STRING /!d;s///;s/"//g]' $version_h`
+
+PROJECT_NAME="Ranguba"
+AC_SUBST(PROJECT_NAME)
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $VERSION)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -209,6 +212,18 @@ fi
 
 m4_ifdef([AC_CHECK_COVERAGE], [AC_CHECK_COVERAGE])
 GENHTML_OPTIONS="--title 'chupatext Code Coverage'"
+
+
+# Check for RubyForge
+RUBYFORGE_PROJECT_NAME="groonga"
+AC_SUBST(RUBYFORGE_PROJECT_NAME)
+
+AC_ARG_WITH([rubyforge-user],
+            AS_HELP_STRING([--with-rubyforge-user=USER],
+                           [User name on RubyFroge (default: $USER)]),
+            [RUBYFORGE_USER="$withval"],
+            [RUBYFORGE_USER="$USER"])
+AC_SUBST(RUBYFORGE_USER)
 
 modulesdir='$(pkglibdir)/modules'
 AC_SUBST(modulesdir)

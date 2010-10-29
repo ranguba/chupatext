@@ -1,3 +1,5 @@
+RUBYFORGE_PATH = /var/www/gforge-projects/$(RUBYFORGE_PROJECT_NAME)
+SERVER_PATH = $(RUBYFORGE_USER)@rubyforge.org:$(RUBYFORGE_PATH)
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
@@ -12,28 +14,22 @@ remove-existing-packages:
 
 update:
 	$(srcdir)/update-repository.sh \
-	  '$(SF_PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
+	  '$(PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
 
 sign:
 	$(srcdir)/sign-repository.sh '$(CODE_NAMES)'
 
-ensure-rsync-path:
-	@if test -z "$(RSYNC_PATH)"; then				\
-	  echo "--with-rsync-path configure option must be specified.";	\
-	  false;							\
-	fi
-
-upload: ensure-rsync-path
+upload:
 	for distribution in $(DISTRIBUTIONS); do			\
 	  (cd $${distribution};						\
-	   rsync -avz dists pool $(RSYNC_PATH)/$${distribution};	\
+	   rsync -avz dists pool $(SERVER_PATH)/$${distribution};	\
 	  );								\
 	done
 
-download: ensure-rsync-path
+download:
 	for distribution in $(DISTRIBUTIONS); do			\
 	  (cd $${distribution};						\
-	   rsync -avz $(RSYNC_PATH)/$${distribution}/pool/ pool;	\
+	   rsync -avz $(SERVER_PATH)/$${distribution}/pool/ pool;	\
 	  );								\
 	done
 
