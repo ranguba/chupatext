@@ -311,9 +311,10 @@ factory_class_init(ChupaDecomposerFactoryClass *klass)
     factory_class->create           = create;
 }
 
-static void
-factory_init(ChupaRubyDecomposerFactory *factory)
+static VALUE
+factory_init_protect(VALUE arg)
 {
+    ChupaRubyDecomposerFactory *factory = (ChupaRubyDecomposerFactory *)arg;
     VALUE cLoader;
 
     cLoader = rb_const_get(rb_const_get(rb_cObject, rb_intern("Chupa")),
@@ -321,6 +322,13 @@ factory_init(ChupaRubyDecomposerFactory *factory)
     factory->loader = rb_funcall2(cLoader, rb_intern("new"), 0, NULL);
     rb_gc_register_address(&(factory->loader));
     rb_funcall2(factory->loader, rb_intern("load"), 0, NULL);
+    return Qnil;
+}
+
+static void
+factory_init(ChupaRubyDecomposerFactory *factory)
+{
+    chupa_ruby_protect(factory_init_protect, (VALUE)factory, NULL, NULL);
 }
 
 static void
