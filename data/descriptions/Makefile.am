@@ -5,4 +5,5 @@ dist_descriptions_DATA =			\
 	tar.desc				\
 	text.desc				\
 	word.desc				\
-	zip.desc
+	zip.desc				\
+	gzip.desc
