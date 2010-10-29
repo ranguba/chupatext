@@ -16,4 +16,3 @@ run ${INTLTOOLIZE:-intltoolize} --force --copy
 run ${AUTOHEADER:-autoheader}
 run ${AUTOMAKE:-automake} --add-missing --foreign --copy
 run ${AUTOCONF:-autoconf}
-run tool/version-update.sh chupatext/version.h
