@@ -332,7 +332,10 @@ G_MODULE_EXPORT void
 CHUPA_DECOMPOSER_QUIT(void)
 {
     g_object_unref(cc);
+#if 0
+    /* need to keep ORBit loaded, which uses atexit() */
     gnm_shutdown();
+#endif
 }
 
 G_MODULE_EXPORT GObject *
