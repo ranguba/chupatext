@@ -12,12 +12,12 @@ CHUPA_VERSION_MAJOR=chupa_version_major
 CHUPA_VERSION_MINOR=chupa_version_minor
 CHUPA_VERSION_MICRO=chupa_version_micro
 CHUPA_VERSION=chupa_version
-version_txt=$(dirname $0)
+version_txt=$(dirname $0)/version.txt
 if test -f "$version_txt"; then
   source "$version_txt"
 else
   CHUPA_N_COMMITS=0
-  CHUPA_COMMIT_ID=0
+  CHUPA_COMMIT_ID=
   CHUPA_RELEASE_DATE=0
 fi
 AC_SUBST(CHUPA_VERSION_MAJOR)

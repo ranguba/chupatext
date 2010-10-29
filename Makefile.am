@@ -32,7 +32,7 @@ version.txt: $(top_builddir)/.git/
 	 n_commits=$$(echo $${description} | cut -d- -f2);			\
 	 echo "CHUPA_N_COMMITS=$${n_commits:-0}";				\
 	 commit_id=$$(echo $${description} | cut -d- -f3);			\
-	 echo "CHUPA_COMMIT_ID=$${commit_id:-0}";				\
+	 echo "CHUPA_COMMIT_ID=$${commit_id}";					\
 	 date=$$($(GIT) log --max-count=1 --format=%cd --date=short | tr -d -);	\
 	 echo "CHUPA_RELEASE_DATE=$${date:-0}") > $@
 
