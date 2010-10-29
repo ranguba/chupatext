@@ -19,7 +19,6 @@ pkginclude_HEADERS = chupatext.h
 BUILT_SOURCES = version.txt
 DISTCLEANFILES = $(BUILT_SOURCES)
 MAINTAINERCLEANFILES = $(BUILT_SOURCES)
-CONFIGURE_DEPENDENCIES = $(BUILT_SOURCES)
 EXTRA_DIST =					\
 	COPYING					\
 	README.ja				\
@@ -27,7 +26,7 @@ EXTRA_DIST =					\
 
 GIT = git
 
-$(top_srcdir)/version.txt: $(top_srcdir)/.git/
+$(top_srcdir)/version.txt:
 	(description=$$($(GIT) describe --tags --match='[0-9][.0-9]*');		\
 	 n_commits=$$(echo $${description} | cut -d- -f2);			\
 	 echo "CHUPA_N_COMMITS=$${n_commits:-0}";				\
