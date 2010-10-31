@@ -477,7 +477,7 @@ init_ruby_interpreter(GError **error)
             rb_protect(inspect_error, (VALUE)&data, &state);
         }
         g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
-                    "failed to initialize Ruby decomposer%s",
+                    "failed to initialize Ruby intepreter%s",
                     data.inspected->str);
         g_string_free(data.inspected, TRUE);
         ruby_cleanup(status);
@@ -487,13 +487,36 @@ init_ruby_interpreter(GError **error)
     return TRUE;
 }
 
+static VALUE
+init_ruby_bindings(VALUE dummy)
+{
+    chupa_ruby_init();
+    return Qnil;
+}
+
 static void
 init_ruby(GError **error)
 {
+    int state = 0;
+
     if (!init_ruby_interpreter(error))
         return;
 
-    chupa_ruby_init();
+    rb_protect(init_ruby_bindings, Qnil, &state);
+    if (state) {
+        InspectErrorData data;
+
+        data.error = rb_errinfo();
+        data.inspected = g_string_new(NULL);
+        if (!NIL_P(data.error)) {
+            g_string_append(data.inspected, ": ");
+            rb_protect(inspect_error, (VALUE)&data, &state);
+        }
+        g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
+                    "failed to initialize Ruby bindings%s",
+                    data.inspected->str);
+        g_string_free(data.inspected, TRUE);
+    }
 }
 
 /* module entry points */
