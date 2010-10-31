@@ -1,4 +1,4 @@
 [Gzip]
 
 name = gzip
-mime_types = application/compressed-tar
+mime_types = application/gzip;application/compressed-tar

@@ -21,6 +21,7 @@
 #include "chupa_test_util.h"
 
 void test_decompose_tar_gz(void);
+void test_decompose_txt_gz(void);
 
 void
 setup(void)
@@ -34,10 +35,16 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_tar_gz chupa_test_decompose_fixture
+#define decompose_gz chupa_test_decompose_fixture
 
 void
 test_decompose_tar_gz(void)
 {
-    cut_assert_equal_string("sample\n", decompose_tar_gz("sample.tar.gz"));
+    cut_assert_equal_string("sample\n", decompose_gz("sample.tar.gz"));
+}
+
+void
+test_decompose_txt_gz(void)
+{
+    cut_assert_equal_string("sample\n", decompose_gz("sample.txt.gz"));
 }

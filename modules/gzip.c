@@ -227,6 +227,7 @@ get_mime_types(ChupaDecomposerFactory *factory)
 {
     GList *mime_types = NULL;
 
+    mime_types = g_list_prepend(mime_types, g_strdup("application/gzip"));
     mime_types = g_list_prepend(mime_types, g_strdup("application/compressed-tar"));
 
     return mime_types;
