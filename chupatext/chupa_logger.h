@@ -55,6 +55,19 @@ G_BEGIN_DECLS
 #define chupa_profile(format, ...)                              \
     chupa_log(CHUPA_LOG_LEVEL_PROFILE, format, ## __VA_ARGS__)
 
+#define chupa_log_g_error(error, format, ...)                   \
+    do {                                                        \
+        if (chupa_need_log(CHUPA_LOG_LEVEL_ERROR)) {            \
+            (chupa_logger_log_g_error(chupa_logger(),           \
+                                      CHUPA_LOG_DOMAIN,         \
+                                      __FILE__,                 \
+                                      __LINE__,                 \
+                                      G_STRFUNC,                \
+                                      error,                    \
+                                      format, ## __VA_ARGS__)); \
+        }                                                       \
+    } while (0)
+
 #define chupa_set_log_level(level)                              \
     chupa_logger_set_target_level(chupa_logger(), (level))
 #define chupa_get_log_level()                                   \
@@ -190,6 +203,14 @@ void             chupa_logger_log_va_list    (ChupaLogger         *logger,
                                               const gchar         *function,
                                               const gchar         *format,
                                               va_list              args);
+void             chupa_logger_log_g_error    (ChupaLogger         *logger,
+                                              const gchar         *domain,
+                                              const gchar         *file,
+                                              guint                line,
+                                              const gchar         *function,
+                                              GError              *error,
+                                              const gchar         *format,
+                                              ...) G_GNUC_PRINTF(7, 8);
 ChupaLogLevelFlags
                  chupa_logger_get_target_level(ChupaLogger        *logger);
 ChupaLogLevelFlags

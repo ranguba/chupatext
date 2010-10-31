@@ -439,6 +439,28 @@ chupa_logger_log_va_list (ChupaLogger *logger,
     g_free(message);
 }
 
+void
+chupa_logger_log_g_error (ChupaLogger *logger,
+                          const gchar *domain,
+                          const gchar *file, guint line, const gchar *function,
+                          GError *error, const gchar *format, ...)
+{
+    va_list args;
+    gchar *message;
+
+    va_start(args, format);
+    message = g_strdup_vprintf(format, args);
+    va_end(args);
+
+    chupa_logger_log(logger, domain, CHUPA_LOG_LEVEL_ERROR, file, line, function,
+                     "%s: <%s> (%s:%d)",
+                     message,
+                     error->message,
+                     g_quark_to_string(error->domain),
+                     error->code);
+    g_free(message);
+}
+
 ChupaLogLevelFlags
 chupa_logger_get_target_level (ChupaLogger *logger)
 {
