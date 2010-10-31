@@ -277,7 +277,7 @@ AC_SUBST(decomposersdir)
 ruby_libdir='$(pkglibdir)/ruby'
 AC_SUBST(ruby_libdir)
 
-ruby_lib_chupadir='$(pkglibdir)/ruby/chupa'
+ruby_lib_chupadir='$(ruby_libdir)/chupa'
 AC_SUBST(ruby_lib_chupadir)
 
 ruby_decomposersdir='$(ruby_lib_chupadir)/decomposers'
@@ -322,3 +322,32 @@ AC_CONFIG_FILES([Makefile
 		 apt/Makefile])
 AC_OUTPUT
 
+echo
+echo "Configure Result:"
+echo
+echo " Options:"
+echo "  coverage                         : $cutter_enable_coverage"
+echo
+echo " Libraries:"
+echo "  GLib                             : $ac_glib_available"
+echo "  GSF                              : $have_gsf"
+echo "  GIO Unix                         : $have_gio_unix"
+echo "  Poppler                          : $have_poppler"
+echo "  wvWare                           : $have_wv"
+echo "  GTK+                             : $have_gtk"
+echo "  GOffice                          : $have_goffice"
+echo "  Ruby                             : $ruby_available ($RUBY)"
+echo
+echo " Paths:"
+echo "  modules directory                : $modulesdir"
+echo "  decomposers directory            : $decomposersdir"
+echo "  Ruby decomposers directory       : $ruby_decomposersdir"
+echo "  descriptions directory           : $descriptionsdir"
+echo
+echo " Tools:"
+echo "  GTK-Doc                          : $enable_gtk_doc"
+echo "  rd2                              : $RD2"
+if test "$cutter_enable_coverage" = "yes"; then
+echo "  lcov                             : $LCOV"
+echo "  genhtml                          : $GENHTML"
+fi
