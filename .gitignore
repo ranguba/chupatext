@@ -40,3 +40,6 @@ strace.out
 /test/temp/*
 /chupatext/chupatext
 /version.txt
+/misc/
+/doc/*.man
+/doc/*.jman

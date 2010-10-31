@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = build data chupatext modules test license po apt
+SUBDIRS = build data chupatext modules test license po misc doc apt
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\

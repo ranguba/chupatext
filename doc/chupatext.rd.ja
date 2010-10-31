@@ -1,0 +1,89 @@
+# -*- rd -*-
+
+= chupatext / ChupaText / ChupaTextのマニュアル
+
+== 名前
+
+chupatext - テキスト抽出コマンド
+
+== 書式
+
+(({chupatext})) [((*オプション ...*))] ((*ファイル ...*))
+
+== 説明
+
+ChupaTextは様々な形式のファイルからテキスト情報とメタ情報を
+抽出するツールです。全文検索システムの構築などに有用です。抽
+出された情報はMIME形式で出力されるため、一般的なメールパーサ
+で解析できます。
+
+以下のファイル形式に対応しています。（暗号化されたファイルに
+は対応していません。）
+
+  * Adobe PDF形式ファイル
+  * Microsoft Word形式ファイル
+  * Microsoft Excel形式ファイル
+  * Microsoft PowerPoint形式ファイル
+  * HTMLファイル
+
+また、以下のアーカイブ形式・圧縮形式にも対応しています。
+
+  * zip
+  * tar
+  * gz
+
+== オプション
+
+: -h, --help
+   ヘルプメッセージを表示します。
+
+: -j, --json
+   JSON形式で出力します。
+
+   1ファイルにつき1つのハッシュとして出力しますが、全体を囲
+   むブラケットは含まれません。
+
+: -i, --ignore-errors
+   変換途中で起きたエラーを無視します。
+
+: --prefix=PATH
+   出力結果のファイル名に前置されるプレフィックスを指定します。
+
+   相対パスで指定したファイルを、絶対パスやHTTPスキームとして
+   出力したいときに使います。
+
+: -v, --version
+   バージョン番号を表示します。
+
+== 終了ステータス
+
+指定されたすべてのファイルのテキスト情報とメタ情報を抽出でき
+た場合は0です。1つでも抽出に失敗した場合は0以外になります。た
+だし、((*--ignore-errors*))を指定した場合は、失敗した場合でも
+0になります。
+
+== ファイル
+
+: /usr/local/etc/chupatext/descriptions/*.desc
+
+   テキスト抽出モジュールの情報があります。
+
+: /usr/local/lib/chupatext/modules/decomposers/*.so
+
+   テキスト抽出モジュールがあります。
+
+: /usr/local/lib/chupatext/ruby/chupa/decomposers/*.rb
+
+   Rubyで実装されたテキスト抽出モジュールがあります。
+
+== 例
+
+以下の例では、chupatextはPDFファイルのテキストとメタ情報を抽
+出し、MIME形式で出力します。エンコーディングはUTF-8です。
+
+  % chupatext sample.pdf
+
+== 関連項目
+
+unzip(1), gunzip(1), tar(1), pdftotext(1), wvText(1),
+ssconvert(1), ooffice(1)

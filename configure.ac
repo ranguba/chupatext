@@ -221,6 +221,13 @@ fi
 AM_CONDITIONAL([HAVE_RUBY], [test "$ruby_available" = "yes"])
 
 dnl **************************************************************
+dnl Checks for RD2
+dnl **************************************************************
+
+AC_PATH_PROG(RD2, rd2, rd2-not-found)
+AM_CONDITIONAL([HAVE_RD2], [test "$RD2" != "rd2-not-found"])
+
+dnl **************************************************************
 dnl Check for Cutter
 dnl **************************************************************
 m4_ifdef([AC_CHECK_GCUTTER], [
@@ -295,6 +302,8 @@ AC_CONFIG_FILES([Makefile
 		 modules/ruby/lib/chupa/Makefile
 		 modules/ruby/lib/chupa/decomposers/Makefile
 		 license/Makefile
+		 misc/Makefile
+		 doc/Makefile
 		 apt/Makefile])
 AC_OUTPUT
 

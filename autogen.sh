@@ -9,6 +9,9 @@ run()
     fi
 }
 
+cutter_svn_repository=https://cutter.svn.sourceforge.net/svnroot/cutter
+run svn export --force $cutter_svn_repository/cutter/trunk/misc
+
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
 run ${INTLTOOLIZE:-intltoolize} --force --copy
