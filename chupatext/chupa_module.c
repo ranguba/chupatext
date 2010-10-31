@@ -149,9 +149,9 @@ cleanup(ChupaModule *module)
     if (!priv->quit)
         return;
 
-    priv->quit();
-
-    _chupa_module_close(priv->library);
+    if (priv->quit()) {
+        _chupa_module_close(priv->library);
+    }
     priv->library  = NULL;
 
     priv->init = NULL;

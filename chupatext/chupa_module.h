@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 #define CHUPA_MODULE_GET_CLASS(obj)  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_MODULE, ChupaModuleClass)
 
 typedef GList   *(*ChupaModuleInitFunc)        (GTypeModule *module);
-typedef void     (*ChupaModuleQuitFunc)        (void);
+typedef gboolean (*ChupaModuleQuitFunc)        (void);
 typedef GObject *(*ChupaModuleInstantiateFunc) (const gchar *first_property,
                                                 va_list      va_args);
 

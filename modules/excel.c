@@ -328,12 +328,14 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
     return registered_types;
 }
 
-G_MODULE_EXPORT void
+G_MODULE_EXPORT gboolean
 CHUPA_DECOMPOSER_QUIT(void)
 {
     g_object_unref(cc);
     gnm_shutdown();
     gnm_pre_parse_shutdown();
+
+    return FALSE;
 }
 
 G_MODULE_EXPORT GObject *
