@@ -1,8 +1,8 @@
 Source: chupatext
 Priority: extra
 Maintainer: Kouhei Sutou <kou@clear-code.com>
-Build-Depends: debhelper (>= 6),
-               cdbs,
+Build-Depends: debhelper (>= 7.0.50),
+               quilt (>= 0.46-7~),
                autotools-dev,
                intltool,
                gtk-doc-tools,

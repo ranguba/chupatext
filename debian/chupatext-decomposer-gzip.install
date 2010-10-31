@@ -1,0 +1,3 @@
+/usr/lib/pkgconfig/chupatext-gzip.pc
+/usr/lib/chupatext/modules/decomposers/gzip.*
+/etc/chupatext/descriptions/gzip.*

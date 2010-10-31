@@ -1,0 +1,4 @@
+/usr/lib/pkgconfig/chupatext-ruby.pc
+/usr/lib/chupatext/ruby/
+/usr/lib/chupatext/modules/decomposers/ruby.*
+/etc/chupatext/descriptions/ruby.*

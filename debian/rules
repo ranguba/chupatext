@@ -1,129 +1,13 @@
 #!/usr/bin/make -f
+# -*- makefile-gmake -*-
+#
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
+%:
+	dh --with quilt $@
 
-DEB_CONFIGURE_USER_FLAGS =			\
-	--with-ruby=/usr/bin/ruby1.9.1
-
-DEB_INSTALL_DOCS_ALL = README.ja
-# DEB_INSTALL_DOCS_chupatext-doc = doc/chupatext.rd doc/chupatext.rd.ja doc/reference/
-
-# DEB_INSTALL_DIRS_chupatext-doc =			\
-# 	/usr/share/chupatext			\
-# 	/usr/share/gtk-doc
-
-DEB_INSTALL_DIRS_libchupatext0 =		\
-	/usr/lib				\
-	/usr/share/locale
-
-DEB_INSTALL_DIRS_libchupatext-dev =		\
-	/usr/lib				\
-	/usr/include/chupatext			\
-	/usr/lib/pkgconfig
-
-DEB_INSTALL_DIRS_chupatext-bin =		\
-	/usr/bin				\
-	/usr/share/man/man1			\
-	/usr/share/man/ja/man1
-
-DEB_INSTALL_DIRS_chupatext-decomposer-text =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-excel =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-word =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-pdf =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-tar =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-zip =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-DEB_INSTALL_DIRS_chupatext-decomposer-ruby =		\
-	/usr/lib/chupatext/modules/decomposers		\
-	/etc/chupatext/descriptions
-
-# install/chupatext-doc::
-# 	cp -ar debian/tmp/usr/share/gtk-doc/* \
-# 		debian/chupatext-doc/usr/share/gtk-doc/
-
-install/libchupatext0::
-	cp -ar debian/tmp/usr/lib/libchupatext.so.* \
-		debian/libchupatext0/usr/lib/
-#	cp -ar debian/tmp/usr/share/locale/* \
-#		debian/libchupatext0/usr/share/locale/
-
-install/libchupatext-dev::
-	cp -ar debian/tmp/usr/lib/libchupatext.so \
-		debian/libchupatext-dev/usr/lib/
-	cp -ar debian/tmp/usr/include/chupatext/chupatext.h \
-		debian/libchupatext-dev/usr/include/chupatext/
-	cp -ar debian/tmp/usr/include/chupatext/chupatext/ \
-		debian/libchupatext-dev/usr/include/chupatext/
-
-install/chupatext-bin::
-	cp -ar debian/tmp/usr/bin/* debian/chupatext-bin/usr/bin/
-	cp -ar debian/tmp/usr/share/man/man1/* \
-		debian/chupatext-bin/usr/share/man/man1/
-	cp -ar debian/tmp/usr/share/man/ja/man1/* \
-		debian/chupatext-bin/usr/share/man/ja/man1/
-
-install/chupatext-decomposer-text::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/text.* \
-		debian/chupatext-decomposer-text/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/text.* \
-		debian/chupatext-decomposer-text/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-excel::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/excel.* \
-		debian/chupatext-decomposer-excel/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/excel.* \
-		debian/chupatext-decomposer-excel/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-word::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/word.* \
-		debian/chupatext-decomposer-word/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/word.* \
-		debian/chupatext-decomposer-word/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-pdf::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/pdf.* \
-		debian/chupatext-decomposer-pdf/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/pdf.* \
-		debian/chupatext-decomposer-pdf/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-tar::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/tar.* \
-		debian/chupatext-decomposer-tar/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/tar.* \
-		debian/chupatext-decomposer-tar/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-zip::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/zip.* \
-		debian/chupatext-decomposer-zip/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/zip.* \
-		debian/chupatext-decomposer-zip/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-gzip::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/gzip.* \
-		debian/chupatext-decomposer-zip/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/gzip.* \
-		debian/chupatext-decomposer-zip/etc/chupatext/descriptions/
-
-install/chupatext-decomposer-ruby::
-	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/ruby.* \
-		debian/chupatext-decomposer-ruby/usr/lib/chupatext/modules/decomposers/
-	cp -ar debian/tmp/etc/chupatext/descriptions/ruby.* \
-		debian/chupatext-decomposer-ruby/etc/chupatext/descriptions/
+override_dh_auto_configure:
+	dh_auto_configure -- --with-ruby=/usr/bin/ruby1.9.1

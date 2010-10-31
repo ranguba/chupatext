@@ -304,12 +304,12 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
 G_MODULE_EXPORT GList *
 CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 {
-    extern void gutils_init(void);
     GList *registered_types = NULL;
     GOErrorInfo	*plugin_errs;
+    gchar const *argv[1];
 
-    gutils_init();
-
+    argv[0] = g_get_prgname();
+    gnm_pre_parse_init(1, argv);
     gnm_init ();
     cc = cmd_context_stderr_new();
     gnm_plugins_init(GO_CMD_CONTEXT(cc));
@@ -332,10 +332,8 @@ G_MODULE_EXPORT void
 CHUPA_DECOMPOSER_QUIT(void)
 {
     g_object_unref(cc);
-#if 0
-    /* need to keep ORBit loaded, which uses atexit() */
     gnm_shutdown();
-#endif
+    gnm_pre_parse_shutdown();
 }
 
 G_MODULE_EXPORT GObject *

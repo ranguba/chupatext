@@ -1,5 +1,4 @@
 debhelper
-cdbs
 intltool
 autotools-dev
 gtk-doc-tools
