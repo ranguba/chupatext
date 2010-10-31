@@ -19,7 +19,8 @@ Homepage: http://groonga.rubyforge.org/
 Package: chupatext
 Section: text
 Architecture: any
-Depends: chupatext-bin (= ${binary:Version}),
+Depends: ${misc:Depends},
+         chupatext-bin (= ${binary:Version}),
          chupatext-decomposer-text (= ${binary:Version}),
          chupatext-decomposer-excel (= ${binary:Version}),
          chupatext-decomposer-word (= ${binary:Version}),
@@ -37,6 +38,7 @@ Description: A text extractor from various file formats (meta-package)
 Package: chupatext-doc
 Section: doc
 Architecture: any
+Depends: ${misc:Depends}
 Description: Documentation of ChupaText
  ChupaText extracts text and meta information from various file format.
  .
