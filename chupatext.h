@@ -1,25 +1,31 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA  02110-1301  USA
  */
 
 #ifndef CHUPATEXT_H
 #define CHUPATEXT_H
 
-#include <chupatext/chupa_feeder.h>
+#include <chupatext/chupa_version.h>
+#include <chupatext/chupa_init.h>
 #include <chupatext/chupa_logger.h>
-
-G_BEGIN_DECLS
-
-void chupa_init(void *address);
-void chupa_quit(void);
-
-int chupa_version(void) G_GNUC_CONST;
-int chupa_commits(void) G_GNUC_CONST;
-int chupa_release_date(void) G_GNUC_CONST;
-const char *chupa_version_string(void) G_GNUC_CONST;
-const char *chupa_version_description(void) G_GNUC_CONST;
-
-G_END_DECLS
+#include <chupatext/chupa_feeder.h>
+#include <chupatext/chupa_decomposer.h>
 
 #endif  /* CHUPATEXT_H */

@@ -56,6 +56,7 @@ libchupatext_la_LDFLAGS =			\
 chupa_public_headers =				\
 	archive_decomposer.h			\
 	chupa_decomposer.h			\
+	chupa_init.h				\
 	chupa_metadata.h			\
 	chupa_module.h				\
 	chupa_decomposer_factory.h		\

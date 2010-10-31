@@ -442,7 +442,6 @@ add_load_path(void)
 static gboolean
 init_ruby_interpreter(GError **error)
 {
-    extern void *chupa_stack_base;
     const VALUE *outer_klass = &rb_cObject;
     int argc;
     const char *args[6];
@@ -460,7 +459,7 @@ init_ruby_interpreter(GError **error)
     args[argc++] = g_get_prgname();
     args[argc] = NULL;
     ruby_sysinit(&argc, &argv);
-    ruby_init_stack(chupa_stack_base);
+    ruby_init_stack(chupa_get_base_address());
     ruby_init();
     add_load_path();
     argc = 1;

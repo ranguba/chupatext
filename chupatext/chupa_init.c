@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,7 +26,7 @@
 #include "chupa_decomposer_description.h"
 #include "chupa_logger.h"
 
-void *chupa_stack_base;
+static gpointer base_address;
 
 static gboolean initialized = FALSE;
 
@@ -63,9 +64,9 @@ delegate_glib_log_handlers (void)
 }
 
 void
-chupa_init(void *address)
+chupa_init(gpointer address)
 {
-    chupa_stack_base = address;
+    base_address = address;
 
     if (initialized) {
         remove_glib_log_handlers();
@@ -102,3 +103,10 @@ chupa_quit(void)
 
     initialized = FALSE;
 }
+
+gpointer
+chupa_get_base_address(void)
+{
+    return base_address;
+}
+

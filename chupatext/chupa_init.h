@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,29 +19,17 @@
  *  MA  02110-1301  USA
  */
 
-#ifndef CHUPA_RUBY_H
-#define CHUPA_RUBY_H
+#ifndef CHUPA_INIT_H
+#define CHUPA_INIT_H
 
-#include <chupatext.h>
+#include <glib.h>
 
-#include <ruby.h>
-#include <ruby/encoding.h>
+G_BEGIN_DECLS
 
-#include <rbgobject.h>
+void          chupa_init             (gpointer address);
+void          chupa_quit             (void);
+gpointer      chupa_get_base_address (void);
 
-#define RUBY_CHECK_VERSION(major, minor, teeny) \
-    (major * 10000 + minor * 100 + teeny) >= RUBY_API_VERSION_CODE
+G_END_DECLS
 
-void  chupa_ruby_init                       (void);
-VALUE chupa_ruby_g_memory_input_stream_init (VALUE mGLib);
-VALUE chupa_ruby_feeder_init                (VALUE mChupa);
-VALUE chupa_ruby_data_init                  (VALUE mChupa);
-VALUE chupa_ruby_decomposer_init            (VALUE mChupa);
-VALUE chupa_ruby_metadata_init              (VALUE mChupa);
-
-VALUE chupa_ruby_metadata_new               (ChupaMetadata *metadata,
-                                             gboolean       readonly);
-
-GType chupa_ruby_decomposer_get_type        (void);
-
-#endif
+#endif  /* CHUPA_INIT_H */
