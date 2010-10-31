@@ -228,6 +228,12 @@ AC_PATH_PROG(RD2, rd2, rd2-not-found)
 AM_CONDITIONAL([HAVE_RD2], [test "$RD2" != "rd2-not-found"])
 
 dnl **************************************************************
+dnl Checks for gtk-doc
+dnl **************************************************************
+
+GTK_DOC_CHECK([1.8])
+
+dnl **************************************************************
 dnl Check for Cutter
 dnl **************************************************************
 m4_ifdef([AC_CHECK_GCUTTER], [
@@ -254,6 +260,13 @@ AC_ARG_WITH([rubyforge-user],
             [RUBYFORGE_USER="$withval"],
             [RUBYFORGE_USER="$USER"])
 AC_SUBST(RUBYFORGE_USER)
+
+RUBYFORGE_PATH="/var/www/gforge-projects/\$(RUBYFORGE_PROJECT_NAME)"
+AC_SUBST(RUBYFORGE_PATH)
+
+RSYNC_PATH="\$(RUBYFORGE_USER)@rubyforge.org:\$(RUBYFORGE_PATH)"
+AC_SUBST(RSYNC_PATH)
+
 
 modulesdir='$(pkglibdir)/modules'
 AC_SUBST(modulesdir)
@@ -304,6 +317,8 @@ AC_CONFIG_FILES([Makefile
 		 license/Makefile
 		 misc/Makefile
 		 doc/Makefile
+		 doc/reference/Makefile
+		 doc/reference/version.xml
 		 apt/Makefile])
 AC_OUTPUT
 

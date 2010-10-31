@@ -1,0 +1,51 @@
+# -*- rd -*-
+
+= Debian GNU/Linuxへインストール --- Debian GNU/LinuxへのChupaTextのインストール方法
+
+== はじめに
+
+Debian GNU/LinuxへのChupaTextのインストール方法を説明します。
+
+== インストール
+
+ChupaTextのDebianパッケージが提供されているので、aptitudeでインス
+トールできます。
+
+現在は、Debian GNU/Linux squeeze/sid i386/amd64用のパッケージ
+を提供しています。他のバージョンが必要な場合は((<メーリングリ
+スト
+|URL:http://lists.sourceforge.jp/mailman/listinfo/groonga-dev>))
+でリクエストしてください。
+
+squeezeの場合は以下のapt lineを書いた
+/etc/apt/sources.list.d/chupatext.listを作成してください。
+
+/etc/apt/sources.list.d/chupatext.list:
+  deb http://groonga.rubyforge.org/debian/ squeeze main
+  deb-src http://groonga.rubyforge.org/debian/ squeeze main
+
+sidの場合は以下のapt lineを書いた
+/etc/apt/sources.list.d/chupatext.listを作成してください。
+
+/etc/apt/sources.list.d/chupatext.list:
+  deb http://groonga.rubyforge.org/debian/ unstable main
+  deb-src http://groonga.rubyforge.org/debian/ unstable main
+
+パッケージはkou@cozmixng.org/kou@clear-code.comの鍵でサイン
+しています。信用する場合は鍵を登録します。
+
+  % gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+  % gpg --export 1C837F31 | sudo apt-key add -
+
+鍵を登録したらaptitudeでインストールできます。
+
+  % sudo aptitude update
+  % sudo aptitude -V -D install chupatext
+
+== 次のステップ
+
+以上でインストールは完了です。
+
+まずは((<chupatext.rd.ja>))でchupatextコマンドの使い方を確認
+してください。ライブラリとしてChupaTextを使う場合はリファレン
+スマニュアル（TODO）を見てください。

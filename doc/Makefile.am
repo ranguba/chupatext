@@ -1,8 +1,14 @@
-# SUBDIRS = reference
+SUBDIRS = reference
 
 EXTRA_DIST =					\
 	chupatext.rd				\
-	chupatext.rd.ja
+	chupatext.rd.ja				\
+	install-to-debian.rd			\
+	install-to-debian.rd.ja			\
+	install-to-ubuntu.rd			\
+	install-to-ubuntu.rd.ja			\
+	install-to-others.rd			\
+	install-to-others.rd.ja
 
 dist_man1_MANS =	\
 	chupatext.man
