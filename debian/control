@@ -61,7 +61,7 @@ Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-	 libchupuatext (= ${binary:Version})
+	 libchupatext (= ${binary:Version})
 Description: Development files to use ChupaText as a library
  ChupaText extracts text and meta information from various file format.
  .
