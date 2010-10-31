@@ -143,23 +143,28 @@ static void
 cleanup(ChupaModule *module)
 {
     ChupaModulePrivate *priv;
+    ChupaModuleQuitFunc quit_func;
+    GModule *library;
 
     priv = CHUPA_MODULE_GET_PRIVATE(module);
 
-    if (!priv->quit)
+    quit_func = priv->quit;
+    if (!quit_func)
         return;
-
-    if (priv->quit()) {
-        _chupa_module_close(priv->library);
-    }
-    priv->library  = NULL;
 
     priv->init = NULL;
     priv->quit = NULL;
     priv->instantiate = NULL;
 
+    library = priv->library;
+    priv->library = NULL;
+
     g_list_free(priv->registered_types);
     priv->registered_types = NULL;
+
+    if (quit_func()) {
+        _chupa_module_close(library);
+    }
 }
 
 static void
