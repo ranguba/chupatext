@@ -1,16 +1,29 @@
-lib_LTLIBRARIES = libchupatext.la
-
 EMPTY =
-
-bin_PROGRAMS = chupatext
-
-chupatext_SOURCES = chupatext.c
-chupatext_LDADD = libchupatext.la
 
 BUILT_SOURCES =
 DISTCLEANFILES =
 MAINTAINERCLEANFILES =
 EXTRA_DIST =
+
+DEFAULT_INCLUDES = -I$(top_includedir) -I$(srcdir) -I$(build_includedir) -I.
+
+AM_CPPFLAGS =							\
+	-DG_LOG_DOMAIN=\"ChupaText\"				\
+	-DCHUPA_LOG_DOMAIN=\"ChupaText\"			\
+	-DCHUPA_MODULES_DIR=\"$(modulesdir)\"			\
+	-DCHUPA_DECOMPOSERS_MODULE_DIR=\"$(decomposersdir)\"	\
+	-DDESCRIPTIONS_DIR=\"$(descriptionsdir)\"		\
+	-D_GNU_SOURCE
+AM_CFLAGS =					\
+	$(GSF_CFLAGS)				\
+	$(GIO_UNIX_CFLAGS)
+
+lib_LTLIBRARIES = libchupatext.la
+
+bin_PROGRAMS = chupatext
+
+chupatext_SOURCES = chupatext.c
+chupatext_LDADD = libchupatext.la
 
 libchupatext_la_SOURCES =			\
 	chupa_enum_types.c			\
@@ -34,17 +47,11 @@ libchupatext_la_SOURCES =			\
 	chupa_version.c				\
 	$(EMPTY)
 
-AM_CPPFLAGS =							\
-	-DG_LOG_DOMAIN=\"ChupaText\"				\
-	-DCHUPA_LOG_DOMAIN=\"ChupaText\"			\
-	-DCHUPA_MODULES_DIR=\"$(modulesdir)\"			\
-	-DCHUPA_DECOMPOSERS_MODULE_DIR=\"$(decomposersdir)\"	\
-	-DDESCRIPTIONS_DIR=\"$(descriptionsdir)\"		\
-	-D_GNU_SOURCE
-AM_CFLAGS = $(GSF_CFLAGS) $(GIO_UNIX_CFLAGS)
-AM_LDFLAGS = $(GSF_LIBS) $(GIO_UNIX_LIBS)
-
-DEFAULT_INCLUDES = -I$(top_includedir) -I$(srcdir) -I$(build_includedir) -I.
+libchupatext_la_LDFLAGS =			\
+	-version-info $(LT_VERSION_INFO)	\
+	-no-undefined				\
+	$(GSF_LIBS)				\
+	$(GIO_UNIX_LIBS)
 
 chupa_public_headers =				\
 	archive_decomposer.h			\
