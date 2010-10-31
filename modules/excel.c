@@ -302,24 +302,24 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
 }
 
 G_MODULE_EXPORT GList *
-CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
+CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 {
     GList *registered_types = NULL;
-    GOErrorInfo	*plugin_errs;
+    GOErrorInfo	*plugin_errors = NULL;
     gchar const *argv[1];
 
     argv[0] = g_get_prgname();
     gnm_pre_parse_init(1, argv);
-    gnm_init ();
+    gnm_init();
     cc = cmd_context_stderr_new();
     gnm_plugins_init(GO_CMD_CONTEXT(cc));
-    go_plugin_db_activate_plugin_list(go_plugins_get_available_plugins(), &plugin_errs);
-    if (plugin_errs) {
-        if (go_error_info_peek_severity(plugin_errs) >= GO_ERROR) {
-            g_warning("go_plugin_db_activate_plugin_list failed: %s",
-                      go_error_info_peek_message(plugin_errs));
-        }
-        go_error_info_free(plugin_errs);
+    go_plugin_db_activate_plugin_list(go_plugins_get_available_plugins(),
+                                      &plugin_errors);
+    if (plugin_errors) {
+        g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
+                    "failed to initialize GOffice plugins : %s",
+                    go_error_info_peek_message(plugin_errors));
+        go_error_info_free(plugin_errors);
     }
 
     decomposer_register_type(type_module, &registered_types);

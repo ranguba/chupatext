@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <nakada@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -27,7 +28,9 @@
 
 G_BEGIN_DECLS
 
-#define CHUPA_TYPE_DECOMPOSER            chupa_decomposer_get_type()
+#define CHUPA_DECOMPOSER_ERROR           (chupa_decomposer_error_quark())
+
+#define CHUPA_TYPE_DECOMPOSER            (chupa_decomposer_get_type())
 #define CHUPA_DECOMPOSER(obj)            \
   G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_DECOMPOSER, ChupaDecomposer)
 #define CHUPA_DECOMPOSER_CLASS(klass)    \
@@ -55,14 +58,20 @@ struct _ChupaDecomposerClass
     gboolean (*feed)(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err);
 };
 
-GType            chupa_decomposer_get_type (void) G_GNUC_CONST;
+typedef enum {
+    CHUPA_DECOMPOSER_ERROR_INIT
+} ChupaDecomposerError;
 
-gboolean         chupa_decomposer_feed    (ChupaDecomposer *dec,
-                                           ChupaFeeder     *feeder,
-                                           ChupaData       *data,
-                                           GError         **error);
+GQuark           chupa_decomposer_error_quark (void) G_GNUC_CONST;
+
+GType            chupa_decomposer_get_type    (void) G_GNUC_CONST;
+
+gboolean         chupa_decomposer_feed        (ChupaDecomposer *dec,
+                                               ChupaFeeder     *feeder,
+                                               ChupaData       *data,
+                                               GError         **error);
 const gchar     *chupa_decomposer_get_mime_type
-                                          (ChupaDecomposer *decomposer);
+                                              (ChupaDecomposer *decomposer);
 
 G_END_DECLS
 

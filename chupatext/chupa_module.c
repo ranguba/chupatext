@@ -30,6 +30,7 @@
 #include "chupa_module.h"
 #include "chupa_decomposer_module.h"
 #include "chupa_utils.h"
+#include "chupa_logger.h"
 
 #if !defined G_PLATFORM_WIN32 && defined HAVE_DLFCN_H
 #include <dlfcn.h>
@@ -96,47 +97,23 @@ chupa_module_init(ChupaModule *module)
 }
 
 static void
+dispose_registered_types(ChupaModulePrivate *priv)
+{
+    g_list_foreach(priv->registered_types, (GFunc)g_free, NULL);
+    g_list_free(priv->registered_types);
+    priv->registered_types = NULL;
+}
+
+static void
 finalize(GObject *object)
 {
     ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(object);
 
     g_free(priv->mod_path);
     priv->mod_path = NULL;
-    g_list_foreach(priv->registered_types, (GFunc)g_free, NULL);
-    g_list_free(priv->registered_types);
-    priv->registered_types = NULL;
+    dispose_registered_types(priv);
 
     G_OBJECT_CLASS(chupa_module_parent_class)->finalize(object);
-}
-
-static gboolean
-load(GTypeModule *module)
-{
-    ChupaModulePrivate *priv = CHUPA_MODULE_GET_PRIVATE(module);
-
-    priv->library = _chupa_module_open(priv->mod_path);
-    if (!priv->library)
-        return FALSE;
-
-    if (!_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(INIT_FUNC),
-                                 (gpointer)&priv->init) ||
-        !_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(QUIT_FUNC),
-                                 (gpointer)&priv->quit) ||
-        !_chupa_module_load_func(priv->library,
-                                 G_STRINGIFY(INSTANTIATE_FUNC),
-                                 (gpointer)&priv->instantiate)) {
-        _chupa_module_close(priv->library);
-        priv->library = NULL;
-        return FALSE;
-    }
-
-    g_list_foreach(priv->registered_types, (GFunc)g_free, NULL);
-    g_list_free(priv->registered_types);
-    priv->registered_types = priv->init(module);
-
-    return TRUE;
 }
 
 static void
@@ -159,12 +136,51 @@ cleanup(ChupaModule *module)
     library = priv->library;
     priv->library = NULL;
 
-    g_list_free(priv->registered_types);
-    priv->registered_types = NULL;
+    dispose_registered_types(priv);
 
     if (quit_func()) {
         _chupa_module_close(library);
     }
+}
+
+static gboolean
+load(GTypeModule *module)
+{
+    ChupaModulePrivate *priv;
+    GError *error = NULL;
+
+    priv = CHUPA_MODULE_GET_PRIVATE(module);
+    priv->library = _chupa_module_open(priv->mod_path);
+    if (!priv->library)
+        return FALSE;
+
+    if (!_chupa_module_load_func(priv->library,
+                                 G_STRINGIFY(INIT_FUNC),
+                                 (gpointer)&priv->init) ||
+        !_chupa_module_load_func(priv->library,
+                                 G_STRINGIFY(QUIT_FUNC),
+                                 (gpointer)&priv->quit) ||
+        !_chupa_module_load_func(priv->library,
+                                 G_STRINGIFY(INSTANTIATE_FUNC),
+                                 (gpointer)&priv->instantiate)) {
+        _chupa_module_close(priv->library);
+        priv->library = NULL;
+        return FALSE;
+    }
+
+    dispose_registered_types(priv);
+    priv->registered_types = priv->init(module, &error);
+
+    if (error) {
+        chupa_log_g_error(error,
+                          "failed to initialize module: <%s>",
+                          g_module_name(priv->library));
+        g_error_free(error);
+        cleanup(CHUPA_MODULE(module));
+        return FALSE;
+    }
+
+    return TRUE;
 }
 
 static void

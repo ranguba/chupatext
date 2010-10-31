@@ -62,35 +62,33 @@ chupa_ruby_decomposer_get_type(void)
 }
 
 typedef struct {
-    GError **g_error;
     VALUE error;
-} make_error_arguments;
+    GString *inspected;
+} InspectErrorData;
 
 static VALUE
-make_error_message(VALUE arg)
+inspect_error(VALUE arg)
 {
-    make_error_arguments *ptr = (make_error_arguments *)arg;
-    GError **g_error = ptr->g_error;
-    VALUE error = ptr->error;
-    GString *error_message;
+    InspectErrorData *data = (InspectErrorData *)arg;
+    VALUE error;
+    GString *inspected;
     VALUE message, class_name, backtrace;
     long i;
 
-    error_message = g_string_new(NULL);
+    error = data->error;
+    inspected = data->inspected;
+
     message = rb_funcall(error, rb_intern("message"), 0);
     class_name = rb_funcall(CLASS_OF(error), rb_intern("to_s"), 0);
-    g_string_append_printf(error_message, "%s (%s)\n",
+    g_string_append_printf(inspected, "%s (%s)\n",
                            StringValueCStr(message),
                            StringValueCStr(class_name));
     backtrace = rb_funcall(error, rb_intern("backtrace"), 0);
     for (i = 0; i < RARRAY_LEN(backtrace); i++) {
-        VALUE line = RARRAY_PTR(backtrace)[i];
-        g_string_append_printf(error_message, "%s\n", StringValueCStr(line));
+        VALUE line;
+        line = RARRAY_PTR(backtrace)[i];
+        g_string_append_printf(inspected, "%s\n", StringValueCStr(line));
     }
-    g_set_error(g_error,
-                CHUPA_FEEDER_ERROR, CHUPA_FEEDER_ERROR_UNKNOWN,
-                "unknown error is occurred: <%s>", error_message->str);
-    g_string_free(error_message, TRUE);
 
     return Qnil;
 }
@@ -122,10 +120,15 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_erro
         *statep = state;
     }
     if (state && !NIL_P(error = rb_errinfo())) {
-	make_error_arguments error_args;
-	error_args.g_error = g_error;
-	error_args.error = error;
-	rb_protect(make_error_message, (VALUE)&error_args, &state);
+	InspectErrorData data;
+
+	data.error = error;
+	data.inspected = g_string_new(NULL);
+	rb_protect(inspect_error, (VALUE)&data, &state);
+        g_set_error(g_error,
+                    CHUPA_FEEDER_ERROR, CHUPA_FEEDER_ERROR_UNKNOWN,
+                    "unknown error is occurred: <%s>", data.inspected->str);
+        g_string_free(data.inspected, TRUE);
     }
 
     return result;
@@ -382,7 +385,8 @@ get_mime_types(ChupaDecomposerFactory *factory)
     for (i = 0; i < length; i++) {
         VALUE rb_mime_type;
         rb_mime_type = RARRAY_PTR(rb_mime_types)[i];
-        mime_types = g_list_prepend(mime_types, g_strdup(StringValueCStr(rb_mime_type)));
+        mime_types = g_list_prepend(mime_types,
+                                    g_strdup(StringValueCStr(rb_mime_type)));
     }
 
     return mime_types;
@@ -436,7 +440,7 @@ add_load_path(void)
 }
 
 static gboolean
-init_ruby_interpreter(void)
+init_ruby_interpreter(GError **error)
 {
     extern void *chupa_stack_base;
     const VALUE *outer_klass = &rb_cObject;
@@ -464,6 +468,19 @@ init_ruby_interpreter(void)
     args[argc] = NULL;
     node = ruby_options(argc, argv);
     if (!ruby_executable_node(node, &status)) {
+        InspectErrorData data;
+
+        data.error = rb_errinfo();
+        data.inspected = g_string_new(NULL);
+        if (!NIL_P(data.error)) {
+            int state = 0;
+            g_string_append(data.inspected, ": ");
+            rb_protect(inspect_error, (VALUE)&data, &state);
+        }
+        g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
+                    "failed to initialize Ruby decomposer%s",
+                    data.inspected->str);
+        g_string_free(data.inspected, TRUE);
         ruby_cleanup(status);
         return FALSE;
     }
@@ -472,9 +489,9 @@ init_ruby_interpreter(void)
 }
 
 static void
-init_ruby(void)
+init_ruby(GError **error)
 {
-    if (!init_ruby_interpreter())
+    if (!init_ruby_interpreter(error))
         return;
 
     chupa_ruby_init();
@@ -482,14 +499,14 @@ init_ruby(void)
 
 /* module entry points */
 G_MODULE_EXPORT GList *
-CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
+CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 {
     GList *registered_types = NULL;
 
     decomposer_register_type(type_module, &registered_types);
     factory_register_type(type_module, &registered_types);
 
-    init_ruby();
+    init_ruby(error);
 
     return registered_types;
 }

@@ -28,7 +28,7 @@
 
 G_BEGIN_DECLS
 
-#define CHUPA_FEEDER_ERROR chupa_feeder_error_quark()
+#define CHUPA_FEEDER_ERROR           chupa_feeder_error_quark()
 
 #define CHUPA_TYPE_FEEDER            chupa_feeder_get_type()
 #define CHUPA_FEEDER(obj)            G_TYPE_CHECK_INSTANCE_CAST(obj, CHUPA_TYPE_FEEDER, ChupaFeeder)

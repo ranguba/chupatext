@@ -199,7 +199,7 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
 
 /* module entry points */
 G_MODULE_EXPORT GList *
-CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
+CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 {
     GList *registered_types = NULL;
 

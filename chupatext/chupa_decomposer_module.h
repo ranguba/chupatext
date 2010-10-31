@@ -32,7 +32,8 @@ G_BEGIN_DECLS
 #define CHUPA_DECOMPOSER_QUIT           chupa_decomposer_quit
 #define CHUPA_DECOMPOSER_CREATE_FACTORY chupa_decomposer_create_factory
 
-GList   *CHUPA_DECOMPOSER_INIT          (GTypeModule *module);
+GList   *CHUPA_DECOMPOSER_INIT          (GTypeModule *module,
+                                         GError     **error);
 gboolean CHUPA_DECOMPOSER_QUIT          (void);
 GObject *CHUPA_DECOMPOSER_CREATE_FACTORY(const gchar *first_property,
                                          va_list      va_args);
