@@ -47,7 +47,7 @@ pull:
 update-po:
 	cd $(top_srcdir) &&			\
 	  (find chupatext -name '*.c';		\
-	   find module -name '*.c') |		\
+	   find modules -name '*.c') |		\
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
