@@ -65,7 +65,8 @@ struct _ChupaGzipDecomposerClass
 static GType chupa_type_gzip_decomposer = 0;
 
 static gboolean
-feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
+feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
+     ChupaData *data, GError **error)
 {
     GsfInput *gzip_input, *input;
     ChupaGsfInputStream *stream;
@@ -74,11 +75,9 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     GString *new_filename;
     gboolean result;
 
-    g_return_val_if_fail(CHUPA_IS_DECOMPOSER(dec), FALSE);
-    g_return_val_if_fail(CHUPA_IS_DATA(data), FALSE);
     filename = chupa_data_get_filename(data);
     input = chupa_data_input_new(data);
-    gzip_input = gsf_input_gzip_new(input, err);
+    gzip_input = gsf_input_gzip_new(input, error);
     if (!gzip_input) {
         return FALSE;
     }
@@ -100,7 +99,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **err)
     data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
     g_object_unref(metadata);
     g_object_unref(stream);
-    result = chupa_feeder_feed(feeder, data, err);
+    result = chupa_feeder_feed(feeder, data, error);
     g_object_unref(data);
     return result;
 }
