@@ -24,9 +24,16 @@
 #include <ctype.h>
 #include <chupatext.h>
 
+/* FIXME: this API can't handle streaming output.
+   We need real Writer object.*/
+typedef struct _writer_funcs {
+    void (*output)(ChupaData *data, GError *error, gpointer udata);
+} writer_funcs;
+
 struct output_info {
     FILE *out;
     const char *prefix;
+    const writer_funcs *writer;
 };
 
 static void
@@ -46,7 +53,7 @@ output_plain_header(gpointer key, gpointer value_list, gpointer user_data)
 }
 
 static void
-output_plain(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
+output_plain(ChupaData *data, GError *error, gpointer udata)
 {
     GInputStream *inst = chupa_data_get_stream(data);
     struct output_info *uinfo = udata;
@@ -117,7 +124,7 @@ write_quote(const char *str, gsize len, FILE *out)
         write_quote(string, (string) ? strlen(string) : 0, out)
 
 static void
-output_json(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
+output_json(ChupaData *data, GError *error, gpointer udata)
 {
     GInputStream *inst = chupa_data_get_stream(data);
     struct output_info *uinfo = udata;
@@ -147,10 +154,16 @@ output_json(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
     fputs("\",\n},\n", out);
 }
 
-static const struct writer_funcs {
-    void (*output)(ChupaFeeder *feeder, ChupaData *data, gpointer udata);
-} plain_writer = {output_plain},
-    json_writer = {output_json};
+static void
+output(ChupaFeeder *feeder, ChupaData *data, gpointer udata)
+{
+    struct output_info *info = udata;
+
+    g_signal_connect(data, "finished", (GCallback)(info->writer->output), info);
+}
+
+static const writer_funcs plain_writer = {output_plain};
+static const writer_funcs json_writer = {output_json};
 
 int
 main(int argc, char **argv)
@@ -162,7 +175,6 @@ main(int argc, char **argv)
     gboolean json = FALSE;
     gboolean ignore_errors = FALSE;
     gboolean version = FALSE;
-    const struct writer_funcs *writer;
     GOptionContext *ctx;
     struct output_info uinfo;
     GOptionEntry opts[] = {
@@ -208,9 +220,9 @@ main(int argc, char **argv)
 
     chupa_init(&feeder);
     feeder = chupa_feeder_new();
-    writer = json ? &json_writer : &plain_writer;
     uinfo.out = stdout;
-    g_signal_connect(feeder, "accepted", (GCallback)writer->output, &uinfo);
+    uinfo.writer = json ? &json_writer : &plain_writer;
+    g_signal_connect(feeder, "accepted", (GCallback)output, &uinfo);
     --argc;
     ++argv;
     for (i = 0; i < argc; ++i) {
