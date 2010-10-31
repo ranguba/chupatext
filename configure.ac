@@ -293,12 +293,12 @@ AC_CONFIG_FILES([Makefile
 		 chupatext.pc
 		 chupatext-excel.pc
 		 chupatext-pdf.pc
-		 chupatext-powerpoint.pc
 		 chupatext-ruby.pc
 		 chupatext-tar.pc
 		 chupatext-text.pc
 		 chupatext-word.pc
 		 chupatext-zip.pc
+		 chupatext-gzip.pc
 		 po/Makefile.in
 		 build/Makefile
 		 data/Makefile

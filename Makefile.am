@@ -7,12 +7,12 @@ pkgconfig_DATA =				\
 	chupatext.pc				\
 	chupatext-excel.pc			\
 	chupatext-pdf.pc			\
-	chupatext-powerpoint.pc			\
 	chupatext-ruby.pc			\
 	chupatext-tar.pc			\
 	chupatext-text.pc			\
 	chupatext-word.pc			\
-	chupatext-zip.pc
+	chupatext-zip.pc			\
+	chupatext-gzip.pc
 
 pkginclude_HEADERS = chupatext.h
 

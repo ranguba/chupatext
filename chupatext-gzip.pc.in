@@ -4,7 +4,7 @@ bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: ChupaTextPowerpoint
-Description: Powerpoint module of ChupaText: a text extraction utility.
+Name: ChupaTextGzip
+Description: Gzip module of ChupaText: a text extraction utility.
 Version: @VERSION@
 Requires: chupatext >= @VERSION@
