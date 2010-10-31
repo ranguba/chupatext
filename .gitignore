@@ -68,3 +68,4 @@ strace.out
 /doc/reference/chupatext.xml*
 /doc/reference/news.*
 /doc/reference/install-to-*
+/doc/reference/*.bak
