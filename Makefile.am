@@ -22,6 +22,8 @@ MAINTAINERCLEANFILES = $(BUILT_SOURCES)
 EXTRA_DIST =					\
 	COPYING					\
 	README.ja				\
+	NEWS					\
+	NEWS.ja					\
 	$(BUILT_SOURCES)
 
 GIT = git
