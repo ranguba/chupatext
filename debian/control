@@ -65,7 +65,7 @@ Depends: ${misc:Depends},
 Description: Development files to use ChupaText as a library
  ChupaText extracts text and meta information from various file format.
  .
- This package provides header files to write a program taht uses ChupaText
+ This package provides header files to write a program that uses ChupaText
  as a library.
 
 Package: chupatext-bin
