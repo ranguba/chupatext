@@ -63,13 +63,15 @@ tar.gz: ((<URL:http://rubyforge.org/frs/?group_id=8073>))
 
 == リポジトリ
 
-((<GitHub|URL:http://github.com/ranguba/chupatext>))
+ChupaTextのリポジトリは
+((<GitHub|URL:http://github.com/ranguba/chupatext>))上にあり
+ます。
 
   % git clone git://github.com/ranguba/chupatext.git
 
 == インストール
 
-((<インストール|INSTALL>))を見てください。
+((<インストール|install>))を見てください。
 
 == 使い方
 

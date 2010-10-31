@@ -46,6 +46,8 @@ strace.out
 /doc/reference/*.stamp
 /doc/reference/tmpl/
 /doc/reference/xml/
+/doc/reference/html/
+/doc/reference/ja/
 /doc/reference/chupatext-decl-list.txt
 /doc/reference/chupatext-decl.txt
 /doc/reference/chupatext-overrides.txt
@@ -63,3 +65,6 @@ strace.out
 /doc/reference/main.sgml
 /doc/reference/version.xml
 /doc/reference/readme.*
+/doc/reference/chupatext.xml*
+/doc/reference/news.*
+/doc/reference/install-to-*

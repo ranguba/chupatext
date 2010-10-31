@@ -1,3 +1,73 @@
--*- indented-text -*-
+# -*- rd -*-
 
-ChupaText is a text extraction utility from various format data.
+= README --- An introduction of ChupaText, a text extraction utility
+
+== Name
+
+ChupaText
+
+== Author
+
+  * Nobuyoshi Nakada <nakada@clear-code.com>
+  * Kouhei Sutou <kou@clear-code.com>
+
+== License
+
+  * Source: LGPLv2.1 or later. (detail:
+    ((<"license/lgpl-2.1.txt"|URL:http://www.gnu.org/licenses/lgpl-2.1.html>)))
+  * Document: Triple license: LGPL, GFDL and/or CC.
+    * LGPL: v2.1 or later. (detail:
+      ((<"license/lgpl-2.1.txt"|URL:http://www.gnu.org/licenses/lgpl-2.1.html>)))
+    * GFDL: v1.3 or later. (detail:
+      ((<"license/gfdl-1.3.txt"|URL:http://www.gnu.org/licenses/fdl.html>)))
+    * CC: ((<BY-SA|URL:http://creativecommons.org/licenses/by-sa/3.0/>))
+  * Exceptions:
+    * module/excel/: GPLv2. (detail:
+      ((<"license/gpl-2.txt"|URL:http://www.gnu.org/licenses/gpl-2.html>)))
+      They are included in ((<Gnumeric|URL:http://projects.gnome.org/gnumeric/>)).
+    * ...
+
+== What's this?
+
+ChupaText is a text extraction utility. It can extracts text
+and metadata from PDF and office documents. You can use it
+vie library, command line and Web service.
+
+== Dependency libraries
+
+Must:
+  * GLib >= 2.24
+
+Optional:
+  * libgsf
+  * Poppler
+  * wv
+  * OpenOffice.org
+  * ruby >= 1.9.2
+
+== Get
+
+tar.gz: ((<URL:http://rubyforge.org/frs/?group_id=8073>))
+
+== Repository
+
+There is the repository for ChupaText on
+((<GitHub|URL:http://github.com/ranguba/chupatext>)).
+
+  % git clone git://github.com/ranguba/chupatext.git
+
+== Install
+
+See ((<install>)).
+
+== Usage
+
+  % chupatext [OPTION ...] FILE ...
+
+FILE is a file what you want to extract from.
+
+See ((<chupatext|"doc/chupatext.rd">)) for more details.
+
+== Thanks
+
+  * ...
