@@ -79,12 +79,6 @@ tar.gz: ((<URL:http://rubyforge.org/frs/?group_id=8073>))
 
 詳細は((<chupa|"doc/chupa.rd.ja">))を見てください。
 
-  % chupamkindex [オプション ...] dbパス ファイル ...
-
-((<groonga|url:http://groonga.org/>))を使って全文検索用データベースを作ります。
-
-詳細は((<chupamkindex|"doc/chupamkindex.rd.ja">))を見てください。
-
 == 感謝
 
   * ...
