@@ -73,11 +73,11 @@ tar.gz: ((<URL:http://rubyforge.org/frs/?group_id=8073>))
 
 == 使い方
 
-  % chupa [オプション ...] ファイル ...
+  % chupatext [オプション ...] ファイル ...
 
 ファイルにテキストを抽出したいファイルを指定します。
 
-詳細は((<chupa|"doc/chupa.rd.ja">))を見てください。
+詳細は((<chupatext|"doc/chupatext.rd.ja">))を見てください。
 
 == 感謝
 
