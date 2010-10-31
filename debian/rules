@@ -60,13 +60,15 @@ DEB_INSTALL_DIRS_chupatext-decomposer-ruby =		\
 # 		debian/chupatext-doc/usr/share/gtk-doc/
 
 install/libchupatext::
-	cp -ar debian/tmp/usr/lib/libchupatext.so.* \
+	cp -ar debian/tmp/usr/lib/libchupatext.so.*.* \
 		debian/libchupatext/usr/lib/
 #	cp -ar debian/tmp/usr/share/locale/* \
 #		debian/libchupatext/usr/share/locale/
 
 install/libchupatext-dev::
 	cp -ar debian/tmp/usr/lib/libchupatext.so \
+		debian/libchupatext/usr/lib/
+	cp -ar debian/tmp/usr/lib/libchupatext.so.? \
 		debian/libchupatext/usr/lib/
 	cp -ar debian/tmp/usr/include/chupatext/chupatext.h \
 		debian/libchupatext-dev/usr/include/chupatext/

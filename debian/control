@@ -44,7 +44,7 @@ Description: Documentation of ChupaText
  .
  This package provides README and reference manual of ChupaText.
 
-Package: libchupatext
+Package: libchupatext0
 Section: libs
 Architecture: any
 Depends: ${misc:Depends},
@@ -61,7 +61,7 @@ Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-	 libchupatext (= ${binary:Version})
+	 libchupatext0 (= ${binary:Version})
 Description: Development files to use ChupaText as a library
  ChupaText extracts text and meta information from various file format.
  .
@@ -73,7 +73,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version})
+         libchupatext0 (= ${binary:Version})
 Description: ChupaText text extractor
  ChupaText extracts text and meta information from various file format.
  .
@@ -85,7 +85,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version})
+         libchupatext0 (= ${binary:Version})
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
  .
@@ -96,7 +96,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version}),
+         libchupatext0 (= ${binary:Version}),
          gnumeric
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
@@ -108,7 +108,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version}),
+         libchupatext0 (= ${binary:Version}),
          libwv2-4
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
@@ -120,7 +120,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-	 libchupatext (= ${binary:Version}),
+	 libchupatext0 (= ${binary:Version}),
          libpoppler-glib4
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
@@ -132,7 +132,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version})
+         libchupatext0 (= ${binary:Version})
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
  .
@@ -143,7 +143,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version})
+         libchupatext0 (= ${binary:Version})
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
  .
@@ -154,7 +154,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version})
+         libchupatext0 (= ${binary:Version})
 Description: ChupaText gzip decomposer
  ChupaText extracts text and meta information from various file format.
  .
@@ -165,7 +165,7 @@ Section: text
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libchupatext (= ${binary:Version}),
+         libchupatext0 (= ${binary:Version}),
 	 ruby1.9.1
 Description: ChupaText text decomposer
  ChupaText extracts text and meta information from various file format.
