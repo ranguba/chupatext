@@ -339,6 +339,7 @@ chupa_decomposer_factory_new(const gchar *name)
     g_return_val_if_fail(module != NULL, NULL);
 
     new_factory = chupa_module_instantiate(module, name);
+    g_return_val_if_fail(new_factory != NULL, NULL);
     g_object_ref(new_factory);
     factories = g_list_prepend(factories, new_factory);
 

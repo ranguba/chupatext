@@ -24,6 +24,7 @@
 
 #include <string.h>
 
+#include <chupatext.h>
 #include "chupa_decomposer_description.h"
 #include "chupa_utils.h"
 
@@ -355,13 +356,19 @@ chupa_decomposer_description_add_mime_type (ChupaDecomposerDescription *descript
         GList *mime_types, *node;
 
         factory = chupa_decomposer_description_get_factory(description);
+        if (!factory)
+            return;
         mime_types = chupa_decomposer_factory_get_mime_types(factory);
         for (node = mime_types; node; node = g_list_next(node)) {
             const gchar *dynamic_mime_type = node->data;
+            chupa_info("[mime-type][register][dynamic][%s][%s]: %s",
+                       priv->name, priv->label, dynamic_mime_type);
             priv->mime_types = g_list_append(priv->mime_types,
                                              g_strdup(dynamic_mime_type));
         }
     } else {
+        chupa_info("[mime-type][register][%s][%s]: %s",
+                   priv->name, priv->label, mime_type);
         priv->mime_types = g_list_append(priv->mime_types, g_strdup(mime_type));
     }
 }
