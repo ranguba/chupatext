@@ -475,6 +475,8 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module)
 G_MODULE_EXPORT gboolean
 CHUPA_DECOMPOSER_QUIT(void)
 {
+    ruby_cleanup(0);
+
     return TRUE;
 }
 
