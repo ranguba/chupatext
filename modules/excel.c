@@ -123,7 +123,7 @@ command_context_error_info(GOCmdContext *context, GOErrorInfo *error)
 }
 
 static gchar *
-command_context_get_password (GOCmdContext *context, const gchar *filename)
+command_context_get_password(GOCmdContext *context, const gchar *filename)
 {
     return NULL;
 }
@@ -257,60 +257,116 @@ chupa_excel_plain_file_p(GsfInput *source)
 }
 
 static gboolean
+chupa_excel_encrypted_file_p(ChupaDecomposer *decomposer, GsfInput *source)
+{
+    if (!chupa_utils_string_equal(chupa_decomposer_get_mime_type(decomposer),
+                                  EXCEL_MIME_TYPE))
+        return FALSE;
+
+    return !chupa_excel_plain_file_p(source);
+}
+
+
+static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaData *data, GError **error)
 {
-    GOFileSaver *fs = NULL;
-    GOFileOpener *fo = NULL;
+    GOFileSaver *saver = NULL;
+    GOFileOpener *opener = NULL;
     GOIOContext *io_context;
-    WorkbookView *wbv = NULL;
+    WorkbookView *view = NULL;
     GsfInput *source;
-    GsfOutput *tmpout;
-    GInputStream *tmpinp;
+    GsfOutput *output;
+    GInputStream *input;
     ChupaData *next_data;
-    const char *filename = chupa_data_get_filename(data);
+    const gchar *filename;
     GPrintFunc old_print_error_func;
     ChupaMetadata *metadata;
 
-    io_context = go_io_context_new(command_context);
-    fs = go_file_saver_for_id(export_id);
-    g_return_val_if_fail(fs, FALSE);
+    filename = chupa_data_get_filename(data);
+
     source = chupa_data_input_new(data);
-    g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
-    if (chupa_utils_string_equal(chupa_decomposer_get_mime_type(decomposer),
-                                 EXCEL_MIME_TYPE) &&
-        !chupa_excel_plain_file_p(source)) {
-        /* encrypted file, skip */
+    if (chupa_excel_encrypted_file_p(decomposer, source)) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[excel][feed][%s][unsupported]: "
+                    "encrypted Excel file isn't supported",
+                    filename);
+        g_object_unref(source);
         return FALSE;
     }
-    g_return_val_if_fail(!gsf_input_seek(source, 0, G_SEEK_SET), FALSE);
-    tmpout = gsf_output_memory_new();
-    g_return_val_if_fail(tmpout, FALSE);
+
+    if (gsf_input_seek(source, 0, G_SEEK_SET)) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[excel][feed][%s][error]: failed to seek input to head",
+                    filename);
+        g_object_unref(source);
+        return FALSE;
+    }
+
+    io_context = go_io_context_new(command_context);
     old_print_error_func = g_set_printerr_handler(printerr_to_log_delegator);
-    wbv = wb_view_new_from_input(source, filename, fo, io_context, NULL);
+    view = wb_view_new_from_input(source, filename, opener, io_context, NULL);
     g_object_unref(source);
     g_set_printerr_handler(old_print_error_func);
     if (go_io_error_occurred(io_context)) {
         go_io_error_display(io_context);
     }
-    g_return_val_if_fail(wbv, FALSE);
-
-    wbv_save_to_output(wbv, fs, tmpout, io_context);
-    g_object_unref(wb_view_get_workbook(wbv));
-    if (go_io_error_occurred(io_context)) {
+    if (!view) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[excel][feed][%s][error]: failed to create workbook",
+                    filename);
         g_object_unref(io_context);
-        g_object_unref(tmpout);
         return FALSE;
     }
 
-    tmpinp = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(tmpout));
+    saver = go_file_saver_for_id(export_id);
+    if (!saver) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[excel][feed][%s][error]: "
+                    "failed to create file saver: <%s>",
+                    filename,
+                    export_id);
+        g_object_unref(view);
+        return FALSE;
+    }
+
+    output = gsf_output_memory_new();
+    if (!output) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[excel][feed][%s][error]: failed to create output",
+                    filename);
+        g_object_unref(view);
+        return FALSE;
+    }
+
+    wbv_save_to_output(view, saver, output, io_context);
+    g_object_unref(wb_view_get_workbook(view));
+    if (go_io_error_occurred(io_context)) {
+        go_io_error_display(io_context);
+        g_object_unref(io_context);
+        g_object_unref(output);
+        return FALSE;
+    }
     g_object_unref(io_context);
-    g_object_unref(tmpout);
+
+    input = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(output));
+    g_object_unref(output);
+
     metadata = chupa_metadata_new();
     chupa_metadata_add_value(metadata, "filename", filename);
-    next_data = chupa_data_new(tmpinp, metadata);
+    next_data = chupa_data_new(input, metadata);
     g_object_unref(metadata);
-    g_object_unref(tmpinp);
+    g_object_unref(input);
     chupa_feeder_accepted(feeder, next_data);
     chupa_data_finished(next_data, NULL);
     g_object_unref(next_data);

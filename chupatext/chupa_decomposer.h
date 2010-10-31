@@ -59,7 +59,8 @@ struct _ChupaDecomposerClass
 };
 
 typedef enum {
-    CHUPA_DECOMPOSER_ERROR_INIT
+    CHUPA_DECOMPOSER_ERROR_INIT,
+    CHUPA_DECOMPOSER_ERROR_FEED
 } ChupaDecomposerError;
 
 GQuark           chupa_decomposer_error_quark (void) G_GNUC_CONST;
