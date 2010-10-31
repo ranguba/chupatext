@@ -173,7 +173,7 @@ load(GTypeModule *module)
 
     if (error) {
         chupa_log_g_error(error,
-                          "failed to initialize module: <%s>",
+                          "[module][initialize][failure][%s]",
                           g_module_name(priv->library));
         g_error_free(error);
         cleanup(CHUPA_MODULE(module));
@@ -278,8 +278,7 @@ instantiate(ChupaModulePrivate *priv, const gchar *first_property, ...)
 }
 
 GObject *
-chupa_module_instantiate(ChupaModule *module,
-                            const gchar *name)
+chupa_module_instantiate(ChupaModule *module, const gchar *name)
 {
     GObject *object = NULL;
     ChupaModulePrivate *priv;
