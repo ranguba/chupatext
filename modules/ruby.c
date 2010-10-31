@@ -401,7 +401,28 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
     return object;
 }
 
-int ruby_executable_node(void *n, int *status); /* prototype was missing in 1.9.2 */
+#if !RUBY_CHECK_VERSION(1, 9, 2)
+/* prototype was missing in 1.9.2 */
+int ruby_executable_node(void *n, int *status);
+#else
+/* For Lucid support. Lucid bundles Ruby 1.9.1. */
+static int
+ruby_executable_node(void *n, int *status)
+{
+    VALUE v = (VALUE)n;
+    int s;
+
+    switch (v) {
+      case Qtrue:  s = EXIT_SUCCESS; break;
+      case Qfalse: s = EXIT_FAILURE; break;
+      default:
+	if (!FIXNUM_P(v)) return TRUE;
+	s = FIX2INT(v);
+    }
+    if (status) *status = s;
+    return FALSE;
+}
+#endif
 
 static void
 add_load_path(void)
@@ -423,6 +444,7 @@ init_ruby_interpreter(void)
     const char *args[6];
     char **argv;
     void *node;
+    int status = 0;
 
     if (outer_klass && *outer_klass) {
         add_load_path();
@@ -431,7 +453,7 @@ init_ruby_interpreter(void)
 
     argv = (char **)args;
     argc = 0;
-    args[argc++] = "chupa";
+    args[argc++] = g_get_prgname();
     args[argc] = NULL;
     ruby_sysinit(&argc, &argv);
     ruby_init_stack(chupa_stack_base);
@@ -441,10 +463,10 @@ init_ruby_interpreter(void)
     args[argc++] = "-e;";
     args[argc] = NULL;
     node = ruby_options(argc, argv);
-    /* if (!ruby_executable_node(node, &status)) { */
-    /*     ruby_cleanup(status); */
-    /*     return FALSE; */
-    /* } */
+    if (!ruby_executable_node(node, &status)) {
+        ruby_cleanup(status);
+        return FALSE;
+    }
 
     return TRUE;
 }
