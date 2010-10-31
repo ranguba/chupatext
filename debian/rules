@@ -13,7 +13,7 @@ DEB_INSTALL_DOCS_ALL = README.ja
 # 	/usr/share/chupatext			\
 # 	/usr/share/gtk-doc
 
-DEB_INSTALL_DIRS_libchupatext =			\
+DEB_INSTALL_DIRS_libchupatext0 =		\
 	/usr/lib				\
 	/usr/share/locale
 
@@ -59,17 +59,15 @@ DEB_INSTALL_DIRS_chupatext-decomposer-ruby =		\
 # 	cp -ar debian/tmp/usr/share/gtk-doc/* \
 # 		debian/chupatext-doc/usr/share/gtk-doc/
 
-install/libchupatext::
-	cp -ar debian/tmp/usr/lib/libchupatext.so.*.* \
-		debian/libchupatext/usr/lib/
+install/libchupatext0::
+	cp -ar debian/tmp/usr/lib/libchupatext.so.* \
+		debian/libchupatext0/usr/lib/
 #	cp -ar debian/tmp/usr/share/locale/* \
-#		debian/libchupatext/usr/share/locale/
+#		debian/libchupatext0/usr/share/locale/
 
 install/libchupatext-dev::
 	cp -ar debian/tmp/usr/lib/libchupatext.so \
-		debian/libchupatext/usr/lib/
-	cp -ar debian/tmp/usr/lib/libchupatext.so.? \
-		debian/libchupatext/usr/lib/
+		debian/libchupatext-dev/usr/lib/
 	cp -ar debian/tmp/usr/include/chupatext/chupatext.h \
 		debian/libchupatext-dev/usr/include/chupatext/
 	cp -ar debian/tmp/usr/include/chupatext/chupatext/ \
