@@ -3,15 +3,15 @@ AC_PREREQ(2.59)
 m4_define([chupa_version_major], [0])
 m4_define([chupa_version_minor], [4])
 m4_define([chupa_version_micro], [0])
-m4_define([chupa_version],
+m4_define([chupa_version_full],
           [chupa_version_major.chupa_version_minor.chupa_version_micro])
 
-AC_INIT(chupatext, [chupa_version], groonga-dev@lists.sourceforge.jp)
+AC_INIT(chupatext, [chupa_version_full], groonga-dev@lists.sourceforge.jp)
 
 CHUPA_VERSION_MAJOR=chupa_version_major
 CHUPA_VERSION_MINOR=chupa_version_minor
 CHUPA_VERSION_MICRO=chupa_version_micro
-CHUPA_VERSION=chupa_version
+CHUPA_VERSION=chupa_version_full
 version_txt=$(dirname $0)/version.txt
 if test -f "$version_txt"; then
   source "$version_txt"
