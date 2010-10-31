@@ -1,4 +1,5 @@
 debhelper
+quilt
 intltool
 autotools-dev
 gtk-doc-tools
