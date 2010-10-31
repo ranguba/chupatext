@@ -23,6 +23,7 @@
 
 void test_html(void);
 void test_excel(void);
+void test_pdf_multi_pages(void);
 
 static GCutProcess *chupatext_process;
 static GString *output_from_chupatext;
@@ -104,6 +105,23 @@ test_excel(void)
                             "mime-type: application/vnd.ms-excel\n"
                             "\n"
                             "sample\n1\n2\n3\n4\n5\n6\n7\n",
+                            result->str);
+}
+
+void
+test_pdf_multi_pages(void)
+{
+    const gchar *path = FIXTURE("sample_multi_pages.pdf");
+    GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
+    GString *result = output_string(process);
+    cut_assert_equal_string("URL: sample_multi_pages.pdf\n"
+                            "filename: sample_multi_pages.pdf\n"
+                            "mime-type: application/pdf\n"
+                            "creation-time: 2010-09-27T04:09:17Z\n"
+                            "\n"
+                            "page1\n\f"
+                            "2 ページ目\n\f"
+                            "page3\n",
                             result->str);
 }
 
