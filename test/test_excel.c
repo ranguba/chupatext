@@ -40,11 +40,13 @@ teardown(void)
 void
 test_decompose_excel(void)
 {
-    cut_assert_equal_string("sample\n1\n2\n3\n4\n5\n6\n7\n", decompose_fixture("sample.xls", NULL));
+    cut_assert_equal_string("sample\n1\n2\n3\n4\n5\n6\n7\n",
+                            decompose_fixture("sample.xls"));
 }
 
 void
 test_decompose_excel_2007(void)
 {
-    cut_assert_equal_string("sample\n", decompose_fixture("sample_2007.xlsx", NULL));
+    cut_assert_equal_string("sample\n",
+                            decompose_fixture("sample_2007.xlsx"));
 }

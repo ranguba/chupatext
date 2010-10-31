@@ -54,12 +54,12 @@ void
 test_decompose_ppt(void)
 {
     cut_assert_equal_string("Sample Title\n",
-                            decompose_msppt("sample.ppt", NULL));
+                            decompose_msppt("sample.ppt"));
 }
 
 void
 test_decompose_ppt_ja(void)
 {
     cut_assert_equal_string("Sample Title\nこんにちゅぱ\n",
-                            decompose_msppt("sample_ja.ppt", NULL));
+                            decompose_msppt("sample_ja.ppt"));
 }

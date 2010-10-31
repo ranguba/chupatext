@@ -29,12 +29,14 @@
 
 void           chupa_test_setup                   (void);
 void           chupa_test_teardown                (void);
-const gchar   *chupa_test_decompose_fixture       (const char *fixture, GError **error);
-const gchar   *chupa_test_decompose_data          (const char *text, gsize size, GError **error);
-ChupaData     *chupa_test_decomposer_from_data    (const char *text, gsize size, GError **error);
-ChupaData     *chupa_test_decomposer_from_fixture (const char *fixture, GError **error);
-const gchar   *chupa_test_decompose_all           (ChupaData *text_input, GError **error);
-ChupaMetadata *chupa_test_decompose_metadata      (ChupaData *text_input, GError **error);
-ChupaMetadata *chupa_test_metadata_fixture        (const char *fixture, GError **error);
+const gchar   *chupa_test_decompose_fixture       (const gchar *fixture);
+const gchar   *chupa_test_decompose_data          (const gchar *text,
+                                                   gsize        size);
+ChupaData     *chupa_test_decomposer_from_data    (const gchar *text,
+                                                   gsize        size);
+ChupaData     *chupa_test_decomposer_from_fixture (const gchar *fixture);
+const gchar   *chupa_test_decompose_all           (ChupaData   *text_input);
+ChupaMetadata *chupa_test_decompose_metadata      (ChupaData   *text_input);
+ChupaMetadata *chupa_test_metadata_fixture        (const gchar *fixture);
 
 #endif

@@ -39,5 +39,5 @@ teardown(void)
 void
 test_decompose_zip(void)
 {
-    cut_assert_equal_string("sample\n", decompose_zip("sample.zip", NULL));
+    cut_assert_equal_string("sample\n", decompose_zip("sample.zip"));
 }

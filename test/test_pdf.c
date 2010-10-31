@@ -41,7 +41,7 @@ teardown(void)
 void
 test_decompose_pdf(void)
 {
-    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf", NULL));
+    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf"));
 }
 
 void
@@ -50,13 +50,15 @@ test_decompose_pdf_multi_pages(void)
     cut_assert_equal_string("page1\n\f"
                             "2 ページ目\n\f"
                             "page3\n",
-                            decompose_pdf("sample_multi_pages.pdf", NULL));
+                            decompose_pdf("sample_multi_pages.pdf"));
 }
 
 void
 test_pdf_info(void)
 {
-    ChupaMetadata *meta =
-        chupa_test_metadata_fixture("sample.pdf", NULL);
-    cut_assert_match("^20[0-9][0-9]-[01][0-9]-[0-3][0-9]", chupa_metadata_get_first_value(meta, "creation-time"));
+    ChupaMetadata *metadata;
+
+    metadata = chupa_test_metadata_fixture("sample.pdf");
+    cut_assert_match("^20[0-9][0-9]-[01][0-9]-[0-3][0-9]",
+                     chupa_metadata_get_first_value(metadata, "creation-time"));
 }

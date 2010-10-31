@@ -46,7 +46,7 @@ void
 test_decompose_html(void)
 {
     cut_assert_equal_string("This is a sample.",
-                            decompose_fixture("sample.html", NULL));
+                            decompose_fixture("sample.html"));
 }
 
 void
@@ -54,7 +54,7 @@ test_decompose_html_title(void)
 {
     ChupaMetadata *metadata;
 
-    metadata = chupa_test_metadata_fixture("sample.html", NULL);
+    metadata = chupa_test_metadata_fixture("sample.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("Sample HTML File",
                             chupa_metadata_get_first_value(metadata, "title"));
@@ -64,14 +64,14 @@ void
 test_decompose_html_utf8(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
-                            decompose_fixture("sample_utf8.html", NULL));
+                            decompose_fixture("sample_utf8.html"));
 }
 
 void
 test_decompose_html_euc_jp(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
-                            decompose_fixture("sample_euc_jp.html", NULL));
+                            decompose_fixture("sample_euc_jp.html"));
 }
 
 void
@@ -79,7 +79,7 @@ test_decompose_html_charset_none(void)
 {
     ChupaMetadata *metadata;
 
-    metadata = chupa_test_metadata_fixture("sample.html", NULL);
+    metadata = chupa_test_metadata_fixture("sample.html");
     cut_assert_not_null(metadata);
     cut_assert_null(chupa_metadata_get_first_value(metadata, "charset"));
 }
@@ -89,7 +89,7 @@ test_decompose_html_charset_utf8(void)
 {
     ChupaMetadata *metadata;
 
-    metadata = chupa_test_metadata_fixture("sample_utf8.html", NULL);
+    metadata = chupa_test_metadata_fixture("sample_utf8.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("utf-8",
                             chupa_metadata_get_first_value(metadata, "charset"));
@@ -100,7 +100,7 @@ test_decompose_html_charset_euc_jp(void)
 {
     ChupaMetadata *metadata;
 
-    metadata = chupa_test_metadata_fixture("sample_euc_jp.html", NULL);
+    metadata = chupa_test_metadata_fixture("sample_euc_jp.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("euc-jp",
                             chupa_metadata_get_first_value(metadata, "charset"));

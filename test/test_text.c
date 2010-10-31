@@ -44,5 +44,6 @@ test_decompose_text_plain (void)
 {
     static const char plain_text[] = "plain text\n";
 
-    cut_assert_equal_string(plain_text, decompose_text(plain_text, sizeof(plain_text) - 1, NULL));
+    cut_assert_equal_string(plain_text,
+                            decompose_text(plain_text, sizeof(plain_text) - 1));
 }

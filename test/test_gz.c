@@ -39,5 +39,5 @@ teardown(void)
 void
 test_decompose_tar_gz(void)
 {
-    cut_assert_equal_string("sample\n", decompose_tar_gz("sample.tar.gz", NULL));
+    cut_assert_equal_string("sample\n", decompose_tar_gz("sample.tar.gz"));
 }
