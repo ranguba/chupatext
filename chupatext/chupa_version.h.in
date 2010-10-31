@@ -26,7 +26,7 @@
 G_BEGIN_DECLS
 
 /**
- * SECTION: chupa-version
+ * SECTION: chupa_version
  * @title: Version Information
  * @short_description: Variables and macros to check the ChupaText version
  *
