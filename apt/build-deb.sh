@@ -36,6 +36,10 @@ if aptitude show libpoppler-glib5 > /dev/null 2>&1; then
     DEPENDED_PACKAGES=$(echo $DEPENDED_PACKAGES | sed -e 's/libpoppler-glib4/libpoppler-glib5/')
 fi
 
+if aptitude show rubygems1.9.1 > /dev/null 2>&1; then
+    DEPENDED_PACKAGES="$DEPENDED_PACKAGES rubygems1.9.1"
+fi
+
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
 run aptitude clean
 

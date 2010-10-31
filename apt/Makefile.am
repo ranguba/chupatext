@@ -1,9 +1,7 @@
-RUBYFORGE_PATH = /var/www/gforge-projects/$(RUBYFORGE_PROJECT_NAME)
-SERVER_PATH = $(RUBYFORGE_USER)@rubyforge.org:$(RUBYFORGE_PATH)
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
-CODE_NAMES = squeeze unstable maverick
+CODE_NAMES = squeeze unstable lucid maverick
 
 release: dist build update sign upload
 
@@ -22,14 +20,14 @@ sign:
 upload:
 	for distribution in $(DISTRIBUTIONS); do			\
 	  (cd $${distribution};						\
-	   rsync -avz dists pool $(SERVER_PATH)/$${distribution};	\
+	   rsync -avz dists pool $(RSYNC_PATH)/$${distribution};	\
 	  );								\
 	done
 
 download:
 	for distribution in $(DISTRIBUTIONS); do			\
 	  (cd $${distribution};						\
-	   rsync -avz $(SERVER_PATH)/$${distribution}/pool/ pool;	\
+	   rsync -avz $(RSYNC_PATH)/$${distribution}/pool/ pool;	\
 	  );								\
 	done
 
