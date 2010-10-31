@@ -90,4 +90,4 @@ uses UTF-8 encoding.
 == SEE ALSO
 
 unzip(1), gunzip(1), tar(1), pdftotext(1), wvText(1),
-ssconvert(1), ooffice(1)
+ssconvert(1), ooffice(1), unoconv(1)

@@ -43,6 +43,7 @@ Optional:
   * Poppler
   * wv
   * OpenOffice.org
+  * unoconv
   * ruby >= 1.9.2
 
 == Get

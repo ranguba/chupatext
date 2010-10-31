@@ -86,4 +86,4 @@ ChupaTextは様々な形式のファイルからテキスト情報とメタ情�
 == 関連項目
 
 unzip(1), gunzip(1), tar(1), pdftotext(1), wvText(1),
-ssconvert(1), ooffice(1)
+ssconvert(1), ooffice(1), unoconv(1)
