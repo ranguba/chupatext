@@ -29,7 +29,6 @@
 #include <goffice/goffice.h>
 #include <gsf/gsf-output-memory.h>
 #include "excel/workbook-view.h"
-#include "excel/command-context-stderr.h"
 #include "excel/libgnumeric.h"
 #include "excel/gnumeric-gconf.h"
 #include "excel/gnm-plugin.h"
@@ -37,6 +36,162 @@
 static const gchar EXCEL_MIME_TYPE[] = "application/vnd.ms-excel";
 static const gchar OFFICE_OPEN_XML_WORKBOOK_MIME_TYPE[] =               \
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+/* ChupaExcelCommandContext */
+#define CHUPA_TYPE_EXCEL_COMMAND_CONTEXT        \
+    (chupa_type_excel_command_context)
+#define CHUPA_EXCEL_COMMAND_CONTEXT(obj)                                \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj),                                  \
+                                CHUPA_TYPE_EXCEL_COMMAND_CONTEXT,       \
+                                ChupaExcelCommandContext))
+#define CHUPA_EXCEL_COMMAND_CONTEXT_CLASS(klass)                \
+    (G_TYPE_CHECK_CLASS_CAST((klass),                           \
+                             CHUPA_TYPE_EXCEL_COMMAND_CONTEXT,  \
+                             ChupaExcelCommandContextClass))
+#define CHUPA_IS_EXCEL_COMMAND_CONTEXT(obj)                             \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj),                                  \
+                                CHUPA_TYPE_EXCEL_COMMAND_CONTEXT))
+#define CHUPA_IS_EXCEL_COMMAND_CONTEXT_CLASS(klass)             \
+    (G_TYPE_CHECK_CLASS_TYPE((klass),                           \
+                             CHUPA_TYPE_EXCEL_COMMAND_CONTEXT)
+#define CHUPA_EXCEL_COMMAND_CONTEXT_GET_CLASS(obj)                      \
+    (G_TYPE_INSTANCE_GET_CLASS((obj),                                   \
+                               CHUPA_TYPE_EXCEL_COMMAND_CONTEXT,        \
+                               ChupaExcelCommandContextClass)
+
+typedef struct _ChupaExcelCommandContext ChupaExcelCommandContext;
+typedef struct _ChupaExcelCommandContextClass ChupaExcelCommandContextClass;
+
+struct _ChupaExcelCommandContext
+{
+    GObject parent_object;
+};
+
+struct _ChupaExcelCommandContextClass
+{
+    GObjectClass parent_class;
+};
+
+static GType chupa_type_excel_command_context = 0;
+
+static GOCmdContext *
+command_context_new(void)
+{
+    return g_object_new(CHUPA_TYPE_EXCEL_COMMAND_CONTEXT, NULL);
+}
+
+static void
+command_context_error_error(GOCmdContext *context, GError *error)
+{
+    chupa_log_g_error(error, "[excel][error]");
+}
+
+static void
+command_context_report_goffice_error_info(GOErrorInfo *error, gint depth)
+{
+    GSList *node;
+    const gchar *message;
+
+    message = go_error_info_peek_message(error);
+    if (message) {
+        GOSeverity severity;
+
+        severity = go_error_info_peek_severity(error);
+        switch (severity) {
+        case GO_WARNING:
+            chupa_warning("%*s[excel][warning]: %s", depth, "", message);
+            break;
+        default:
+            chupa_error("%*s[excel][error]: %s", depth, "", message);
+            break;
+        }
+        depth++;
+    }
+
+    for (node = go_error_info_peek_details(error);
+         node;
+         node = g_slist_next(node)) {
+        GOErrorInfo *error_detail = node->data;
+        command_context_report_goffice_error_info(error_detail, depth);
+    }
+}
+
+static void
+command_context_error_info(GOCmdContext *context, GOErrorInfo *error)
+{
+    command_context_report_goffice_error_info(error, 0);
+}
+
+static gchar *
+command_context_get_password (GOCmdContext *context, const gchar *filename)
+{
+    return NULL;
+}
+
+static void
+command_context_set_sensitive(GOCmdContext *context, gboolean sensitive)
+{
+}
+
+static void
+command_context_progress_set(GOCmdContext *context, gdouble value)
+{
+}
+
+static void
+command_context_progress_message_set(GOCmdContext *context, const gchar *message)
+{
+}
+
+static void
+command_context_init(ChupaExcelCommandContext *context)
+{
+}
+
+static void
+command_context_interface_init(GOCmdContextClass *context_class)
+{
+    context_class->get_password         = command_context_get_password;
+    context_class->set_sensitive        = command_context_set_sensitive;
+    context_class->progress_set         = command_context_progress_set;
+    context_class->progress_message_set = command_context_progress_message_set;
+    context_class->error.error          = command_context_error_error;
+    context_class->error.error_info     = command_context_error_info;
+}
+
+static void
+command_context_register_type(GTypeModule *type_module, GList **registered_types)
+{
+    static const GTypeInfo info = {
+        sizeof(ChupaExcelCommandContextClass),
+        (GBaseInitFunc)NULL,
+        (GBaseFinalizeFunc)NULL,
+        (GClassInitFunc)NULL,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof(ChupaExcelCommandContext),
+        0,
+        (GInstanceInitFunc)command_context_init,
+    };
+    static GInterfaceInfo interface_info = {
+        (GInterfaceInitFunc)command_context_interface_init,
+        (GInterfaceFinalizeFunc)NULL,
+        NULL /* interface data */
+    };
+    const gchar *type_name = "ChupaExcelCommandContext";
+
+    chupa_type_excel_command_context =
+        g_type_module_register_type(type_module,
+                                    G_TYPE_OBJECT,
+                                    type_name,
+                                    &info, 0);
+    g_type_module_add_interface(type_module,
+                                chupa_type_excel_command_context,
+                                GO_TYPE_CMD_CONTEXT,
+                                &interface_info);
+
+    *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
+}
 
 /* ChupaExcelDecomposer */
 #define CHUPA_TYPE_EXCEL_DECOMPOSER             \
@@ -73,7 +228,7 @@ struct _ChupaExcelDecomposerClass
     ChupaDecomposerClass parent_class;
 };
 
-static GOCmdContext *cc;
+static GOCmdContext *command_context;
 static GType chupa_type_excel_decomposer = 0;
 
 static const char export_id[] = "Gnumeric_stf:stf_csv";
@@ -107,7 +262,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
 {
     GOFileSaver *fs = NULL;
     GOFileOpener *fo = NULL;
-    GOIOContext *io_context = go_io_context_new(cc);
+    GOIOContext *io_context;
     WorkbookView *wbv = NULL;
     GsfInput *source;
     GsfOutput *tmpout;
@@ -117,6 +272,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     GPrintFunc old_print_error_func;
     ChupaMetadata *metadata;
 
+    io_context = go_io_context_new(command_context);
     fs = go_file_saver_for_id(export_id);
     g_return_val_if_fail(fs, FALSE);
     source = chupa_data_input_new(data);
@@ -306,13 +462,15 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 {
     GList *registered_types = NULL;
     GOErrorInfo	*plugin_errors = NULL;
-    gchar const *argv[1];
+    const gchar *argv[1];
+
+    command_context_register_type(type_module, &registered_types);
 
     argv[0] = g_get_prgname();
     gnm_pre_parse_init(1, argv);
     gnm_init();
-    cc = cmd_context_stderr_new();
-    gnm_plugins_init(GO_CMD_CONTEXT(cc));
+    command_context = command_context_new();
+    gnm_plugins_init(GO_CMD_CONTEXT(command_context));
     go_plugin_db_activate_plugin_list(go_plugins_get_available_plugins(),
                                       &plugin_errors);
     if (plugin_errors) {
@@ -331,7 +489,7 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 G_MODULE_EXPORT gboolean
 CHUPA_DECOMPOSER_QUIT(void)
 {
-    g_object_unref(cc);
+    g_object_unref(command_context);
     gnm_shutdown();
     gnm_pre_parse_shutdown();
 
