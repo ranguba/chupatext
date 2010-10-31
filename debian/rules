@@ -77,10 +77,10 @@ install/libchupatext-dev::
 
 install/chupatext-bin::
 	cp -ar debian/tmp/usr/bin/* debian/chupatext-bin/usr/bin/
-#	cp -ar debian/tmp/usr/share/man/man1/* \
-#		debian/chupatext-bin/usr/share/man/man1/
-#	cp -ar debian/tmp/usr/share/man/ja/man1/* \
-#		debian/chupatext-bin/usr/share/man/ja/man1/
+	cp -ar debian/tmp/usr/share/man/man1/* \
+		debian/chupatext-bin/usr/share/man/man1/
+	cp -ar debian/tmp/usr/share/man/ja/man1/* \
+		debian/chupatext-bin/usr/share/man/ja/man1/
 
 install/chupatext-decomposer-text::
 	cp -ar debian/tmp/usr/lib/chupatext/modules/decomposers/text.* \
