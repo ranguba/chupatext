@@ -52,6 +52,7 @@ struct _ChupaRubyDecomposerClass
     ChupaDecomposerClass parent_class;
 };
 
+static gboolean chupa_ruby_interpreter_initialized = FALSE;
 static GType chupa_type_ruby_decomposer = 0;
 static ChupaRubyDecomposerClass *decomposer_parent_class;
 
@@ -483,6 +484,7 @@ init_ruby_interpreter(GError **error)
         ruby_cleanup(status);
         return FALSE;
     }
+    chupa_ruby_interpreter_initialized = TRUE;
 
     return TRUE;
 }
@@ -536,7 +538,10 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 G_MODULE_EXPORT gboolean
 CHUPA_DECOMPOSER_QUIT(void)
 {
-    ruby_cleanup(0);
+    if (chupa_ruby_interpreter_initialized) {
+        ruby_cleanup(0);
+        chupa_ruby_interpreter_initialized = FALSE;
+    }
 
     return TRUE;
 }
