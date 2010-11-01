@@ -16,4 +16,4 @@
 # MA  02110-1301  USA
 
 require "tempfile"
-require "chupa"
+require "chupatext"
