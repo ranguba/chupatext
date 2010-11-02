@@ -52,13 +52,16 @@ struct _ChupaArchiveDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 
-    GsfInfile *(*get_infile)     (GsfInput     *input,
-                                  GError      **error);
+    GsfInfile *(*get_infile)     (ChupaArchiveDecomposer *decomposer,
+                                  GsfInput               *input,
+                                  GError                **error);
 };
 
 GType      chupa_archive_decomposer_get_type  (void) G_GNUC_CONST;
 
-GsfInfile *chupa_archive_decomoser_get_infile (ChupaArchiveDecomposer *decomposer);
+GsfInfile *chupa_archive_decomposer_get_infile(ChupaArchiveDecomposer *decomposer,
+                                               ChupaData              *data,
+                                               GError                **error);
 
 G_END_DECLS
 

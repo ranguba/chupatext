@@ -61,13 +61,20 @@ struct _ChupaTarDecomposerClass
 
 static GType chupa_type_tar_decomposer = 0;
 
+static GsfInfile *
+get_infile(ChupaArchiveDecomposer *archive_decomposer,
+           GsfInput *input, GError **error)
+{
+    return gsf_infile_tar_new(input, error);
+}
+
 static void
 decomposer_class_init(ChupaTarDecomposerClass *klass)
 {
     ChupaArchiveDecomposerClass *decomposer_class;
 
     decomposer_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);
-    decomposer_class->get_infile = gsf_infile_tar_new;
+    decomposer_class->get_infile = get_infile;
 }
 
 static void

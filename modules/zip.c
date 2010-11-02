@@ -62,13 +62,20 @@ struct _ChupaZipDecomposerClass
 
 static GType chupa_type_zip_decomposer = 0;
 
+static GsfInfile *
+get_infile(ChupaArchiveDecomposer *archive_decomposer,
+           GsfInput *input, GError **error)
+{
+    return gsf_infile_zip_new(input, error);
+}
+
 static void
 decomposer_class_init(ChupaZipDecomposerClass *klass)
 {
     ChupaArchiveDecomposerClass *archive_decomposer_class;
 
     archive_decomposer_class = CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass);
-    archive_decomposer_class->get_infile = gsf_infile_zip_new;
+    archive_decomposer_class->get_infile = get_infile;
 }
 
 static void

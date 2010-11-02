@@ -32,16 +32,12 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaData *data, GError **error)
 {
     GsfInfile *infile;
-    GsfInput *input;
     gboolean result = TRUE;
-    ChupaArchiveDecomposerClass *arch_class;
+    ChupaArchiveDecomposer *archive_decomposer;
     int i, num;
 
-    g_return_val_if_fail(CHUPA_IS_ARCHIVE_DECOMPOSER(decomposer), FALSE);
-    g_return_val_if_fail(CHUPA_IS_DATA(data), FALSE);
-    arch_class = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(decomposer);
-    input = chupa_data_input_new(data);
-    infile = arch_class->get_infile(input, error);
+    archive_decomposer = CHUPA_ARCHIVE_DECOMPOSER(decomposer);
+    infile = chupa_archive_decomposer_get_infile(archive_decomposer, data, error);
     if (!infile) {
         return FALSE;
     }
@@ -82,4 +78,20 @@ chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
     ChupaDecomposerClass *decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
 
     decomposer_class->feed = feed;
+}
+
+GsfInfile *
+chupa_archive_decomposer_get_infile(ChupaArchiveDecomposer *decomposer,
+                                    ChupaData *data,
+                                    GError **error)
+{
+    ChupaArchiveDecomposerClass *klass;
+    GsfInput *input;
+    GsfInfile *infile;
+
+    klass = CHUPA_ARCHIVE_DECOMPOSER_GET_CLASS(decomposer);
+    input = chupa_data_input_new(data);
+    infile = klass->get_infile(decomposer, input, error);
+    g_object_unref(input);
+    return infile;
 }
