@@ -440,6 +440,54 @@ add_load_path(void)
     ruby_incpush(ruby_library_dir);
 }
 
+static void
+ruby_init_without_signal_change (void)
+{
+    RETSIGTYPE (*sigint_handler)_((int));
+#ifdef SIGHUP
+    RETSIGTYPE (*sighup_handler)_((int));
+#endif
+#ifdef SIGQUIT
+    RETSIGTYPE (*sigquit_handler)_((int));
+#endif
+#ifdef SIGTERM
+    RETSIGTYPE (*sigterm_handler)_((int));
+#endif
+#ifdef SIGSEGV
+    RETSIGTYPE (*sigsegv_handler)_((int));
+#endif
+
+    sigint_handler = signal(SIGINT, SIG_DFL);
+#ifdef SIGHUP
+    sighup_handler = signal(SIGHUP, SIG_DFL);
+#endif
+#ifdef SIGQUIT
+    sigquit_handler = signal(SIGQUIT, SIG_DFL);
+#endif
+#ifdef SIGTERM
+    sigterm_handler = signal(SIGTERM, SIG_DFL);
+#endif
+#ifdef SIGSEGV
+    sigsegv_handler = signal(SIGSEGV, SIG_DFL);
+#endif
+
+    ruby_init();
+
+    signal(SIGINT, sigint_handler);
+#ifdef SIGHUP
+    signal(SIGHUP, sighup_handler);
+#endif
+#ifdef SIGQUIT
+    signal(SIGQUIT, sigquit_handler);
+#endif
+#ifdef SIGTERM
+    signal(SIGTERM, sigterm_handler);
+#endif
+#ifdef SIGSEGV
+    signal(SIGSEGV, sigsegv_handler);
+#endif
+}
+
 static gboolean
 init_ruby_interpreter(GError **error)
 {
@@ -461,7 +509,7 @@ init_ruby_interpreter(GError **error)
     args[argc] = NULL;
     ruby_sysinit(&argc, &argv);
     ruby_init_stack(chupa_get_base_address());
-    ruby_init();
+    ruby_init_without_signal_change();
     add_load_path();
     argc = 1;
     args[argc++] = "-e;";
