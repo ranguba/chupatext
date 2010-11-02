@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,8 +19,8 @@
  *  MA  02110-1301  USA
  */
 
-#ifndef CHUPATEXT_ARCHIVE_DECOMPOSER_H
-#define CHUPATEXT_ARCHIVE_DECOMPOSER_H
+#ifndef CHUPA_ARCHIVE_DECOMPOSER_H
+#define CHUPA_ARCHIVE_DECOMPOSER_H
 
 #include <chupatext/chupa_decomposer.h>
 #include <glib.h>
@@ -51,13 +52,17 @@ struct _ChupaArchiveDecomposerClass
 {
     ChupaDecomposerClass parent_class;
 
-    GsfInfile *(*get_infile)(GsfInput *input, GError **error);
-    gboolean (*feed_component)(ChupaFeeder *feeder, ChupaData *data, GError **error);
+    GsfInfile *(*get_infile)     (GsfInput     *input,
+                                  GError      **error);
+    gboolean   (*feed_component) (ChupaFeeder *feeder,
+                                  ChupaData   *data,
+                                  GError     **error);
 };
 
-GType chupa_archive_decomposer_get_type(void) G_GNUC_CONST;
-GsfInfile *chupa_archive_decomoser_get_infile(ChupaArchiveDecomposer *);
+GType      chupa_archive_decomposer_get_type  (void) G_GNUC_CONST;
+
+GsfInfile *chupa_archive_decomoser_get_infile (ChupaArchiveDecomposer *decomposer);
 
 G_END_DECLS
 
-#endif  /* CHUPATEXT_ARCHIVE_DECOMPOSER_H */
+#endif  /* CHUPA_ARCHIVE_DECOMPOSER_H */

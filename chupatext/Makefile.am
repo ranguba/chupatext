@@ -42,7 +42,7 @@ libchupatext_la_SOURCES =			\
 	chupa_memory_input_stream.c		\
 	chupa_logger.c				\
 	chupa_decomposer.c			\
-	archive_decomposer.c			\
+	chupa_archive_decomposer.c		\
 	chupa_utils.c				\
 	chupa_version.c				\
 	chupa_types.c				\
@@ -55,7 +55,7 @@ libchupatext_la_LDFLAGS =			\
 	$(GIO_UNIX_LIBS)
 
 chupa_public_headers =				\
-	archive_decomposer.h			\
+	chupa_archive_decomposer.h		\
 	chupa_decomposer.h			\
 	chupa_init.h				\
 	chupa_metadata.h			\

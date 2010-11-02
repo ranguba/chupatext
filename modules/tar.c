@@ -20,7 +20,7 @@
  */
 
 #include <chupatext/chupa_decomposer_module.h>
-#include <chupatext/archive_decomposer.h>
+#include <chupatext/chupa_archive_decomposer.h>
 #include <glib.h>
 #include <gsf/gsf-infile-tar.h>
 
