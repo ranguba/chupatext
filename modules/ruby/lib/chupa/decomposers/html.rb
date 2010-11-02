@@ -21,7 +21,8 @@ class Chupa::HTML < Chupa::BaseDecomposer
   mime_types "text/html"
 
   def decompose
-    doc = Nokogiri::HTML.parse(@source)
+    data = @source.read
+    doc = Nokogiri::HTML.parse(data, nil, guess_encoding(data))
     if title = (doc % "head/title")
       metadata["title"] = title.text
     end
@@ -36,5 +37,15 @@ class Chupa::HTML < Chupa::BaseDecomposer
     end
     metadata["output-length"] = body.bytesize.to_s
     accepted(body)
+  end
+
+  private
+  def guess_encoding(data)
+    case data
+    when /\A<\?xml.+?encoding=(['"])([a-zA-Z0-9_-]+)\1/
+      $2
+    else
+      nil
+    end
   end
 end
