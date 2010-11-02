@@ -30,6 +30,8 @@
 
 static GList *descriptions = NULL;
 
+static void dispose_factory(ChupaDecomposerDescription *description);
+
 static void
 load_decomposer_description (const gchar *path)
 {
@@ -120,6 +122,7 @@ chupa_decomposer_description_init (void)
 void
 chupa_decomposer_description_quit (void)
 {
+    g_list_foreach(descriptions, (GFunc)dispose_factory, NULL);
     g_list_foreach(descriptions, (GFunc)g_object_unref, NULL);
     g_list_free(descriptions);
     descriptions = NULL;
@@ -218,6 +221,19 @@ init (ChupaDecomposerDescription *description)
 }
 
 static void
+dispose_factory(ChupaDecomposerDescription *description)
+{
+    ChupaDecomposerDescriptionPrivate *priv;
+
+    priv = CHUPA_DECOMPOSER_DESCRIPTION_GET_PRIVATE(description);
+
+    if (priv->factory) {
+        g_object_unref(priv->factory);
+        priv->factory = NULL;
+    }
+}
+
+static void
 dispose(GObject *object)
 {
     ChupaDecomposerDescriptionPrivate *priv;
@@ -240,10 +256,7 @@ dispose(GObject *object)
         priv->mime_types = NULL;
     }
 
-    if (priv->factory) {
-        g_object_unref(priv->factory);
-        priv->factory = NULL;
-    }
+    dispose_factory(CHUPA_DECOMPOSER_DESCRIPTION(object));
 
     G_OBJECT_CLASS(chupa_decomposer_description_parent_class)->dispose(object);
 }
