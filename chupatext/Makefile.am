@@ -45,6 +45,7 @@ libchupatext_la_SOURCES =			\
 	archive_decomposer.c			\
 	chupa_utils.c				\
 	chupa_version.c				\
+	chupa_types.c				\
 	$(EMPTY)
 
 libchupatext_la_LDFLAGS =			\
