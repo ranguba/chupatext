@@ -27,6 +27,7 @@ void test_decompose_html_euc_jp(void);
 void test_decompose_html_charset_none(void);
 void test_decompose_html_charset_utf8(void);
 void test_decompose_html_charset_euc_jp(void);
+void test_non_ascii_text_before_charset(void);
 
 void
 setup(void)
@@ -104,4 +105,15 @@ test_decompose_html_charset_euc_jp(void)
     cut_assert_not_null(metadata);
     cut_assert_equal_string("euc-jp",
                             chupa_metadata_get_first_value(metadata, "charset"));
+}
+
+void
+test_non_ascii_text_before_charset(void)
+{
+    ChupaMetadata *metadata;
+
+    metadata = chupa_test_metadata_fixture("gnu_philosophy.ru.html");
+    cut_assert_not_null(metadata);
+    cut_assert_equal_string("Философия Проекта GNU - Фонд Свободного ПО (FSF)",
+                           chupa_metadata_get_first_value(metadata, "title"));
 }
