@@ -25,6 +25,9 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 #include <gsf/gsf-input.h>
+#include <gsf/gsf-input-impl.h>
+
+#include "chupa_metadata.h"
 
 G_BEGIN_DECLS
 
@@ -53,9 +56,10 @@ struct _ChupaGsfInputStreamClass
     GInputStreamClass parent_class;
 };
 
-GType                chupa_gsf_input_stream_get_type  (void) G_GNUC_CONST;
-ChupaGsfInputStream *chupa_gsf_input_stream_new       (GsfInput *input);
-GsfInput            *chupa_gsf_input_stream_get_input (ChupaGsfInputStream *stream);
+GType                chupa_gsf_input_stream_get_type     (void) G_GNUC_CONST;
+ChupaGsfInputStream *chupa_gsf_input_stream_new          (GsfInput *input);
+GsfInput            *chupa_gsf_input_stream_get_input    (ChupaGsfInputStream *stream);
+ChupaMetadata       *chupa_gsf_input_stream_get_metadata (ChupaGsfInputStream *stream);
 
 G_END_DECLS
 

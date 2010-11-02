@@ -191,3 +191,17 @@ chupa_gsf_input_stream_get_input(ChupaGsfInputStream *stream)
     priv = CHUPA_GSF_INPUT_STREAM_GET_PRIVATE(stream);
     return priv->input;
 }
+
+ChupaMetadata *
+chupa_gsf_input_stream_get_metadata(ChupaGsfInputStream *stream)
+{
+    ChupaMetadata *metadata;
+    ChupaGsfInputStreamPrivate *priv;
+
+    priv = CHUPA_GSF_INPUT_STREAM_GET_PRIVATE(stream);
+    metadata = chupa_metadata_new();
+    chupa_metadata_set_content_length(metadata, gsf_input_size(priv->input));
+    chupa_metadata_add_value(metadata, "filename", gsf_input_name(priv->input));
+
+    return metadata;
+}
