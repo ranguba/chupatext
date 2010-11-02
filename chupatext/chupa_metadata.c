@@ -338,8 +338,7 @@ chupa_metadata_get_size (ChupaMetadata *metadata, const gchar *key, GError **err
 void
 chupa_metadata_set_content_length (ChupaMetadata *metadata, gsize length)
 {
-    /* FIXME: use add_size() */
-    chupa_metadata_add_int(metadata, "content-length", length);
+    chupa_metadata_add_size(metadata, "content-length", length);
 }
 
 gsize
