@@ -35,7 +35,7 @@ tgz_uris.each do |tgz_uri|
 end
 
 chuparuby_dir = test_lib_dir + "chuparuby"
-chuparuby_ext_dir = chuparuby_dir + "ext" + "chupa"
+chuparuby_ext_dir = chuparuby_dir + "ext" + "chupatext"
 chuparuby_lib_dir = chuparuby_dir + "lib"
 unless chuparuby_dir.exist?
   Dir.chdir(test_lib_dir.to_s) do
