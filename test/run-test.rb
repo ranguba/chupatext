@@ -37,13 +37,22 @@ end
 chuparuby_dir = test_lib_dir + "chuparuby"
 chuparuby_ext_dir = chuparuby_dir + "ext" + "chupatext"
 chuparuby_lib_dir = chuparuby_dir + "lib"
+chuparuby_force_make = false
 unless chuparuby_dir.exist?
+  chuparuby_force_make = true
   Dir.chdir(test_lib_dir.to_s) do
     chuparuby_git_url = "git://github.com/ranguba/chuparuby.git"
     system("git", "clone", chuparuby_git_url) or exit(false)
   end
   Dir.chdir(chuparuby_ext_dir.to_s) do
     system(ENV["RUBY"], "extconf.rb") or exit(false)
+  end
+end
+if chuparuby_force_make or ENV["NO_MAKE"] != "yes"
+  Dir.chdir(chuparuby_dir.to_s) do
+    system("git", "pull", "--rebase") or exit(false)
+  end
+  Dir.chdir(chuparuby_ext_dir.to_s) do
     make_args = ["CPPFLAGS=-I#{top_src_dir}",
                  "LIBPATH=-L#{top_build_dir}/chupatext/.libs"]
     system(ENV["MAKE"], *make_args) or exit(false)
