@@ -62,7 +62,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
         g_object_unref(stream);
         g_object_unref(metadata);
-        result = arch_class->feed_component(feeder, data, error);
+        chupa_feeder_feed(feeder, data, error);
         g_object_unref(data);
         if (!result) {
             break;
@@ -82,6 +82,4 @@ chupa_archive_decomposer_class_init(ChupaArchiveDecomposerClass *klass)
     ChupaDecomposerClass *decomposer_class = CHUPA_DECOMPOSER_CLASS(klass);
 
     decomposer_class->feed = feed;
-
-    CHUPA_ARCHIVE_DECOMPOSER_CLASS(klass)->feed_component = chupa_feeder_feed;
 }
