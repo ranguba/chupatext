@@ -31,6 +31,7 @@ typedef struct _Field
     GType type;
     union {
         gint     integer;
+        gsize    size;
         gpointer pointer;
     } value;
     GDestroyNotify free_function;
@@ -306,6 +307,32 @@ chupa_metadata_get_time_val (ChupaMetadata *metadata, const gchar *key, GError *
     }
 
     return field->value.pointer;
+}
+
+void
+chupa_metadata_add_size (ChupaMetadata *metadata, const gchar *key, gsize size)
+{
+    Field *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    field = field_new(metadata, CHUPA_TYPE_SIZE);
+    field->value.size = size;
+    field->free_function = NULL;
+    g_hash_table_insert(priv->fields, g_strdup(key), field);
+}
+
+gsize
+chupa_metadata_get_size (ChupaMetadata *metadata, const gchar *key, GError **error)
+{
+    Field *field;
+
+    field = field_lookup(metadata, key, error);
+    if (!field) {
+        return 0;
+    }
+
+    return field->value.size;
 }
 
 void

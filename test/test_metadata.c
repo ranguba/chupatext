@@ -32,6 +32,8 @@ void test_foreach (void);
 void test_int (void);
 void test_int_error (void);
 void test_time_val (void);
+void test_size (void);
+void test_size_error (void);
 void test_content_length (void);
 
 static ChupaMetadata *metadata, *metadata2;
@@ -214,6 +216,30 @@ test_time_val (void)
     cut_assert_not_null(actual_time_val);
     cut_assert_equal_int(expected_time_val.tv_sec, actual_time_val->tv_sec);
     cut_assert_equal_int(expected_time_val.tv_usec, actual_time_val->tv_usec);
+}
+
+void
+test_size (void)
+{
+    metadata = chupa_metadata_new();
+    chupa_metadata_add_size(metadata, "hoge", 1);
+    cut_assert_equal_size(1, chupa_metadata_get_size(metadata, "hoge", NULL));
+}
+
+void
+test_size_error (void)
+{
+    const gchar *key;
+
+    key = "piyo";
+    metadata = chupa_metadata_new();
+    expected_error = g_error_new(CHUPA_METADATA_ERROR,
+                                 CHUPA_METADATA_ERROR_NOT_EXIST,
+                                 "requested key doesn't exist in metadata: <%s>",
+                                 "piyo");
+
+    cut_assert_equal_size(0, chupa_metadata_get_size(metadata, key, &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
