@@ -92,10 +92,9 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     } else {
         return FALSE;
     }
-    metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, "filename", new_filename->str);
+    gsf_input_set_name_from_filename(gzip_input, new_filename->str);
     g_string_free(new_filename, TRUE);
-    chupa_metadata_set_content_length(metadata, gsf_input_size(gzip_input));
+    metadata = chupa_gsf_input_stream_get_metadata(stream);
     data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
     g_object_unref(metadata);
     g_object_unref(stream);
