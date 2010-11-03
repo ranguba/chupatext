@@ -36,7 +36,6 @@ module Chupa
     end
 
     class OpenOffice < ExternalCommand
-      SCRIPT_DIR = ".openoffice.org/3/user/basic/Standard"
       SCRIPTS = [{
                    :name => "script.xlb",
                    :content => <<EOS
@@ -77,23 +76,25 @@ EOS
       def initialize(options={})
         super(options[:command] || "ooffice")
         @home_dir = Pathname.new(options[:home_dir] || "~/.chupa").expand_path
-        @script_dir = @home_dir + SCRIPT_DIR
       end
 
       def prepare
         unless File.directory?(@home_dir)
           FileUtils.mkdir_p(@home_dir)
         end
-        unless File.directory?(@script_dir)
+        base_directory = guess_base_directory
+        if base_directory.nil?
           unique_key = Digest::MD5.hexdigest(Time.now.to_s + Object.new.object_id.to_s)
           run("-headless", "macro:///Stop", unique_key,
               {:env => {"HOME" => @home_dir.to_s}})
           while (ps_str = `ps aux`).include?(unique_key)
             sleep(0.5)
           end
+          base_directory = guess_base_directory
         end
+        script_directory = @home_dir + base_directory + "3/user/basic/Standard"
         SCRIPTS.each do |script|
-          File.open(@script_dir + script[:name], "w") do |file|
+          File.open(script_directory + script[:name], "w") do |file|
             file.puts(script[:content])
           end
         end
@@ -117,6 +118,14 @@ EOS
       def home_dir
         @home_dir.to_s
       end
+
+      private
+      def guess_base_directory
+        [".libreoffice", ".openoffice.org"].find do |base_directory|
+          script_dir = @home_dir + base_directory
+          script_dir.exist?
+        end
+      end
     end
 
     class << self
@@ -133,6 +142,7 @@ EOS
         [unoconv,
          open_office("ooffice"),
          open_office("soffice"),
+         open_office("/opt/libreoffice.org3/program/soffice"),
          open_office("/opt/openoffice.org3/program/soffice")].find do |command|
           command.exist?
         end
