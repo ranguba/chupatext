@@ -34,26 +34,48 @@ ChupaTextは様々な形式のファイルからテキスト情報とメタ情�
 
 == 出力フォーマット
 
+注意: 以下の記述はまだ案の段階です。まだ実装されていません。
+
 ChupaTextで抽出されたテキスト情報とメタ情報はMIME形式で出力されます。出
 力のヘッダーフィールドはメタ情報を、本文はテキスト情報を表しています。
 ChupaTextがメタ情報として必ず出力するフィールドは以下のものがあります。
 
 : Content-Length
-   出力されたテキストの長さを表わします
+   出力されたテキストの長さ。
 
 : Content-Type
-   常に text/plain; charset=UTF-8 を出力します
+   常に"text/plain; charset=UTF-8"。
 
 : Original-Filename
-   入力ファイル名を表します
+   入力ファイル名。
 
 : Original-Content-Type
-   入力ファイルのMIMEタイプに加え、判明した場合にはエンコーディング情報を出力します
+   入力ファイルのMIMEタイプ。可能であれば以下のパラメータも
+   加わる。
+     * charset: 入力ファイルのエンコーディング情報。
+     * name: 入力ファイル名。
+
+: Original-Content-Disposition
+   入力ファイルを表示するときに利用する情報。タイプは常に"inline"。
+     * filename: 入力ファイル名
+     * creation-date: 入力ファイルの作成時刻。
+     * modification-date: 入力ファイルの最終更新時刻。
+     * size: 入力ファイルのバイト数。
+     * read-date: 入力ファイルを読み込んだ時刻。
 
 また、以下のフィールドはメタ情報が存在する場合のみ出力されます。
 
 : Title
-   入力ファイルのタイトルを出力します
+   入力ファイルのタイトル。
+
+: Author
+   入力ファイルの作成者。
+
+: Last-Modified-Time
+   入力ファイルの最終変更時刻。
+
+: Creation-Time
+   入力ファイルの作成時刻。
 
 == オプション
 
