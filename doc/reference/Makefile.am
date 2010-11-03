@@ -177,4 +177,4 @@ upload: docs
 	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --language=ja tmp/reference/ja/*.html
-	rsync -avz --delete tmp/reference $(RSYNC_PATH)/$(PACKAGE)/
+	rsync -avz --delete tmp/reference/ $(RSYNC_PATH)/$(PACKAGE)/
