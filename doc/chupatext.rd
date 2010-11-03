@@ -40,12 +40,12 @@ It also supports the following archive and compression formats:
 : -h, --help
    chupatext shows help message and exits.
 
-: -j, --json
-   chupatext outputs text and metadata extraction result as
-   JSON format.
+# : -j, --json
+#    chupatext outputs text and metadata extraction result as
+#    JSON format.
 
-   chupatext outputs a hash object for a file but bracket
-   that surrounds all hashs isn't included.
+#    chupatext outputs a hash object for a file but bracket
+#    that surrounds all hashs isn't included.
 
 : -i, --ignore-errors
    chupatext ignores all errors occurred in extraction.

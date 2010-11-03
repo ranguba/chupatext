@@ -172,10 +172,12 @@ main(int argc, char **argv)
     GOptionContext *ctx;
     struct output_info uinfo;
     GOptionEntry opts[] = {
+/* DISABLED.
         {
             "json", 'j', 0, G_OPTION_ARG_NONE, NULL,
             "output in JSON", NULL
         },
+*/
         {
             "ignore-errors", 'i', 0, G_OPTION_ARG_NONE, NULL,
             "ignore errors while extracting", NULL
@@ -191,7 +193,7 @@ main(int argc, char **argv)
         { NULL }
     };
     i = 0;
-    opts[i++].arg_data = &json;
+    /* opts[i++].arg_data = &json; */
     opts[i++].arg_data = &ignore_errors;
     opts[i++].arg_data = &uinfo.prefix;
     opts[i++].arg_data = &version;
