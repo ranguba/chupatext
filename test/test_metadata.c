@@ -183,7 +183,7 @@ void
 test_int (void)
 {
     metadata = chupa_metadata_new();
-    chupa_metadata_add_int(metadata, "foo", 1);
+    chupa_metadata_set_int(metadata, "foo", 1);
     cut_assert_equal_int(1, chupa_metadata_get_int(metadata, "foo", NULL));
 }
 
@@ -210,7 +210,7 @@ test_time_val (void)
 
     metadata = chupa_metadata_new();
     g_get_current_time(&expected_time_val);
-    chupa_metadata_add_time_val(metadata, "last-modified", &expected_time_val);
+    chupa_metadata_set_time_val(metadata, "last-modified", &expected_time_val);
     actual_time_val = chupa_metadata_get_time_val(metadata, "last-modified", NULL);
 
     cut_assert_not_null(actual_time_val);
@@ -222,7 +222,7 @@ void
 test_size (void)
 {
     metadata = chupa_metadata_new();
-    chupa_metadata_add_size(metadata, "hoge", 1);
+    chupa_metadata_set_size(metadata, "hoge", 1);
     cut_assert_equal_size(1, chupa_metadata_get_size(metadata, "hoge", NULL));
 }
 
