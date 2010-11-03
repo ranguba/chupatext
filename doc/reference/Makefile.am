@@ -31,7 +31,8 @@ HFILE_GLOB =								\
 #CFILE_GLOB=$(top_srcdir)/chupatext/*.c
 
 # Headers to ignore
-IGNORE_HFILES =
+IGNORE_HFILES =					\
+	config.h
 
 INCLUDES =					\
 	-I$(top_srcdir)/chupatext		\
