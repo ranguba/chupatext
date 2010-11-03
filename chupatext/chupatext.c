@@ -199,8 +199,8 @@ main(int argc, char **argv)
 
     uinfo.prefix = NULL;
     g_type_init();
-    ctx = g_option_context_new(" input files...");
-    g_option_context_set_description(ctx, "sample wraper of libchupatext.");
+    ctx = g_option_context_new("FILE...");
+    g_option_context_set_description(ctx, "A text and metadata extractor.");
     g_option_context_set_help_enabled(ctx, TRUE);
     g_option_context_add_main_entries(ctx, opts, NULL);
     if (!g_option_context_parse(ctx, &argc, &argv, &err)) {
