@@ -347,7 +347,7 @@ chupa_metadata_get_content_length (ChupaMetadata *metadata)
     gsize length;
     GError *error = NULL;
 
-    length = chupa_metadata_get_int(metadata, "content-length", &error);
+    length = chupa_metadata_get_size(metadata, "content-length", &error);
     if (error) {
         g_error_free(error);
         return 0;
