@@ -74,9 +74,9 @@ end sub
 EOS
                  }]
 
-      def initialize(home_dir = nil)
-        super("ooffice")
-        @home_dir = Pathname.new(File.expand_path(home_dir || "~/.chupa"))
+      def initialize(options={})
+        super(options[:command] || "ooffice")
+        @home_dir = Pathname.new(options[:home_dir] || "~/.chupa").expand_path
         @script_dir = @home_dir + SCRIPT_DIR
       end
 
@@ -101,7 +101,8 @@ EOS
 
       def convert(input, output)
         FileUtils.rm(output.path)
-        run("-headless", input.path, "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")",
+        run("-headless", input.path,
+            "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")",
             {:env => {"HOME" => @home_dir.to_s}})
         ooffice_start_time = Time.now
         while `ps aux`.include?(output.path)
@@ -119,8 +120,9 @@ EOS
     end
 
     class << self
-      def open_office
-        OpenOffice.new(ENV['CHUPA_HOME'])
+      def open_office(command=nil)
+        OpenOffice.new(:command => command,
+                       :home_dir => ENV['CHUPA_HOME'])
       end
 
       def unoconv
@@ -128,7 +130,10 @@ EOS
       end
 
       def convertor
-        [unoconv, open_office].find do |command|
+        [unoconv,
+         open_office("ooffice"),
+         open_office("soffice"),
+         open_office("/opt/openoffice.org3/program/soffice")].find do |command|
           command.exist?
         end
       end

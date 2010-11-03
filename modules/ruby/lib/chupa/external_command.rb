@@ -18,7 +18,7 @@
 module Chupa
   class ExternalCommand
     def initialize(command)
-      @command = command
+      @command = Pathname.new(command)
     end
 
     def run(*args)
@@ -27,14 +27,21 @@ module Chupa
       else
         option = {}
       end
-      pid = spawn((option[:env] || {}), @command, *args, (option[:spawn_option] || {}))
+      pid = spawn((option[:env] || {}),
+                  @command.to_s,
+                  *args,
+                  (option[:spawn_option] || {}))
       pid, status = Process.waitpid2(pid)
       status.success?
     end
 
     def exist?
-      (ENV['PATH'] || "").split(File::PATH_SEPARATOR).any? do |path|
-        (Pathname.new(path) + @command).expand_path.exist?
+      if @command.absolute?
+        @command.file? and @command.executable?
+      else
+        (ENV['PATH'] || "").split(File::PATH_SEPARATOR).any? do |path|
+          (Pathname.new(path) + @command).expand_path.exist?
+        end
       end
     end
   end
