@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ChupaText 0.4.0\n"
-"POT-Creation-Date: 2010-11-03 17:40+0900\n"
+"POT-Creation-Date: 2010-11-03 22:42+0900\n"
 "PO-Revision-Date: 2010-11-03 22:35+0900\n"
 "Last-Translator: Kouhei Sutou <kou@clear-code.com>\n"
 "Language-Team: Japanese\n"
@@ -669,7 +669,9 @@ msgid ""
 "ChupaText provides version information, primarily useful in configure checks "
 "for builds that have a configure script. Tests will not typically use the "
 "features described here."
-msgstr "ChupaTextはバージョン情報を提供します。主にconfigureスクリプトの中で便利に使うことができます。テストでは普通はここで説明する機能を使わないでしょう。"
+msgstr ""
+"ChupaTextはバージョン情報を提供します。主にconfigureスクリプトの中で便利に使"
+"うことができます。テストでは普通はここで説明する機能を使わないでしょう。"
 
 #: xml/chupa_version.xml:55(programlisting)
 #, no-wrap
@@ -707,7 +709,9 @@ msgstr ""
 msgid ""
 "The version number of the ChupaText with (MAJOR + 1000000 + MINOR + 1000 + "
 "MICRO) calculation."
-msgstr "(MAJOR + 1000000 + MINOR + 1000 + MICRO)という式で計算したChupaTextのバージョンを表す数です。"
+msgstr ""
+"(MAJOR + 1000000 + MINOR + 1000 + MICRO)という式で計算したChupaTextのバージョ"
+"ンを表す数です。"
 
 #: xml/chupa_version.xml:87(programlisting)
 #, no-wrap
@@ -718,7 +722,9 @@ msgstr ""
 msgid ""
 "The version number string of the ChupaText with \"#{MAJOR}.#{MINOR}.#"
 "{MICRO}\" format."
-msgstr "\"#{MAJOR}.#{MINOR}.#{MICRO}\"という形式のChupaTextのバージョンを表す文字列です。"
+msgstr ""
+"\"#{MAJOR}.#{MINOR}.#{MICRO}\"という形式のChupaTextのバージョンを表す文字列で"
+"す。"
 
 #: xml/chupa_version.xml:96(programlisting)
 #, no-wrap
@@ -756,7 +762,9 @@ msgstr ""
 msgid ""
 "The version number description of the ChupaText with \"#{MAJOR}.#{MINOR}.#"
 "{MICRO}-#{N_COMMITS}-#{COMMIT_ID} #{DATE}\" format."
-msgstr "\"#{MAJOR}.#{MINOR}.#{MICRO}-#{N_COMMITS}-#{COMMIT_ID} #{DATE}\"という形式のChupaTextのバージョン番号を説明する文字列です。"
+msgstr ""
+"\"#{MAJOR}.#{MINOR}.#{MICRO}-#{N_COMMITS}-#{COMMIT_ID} #{DATE}\"という形式の"
+"ChupaTextのバージョン番号を説明する文字列です。"
 
 #: xml/chupa_version.xml:127(title)
 msgid "CHUPA_CHECK_VERSION()"
@@ -771,7 +779,9 @@ msgstr ""
 msgid ""
 "Checks the version of the ChupaText. Returns true if the version of the "
 "ChupaText header files is the same as or newer than the passed-in version."
-msgstr "ChupaTextのバージョンをチェックします。ChupaTextのヘッダーファイルに書いてあるバージョンが渡されたバージョンと同じか新しかったら真を返します。"
+msgstr ""
+"ChupaTextのバージョンをチェックします。ChupaTextのヘッダーファイルに書いてあ"
+"るバージョンが渡されたバージョンと同じか新しかったら真を返します。"
 
 #: xml/chupa_version.xml:135(term)
 msgid "<parameter>major</parameter> :"
