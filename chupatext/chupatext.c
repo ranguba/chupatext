@@ -106,7 +106,6 @@ write_quote(const char *str, gsize len, FILE *out)
             else {
                 putc(esc, out);
             }
-            
         }
         else {
             putc(c, out);
