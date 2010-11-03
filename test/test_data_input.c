@@ -66,8 +66,8 @@ test_read(void)
     content_length_string = g_string_new(NULL);
     g_string_printf(content_length_string, "%zd", length);
     metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata,
-                             "content-length", content_length_string->str);
+    chupa_metadata_set_string(metadata,
+                              "content-length", content_length_string->str);
     g_string_free(content_length_string, TRUE);
     data = chupa_data_new(memory_stream, metadata);
     input = chupa_data_input_new(data);

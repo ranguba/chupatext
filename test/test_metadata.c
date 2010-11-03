@@ -23,12 +23,11 @@
 #include <gcutter.h>
 
 void test_new (void);
-void test_get_first_value (void);
-void test_get_values (void);
-void test_replace_value (void);
-void test_update_value (void);
-void test_remove_value (void);
+void test_set_value (void);
+void test_remove (void);
 void test_foreach (void);
+void test_string (void);
+void test_string_error (void);
 void test_int (void);
 void test_int_error (void);
 void test_time_val (void);
@@ -71,95 +70,48 @@ test_new (void)
 {
     metadata = chupa_metadata_new();
     cut_assert_equal_int(0, chupa_metadata_size(metadata));
-    cut_assert_equal_string(NULL, chupa_metadata_get_first_value(metadata, "content-type"));
+    cut_assert_equal_string(NULL,
+                            chupa_metadata_get_string(metadata, "content-type",
+                                                      NULL));
 }
 
 void
-test_get_first_value (void)
-{
-    metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, "content-type", "text/plain");
-    cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, "content-type"));
-}
-
-void
-test_get_values (void)
-{
-    GList *values;
-
-    metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, "content-type", "text/plain");
-    chupa_metadata_add_value(metadata, "content-type", "text/html");
-    values = chupa_metadata_get_values(metadata, "content-type");
-    cut_assert_equal_int(2, g_list_length(values));
-    cut_assert_equal_string("text/plain", values->data);
-    cut_assert_equal_string("text/html", values->next->data);
-}
-
-void
-test_replace_value (void)
-{
-    const gchar *key = "content-type";
-    GList *values;
-
-    metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, key, "text/plain");
-    cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, key));
-    chupa_metadata_replace_value(metadata, key, "text/html");
-    values = chupa_metadata_get_values(metadata, key);
-    cut_assert_equal_int(1, g_list_length(values));
-    cut_assert_equal_string("text/html", values->data);
-}
-
-void
-test_update_value (void)
-{
-    const gchar *key1 = "content-type";
-    const gchar *key2 = "content-length";
-
-    metadata = chupa_metadata_new();
-    metadata2 = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, key1, "text/plain");
-    chupa_metadata_add_value(metadata2, key2, "100");
-    cut_assert_null(chupa_metadata_get_first_value(metadata, key2));
-    chupa_metadata_update(metadata, metadata2);
-    cut_assert_equal_string("100", chupa_metadata_get_first_value(metadata, key2));
-}
-
-void
-test_remove_value (void)
+test_set_value (void)
 {
     const gchar *key = "content-type";
 
     metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, key, "text/plain");
-    cut_assert_equal_string("text/plain", chupa_metadata_get_first_value(metadata, key));
-    chupa_metadata_replace_value(metadata, key, NULL);
-    cut_assert_null(chupa_metadata_get_values(metadata, key));
+    chupa_metadata_set_string(metadata, key, "text/plain");
+    cut_assert_equal_string("text/plain",
+                            chupa_metadata_get_string(metadata, key, NULL));
+    chupa_metadata_set_string(metadata, key, "text/html");
+    cut_assert_equal_string("text/html",
+                            chupa_metadata_get_string(metadata, key, NULL));
 }
 
-struct foreach_test_args {
-    GString *string;
-    const gchar *key;
-};
-
-static void
-test_foreach_push_values(gpointer value, gpointer user_data)
+void
+test_remove (void)
 {
-    struct foreach_test_args *args = user_data;
-    g_string_append(args->string, args->key);
-    g_string_append(args->string, ": ");
-    g_string_append(args->string, value);
-    g_string_append_c(args->string, '\n');
+    const gchar *key = "content-type";
+
+    metadata = chupa_metadata_new();
+    chupa_metadata_set_string(metadata, key, "text/plain");
+    cut_assert_equal_string("text/plain",
+                            chupa_metadata_get_string(metadata, key, NULL));
+    chupa_metadata_remove(metadata, key);
+    cut_assert_equal_string(NULL,
+                            chupa_metadata_get_string(metadata, key, NULL));
 }
 
 static void
-test_foreach_push(gpointer key, gpointer value_list, gpointer user_data)
+test_foreach_push(gpointer key, gpointer value, gpointer user_data)
 {
-    struct foreach_test_args args;
-    args.string = user_data;
-    args.key = key;
-    g_list_foreach(value_list, test_foreach_push_values, (gpointer)&args);
+    GString *string = user_data;
+
+    g_string_append(string, key);
+    g_string_append(string, ": ");
+    g_string_append(string, chupa_metadata_field_value_string(value));
+    g_string_append(string, "\n");
 }
 
 void
@@ -168,15 +120,40 @@ test_foreach (void)
     GString *result;
 
     metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, "foo", "bar");
-    chupa_metadata_add_value(metadata, "bar", "qux");
-    chupa_metadata_add_value(metadata, "foo", "zot");
+    chupa_metadata_set_string(metadata, "author", "Joe");
+    chupa_metadata_set_string(metadata, "creator", "Bob");
     result = g_string_sized_new(32);
     chupa_metadata_foreach(metadata, test_foreach_push, result);
-    cut_assert_equal_string("foo: bar\n"
-                            "foo: zot\n"
-                            "bar: qux\n",
+    cut_assert_equal_string("author: Joe\n"
+                            "creator: Bob\n",
                             result->str);
+}
+
+void
+test_string (void)
+{
+    metadata = chupa_metadata_new();
+    chupa_metadata_set_string(metadata, "author", "Joe");
+    cut_assert_equal_string("Joe",
+                            chupa_metadata_get_string(metadata, "author", NULL));
+}
+
+void
+test_string_error (void)
+{
+    const gchar *key;
+
+    key = "author";
+    metadata = chupa_metadata_new();
+    expected_error = g_error_new(CHUPA_METADATA_ERROR,
+                                 CHUPA_METADATA_ERROR_NOT_EXIST,
+                                 "requested key doesn't exist in metadata: <%s>",
+                                 key);
+
+    cut_assert_equal_string(NULL,
+                            chupa_metadata_get_string(metadata, key,
+                                                      &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

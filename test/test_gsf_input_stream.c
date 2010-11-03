@@ -92,7 +92,7 @@ test_get_metadata(void)
     cut_assert_not_null(metadata);
     cut_assert_equal_size(6, chupa_metadata_get_content_length(metadata));
     cut_assert_equal_string("memory_input.dat",
-                            chupa_metadata_get_first_value(metadata, "filename"));
+                            chupa_metadata_get_string(metadata, "filename", NULL));
 }
 
 /*

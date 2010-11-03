@@ -38,19 +38,12 @@ struct output_info {
 };
 
 static void
-output_plain_header_values(gpointer value, gpointer user_data)
+output_plain_header(gpointer key, gpointer value, gpointer user_data)
 {
-    struct output_info *info = user_data;
-    fprintf(info->out, "%s: %s\n", info->prefix, (const char *)value);
-}
+    ChupaMetadataField *field = value;
+    FILE *output = user_data;
 
-static void
-output_plain_header(gpointer key, gpointer value_list, gpointer user_data)
-{
-    struct output_info info;
-    info.out = user_data;
-    info.prefix = key;
-    g_list_foreach(value_list, output_plain_header_values, &info);
+    fprintf(output, "%s\n", chupa_metadata_field_to_string(field));
 }
 
 static void

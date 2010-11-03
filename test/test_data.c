@@ -64,7 +64,7 @@ test_new (void)
     meta = chupa_data_get_metadata(data);
     cut_assert_not_null(meta);
     cut_assert_equal_int(1, chupa_metadata_size(meta));
-    cut_assert_not_null(chupa_metadata_get_first_value(meta, "mime-type"));
+    cut_assert_not_null(chupa_metadata_get_string(meta, "mime-type", NULL));
 }
 
 void

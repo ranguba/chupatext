@@ -85,7 +85,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         else {
             arg->encoding = "UTF-8";
         }
-        chupa_metadata_add_value(meta, "charset", arg->encoding);
+        chupa_metadata_set_string(meta, "charset", arg->encoding);
     }
 
     /* take care of any oddities in Microsoft's character "encoding" */
@@ -171,8 +171,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
     arg.feeder = feeder;
     metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, "filename",
-                             chupa_data_get_filename(data));
+    chupa_metadata_set_string(metadata, "filename",
+                              chupa_data_get_filename(data));
     arg.text = chupa_data_new(G_INPUT_STREAM(arg.dest), metadata);
     g_object_unref(metadata);
     arg.encoding = NULL;
@@ -197,7 +197,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         arg.buffer = NULL;
         if (!arg.encoding) {
             ChupaMetadata *meta = chupa_data_get_metadata(arg.text);
-            chupa_metadata_add_value(meta, "charset", "US-ASCII");
+            chupa_metadata_set_string(meta, "charset", "US-ASCII");
         }
         if (arg.feeder) {
             chupa_feeder_accepted(feeder, arg.text);

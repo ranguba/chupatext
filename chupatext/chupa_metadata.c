@@ -18,16 +18,20 @@
  *  MA  02110-1301  USA
  */
 
+#include <string.h>
+
 #include "chupa_metadata.h"
 
-#define CHUPA_METADATA_GET_PRIVATE(obj)                  \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                  \
-                                 CHUPA_TYPE_METADATA,    \
-                                 ChupaMetadataPrivate))
+#define CHUPA_METADATA_FIELD_GET_PRIVATE(obj)                   \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
+                                 CHUPA_TYPE_METADATA_FIELD,     \
+                                 ChupaMetadataFieldPrivate))
 
-typedef struct _Field
+typedef struct _ChupaMetadataFieldPrivate  ChupaMetadataFieldPrivate;
+typedef struct _ChupaMetadataFieldPrivate
 {
     ChupaMetadata *metadata;
+    gchar *name;
     GType type;
     union {
         gint     integer;
@@ -35,38 +39,242 @@ typedef struct _Field
         gpointer pointer;
     } value;
     GDestroyNotify free_function;
+    GString *string;
 } Field;
 
-typedef struct _ChupaMetadataPrivate	ChupaMetadataPrivate;
-struct _ChupaMetadataPrivate
-{
-    GHashTable *data;
-    GHashTable *fields;
-};
+G_DEFINE_TYPE(ChupaMetadataField, chupa_metadata_field, G_TYPE_OBJECT);
 
-static Field *
-field_new (ChupaMetadata *metadata, GType type)
-{
-    Field *field;
+static void field_dispose        (GObject         *object);
 
-    field = g_slice_new0(Field);
-    field->metadata = metadata;
-    field->type = type;
+static void
+chupa_metadata_field_class_init (ChupaMetadataFieldClass *klass)
+{
+    GObjectClass *gobject_class;
+
+    gobject_class = G_OBJECT_CLASS(klass);
+
+    gobject_class->dispose      = field_dispose;
+
+    g_type_class_add_private(gobject_class, sizeof(ChupaMetadataFieldPrivate));
+}
+
+static void
+chupa_metadata_field_init (ChupaMetadataField *field)
+{
+}
+
+static void
+field_dispose (GObject *object)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(object);
+
+    if (priv->metadata) {
+        g_object_unref(priv->metadata);
+        priv->metadata = NULL;
+    }
+
+    if (priv->name) {
+        g_free(priv->name);
+        priv->name = NULL;
+    }
+
+    if (priv->value.pointer) {
+        if (priv->free_function) {
+            priv->free_function(priv->value.pointer);
+        }
+    }
+
+    if (priv->string) {
+        g_string_free(priv->string, TRUE);
+        priv->string = NULL;
+    }
+
+    G_OBJECT_CLASS(chupa_metadata_field_parent_class)->dispose(object);
+}
+
+static ChupaMetadataField *
+field_new (ChupaMetadata *metadata, const gchar *name, GType type)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataFieldPrivate *priv;
+
+    field = g_object_new(CHUPA_TYPE_METADATA_FIELD, NULL);
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    priv->metadata = g_object_ref(metadata);
+    priv->name = g_strdup(name);
+    priv->type = type;
+    priv->string = NULL;
 
     return field;
 }
 
-static void
-field_free (Field *field)
+static ChupaMetadataField *
+field_new_string (ChupaMetadata *metadata, const gchar *name, const gchar *value)
 {
-    if (field->value.pointer) {
-        if (field->free_function) {
-            field->free_function(field->value.pointer);
+    ChupaMetadataField *field;
+    ChupaMetadataFieldPrivate *priv;
+
+    field = field_new(metadata, name, G_TYPE_STRING);
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    priv->value.pointer = g_strdup(value);
+    priv->free_function = g_free;
+
+    return field;
+}
+
+static ChupaMetadataField *
+field_new_int (ChupaMetadata *metadata, const gchar *name, gint value)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataFieldPrivate *priv;
+
+    field = field_new(metadata, name, G_TYPE_INT);
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    priv->value.integer = value;
+    priv->free_function = NULL;
+
+    return field;
+}
+
+static ChupaMetadataField *
+field_new_time_val (ChupaMetadata *metadata, const gchar *name, GTimeVal *value)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataFieldPrivate *priv;
+    GTimeVal *dupped_value;
+
+    dupped_value = g_new0(GTimeVal, 1);
+    memcpy(dupped_value, value, sizeof(GTimeVal));
+    /* FIXME: use CHUPA_TYPE_TIME_VAL */
+    field = field_new(metadata, name, G_TYPE_POINTER);
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    priv->value.pointer = dupped_value;
+    priv->free_function = g_free;
+
+    return field;
+}
+
+static ChupaMetadataField *
+field_new_size (ChupaMetadata *metadata, const gchar *name, gsize value)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataFieldPrivate *priv;
+
+    field = field_new(metadata, name, CHUPA_TYPE_SIZE);
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    priv->value.size = value;
+    priv->free_function = NULL;
+
+    return field;
+}
+
+const gchar *
+chupa_metadata_field_name(ChupaMetadataField *field)
+{
+    return CHUPA_METADATA_FIELD_GET_PRIVATE(field)->name;
+}
+
+GType
+chupa_metadata_field_type(ChupaMetadataField *field)
+{
+    return CHUPA_METADATA_FIELD_GET_PRIVATE(field)->type;
+}
+
+const gchar *
+chupa_metadata_field_value_string(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->type == G_TYPE_STRING) {
+        return priv->value.pointer;
+    } else {
+        return NULL;
+    }
+}
+
+gint
+chupa_metadata_field_value_int(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->type == G_TYPE_INT) {
+        return priv->value.integer;
+    } else {
+        return 0;
+    }
+}
+
+GTimeVal *
+chupa_metadata_field_value_time_val(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->type == G_TYPE_POINTER) {
+        return priv->value.pointer;
+    } else {
+        return NULL;
+    }
+}
+
+gsize
+chupa_metadata_field_value_size(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->type == CHUPA_TYPE_SIZE) {
+        return priv->value.size;
+    } else {
+        return 0;
+    }
+}
+
+const gchar *
+chupa_metadata_field_to_string(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->string)
+        return priv->string->str;
+
+    priv->string = g_string_new(NULL);
+    g_string_append(priv->string, priv->name);
+    g_string_append(priv->string, ": ");
+    switch (priv->type) {
+    case G_TYPE_INT:
+        g_string_append_printf(priv->string, "%d", priv->value.integer);
+        break;
+    case G_TYPE_STRING:
+        g_string_append(priv->string, priv->value.pointer);
+        break;
+    default:
+        if (priv->type == CHUPA_TYPE_SIZE) {
+            g_string_append_printf(priv->string, "%zd", priv->value.size);
+        } else {
+            g_string_append(priv->string, "(unsupported)");
         }
+        break;
     }
 
-    g_slice_free(Field, field);
+    return priv->string->str;
 }
+
+#define CHUPA_METADATA_GET_PRIVATE(obj)                  \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                  \
+                                 CHUPA_TYPE_METADATA,    \
+                                 ChupaMetadataPrivate))
+
+typedef struct _ChupaMetadataPrivate	ChupaMetadataPrivate;
+struct _ChupaMetadataPrivate
+{
+    GHashTable *fields;
+};
 
 G_DEFINE_TYPE(ChupaMetadata, chupa_metadata, G_TYPE_OBJECT);
 
@@ -85,22 +293,14 @@ chupa_metadata_class_init (ChupaMetadataClass *klass)
 }
 
 static void
-data_values_free(gpointer pointer)
-{
-    GList *values = pointer;
-    g_list_foreach(values, (GFunc)g_free, NULL);
-    g_list_free(values);
-}
-
-static void
 chupa_metadata_init (ChupaMetadata *metadata)
 {
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
 
-    priv->data = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, data_values_free);
-    priv->fields = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify) field_free);
+    priv->fields = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                         g_free, (GDestroyNotify)g_object_unref);
 }
 
 static void
@@ -110,9 +310,9 @@ dispose (GObject *object)
 
     priv = CHUPA_METADATA_GET_PRIVATE(object);
 
-    if (priv->data) {
-        g_hash_table_unref(priv->data);
-        priv->data = NULL;
+    if (priv->fields) {
+        g_hash_table_unref(priv->fields);
+        priv->fields = NULL;
     }
 
     G_OBJECT_CLASS(chupa_metadata_parent_class)->dispose(object);
@@ -131,100 +331,13 @@ chupa_metadata_new(void)
                         NULL);
 }
 
-void
-chupa_metadata_add_value(ChupaMetadata *metadata, const gchar *key, const gchar *value)
-{
-    ChupaMetadataPrivate *priv;
-    GList *values = NULL;
-    gpointer keyptr = (gpointer)key, valptr;
-
-    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    if (g_hash_table_lookup_extended(priv->data, key, &keyptr, &valptr)) {
-        g_hash_table_steal(priv->data, keyptr);
-        key = keyptr;
-        values = valptr;
-    } else {
-        key = g_strdup(key);
-    }
-    values = g_list_append(values, g_strdup(value));
-    g_hash_table_insert(priv->data, (gpointer)key, values);
-}
-
-void
-chupa_metadata_replace_value(ChupaMetadata *metadata, const gchar *key, const gchar *value)
-{
-    ChupaMetadataPrivate *priv;
-
-    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    if (!value) {
-        g_hash_table_remove(priv->data, key);
-        return;
-    }
-    g_hash_table_replace(priv->data, g_strdup(key), g_list_append(NULL, g_strdup(value)));
-}
-
-const gchar *
-chupa_metadata_get_first_value(ChupaMetadata *metadata, const gchar *key)
-{
-    ChupaMetadataPrivate *priv;
-    GList *values;
-
-    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    values = g_hash_table_lookup(priv->data, key);
-    if (!values) {
-        return NULL;
-    }
-    return values->data;
-}
-
-GList *
-chupa_metadata_get_values(ChupaMetadata *metadata, const gchar *key)
-{
-    ChupaMetadataPrivate *priv;
-
-    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    return g_hash_table_lookup(priv->data, key);
-}
-
-static void
-list_copy(gpointer value, gpointer user_data)
-{
-    GList **dest = user_data;
-    *dest = g_list_append(*dest, g_strdup(value));
-}
-
-static void
-metadata_update_func(gpointer key, gpointer value, gpointer user_data)
-{
-    GHashTable *dest = user_data;
-    GList *l1 = g_hash_table_lookup(dest, key), *l2 = value;
-
-    if (g_hash_table_lookup_extended(dest, key, &key, &value)) {
-        g_hash_table_steal(dest, key);
-    } else {
-        key = g_strdup(key);
-    }
-    g_list_foreach(l2, list_copy, &l1);
-    g_hash_table_insert(dest, key, l1);
-}
-
-void
-chupa_metadata_update(ChupaMetadata *metadata, ChupaMetadata *update)
-{
-    ChupaMetadataPrivate *priv1, *priv2;
-
-    priv1 = CHUPA_METADATA_GET_PRIVATE(metadata);
-    priv2 = CHUPA_METADATA_GET_PRIVATE(update);
-    g_hash_table_foreach(priv2->data, metadata_update_func, priv1->data);
-}
-
 guint
 chupa_metadata_size(ChupaMetadata *metadata)
 {
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    return g_hash_table_size(priv->data);
+    return g_hash_table_size(priv->fields);
 }
 
 void
@@ -233,14 +346,14 @@ chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data)
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    g_hash_table_foreach(priv->data, func, user_data);
+    g_hash_table_foreach(priv->fields, func, user_data);
 }
 
-static Field *
+static ChupaMetadataField *
 field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
 {
     ChupaMetadataPrivate *priv;
-    Field *field;
+    ChupaMetadataField *field;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
     field = g_hash_table_lookup(priv->fields, key);
@@ -256,83 +369,114 @@ field_lookup (ChupaMetadata *metadata, const gchar *key, GError **error)
     return field;
 }
 
-void
-chupa_metadata_set_int (ChupaMetadata *metadata, const gchar *key, gint value)
+gboolean
+chupa_metadata_remove (ChupaMetadata *metadata, const gchar *key)
 {
-    Field *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    return g_hash_table_remove(priv->fields, key);
+}
+
+void
+chupa_metadata_set_string (ChupaMetadata *metadata, const gchar *key,
+                           const gchar *value)
+{
+    ChupaMetadataField *field;
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
 
-    field = field_new(metadata, G_TYPE_INT);
-    field->value.integer = value;
-    field->free_function = NULL;
+    field = field_new_string(metadata, key, value);
+    g_hash_table_insert(priv->fields, g_strdup(key), field);
+}
+
+const gchar *
+chupa_metadata_get_string (ChupaMetadata *metadata, const gchar *key,
+                           GError **error)
+{
+    ChupaMetadataField *field;
+
+    field = field_lookup(metadata, key, error);
+    if (!field) {
+        return 0;
+    }
+
+    return chupa_metadata_field_value_string(field);
+}
+
+void
+chupa_metadata_set_int (ChupaMetadata *metadata, const gchar *key, gint value)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+
+    field = field_new_int(metadata, key, value);
     g_hash_table_insert(priv->fields, g_strdup(key), field);
 }
 
 gint
 chupa_metadata_get_int (ChupaMetadata *metadata, const gchar *key, GError **error)
 {
-    Field *field;
+    ChupaMetadataField *field;
 
     field = field_lookup(metadata, key, error);
     if (!field) {
         return 0;
     }
 
-    return field->value.integer;
+    return chupa_metadata_field_value_int(field);
 }
 
 void
-chupa_metadata_set_time_val (ChupaMetadata *metadata, const gchar *key, GTimeVal *time_val)
+chupa_metadata_set_time_val (ChupaMetadata *metadata, const gchar *key,
+                             GTimeVal *value)
 {
-    Field *field;
+    ChupaMetadataField *field;
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    field = field_new(metadata, G_TYPE_POINTER);
-    field->free_function = g_free;
-    field->value.pointer = time_val;
+    field = field_new_time_val(metadata, key, value);
     g_hash_table_insert(priv->fields, g_strdup(key), field);
 }
 
 GTimeVal *
 chupa_metadata_get_time_val (ChupaMetadata *metadata, const gchar *key, GError **error)
 {
-    Field *field;
+    ChupaMetadataField *field;
 
     field = field_lookup(metadata, key, error);
     if (!field) {
         return NULL;
     }
 
-    return field->value.pointer;
+    return chupa_metadata_field_value_time_val(field);
 }
 
 void
 chupa_metadata_set_size (ChupaMetadata *metadata, const gchar *key, gsize size)
 {
-    Field *field;
+    ChupaMetadataField *field;
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    field = field_new(metadata, CHUPA_TYPE_SIZE);
-    field->value.size = size;
-    field->free_function = NULL;
+    field = field_new_size(metadata, key, size);
     g_hash_table_insert(priv->fields, g_strdup(key), field);
 }
 
 gsize
 chupa_metadata_get_size (ChupaMetadata *metadata, const gchar *key, GError **error)
 {
-    Field *field;
+    ChupaMetadataField *field;
 
     field = field_lookup(metadata, key, error);
     if (!field) {
         return 0;
     }
 
-    return field->value.size;
+    return chupa_metadata_field_value_size(field);
 }
 
 void

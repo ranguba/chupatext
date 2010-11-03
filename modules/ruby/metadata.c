@@ -54,7 +54,7 @@ chupa_metadata_get(VALUE self, VALUE name)
     const char *value;
 
     metadata = SELF(self);
-    value = chupa_metadata_get_first_value(metadata, RVAL2CSTR(name));
+    value = chupa_metadata_get_string(metadata, RVAL2CSTR(name), NULL);
     if (!value) {
         return Qnil;
     }
@@ -66,7 +66,6 @@ chupa_metadata_set(VALUE self, VALUE name, VALUE value)
 {
     ChupaMetadata *metadata;
     const char *namestr;
-    VALUE aryvalue;
 
     metadata = SELF(self);
     chupa_metadata_writable(self);
@@ -74,51 +73,16 @@ chupa_metadata_set(VALUE self, VALUE name, VALUE value)
     name = rb_str_new_frozen(name);
     namestr = RSTRING_PTR(name);
     if (NIL_P(value)) {
-        chupa_metadata_replace_value(metadata, namestr, NULL);
-    }
-    else if (!NIL_P(aryvalue = rb_check_array_type(value))) {
-        long i;
-        chupa_metadata_replace_value(metadata, namestr, NULL);
-        for (i = 0; i < RARRAY_LEN(aryvalue); ++i) {
-            value = RARRAY_PTR(aryvalue)[i];
-            chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
-        }
-    }
-    else {
-        chupa_metadata_replace_value(metadata, namestr, StringValueCStr(value));
-    }
-
-    return value;
-}
-
-static VALUE
-chupa_metadata_add(VALUE self, VALUE name, VALUE value)
-{
-    ChupaMetadata *metadata;
-    const char *namestr;
-    VALUE aryvalue;
-
-    metadata = SELF(self);
-    chupa_metadata_writable(self);
-    StringValueCStr(name);
-    name = rb_str_new_frozen(name);
-    namestr = RSTRING_PTR(name);
-    if (!NIL_P(aryvalue = rb_check_array_type(value))) {
-        long i;
-        for (i = 0; i < RARRAY_LEN(aryvalue); ++i) {
-            value = RARRAY_PTR(aryvalue)[i];
-            chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
-        }
-    }
-    else {
-        chupa_metadata_add_value(metadata, namestr, StringValueCStr(value));
+        chupa_metadata_remove(metadata, namestr);
+    } else {
+        chupa_metadata_set_string(metadata, namestr, StringValueCStr(value));
     }
 
     return value;
 }
 
 static void
-chupa_metadata_keys_push(gpointer key, gpointer values, gpointer user_data)
+chupa_metadata_keys_push(gpointer key, gpointer value, gpointer user_data)
 {
     rb_ary_push((VALUE)user_data, CSTR2RVAL(key));
 }
@@ -186,7 +150,6 @@ chupa_ruby_metadata_init(VALUE mChupa)
     rb_define_method(cMetadata, "[]", chupa_metadata_get, 1);
     rb_define_method(cMetadata, "[]=", chupa_metadata_set, 2);
     rb_define_method(cMetadata, "set", chupa_metadata_set, 2);
-    rb_define_method(cMetadata, "add", chupa_metadata_add, 2);
     rb_define_method(cMetadata, "keys", chupa_metadata_keys, 0);
     rb_define_method(cMetadata, "values", chupa_metadata_values, 0);
     rb_define_method(cMetadata, "each", chupa_metadata_each, 0);

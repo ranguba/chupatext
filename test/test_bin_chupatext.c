@@ -117,6 +117,7 @@ test_pdf_multi_pages(void)
     GString *result = output_string(process);
     cut_assert_equal_string("URI: sample_multi_pages.pdf\n"
                             "filename: sample_multi_pages.pdf\n"
+                            "content-length: 6145\n"
                             "mime-type: application/pdf\n"
                             "creation-time: 2010-09-27T04:09:17Z\n"
                             "\n"

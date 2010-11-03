@@ -58,7 +58,7 @@ test_decompose_html_title(void)
     metadata = chupa_test_metadata_fixture("sample.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("Sample HTML File",
-                            chupa_metadata_get_first_value(metadata, "title"));
+                            chupa_metadata_get_string(metadata, "title", NULL));
 }
 
 void
@@ -82,7 +82,8 @@ test_decompose_html_charset_none(void)
 
     metadata = chupa_test_metadata_fixture("sample.html");
     cut_assert_not_null(metadata);
-    cut_assert_null(chupa_metadata_get_first_value(metadata, "charset"));
+    cut_assert_equal_string(NULL,
+                            chupa_metadata_get_string(metadata, "charset", NULL));
 }
 
 void
@@ -93,7 +94,7 @@ test_decompose_html_charset_utf8(void)
     metadata = chupa_test_metadata_fixture("sample_utf8.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("utf-8",
-                            chupa_metadata_get_first_value(metadata, "charset"));
+                            chupa_metadata_get_string(metadata, "charset", NULL));
 }
 
 void
@@ -104,7 +105,7 @@ test_decompose_html_charset_euc_jp(void)
     metadata = chupa_test_metadata_fixture("sample_euc_jp.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("euc-jp",
-                            chupa_metadata_get_first_value(metadata, "charset"));
+                            chupa_metadata_get_string(metadata, "charset", NULL));
 }
 
 void
@@ -115,5 +116,5 @@ test_non_ascii_text_before_charset(void)
     metadata = chupa_test_metadata_fixture("gnu_philosophy.ru.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("Философия Проекта GNU - Фонд Свободного ПО (FSF)",
-                           chupa_metadata_get_first_value(metadata, "title"));
+                            chupa_metadata_get_string(metadata, "title", NULL));
 }

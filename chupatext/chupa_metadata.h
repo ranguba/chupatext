@@ -25,7 +25,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "chupa_types.h"
+#include <chupatext/chupa_types.h>
 
 G_BEGIN_DECLS
 
@@ -65,22 +65,20 @@ GQuark         chupa_metadata_error_quark     (void);
 
 GType          chupa_metadata_get_type        (void) G_GNUC_CONST;
 ChupaMetadata *chupa_metadata_new             (void);
-void           chupa_metadata_add_value       (ChupaMetadata *metadata,
-                                               const gchar   *key,
-                                               const gchar   *value);
-void           chupa_metadata_replace_value   (ChupaMetadata *metadata,
-                                               const gchar   *key,
-                                               const gchar   *value);
-const gchar   *chupa_metadata_get_first_value (ChupaMetadata *metadata,
-                                               const gchar   *key);
-GList         *chupa_metadata_get_values      (ChupaMetadata *metadata,
-                                               const gchar   *key);
 void           chupa_metadata_update          (ChupaMetadata *metadata,
                                                ChupaMetadata *update);
 guint          chupa_metadata_size            (ChupaMetadata *metadata);
 void           chupa_metadata_foreach         (ChupaMetadata *metadata,
                                                GHFunc         func,
                                                gpointer       user_data);
+gboolean       chupa_metadata_remove          (ChupaMetadata *metadata,
+                                               const gchar   *key);
+void           chupa_metadata_set_string      (ChupaMetadata *metadata,
+                                               const gchar   *key,
+                                               const gchar   *value);
+const gchar   *chupa_metadata_get_string      (ChupaMetadata *metadata,
+                                               const gchar   *key,
+                                               GError       **error);
 void           chupa_metadata_set_int         (ChupaMetadata *metadata,
                                                const gchar   *key,
                                                gint           value);
@@ -105,6 +103,45 @@ void           chupa_metadata_set_content_length
                                                gsize          length);
 gsize          chupa_metadata_get_content_length
                                               (ChupaMetadata *metadata);
+
+#define CHUPA_TYPE_METADATA_FIELD            chupa_metadata_field_get_type()
+#define CHUPA_METADATA_FIELD(obj)                               \
+    G_TYPE_CHECK_INSTANCE_CAST(obj,                             \
+                               CHUPA_TYPE_METADATA_FIELD,       \
+                               ChupaMetadataField)
+#define CHUPA_METADATA_FIELD_CLASS(klass)               \
+    G_TYPE_CHECK_CLASS_CAST(klass,                      \
+                            CHUPA_TYPE_METADATA_FIELD,  \
+                            ChupaMetadataFieldClass)
+#define CHUPA_IS_METADATA_FIELD(obj)                            \
+    G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_METADATA_FIELD)
+#define CHUPA_IS_METADATA_FIELD_CLASS(klass)                    \
+    G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_METADATA_FIELD)
+#define CHUPA_METADATA_FIELD_GET_CLASS(obj)                             \
+    G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_METADATA_FIELD,           \
+                              ChupaMetadataFieldClass)
+
+typedef struct _ChupaMetadataField ChupaMetadataField;
+typedef struct _ChupaMetadataFieldClass ChupaMetadataFieldClass;
+
+struct _ChupaMetadataField
+{
+    GObject object;
+};
+
+struct _ChupaMetadataFieldClass
+{
+    GObjectClass parent_class;
+};
+
+GType          chupa_metadata_field_get_type        (void) G_GNUC_CONST;
+const gchar   *chupa_metadata_field_name            (ChupaMetadataField *field);
+GType          chupa_metadata_field_type            (ChupaMetadataField *field);
+const gchar   *chupa_metadata_field_value_string    (ChupaMetadataField *field);
+gint           chupa_metadata_field_value_int       (ChupaMetadataField *field);
+GTimeVal      *chupa_metadata_field_value_time_val  (ChupaMetadataField *field);
+gsize          chupa_metadata_field_value_size      (ChupaMetadataField *field);
+const gchar   *chupa_metadata_field_to_string       (ChupaMetadataField *field);
 
 G_END_DECLS
 

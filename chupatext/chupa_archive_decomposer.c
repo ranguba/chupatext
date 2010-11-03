@@ -54,7 +54,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_object_unref(input);
         metadata = chupa_metadata_new();
         name = gsf_infile_name_by_index(infile, i);
-        chupa_metadata_add_value(metadata, "filename", name);
+        chupa_metadata_set_string(metadata, "filename", name);
         data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
         g_object_unref(stream);
         g_object_unref(metadata);

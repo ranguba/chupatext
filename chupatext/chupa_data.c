@@ -144,9 +144,9 @@ constructed(GObject *object)
     if (!priv->metadata) {
         priv->metadata = chupa_metadata_new();
     }
-    filename = chupa_metadata_get_first_value(priv->metadata, meta_filename);
+    filename = chupa_metadata_get_string(priv->metadata, meta_filename, NULL);
     mime_type = guess_mime_type(filename, priv->stream, NULL);
-    chupa_metadata_replace_value(priv->metadata, "mime-type", mime_type);
+    chupa_metadata_set_string(priv->metadata, "mime-type", mime_type);
 }
 
 static void
@@ -306,9 +306,9 @@ chupa_data_new_from_file(GFile *file, ChupaMetadata *metadata, GError **error)
     info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_NAME, 0,
                              NULL, NULL);
     if (info) {
-        chupa_metadata_add_value(metadata,
-                                 meta_filename,
-                                 g_file_info_get_name(info));
+        chupa_metadata_set_string(metadata,
+                                  meta_filename,
+                                  g_file_info_get_name(info));
         g_object_unref(info);
     }
 
@@ -334,42 +334,42 @@ const gchar *
 chupa_data_get_mime_type(ChupaData *data)
 {
     ChupaMetadata *meta = chupa_data_get_metadata(data);
-    return chupa_metadata_get_first_value(meta, "mime-type");
+    return chupa_metadata_get_string(meta, "mime-type", NULL);
 }
 
 void
 chupa_data_set_mime_type(ChupaData *data, const gchar *mime_type)
 {
     ChupaMetadata *meta = chupa_data_get_metadata(data);
-    chupa_metadata_replace_value(meta, "mime-type", mime_type);
+    chupa_metadata_set_string(meta, "mime-type", mime_type);
 }
 
 const gchar *
 chupa_data_get_filename(ChupaData *data)
 {
     ChupaMetadata *meta = chupa_data_get_metadata(data);
-    return chupa_metadata_get_first_value(meta, meta_filename);
+    return chupa_metadata_get_string(meta, meta_filename, NULL);
 }
 
 void
 chupa_data_set_filename(ChupaData *data, const char *filename)
 {
     ChupaMetadata *meta = chupa_data_get_metadata(data);
-    chupa_metadata_add_value(meta, meta_filename, filename);
+    chupa_metadata_set_string(meta, meta_filename, filename);
 }
 
 const gchar *
 chupa_data_get_charset(ChupaData *data)
 {
     ChupaMetadata *meta = chupa_data_get_metadata(data);
-    return chupa_metadata_get_first_value(meta, meta_charset);
+    return chupa_metadata_get_string(meta, meta_charset, NULL);
 }
 
 void
 chupa_data_set_charset(ChupaData *data, const char *charset)
 {
     ChupaMetadata *meta = chupa_data_get_metadata(data);
-    chupa_metadata_add_value(meta, meta_charset, charset);
+    chupa_metadata_set_string(meta, meta_charset, charset);
 }
 
 void

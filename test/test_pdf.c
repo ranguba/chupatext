@@ -60,5 +60,5 @@ test_pdf_info(void)
 
     metadata = chupa_test_metadata_fixture("sample.pdf");
     cut_assert_match("^20[0-9][0-9]-[01][0-9]-[0-3][0-9]",
-                     chupa_metadata_get_first_value(metadata, "creation-time"));
+                     chupa_metadata_get_string(metadata, "creation-time", NULL));
 }

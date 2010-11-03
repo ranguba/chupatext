@@ -167,7 +167,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     sink = g_memory_input_stream_new();
     rb_iv_set(rb_decomposer, "@sink", GOBJ2RVAL(sink));
     metadata = chupa_metadata_new();
-    chupa_metadata_add_value(metadata, "filename", chupa_data_get_filename(data));
+    chupa_metadata_set_string(metadata, "filename", chupa_data_get_filename(data));
     target_data = chupa_data_new(sink, metadata);
     g_object_unref(sink);
     g_object_unref(metadata);
