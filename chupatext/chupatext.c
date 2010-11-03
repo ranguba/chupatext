@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -71,7 +72,7 @@ output_plain(ChupaData *data, GError *error, gpointer udata)
             if (uinfo->prefix) {
                 path = g_build_filename(uinfo->prefix, name, NULL);
             }
-            fprintf(out, "URL: %s\n", path ? path : name ? name : "(noname)");
+            fprintf(out, "URI: %s\n", path ? path : name ? name : "(noname)");
             if (path) {
                 g_free(path);
             }

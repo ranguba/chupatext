@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -83,7 +84,7 @@ test_html(void)
     const gchar *path = FIXTURE("sample.html");
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
-    cut_assert_equal_string("URL: sample.html\n"
+    cut_assert_equal_string("URI: sample.html\n"
                             "filename: sample.html\n"
                             "title: Sample HTML File\n"
                             "mime-type: text/plain\n"
@@ -100,7 +101,7 @@ test_excel(void)
     const gchar *path = FIXTURE("sample.xls");
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
-    cut_assert_equal_string("URL: sample.xls\n"
+    cut_assert_equal_string("URI: sample.xls\n"
                             "filename: sample.xls\n"
                             "mime-type: application/vnd.ms-excel\n"
                             "\n"
@@ -114,7 +115,7 @@ test_pdf_multi_pages(void)
     const gchar *path = FIXTURE("sample_multi_pages.pdf");
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
-    cut_assert_equal_string("URL: sample_multi_pages.pdf\n"
+    cut_assert_equal_string("URI: sample_multi_pages.pdf\n"
                             "filename: sample_multi_pages.pdf\n"
                             "mime-type: application/pdf\n"
                             "creation-time: 2010-09-27T04:09:17Z\n"
