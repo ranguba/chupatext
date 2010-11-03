@@ -91,12 +91,18 @@ CLEANFILES +=				\
 	$(generated_xml_files)
 
 # Other files to distribute
-EXTRA_DIST +=				\
-	html-build.stamp		\
-	version.xml.in			\
-	$(generated_xml_files)		\
-	overrides.txt			\
-	ja.po
+EXTRA_DIST +=					\
+	html-build.stamp			\
+	version.xml.in				\
+	$(generated_xml_files)			\
+	overrides.txt				\
+	ja.po					\
+	head.html				\
+	head-ja.html				\
+	header.html				\
+	header-ja.html				\
+	footer.html				\
+	footer-ja.html
 
 $(DOC_MODULE)-overrides.txt: $(srcdir)/overrides.txt
 	cp $< $@
@@ -171,4 +177,4 @@ upload: docs
 	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --language=ja tmp/reference/ja/*.html
-	rsync -avz --delete tmp/reference/ $(RSYNC_PATH)/reference/
+	rsync -avz --delete tmp/reference $(RSYNC_PATH)/$(PACKAGE)/

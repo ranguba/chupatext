@@ -55,3 +55,12 @@ update-po:
 
 echo-top-builddir:
 	@echo $(top_builddir)
+
+upload: upload-doc
+
+upload-doc:
+	cd doc/reference && $(MAKE) upload
+
+release: dist
+	rubyforge add_release $(RUBYFORGE_PROJECT_NAME) $(PACKAGE) \
+	  $(VERSION) $(PACKAGE)-$(VERSION).tar.gz

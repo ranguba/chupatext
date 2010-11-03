@@ -69,3 +69,4 @@ strace.out
 /doc/reference/news.*
 /doc/reference/install-to-*
 /doc/reference/*.bak
+/doc/reference/tmp/
