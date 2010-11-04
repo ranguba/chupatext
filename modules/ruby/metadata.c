@@ -82,9 +82,10 @@ chupa_metadata_set(VALUE self, VALUE name, VALUE value)
 }
 
 static void
-chupa_metadata_keys_push(gpointer key, gpointer value, gpointer user_data)
+chupa_metadata_keys_push(ChupaMetadataField *field, gpointer user_data)
 {
-    rb_ary_push((VALUE)user_data, CSTR2RVAL(key));
+    VALUE *keys = user_data;
+    rb_ary_push(*keys, CSTR2RVAL(chupa_metadata_field_name(field)));
 }
 
 static VALUE
@@ -94,22 +95,15 @@ chupa_metadata_keys(VALUE self)
     VALUE keys = rb_ary_new();
 
     metadata = SELF(self);
-    chupa_metadata_foreach(metadata, chupa_metadata_keys_push, (gpointer)keys);
+    chupa_metadata_foreach(metadata, chupa_metadata_keys_push, &keys);
     return keys;
 }
 
 static void
-chupa_metadata_glist_push(gpointer str, gpointer user_data)
+chupa_metadata_value_push(ChupaMetadataField *field, gpointer user_data)
 {
-    rb_ary_push((VALUE)user_data, CSTR2RVAL(str));
-}
-
-static void
-chupa_metadata_values_push(gpointer key, gpointer value_list, gpointer user_data)
-{
-    VALUE values = rb_ary_new();
-    g_list_foreach(value_list, chupa_metadata_glist_push, (gpointer)values);
-    rb_ary_push((VALUE)user_data, values);
+    VALUE *values = user_data;
+    rb_ary_push(*values, CSTR2RVAL(chupa_metadata_field_value_string(field)));
 }
 
 static VALUE
@@ -119,16 +113,14 @@ chupa_metadata_values(VALUE self)
     VALUE values = rb_ary_new();
 
     metadata = SELF(self);
-    chupa_metadata_foreach(metadata, chupa_metadata_values_push, (gpointer)values);
+    chupa_metadata_foreach(metadata, chupa_metadata_value_push, &values);
     return values;
 }
 
 static void
-chupa_metadata_each_yield(gpointer key, gpointer value_list, gpointer user_data)
+chupa_metadata_each_yield(ChupaMetadataField *field, gpointer user_data)
 {
-    VALUE values = rb_ary_new();
-    g_list_foreach(value_list, chupa_metadata_glist_push, (gpointer)values);
-    rb_yield_values(2, CSTR2RVAL(key), values);
+    rb_yield_values(1, GOBJ2RVAL(field));
 }
 
 static VALUE

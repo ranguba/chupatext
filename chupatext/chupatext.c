@@ -38,9 +38,8 @@ struct output_info {
 };
 
 static void
-output_plain_header(gpointer key, gpointer value, gpointer user_data)
+output_plain_header(ChupaMetadataField *field, gpointer user_data)
 {
-    ChupaMetadataField *field = value;
     FILE *output = user_data;
 
     fprintf(output, "%s\n", chupa_metadata_field_to_string(field));

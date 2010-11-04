@@ -104,13 +104,13 @@ test_remove (void)
 }
 
 static void
-test_foreach_push(gpointer key, gpointer value, gpointer user_data)
+test_foreach_push(ChupaMetadataField *field, gpointer user_data)
 {
     GString *string = user_data;
 
-    g_string_append(string, key);
+    g_string_append(string, chupa_metadata_field_name(field));
     g_string_append(string, ": ");
-    g_string_append(string, chupa_metadata_field_value_string(value));
+    g_string_append(string, chupa_metadata_field_value_string(field));
     g_string_append(string, "\n");
 }
 

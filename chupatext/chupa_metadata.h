@@ -29,6 +29,12 @@
 
 G_BEGIN_DECLS
 
+typedef struct _ChupaMetadataField ChupaMetadataField;
+typedef struct _ChupaMetadataFieldClass ChupaMetadataFieldClass;
+
+typedef void   (*ChupaMetadataFieldCallback) (ChupaMetadataField *field,
+                                              gpointer            user_data);
+
 #define CHUPA_METADATA_ERROR           (chupa_metadata_error_quark())
 
 #define CHUPA_TYPE_METADATA            chupa_metadata_get_type()
@@ -69,7 +75,7 @@ void           chupa_metadata_update          (ChupaMetadata *metadata,
                                                ChupaMetadata *update);
 guint          chupa_metadata_size            (ChupaMetadata *metadata);
 void           chupa_metadata_foreach         (ChupaMetadata *metadata,
-                                               GHFunc         func,
+                                               ChupaMetadataFieldCallback callback,
                                                gpointer       user_data);
 gboolean       chupa_metadata_remove          (ChupaMetadata *metadata,
                                                const gchar   *key);
@@ -120,9 +126,6 @@ gsize          chupa_metadata_get_content_length
 #define CHUPA_METADATA_FIELD_GET_CLASS(obj)                             \
     G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_METADATA_FIELD,           \
                               ChupaMetadataFieldClass)
-
-typedef struct _ChupaMetadataField ChupaMetadataField;
-typedef struct _ChupaMetadataFieldClass ChupaMetadataFieldClass;
 
 struct _ChupaMetadataField
 {

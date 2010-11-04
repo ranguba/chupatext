@@ -340,13 +340,33 @@ chupa_metadata_size(ChupaMetadata *metadata)
     return g_hash_table_size(priv->fields);
 }
 
+typedef struct _FieldForeachData
+{
+    ChupaMetadataFieldCallback callback;
+    gpointer user_data;
+} FieldForeachData;
+
+static void
+fields_foreach_body(gpointer key, gpointer value, gpointer user_data)
+{
+    ChupaMetadataField *field = value;
+    FieldForeachData *data = user_data;
+
+    data->callback(field, data->user_data);
+}
+
 void
-chupa_metadata_foreach(ChupaMetadata *metadata, GHFunc func, gpointer user_data)
+chupa_metadata_foreach(ChupaMetadata *metadata,
+                       ChupaMetadataFieldCallback callback, gpointer user_data)
 {
     ChupaMetadataPrivate *priv;
+    FieldForeachData data;
+
+    data.callback = callback;
+    data.user_data = user_data;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    g_hash_table_foreach(priv->fields, func, user_data);
+    g_hash_table_foreach(priv->fields, fields_foreach_body, &data);
 }
 
 static ChupaMetadataField *
