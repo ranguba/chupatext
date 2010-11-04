@@ -40,11 +40,11 @@ ChupaTextで抽出されたテキスト情報とメタ情報はMIME形式で出�
 力のヘッダーフィールドはメタ情報を、本文はテキスト情報を表しています。
 ChupaTextがメタ情報として必ず出力するフィールドは以下のものがあります。
 
-: Content-Length
-   出力されたテキストの長さ。
-
 : Content-Type
    常に"text/plain; charset=UTF-8"。
+
+: Content-Length
+   出力されたテキストの長さ。
 
 : Original-Filename
    入力ファイル名。
@@ -71,7 +71,7 @@ ChupaTextがメタ情報として必ず出力するフィールドは以下の�
 : Author
    入力ファイルの作成者。
 
-: Last-Modified-Time
+: Modification-Time
    入力ファイルの最終変更時刻。
 
 : Creation-Time

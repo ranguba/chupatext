@@ -37,40 +37,121 @@ struct output_info {
     const writer_funcs *writer;
 };
 
+typedef struct _OutputHeaderData
+{
+    FILE *output;
+    const gchar *original_mime_type;
+    const gchar *original_encoding;
+    const gchar *original_filename;
+    gsize original_content_length;
+    const gchar *creation_time;
+    const gchar *modification_time;
+} OutputHeaderData;
+
 static void
 output_plain_header(ChupaMetadataField *field, gpointer user_data)
 {
-    FILE *output = user_data;
+    OutputHeaderData *data = user_data;
+    const gchar *name;
+    GString *normalized_name;
+    gsize i;
+    gboolean capitalize_target = TRUE;
 
-    fprintf(output, "%s\n", chupa_metadata_field_to_string(field));
+    name = chupa_metadata_field_name(field);
+#define EQUAL_NAME(key)                                         \
+    chupa_utils_string_equal(name, CHUPA_METADATA_NAME_ ## key)
+    if (EQUAL_NAME(MIME_TYPE) || EQUAL_NAME(ENCODING)) {
+        return;
+    } else if (EQUAL_NAME(ORIGINAL_MIME_TYPE)) {
+        data->original_mime_type = chupa_metadata_field_value_string(field);
+        return;
+    } else if (EQUAL_NAME(ORIGINAL_ENCODING)) {
+        data->original_encoding = chupa_metadata_field_value_string(field);
+        return;
+    } else if (EQUAL_NAME(ORIGINAL_FILENAME)) {
+        data->original_filename = chupa_metadata_field_value_string(field);
+    } else if (EQUAL_NAME(ORIGINAL_CONTENT_LENGTH)) {
+        data->original_content_length = chupa_metadata_field_value_size(field);
+    } else if (EQUAL_NAME(CREATION_TIME)) {
+        data->creation_time = chupa_metadata_field_value_string(field);
+    } else if (EQUAL_NAME(MODIFICATION_TIME)) {
+        data->modification_time = chupa_metadata_field_value_string(field);
+    }
+#undef EQUAL_NAME
+
+    normalized_name = g_string_new(name);
+    for (i = 0; i < normalized_name->len; i++) {
+        gchar character = normalized_name->str[i];
+        if (capitalize_target && ('a' <= character && character <= 'z')) {
+            normalized_name->str[i] += 'A' - 'a';
+            capitalize_target = FALSE;
+        } else if (character == '-') {
+            capitalize_target = TRUE;
+        } else {
+            capitalize_target = FALSE;
+        }
+    }
+    fprintf(data->output, "%s: %s\n",
+            normalized_name->str,
+            chupa_metadata_field_value_as_string(field));
+    g_string_free(normalized_name, TRUE);
 }
 
 static void
-output_plain(ChupaData *data, GError *error, gpointer udata)
+output_plain(ChupaData *data, GError *error, gpointer user_data)
 {
     GInputStream *inst = chupa_data_get_stream(data);
-    struct output_info *uinfo = udata;
-    FILE *out = uinfo->out;
-    const char *name = chupa_data_get_filename(data);
+    struct output_info *info = user_data;
+    FILE *out = info->out;
+    const gchar *filename;
     ChupaMetadata *metadata = chupa_data_get_metadata(data);
     char *path = NULL;
     char buf[4096];
     gssize size;
     gboolean header_written = FALSE;
 
+    filename = chupa_metadata_get_original_filename(metadata);
     while ((size = g_input_stream_read(inst, buf, sizeof(buf), NULL, NULL)) > 0) {
         if (!header_written) {
+            OutputHeaderData header_data;
+            memset(&header_data, 0, sizeof(header_data));
+            header_data.output = out;
             header_written = TRUE;
-            if (uinfo->prefix) {
-                path = g_build_filename(uinfo->prefix, name, NULL);
+            if (info->prefix) {
+                path = g_build_filename(info->prefix, filename, NULL);
             }
-            fprintf(out, "URI: %s\n", path ? path : name ? name : "(noname)");
+            fprintf(out, "URI: %s\n",
+                    path ? path : filename ? filename : "(noname)");
             if (path) {
                 g_free(path);
             }
+            fprintf(out, "Content-Type: text/plain; charset=UTF-8\n");
             if (metadata) {
-                chupa_metadata_foreach(metadata, output_plain_header, out);
+                chupa_metadata_foreach(metadata, output_plain_header, &header_data);
             }
+            if (header_data.original_mime_type) {
+                fprintf(out, "Original-Content-Type: %s",
+                        header_data.original_mime_type);
+                if (header_data.original_encoding) {
+                    fprintf(out, "; charset=%s", header_data.original_encoding);
+                }
+                fprintf(out, "\n");
+            }
+            fprintf(out, "Original-Content-Disposition: inline");
+            if (header_data.original_filename) {
+                fprintf(out, "; filename=%s", header_data.original_filename);
+            }
+            if (header_data.original_content_length > 0) {
+                fprintf(out, "; size=%zd", header_data.original_content_length);
+            }
+            if (header_data.creation_time) {
+                fprintf(out, "; creation-date=%s", header_data.creation_time);
+            }
+            if (header_data.modification_time) {
+                fprintf(out, "; modification-date=%s",
+                        header_data.modification_time);
+            }
+            fprintf(out, "\n");
             putc('\n', out);
         }
         fwrite(buf, 1, size, out);

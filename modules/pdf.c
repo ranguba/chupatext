@@ -81,12 +81,13 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     const gsize bufsize = sizeof(buffer);
     GString *str = g_string_sized_new(sizeof(buffer));
     GInputStream *inp = chupa_data_get_stream(data);
-    ChupaMetadata *meta = chupa_data_get_metadata(data);
+    ChupaMetadata *input_metadata, *output_metadata;
     ChupaData *pdf_text = NULL;
     gchar *title, *author, *metadata;
     gint creation, modtime;
     int n, i;
 
+    input_metadata = chupa_data_get_metadata(data);
     while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, error)) > 0) {
         g_string_append_len(str, buffer, count);
         if (count < bufsize) break;
@@ -100,6 +101,9 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
         g_string_free(str, TRUE);
         return FALSE;
     }
+
+    output_metadata = chupa_metadata_new();
+    chupa_metadata_merge_original_metadata(output_metadata, input_metadata);
     g_object_get(doc,
                  "title", &title,
                  "author", &author,
@@ -108,21 +112,21 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
                  "metadata", &metadata,
                  NULL);
     if (title) {
-        chupa_metadata_set_string(meta, "title", title);
+        chupa_metadata_set_string(output_metadata, "title", title);
         g_free(title);
     }
     if (author) {
-        chupa_metadata_set_string(meta, "author", author);
+        chupa_metadata_set_string(output_metadata, "author", author);
         g_free(author);
     }
     if (creation != -1 && creation != 0) {
-        metadata_set_time(meta, "creation-time", creation);
+        metadata_set_time(output_metadata, "creation-time", creation);
     }
     if (modtime != -1 && modtime != 0) {
-        metadata_set_time(meta, "mod-time", modtime);
+        metadata_set_time(output_metadata, "modification-time", modtime);
     }
     if (metadata) {
-        chupa_metadata_set_string(meta, "metadata", metadata);
+        chupa_metadata_set_string(output_metadata, "metadata", metadata);
         g_free(metadata);
     }
     n = poppler_document_get_n_pages(doc);
@@ -143,12 +147,13 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
             const gchar *filename;
             filename = chupa_data_get_filename(data);
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
-            pdf_text = chupa_data_new(inp, meta);
+            pdf_text = chupa_data_new(inp, output_metadata);
             chupa_feeder_accepted(feeder, pdf_text);
             mem = (GMemoryInputStream *)inp;
         }
         g_object_unref(page);
     }
+    g_object_unref(output_metadata);
     g_object_unref(doc);
     g_string_free(str, TRUE);
     chupa_data_finished(pdf_text, NULL);

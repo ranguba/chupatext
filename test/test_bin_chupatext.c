@@ -102,8 +102,8 @@ test_excel(void)
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
     cut_assert_equal_string("URI: sample.xls\n"
-                            "filename: sample.xls\n"
-                            "mime-type: application/vnd.ms-excel\n"
+                            "Original-Filename: sample.xls\n"
+                            "Original-Content-Type: application/vnd.ms-excel\n"
                             "\n"
                             "sample\n1\n2\n3\n4\n5\n6\n7\n",
                             result->str);
@@ -116,10 +116,15 @@ test_pdf_multi_pages(void)
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
     cut_assert_equal_string("URI: sample_multi_pages.pdf\n"
-                            "filename: sample_multi_pages.pdf\n"
-                            "content-length: 6145\n"
-                            "mime-type: application/pdf\n"
-                            "creation-time: 2010-09-27T04:09:17Z\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 6145\n"
+                            "Creation-Time: 2010-09-27T04:09:17Z\n"
+                            "Original-Filename: sample_multi_pages.pdf\n"
+                            "Original-Content-Type: application/pdf\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample_multi_pages.pdf;"
+                            " size=6145;"
+                            " creation-date=2010-09-27T04:09:17Z\n"
                             "\n"
                             "page1\n\f"
                             "2 ページ目\n\f"
