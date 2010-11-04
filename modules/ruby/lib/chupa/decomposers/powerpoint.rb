@@ -85,7 +85,7 @@ EOS
         base_directory = guess_base_directory
         if base_directory.nil?
           unique_key = Digest::MD5.hexdigest(Time.now.to_s + Object.new.object_id.to_s)
-          run("-headless", "macro:///Stop", unique_key,
+          run("-headless", unique_key,
               {:env => {"HOME" => @home_dir.to_s}})
           while (ps_str = `ps aux`).include?(unique_key)
             sleep(0.5)
