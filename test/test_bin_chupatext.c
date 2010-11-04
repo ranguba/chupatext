@@ -85,11 +85,15 @@ test_html(void)
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
     cut_assert_equal_string("URI: sample.html\n"
-                            "filename: sample.html\n"
-                            "title: Sample HTML File\n"
-                            "mime-type: text/plain\n"
-                            "output-length: 17\n"
-                            "encoding: UTF-8\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 120\n"
+                            "Content-Length: 17\n"
+                            "Title: Sample HTML File\n"
+                            "Original-Filename: sample.html\n"
+                            "Original-Content-Type: text/html\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample.html;"
+                            " size=120\n"
                             "\n"
                             "This is a sample.\n",
                             result->str);

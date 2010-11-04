@@ -27,7 +27,7 @@ class Chupa::HTML < Chupa::BaseDecomposer
       metadata["title"] = title.text
     end
     if encoding = doc.encoding
-      metadata["charset"] = encoding.downcase
+      metadata["original-encoding"] = encoding.downcase
     end
     metadata["encoding"] = "UTF-8"
     if body = (doc % "body")
@@ -35,7 +35,7 @@ class Chupa::HTML < Chupa::BaseDecomposer
     else
       body = ""
     end
-    metadata["output-length"] = body.bytesize.to_s
+    metadata["content-length"] = body.bytesize.to_s
     accepted(body)
   end
 
