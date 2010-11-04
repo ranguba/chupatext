@@ -102,8 +102,14 @@ test_excel(void)
     GCutProcess *process = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     GString *result = output_string(process);
     cut_assert_equal_string("URI: sample.xls\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 5632\n"
+                            "Content-Length: 21\n"
                             "Original-Filename: sample.xls\n"
                             "Original-Content-Type: application/vnd.ms-excel\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample.xls;"
+                            " size=5632\n"
                             "\n"
                             "sample\n1\n2\n3\n4\n5\n6\n7\n",
                             result->str);

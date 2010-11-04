@@ -363,7 +363,9 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     g_object_unref(output);
 
     metadata = chupa_metadata_new();
-    chupa_metadata_set_string(metadata, "filename", filename);
+    chupa_metadata_set_content_length(metadata, gsf_output_size(output));
+    chupa_metadata_merge_original_metadata(metadata,
+                                           chupa_data_get_metadata(data));
     next_data = chupa_data_new(input, metadata);
     g_object_unref(metadata);
     g_object_unref(input);
