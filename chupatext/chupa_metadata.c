@@ -40,6 +40,7 @@ typedef struct _ChupaMetadataFieldPrivate
     } value;
     GDestroyNotify free_function;
     GString *string;
+    GString *value_string;
 } Field;
 
 G_DEFINE_TYPE(ChupaMetadataField, chupa_metadata_field, G_TYPE_OBJECT);
@@ -91,6 +92,11 @@ field_dispose (GObject *object)
         priv->string = NULL;
     }
 
+    if (priv->value_string) {
+        g_string_free(priv->value_string, TRUE);
+        priv->value_string = NULL;
+    }
+
     G_OBJECT_CLASS(chupa_metadata_field_parent_class)->dispose(object);
 }
 
@@ -106,6 +112,7 @@ field_new (ChupaMetadata *metadata, const gchar *name, GType type)
     priv->name = g_strdup(name);
     priv->type = type;
     priv->string = NULL;
+    priv->value_string = NULL;
 
     return field;
 }
@@ -235,6 +242,35 @@ chupa_metadata_field_value_size(ChupaMetadataField *field)
 }
 
 const gchar *
+chupa_metadata_field_value_as_string(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->value_string)
+        return priv->value_string->str;
+
+    priv->value_string = g_string_new(NULL);
+    switch (priv->type) {
+    case G_TYPE_INT:
+        g_string_append_printf(priv->value_string, "%d", priv->value.integer);
+        break;
+    case G_TYPE_STRING:
+        g_string_append(priv->value_string, priv->value.pointer);
+        break;
+    default:
+        if (priv->type == CHUPA_TYPE_SIZE) {
+            g_string_append_printf(priv->value_string, "%zd", priv->value.size);
+        } else {
+            g_string_append(priv->value_string, "(unsupported)");
+        }
+        break;
+    }
+
+    return priv->value_string->str;
+}
+
+const gchar *
 chupa_metadata_field_to_string(ChupaMetadataField *field)
 {
     ChupaMetadataFieldPrivate *priv;
@@ -246,21 +282,7 @@ chupa_metadata_field_to_string(ChupaMetadataField *field)
     priv->string = g_string_new(NULL);
     g_string_append(priv->string, priv->name);
     g_string_append(priv->string, ": ");
-    switch (priv->type) {
-    case G_TYPE_INT:
-        g_string_append_printf(priv->string, "%d", priv->value.integer);
-        break;
-    case G_TYPE_STRING:
-        g_string_append(priv->string, priv->value.pointer);
-        break;
-    default:
-        if (priv->type == CHUPA_TYPE_SIZE) {
-            g_string_append_printf(priv->string, "%zd", priv->value.size);
-        } else {
-            g_string_append(priv->string, "(unsupported)");
-        }
-        break;
-    }
+    g_string_append(priv->string, chupa_metadata_field_value_as_string(field));
 
     return priv->string->str;
 }

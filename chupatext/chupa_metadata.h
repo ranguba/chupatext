@@ -29,6 +29,22 @@
 
 G_BEGIN_DECLS
 
+#define CHUPA_METADATA_NAME_CONTENT_TYPE          "content-type"
+#define CHUPA_METADATA_NAME_CONTENT_LENGTH        "content-length"
+#define CHUPA_METADATA_NAME_CONTENT_DISPOSITION   "content-disposition"
+#define CHUPA_METADATA_NAME_FILENAME              "filename"
+#define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_TYPE "original-content-type"
+#define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH \
+    "original-content-length"
+#define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_DISPOSITION \
+    "original-content-disposition"
+#define CHUPA_METADATA_NAME_ORIGINAL_FILENAME     "original-filename"
+
+#define CHUPA_METADATA_NAME_TITLE                 "title"
+#define CHUPA_METADATA_NAME_AUTHOR                "author"
+#define CHUPA_METADATA_NAME_MODIFICATION_TIME     "modification-time"
+#define CHUPA_METADATA_NAME_CREATION_TIME         "creation-time"
+
 typedef struct _ChupaMetadataField ChupaMetadataField;
 typedef struct _ChupaMetadataFieldClass ChupaMetadataFieldClass;
 
@@ -144,6 +160,7 @@ const gchar   *chupa_metadata_field_value_string    (ChupaMetadataField *field);
 gint           chupa_metadata_field_value_int       (ChupaMetadataField *field);
 GTimeVal      *chupa_metadata_field_value_time_val  (ChupaMetadataField *field);
 gsize          chupa_metadata_field_value_size      (ChupaMetadataField *field);
+const gchar   *chupa_metadata_field_value_as_string (ChupaMetadataField *field);
 const gchar   *chupa_metadata_field_to_string       (ChupaMetadataField *field);
 
 G_END_DECLS
