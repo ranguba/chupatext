@@ -85,8 +85,7 @@ EOS
         base_directory = guess_base_directory
         if base_directory.nil?
           unique_key = Digest::MD5.hexdigest(Time.now.to_s + Object.new.object_id.to_s)
-          run("-headless", unique_key,
-              {:env => {"HOME" => @home_dir.to_s}})
+          run(unique_key)
           while (ps_str = `ps aux`).include?(unique_key)
             sleep(0.5)
           end
@@ -102,9 +101,8 @@ EOS
 
       def convert(input, output)
         FileUtils.rm(output.path)
-        run("-headless", input.path,
-            "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")",
-            {:env => {"HOME" => @home_dir.to_s}})
+        run(input.path,
+            "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")")
         ooffice_start_time = Time.now
         while `ps aux`.include?(output.path)
           if Time.now - ooffice_start_time > 30
@@ -120,6 +118,10 @@ EOS
       end
 
       private
+      def run(*arguments)
+        super("-headless", *arguments, {:env => {"HOME" => @home_dir.to_s}})
+      end
+
       def guess_base_directory
         [".libreoffice", ".openoffice.org"].find do |base_directory|
           script_dir = @home_dir + base_directory
