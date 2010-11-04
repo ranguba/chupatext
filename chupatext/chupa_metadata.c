@@ -353,6 +353,34 @@ chupa_metadata_new(void)
                         NULL);
 }
 
+void
+chupa_metadata_merge_original_metadata (ChupaMetadata *metadata,
+                                        ChupaMetadata *original)
+{
+    const gchar *original_filename, *original_mime_type;
+    gsize original_content_length;
+
+    original_filename = chupa_metadata_get_original_filename(original);
+    if (!original_filename)
+        original_filename = chupa_metadata_get_filename(original);
+    if (original_filename)
+        chupa_metadata_set_original_filename(metadata, original_filename);
+
+    original_mime_type = chupa_metadata_get_original_mime_type(original);
+    if (!original_mime_type)
+        original_mime_type = chupa_metadata_get_mime_type(original);
+    if (original_mime_type)
+        chupa_metadata_set_original_mime_type(metadata, original_mime_type);
+
+    original_content_length =
+        chupa_metadata_get_original_content_length(original);
+    if (original_content_length == 0)
+        original_content_length = chupa_metadata_get_content_length(original);
+    if (original_content_length > 0)
+        chupa_metadata_set_original_content_length(metadata,
+                                                   original_content_length);
+}
+
 guint
 chupa_metadata_size(ChupaMetadata *metadata)
 {
@@ -524,22 +552,114 @@ chupa_metadata_get_size (ChupaMetadata *metadata, const gchar *key, GError **err
 void
 chupa_metadata_set_content_length (ChupaMetadata *metadata, gsize length)
 {
-    chupa_metadata_set_size(metadata, "content-length", length);
+    chupa_metadata_set_size(metadata, CHUPA_METADATA_NAME_CONTENT_LENGTH,
+                            length);
 }
 
 gsize
 chupa_metadata_get_content_length (ChupaMetadata *metadata)
 {
-    gsize length;
-    GError *error = NULL;
+    return chupa_metadata_get_size(metadata, CHUPA_METADATA_NAME_CONTENT_LENGTH,
+                                   NULL);
+}
 
-    length = chupa_metadata_get_size(metadata, "content-length", &error);
-    if (error) {
-        g_error_free(error);
-        return 0;
-    } else {
-        return length;
-    }
+void
+chupa_metadata_set_original_content_length (ChupaMetadata *metadata,
+                                            gsize length)
+{
+    chupa_metadata_set_size(metadata,
+                            CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH,
+                            length);
+}
+
+gsize
+chupa_metadata_get_original_content_length (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_size(metadata,
+                                   CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH,
+                                   NULL);
+}
+
+void
+chupa_metadata_set_filename (ChupaMetadata *metadata, const gchar *filename)
+{
+    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_FILENAME, filename);
+}
+
+const gchar *
+chupa_metadata_get_filename (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_string(metadata, CHUPA_METADATA_NAME_FILENAME,
+                                     NULL);
+}
+
+void
+chupa_metadata_set_original_filename (ChupaMetadata *metadata,
+                                      const gchar *filename)
+{
+    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_ORIGINAL_FILENAME,
+                              filename);
+}
+
+const gchar *
+chupa_metadata_get_original_filename (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_string(metadata,
+                                     CHUPA_METADATA_NAME_ORIGINAL_FILENAME,
+                                     NULL);
+}
+
+void
+chupa_metadata_set_mime_type (ChupaMetadata *metadata, const gchar *mime_type)
+{
+    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_MIME_TYPE,
+                              mime_type);
+}
+
+const gchar *
+chupa_metadata_get_mime_type (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_string(metadata, CHUPA_METADATA_NAME_MIME_TYPE,
+                                     NULL);
+}
+
+void
+chupa_metadata_set_original_mime_type (ChupaMetadata *metadata,
+                                       const gchar *mime_type)
+{
+    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE,
+                              mime_type);
+}
+
+const gchar *
+chupa_metadata_get_original_mime_type (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_string(metadata,
+                                     CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE,
+                                     NULL);
+}
+
+const gchar *
+chupa_metadata_get_encoding (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_string(metadata, CHUPA_METADATA_NAME_ENCODING,
+                                     NULL);
+}
+
+void
+chupa_metadata_set_original_encoding (ChupaMetadata *metadata,
+                                      const gchar *encoding)
+{
+    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_ORIGINAL_ENCODING,
+                              encoding);
+}
+
+const gchar *
+chupa_metadata_get_original_encoding (ChupaMetadata *metadata)
+{
+    return chupa_metadata_get_string(metadata,
+                                     CHUPA_METADATA_NAME_ORIGINAL_ENCODING,
+                                     NULL);
 }
 
 /*

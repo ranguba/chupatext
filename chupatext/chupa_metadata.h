@@ -29,11 +29,13 @@
 
 G_BEGIN_DECLS
 
-#define CHUPA_METADATA_NAME_CONTENT_TYPE          "content-type"
+#define CHUPA_METADATA_NAME_MIME_TYPE             "mime-type"
+#define CHUPA_METADATA_NAME_ENCODING              "encoding"
 #define CHUPA_METADATA_NAME_CONTENT_LENGTH        "content-length"
 #define CHUPA_METADATA_NAME_CONTENT_DISPOSITION   "content-disposition"
 #define CHUPA_METADATA_NAME_FILENAME              "filename"
-#define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_TYPE "original-content-type"
+#define CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE    "original-mime-type"
+#define CHUPA_METADATA_NAME_ORIGINAL_ENCODING     "encoding"
 #define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH \
     "original-content-length"
 #define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_DISPOSITION \
@@ -87,8 +89,9 @@ GQuark         chupa_metadata_error_quark     (void);
 
 GType          chupa_metadata_get_type        (void) G_GNUC_CONST;
 ChupaMetadata *chupa_metadata_new             (void);
-void           chupa_metadata_update          (ChupaMetadata *metadata,
-                                               ChupaMetadata *update);
+void           chupa_metadata_merge_original_metadata
+                                              (ChupaMetadata *metadata,
+                                               ChupaMetadata *original);
 guint          chupa_metadata_size            (ChupaMetadata *metadata);
 void           chupa_metadata_foreach         (ChupaMetadata *metadata,
                                                ChupaMetadataFieldCallback callback,
@@ -124,6 +127,35 @@ void           chupa_metadata_set_content_length
                                               (ChupaMetadata *metadata,
                                                gsize          length);
 gsize          chupa_metadata_get_content_length
+                                              (ChupaMetadata *metadata);
+void           chupa_metadata_set_original_content_length
+                                              (ChupaMetadata *metadata,
+                                               gsize          length);
+gsize          chupa_metadata_get_original_content_length
+                                              (ChupaMetadata *metadata);
+void           chupa_metadata_set_filename    (ChupaMetadata *metadata,
+                                               const gchar   *filename);
+const gchar   *chupa_metadata_get_filename    (ChupaMetadata *metadata);
+void           chupa_metadata_set_original_filename
+                                              (ChupaMetadata *metadata,
+                                               const gchar   *filename);
+const gchar   *chupa_metadata_get_original_filename
+                                              (ChupaMetadata *metadata);
+void           chupa_metadata_set_mime_type   (ChupaMetadata *metadata,
+                                               const gchar   *mime_type);
+const gchar   *chupa_metadata_get_mime_type   (ChupaMetadata *metadata);
+void           chupa_metadata_set_original_mime_type
+                                              (ChupaMetadata *metadata,
+                                               const gchar   *mime_type);
+const gchar   *chupa_metadata_get_original_mime_type
+                                              (ChupaMetadata *metadata);
+void           chupa_metadata_set_encoding    (ChupaMetadata *metadata,
+                                               const gchar   *encoding);
+const gchar   *chupa_metadata_get_encoding    (ChupaMetadata *metadata);
+void           chupa_metadata_set_original_encoding
+                                              (ChupaMetadata *metadata,
+                                               const gchar   *encoding);
+const gchar   *chupa_metadata_get_original_encoding
                                               (ChupaMetadata *metadata);
 
 #define CHUPA_TYPE_METADATA_FIELD            chupa_metadata_field_get_type()
