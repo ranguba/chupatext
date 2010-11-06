@@ -156,7 +156,6 @@ output_plain(ChupaData *data, GError *error, gpointer user_data)
         }
         fwrite(buf, 1, size, out);
     }
-    fputs("\n\n", out);
 }
 
 static void
