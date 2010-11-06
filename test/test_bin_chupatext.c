@@ -44,7 +44,7 @@ teardown (void)
 }
 
 static const gchar *
-run(GCutProcess *process)
+run_process(GCutProcess *process)
 {
     GError *error = NULL;
 
@@ -62,15 +62,19 @@ run(GCutProcess *process)
 
 #define CHUPATEXT_COMMAND "./chupatext/chupatext"
 
-#define TAKE_STRING(str) cut_take_string(str)
-#define FIXTURE(fixture) TAKE_STRING(cut_build_fixture_data_path(fixture, NULL))
+static const gchar *
+run(const gchar *fixture_file)
+{
+    const gchar *full_path;
+
+    full_path = cut_take_string(cut_build_fixture_data_path(fixture_file, NULL));
+    chupatext = gcut_process_new(CHUPATEXT_COMMAND, full_path, NULL);
+    return run_process(chupatext);
+}
 
 void
 test_html(void)
 {
-    const gchar *path = FIXTURE("sample.html");
-
-    chupatext = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     cut_assert_equal_string("URI: sample.html\n"
                             "Content-Type: text/plain; charset=UTF-8\n"
                             "Original-Content-Length: 120\n"
@@ -83,15 +87,12 @@ test_html(void)
                             " size=120\n"
                             "\n"
                             "This is a sample.",
-                            run(chupatext));
+                            run("sample.html"));
 }
 
 void
 test_excel(void)
 {
-    const gchar *path = FIXTURE("sample.xls");
-
-    chupatext = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     cut_assert_equal_string("URI: sample.xls\n"
                             "Content-Type: text/plain; charset=UTF-8\n"
                             "Original-Content-Length: 5632\n"
@@ -103,15 +104,12 @@ test_excel(void)
                             " size=5632\n"
                             "\n"
                             "sample\n1\n2\n3\n4\n5\n6\n7\n",
-                            run(chupatext));
+                            run("sample.xls"));
 }
 
 void
 test_pdf_multi_pages(void)
 {
-    const gchar *path = FIXTURE("sample_multi_pages.pdf");
-
-    chupatext = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     cut_assert_equal_string("URI: sample_multi_pages.pdf\n"
                             "Content-Type: text/plain; charset=UTF-8\n"
                             "Original-Content-Length: 6145\n"
@@ -126,7 +124,7 @@ test_pdf_multi_pages(void)
                             "page1\n\f"
                             "2 ページ目\n\f"
                             "page3",
-                            run(chupatext));
+                            run("sample_multi_pages.pdf"));
 }
 
 /*
