@@ -25,7 +25,7 @@
 
 G_BEGIN_DECLS
 
-#define	CHUPA_TYPE_SIZE (chupa_size_get_type())
+#define	CHUPA_TYPE_SIZE      (chupa_size_get_type())
 GType   chupa_size_get_type  (void) G_GNUC_CONST;
 
 G_END_DECLS
