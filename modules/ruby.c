@@ -63,34 +63,16 @@ chupa_ruby_decomposer_get_type(void)
 }
 
 typedef struct {
-    VALUE error;
+    VALUE exception;
     GString *inspected;
-} InspectErrorData;
+} InspectExceptionData;
 
 static VALUE
-inspect_error(VALUE arg)
+inspect_exception(VALUE arg)
 {
-    InspectErrorData *data = (InspectErrorData *)arg;
-    VALUE error;
-    GString *inspected;
-    VALUE message, class_name, backtrace;
-    long i;
+    InspectExceptionData *data = (InspectExceptionData *)arg;
 
-    error = data->error;
-    inspected = data->inspected;
-
-    message = rb_funcall(error, rb_intern("message"), 0);
-    class_name = rb_funcall(CLASS_OF(error), rb_intern("to_s"), 0);
-    g_string_append_printf(inspected, "%s (%s)\n",
-                           StringValueCStr(message),
-                           StringValueCStr(class_name));
-    backtrace = rb_funcall(error, rb_intern("backtrace"), 0);
-    for (i = 0; i < RARRAY_LEN(backtrace); i++) {
-        VALUE line;
-        line = RARRAY_PTR(backtrace)[i];
-        g_string_append_printf(inspected, "%s\n", StringValueCStr(line));
-    }
-
+    chupa_ruby_exception_inspect(data->exception, data->inspected);
     return Qnil;
 }
 
@@ -111,22 +93,22 @@ invoke_rb_funcall2(VALUE data)
 }
 
 static VALUE
-chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_error)
+chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **error)
 {
-    VALUE result, error;
+    VALUE result, exception;
     int state = 0;
 
     result = rb_protect(func, arg, &state);
     if (statep) {
         *statep = state;
     }
-    if (state && !NIL_P(error = rb_errinfo())) {
-	InspectErrorData data;
+    if (state && !NIL_P(exception = rb_errinfo())) {
+	InspectExceptionData data;
 
-	data.error = error;
-	data.inspected = g_string_new(NULL);
-	rb_protect(inspect_error, (VALUE)&data, &state);
-        g_set_error(g_error,
+	data.exception = exception;
+        data.inspected = g_string_new(NULL);
+        rb_protect(inspect_exception, (VALUE)&data, &state);
+        g_set_error(error,
                     CHUPA_FEEDER_ERROR, CHUPA_FEEDER_ERROR_UNKNOWN,
                     "unknown error is occurred: <%s>", data.inspected->str);
         g_string_free(data.inspected, TRUE);
@@ -136,7 +118,7 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **g_erro
 }
 
 static VALUE
-chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_error)
+chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **error)
 {
     funcall_arguments call_args;
 
@@ -144,40 +126,31 @@ chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **g_err
     call_args.name = mid;
     call_args.argc = argc;
     call_args.argv = argv;
-    return chupa_ruby_protect(invoke_rb_funcall2, (VALUE)&call_args, NULL, g_error);
+    return chupa_ruby_protect(invoke_rb_funcall2, (VALUE)&call_args, NULL, error);
 }
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaData *data, GError **error)
 {
-    ID id_feed;
+    ID id_new, id_feed;
     ChupaRubyDecomposer *ruby_decomposer;
-    VALUE result;
     VALUE rb_decomposer;
-    ChupaData *target_data;
-    GInputStream *sink;
-    ChupaMetadata *metadata;
+    VALUE decomposer_new_argv[2];
 
+    CONST_ID(id_new, "new");
     CONST_ID(id_feed, "feed");
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
-    rb_decomposer = rb_funcall(ruby_decomposer->decomposer, rb_intern("new"), 0);
-    rb_iv_set(rb_decomposer, "@feeder", GOBJ2RVAL(feeder));
-    rb_iv_set(rb_decomposer, "@source", GOBJ2RVAL(data));
-    sink = g_memory_input_stream_new();
-    rb_iv_set(rb_decomposer, "@sink", GOBJ2RVAL(sink));
-    metadata = chupa_metadata_new();
-    chupa_metadata_merge_original_metadata(metadata,
-                                           chupa_data_get_metadata(data));
-    target_data = chupa_data_new(sink, metadata);
-    g_object_unref(sink);
-    g_object_unref(metadata);
-    rb_iv_set(rb_decomposer, "@target", GOBJ2RVAL(target_data));
-    chupa_data_set_mime_type(target_data, "text/plain");
+    decomposer_new_argv[0] = GOBJ2RVAL(feeder);
+    decomposer_new_argv[1] = GOBJ2RVAL(data);
+    rb_decomposer = chupa_ruby_funcall(ruby_decomposer->decomposer,
+                                       id_new,
+                                       2,
+                                       decomposer_new_argv,
+                                       error);
+    chupa_ruby_funcall(rb_decomposer, id_feed, 0, NULL, error);
 
-    result = chupa_ruby_funcall(rb_decomposer, id_feed, 0, 0, error);
-
-    return RTEST(result);
+    return TRUE;
 }
 
 static void
@@ -517,14 +490,14 @@ init_ruby_interpreter(GError **error)
     args[argc] = NULL;
     node = ruby_options(argc, argv);
     if (!ruby_executable_node(node, &status)) {
-        InspectErrorData data;
+        InspectExceptionData data;
 
-        data.error = rb_errinfo();
+        data.exception = rb_errinfo();
         data.inspected = g_string_new(NULL);
-        if (!NIL_P(data.error)) {
+        if (!NIL_P(data.exception)) {
             int state = 0;
             g_string_append(data.inspected, ": ");
-            rb_protect(inspect_error, (VALUE)&data, &state);
+            rb_protect(inspect_exception, (VALUE)&data, &state);
         }
         g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
                     "failed to initialize Ruby intepreter%s",
@@ -555,13 +528,13 @@ init_ruby(GError **error)
 
     rb_protect(init_ruby_bindings, Qnil, &state);
     if (state) {
-        InspectErrorData data;
+        InspectExceptionData data;
 
-        data.error = rb_errinfo();
+        data.exception = rb_errinfo();
         data.inspected = g_string_new(NULL);
-        if (!NIL_P(data.error)) {
+        if (!NIL_P(data.exception)) {
             g_string_append(data.inspected, ": ");
-            rb_protect(inspect_error, (VALUE)&data, &state);
+            rb_protect(inspect_exception, (VALUE)&data, &state);
         }
         g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
                     "failed to initialize Ruby bindings%s",
