@@ -52,6 +52,17 @@ feed(VALUE self, VALUE input)
     return CBOOL2RVAL(success);
 }
 
+static VALUE
+accepted(VALUE self, VALUE data)
+{
+    ChupaFeeder *feeder;
+
+    feeder = SELF(self);
+    chupa_feeder_accepted(feeder, RVAL2GOBJ(data));
+
+    return Qnil;
+}
+
 VALUE
 chupa_ruby_feeder_init(VALUE mChupa)
 {
@@ -63,6 +74,7 @@ chupa_ruby_feeder_init(VALUE mChupa)
     cFeeder = G_DEF_CLASS(CHUPA_TYPE_FEEDER, "Feeder", mChupa);
 
     rb_define_method(cFeeder, "feed", feed, 1);
+    rb_define_method(cFeeder, "accepted", accepted, 1);
 
     return cFeeder;
 }
