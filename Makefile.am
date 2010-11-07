@@ -61,6 +61,9 @@ upload: upload-doc
 upload-doc:
 	cd doc/reference && $(MAKE) upload
 
+tag:
+	git tag -a ${VERSION} -m "release ${VERSION}!!!"
+
 release: dist
 	rubyforge add_release $(RUBYFORGE_PROJECT_NAME) $(PACKAGE) \
 	  $(VERSION) $(PACKAGE)-$(VERSION).tar.gz
