@@ -16,3 +16,4 @@
 # MA  02110-1301  USA
 
 require 'glib2'
+GLib::Log.cancel_handler
