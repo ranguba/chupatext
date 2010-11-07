@@ -95,6 +95,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     gsf_input_set_name_from_filename(gzip_input, new_filename->str);
     g_string_free(new_filename, TRUE);
     metadata = chupa_gsf_input_stream_get_metadata(stream);
+    chupa_metadata_merge_original_metadata(metadata,
+                                           chupa_data_get_metadata(data));
     data = chupa_data_new(G_INPUT_STREAM(stream), metadata);
     g_object_unref(metadata);
     g_object_unref(stream);

@@ -23,6 +23,7 @@
 #include "chupa_test_util.h"
 
 void test_text(void);
+void test_gzip(void);
 void test_html(void);
 void test_word(void);
 void test_excel(void);
@@ -99,6 +100,24 @@ test_text(void)
                             "sample\n"
                             "\n",
                             run("sample.txt"));
+}
+
+void
+test_gzip(void)
+{
+    cut_assert_equal_string("URI: sample.txt.gz\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 38\n"
+                            "Content-Length: 7\n"
+                            "Original-Filename: sample.txt.gz\n"
+                            "Original-Content-Type: application/x-gzip\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample.txt.gz;"
+                            " size=38\n"
+                            "\n"
+                            "sample\n"
+                            "\n",
+                            run("sample.txt.gz"));
 }
 
 void
