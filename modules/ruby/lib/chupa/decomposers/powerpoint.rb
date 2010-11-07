@@ -86,7 +86,8 @@ EOS
         end
         base_directory = guess_base_directory
         if base_directory.nil?
-          unique_key = Digest::MD5.hexdigest(Time.now.to_s + Object.new.object_id.to_s)
+          random_id = "#{Time.now}#{Object.new.object_id}"
+          unique_key = Digest::MD5.hexdigest(random_id)
           run(unique_key)
           while (ps_str = `ps aux`).include?(unique_key)
             sleep(0.5)
@@ -161,12 +162,12 @@ EOS
 
       pdf = Tempfile.new(["chupadata-pdf", ".pdf"])
       ppt = Tempfile.new(["chupadata-ppt", ".ppt"])
-      ppt.write(@source.read)
+      ppt.write(@input.read)
       ppt.close
 
       convertor.convert(ppt, pdf)
-      data = Chupa::Data.decompose(pdf.path)
-      accepted(data.read)
+      data = Chupa::Data.new(pdf.path, metadata)
+      delegate(data.decompose(@feeder))
     end
   end
 end

@@ -33,26 +33,63 @@ module Chupa
       end
     end
 
+    attr_reader :input
+    def initialize(feeder, input)
+      @feeder = feeder
+      @input = input
+      @output_stream = nil
+      @output = nil
+      @metadata = nil
+      @accepted = false
+      @finisehd = false
+    end
+
     def feed
       begin
-        success = decompose
-        @feeder.feed(@target) if success
-        success
+        decompose
+        finished
       rescue Exception
-        puts "#{$!.class}:#{$!.message}"
-        puts $@
-        raise
-        false
+        finished($!)
       end
     end
 
     private
-    def accepted(data)
-      @sink.add_data(data)
+    def text(data)
+      output_stream.add_data(data)
+      unless @accepted
+        metadata["mime-type"] = "text/plain"
+        @feeder.accepted(output)
+        @accepted = true
+      end
+    end
+
+    def finished(error=nil)
+      return unless @accepted
+      return if @finished
+      output.finished(error)
+      @finished = true
+    end
+
+    def delegate(delegate_data)
+      @feeder.feed(delegate_data)
+    end
+
+    def output_stream
+      @output_stream ||= GLib::MemoryInputStream.new
+    end
+
+    def output
+      @output ||= Chupa::Data.new(output_stream, metadata)
     end
 
     def metadata
-      @target.metadata
+      @metadata ||= create_metadata
+    end
+
+    def create_metadata
+      metadata = Chupa::Metadata.new
+      metadata.merge_original_metadata(@input.metadata)
+      metadata
     end
   end
 end
