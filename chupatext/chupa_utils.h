@@ -34,6 +34,8 @@ gboolean     chupa_utils_guess_console_color_usability
                                              (void);
 gboolean     chupa_utils_string_equal        (const gchar *string1,
                                               const gchar *string2);
+gchar       *chupa_utils_format_rfc2822      (GTimeVal    *time_value);
+
 
 #ifdef G_OS_WIN32
 const gchar *chupa_win32_base_path           (void);

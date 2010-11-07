@@ -22,6 +22,7 @@ noinst_LTLIBRARIES =				\
 	test_zip.la				\
 	test_html.la				\
 	test_bin_chupatext.la			\
+	test_utils.la				\
 	$(EMPTY)
 
 if HAVE_POPPLER_GLIB
@@ -82,6 +83,8 @@ test_tar_la_SOURCES = test_tar.c
 test_gz_la_SOURCES = test_gz.c
 test_zip_la_SOURCES = test_zip.c
 test_html_la_SOURCES = test_html.c
+test_bin_chupatext_la_SOURCES = test_bin_chupatext.c
+test_utils_la_SOURCES = test_utils.c
 
 echo-top-builddir:
 	@echo $(abs_top_builddir)

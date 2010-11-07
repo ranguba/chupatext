@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
@@ -111,6 +112,31 @@ chupa_utils_string_equal(const gchar *string1, const gchar *string2)
     if (!string1 || !string2)
         return FALSE;
     return strcmp(string1, string2) == 0;
+}
+
+static gchar *wday_labels[] = {
+    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+};
+
+static gchar *month_labels[] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+    "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+
+gchar *
+chupa_utils_format_rfc2822 (GTimeVal *time_value)
+{
+    struct tm time;
+
+    gmtime_r(&(time_value->tv_sec), &time);
+    return g_strdup_printf("%s, %02d %s %d %02d:%02d:%02d +0000",
+                           wday_labels[time.tm_wday],
+                           time.tm_mday,
+                           month_labels[time.tm_mon],
+                           time.tm_year + 1900,
+                           time.tm_hour,
+                           time.tm_min,
+                           time.tm_sec);
 }
 
 #ifdef G_OS_WIN32
