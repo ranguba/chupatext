@@ -55,7 +55,7 @@ if chuparuby_force_make or ENV["NO_MAKE"] != "yes"
   Dir.chdir(chuparuby_ext_dir.to_s) do
     make_args = ["CPPFLAGS=-I#{top_src_dir}",
                  "LIBPATH=-L#{top_build_dir}/chupatext/.libs"]
-    system(ENV["MAKE"], *make_args) or exit(false)
+    system(ENV["MAKE"], "-q", *make_args) or exit(false)
   end
 end
 $LOAD_PATH.unshift(chuparuby_ext_dir.to_s)
