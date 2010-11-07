@@ -165,6 +165,16 @@ void           chupa_metadata_set_original_encoding
                                                const gchar   *encoding);
 const gchar   *chupa_metadata_get_original_encoding
                                               (ChupaMetadata *metadata);
+void           chupa_metadata_set_modification_time
+                                              (ChupaMetadata *metadata,
+                                               GTimeVal      *value);
+GTimeVal      *chupa_metadata_get_modification_time
+                                              (ChupaMetadata *metadata);
+void           chupa_metadata_set_creation_time
+                                              (ChupaMetadata *metadata,
+                                               GTimeVal      *value);
+GTimeVal      *chupa_metadata_get_creation_time
+                                              (ChupaMetadata *metadata);
 void           chupa_metadata_set_meta_ignore_time
                                               (ChupaMetadata *metadata,
                                                gboolean       ignore);

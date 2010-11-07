@@ -468,21 +468,17 @@ chupa_metadata_class_init (ChupaMetadataClass *klass)
                                G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_AUTHOR, spec);
 
-/*
-    spec = g_param_spec_time("modification-time",
-                             "Modification time",
-                             "Modification time of the associated data",
-                             0,
-                             G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    spec = chupa_param_spec_time_val("modification-time",
+                                     "Modification time",
+                                     "Modification time of the associated data",
+                                     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_MODIFICATION_TIME, spec);
 
-    spec = g_param_spec_time("creation-time",
-                             "Creation time",
-                             "Creation time of the associated data",
-                             0,
-                             G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    spec = chupa_param_spec_time_val("creation-time",
+                                     "Creation time",
+                                     "Creation time of the associated data",
+                                     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_CREATION_TIME, spec);
-*/
 
     spec = g_param_spec_boolean("meta-ignore-time",
                                 "Meta: ignore time",
@@ -569,14 +565,14 @@ set_property(GObject *object,
     case PROP_AUTHOR:
         chupa_metadata_set_author(metadata, g_value_get_string(value));
         break;
-/*
     case PROP_MODIFICATION_TIME:
-        chupa_metadata_set_modification_time(metadata, g_value_get_time(value));
+        chupa_metadata_set_modification_time(metadata,
+                                             chupa_value_get_time_val(value));
         break;
     case PROP_CREATION_TIME:
-        chupa_metadata_set_creation_time(metadata, g_value_get_time(value));
+        chupa_metadata_set_creation_time(metadata,
+                                         chupa_value_get_time_val(value));
         break;
-*/
     case PROP_META_IGNORE_TIME:
         chupa_metadata_set_meta_ignore_time(metadata,
                                             g_value_get_boolean(value));
@@ -634,14 +630,14 @@ get_property(GObject *object,
     case PROP_AUTHOR:
         g_value_set_string(value, chupa_metadata_get_author(metadata));
         break;
-/*
     case PROP_MODIFICATION_TIME:
-        g_value_set_time(value, chupa_metadata_get_modification_time(metadata));
+        chupa_value_set_time_val(value,
+                                 chupa_metadata_get_modification_time(metadata));
         break;
     case PROP_CREATION_TIME:
-        g_value_set_time(value, chupa_metadata_get_creation_time(metadata));
+        chupa_value_set_time_val(value,
+                                 chupa_metadata_get_creation_time(metadata));
         break;
-*/
     case PROP_META_IGNORE_TIME:
         g_value_set_boolean(value,
                             chupa_metadata_get_meta_ignore_time(metadata));
@@ -911,6 +907,8 @@ chupa_metadata_get_ ## name (ChupaMetadata *metadata)                   \
     DEFINE_ACCESSOR(name, key_name, const gchar *, string)
 #define DEFINE_BOOLEAN_ACCESSOR(name, key_name)         \
     DEFINE_ACCESSOR(name, key_name, gboolean, boolean)
+#define DEFINE_TIME_VAL_ACCESSOR(name, key_name)         \
+    DEFINE_ACCESSOR(name, key_name, GTimeVal *, time_val)
 
 DEFINE_SIZE_ACCESSOR(content_length, CONTENT_LENGTH)
 DEFINE_SIZE_ACCESSOR(original_content_length, ORIGINAL_CONTENT_LENGTH)
@@ -923,6 +921,8 @@ DEFINE_STRING_ACCESSOR(encoding, ENCODING)
 DEFINE_STRING_ACCESSOR(original_encoding, ORIGINAL_ENCODING)
 DEFINE_STRING_ACCESSOR(title, TITLE)
 DEFINE_STRING_ACCESSOR(author, AUTHOR)
+DEFINE_TIME_VAL_ACCESSOR(modification_time, MODIFICATION_TIME)
+DEFINE_TIME_VAL_ACCESSOR(creation_time, CREATION_TIME)
 DEFINE_BOOLEAN_ACCESSOR(meta_ignore_time, META_IGNORE_TIME)
 
 /*

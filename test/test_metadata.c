@@ -39,6 +39,8 @@ void test_boolean_error (void);
 void test_content_length (void);
 void test_encoding (void);
 void test_original_encoding (void);
+void test_modification_time (void);
+void test_creation_time (void);
 void test_meta_ignore_time (void);
 
 static ChupaMetadata *metadata, *metadata2;
@@ -290,6 +292,22 @@ test_original_encoding (void)
     chupa_metadata_set_original_encoding(metadata, "UTF-8");
     cut_assert_equal_string("UTF-8",
                             chupa_metadata_get_original_encoding(metadata));
+}
+
+void
+test_modification_time (void)
+{
+    GTimeVal value, *actual_value;
+
+    metadata = chupa_metadata_new();
+    g_get_current_time(&value);
+    cut_assert_null(chupa_metadata_get_modification_time(metadata));
+    chupa_metadata_set_modification_time(metadata, &value);
+
+    actual_value = chupa_metadata_get_modification_time(metadata);
+    cut_assert_not_null(actual_value);
+    cut_assert_equal_int(value.tv_sec, actual_value->tv_sec);
+    cut_assert_equal_int(value.tv_usec, actual_value->tv_usec);
 }
 
 void
