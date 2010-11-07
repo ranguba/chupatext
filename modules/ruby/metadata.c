@@ -82,6 +82,17 @@ chupa_metadata_set(VALUE self, VALUE name, VALUE value)
     return value;
 }
 
+static VALUE
+metadata_remove(VALUE self, VALUE name)
+{
+    ChupaMetadata *metadata;
+
+    metadata = SELF(self);
+    chupa_metadata_remove(metadata, RVAL2CSTR(name));
+
+    return Qnil;
+}
+
 static void
 chupa_metadata_keys_push(ChupaMetadataField *field, gpointer user_data)
 {
@@ -135,7 +146,7 @@ chupa_metadata_each(VALUE self)
 }
 
 static VALUE
-merge_original_metadata(VALUE self, VALUE original)
+metadata_merge_original_metadata(VALUE self, VALUE original)
 {
     ChupaMetadata *metadata, *original_metadata;
 
@@ -154,11 +165,12 @@ chupa_ruby_metadata_init(VALUE mChupa)
     rb_define_method(cMetadata, "[]", chupa_metadata_get, 1);
     rb_define_method(cMetadata, "[]=", chupa_metadata_set, 2);
     rb_define_method(cMetadata, "set", chupa_metadata_set, 2);
+    rb_define_method(cMetadata, "remove", metadata_remove, 1);
     rb_define_method(cMetadata, "keys", chupa_metadata_keys, 0);
     rb_define_method(cMetadata, "values", chupa_metadata_values, 0);
     rb_define_method(cMetadata, "each", chupa_metadata_each, 0);
     rb_define_method(cMetadata, "merge_original_metadata",
-                     merge_original_metadata, 1);
+                     metadata_merge_original_metadata, 1);
     rb_include_module(cMetadata, rb_mEnumerable);
     return cMetadata;
 }
