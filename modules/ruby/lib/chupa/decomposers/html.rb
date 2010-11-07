@@ -24,18 +24,18 @@ class Chupa::HTML < Chupa::BaseDecomposer
     data = @input.read
     doc = Nokogiri::HTML.parse(data, nil, guess_encoding(data))
     if title = (doc % "head/title")
-      metadata["title"] = title.text
+      metadata.title = title.text
     end
     if encoding = doc.encoding
-      metadata["original-encoding"] = encoding.downcase
+      metadata.original_encoding = encoding.downcase
     end
-    metadata["encoding"] = "utf-8"
+    metadata.encoding = "utf-8"
     if body = (doc % "body")
       body = body.text.gsub(/^\s+|\s+$/, '')
     else
       body = ""
     end
-    metadata["content-length"] = body.bytesize.to_s
+    metadata.content_length = body.bytesize
     text(body)
   end
 
