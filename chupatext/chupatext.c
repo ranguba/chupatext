@@ -43,8 +43,8 @@ typedef struct _OutputHeaderData
     const gchar *original_encoding;
     const gchar *original_filename;
     gsize original_content_length;
-    const gchar *creation_time;
-    const gchar *modification_time;
+    GTimeVal *creation_time;
+    GTimeVal *modification_time;
 } OutputHeaderData;
 
 static void
@@ -72,9 +72,9 @@ output_plain_header(ChupaMetadataField *field, gpointer user_data)
     } else if (EQUAL_NAME(ORIGINAL_CONTENT_LENGTH)) {
         data->original_content_length = chupa_metadata_field_value_size(field);
     } else if (EQUAL_NAME(CREATION_TIME)) {
-        data->creation_time = chupa_metadata_field_value_string(field);
+        data->creation_time = chupa_metadata_field_value_time_val(field);
     } else if (EQUAL_NAME(MODIFICATION_TIME)) {
-        data->modification_time = chupa_metadata_field_value_string(field);
+        data->modification_time = chupa_metadata_field_value_time_val(field);
     }
 #undef EQUAL_NAME
 
@@ -152,11 +152,18 @@ output_headers(ChupaData *data, FILE *output)
         fprintf(output, "; size=%zd", header_data.original_content_length);
     }
     if (header_data.creation_time) {
-        fprintf(output, "; creation-date=%s", header_data.creation_time);
+        gchar *creation_time_rfc2822;
+        creation_time_rfc2822 =
+            chupa_utils_format_rfc2822(header_data.creation_time);
+        fprintf(output, "; creation-date=%s", creation_time_rfc2822);
+        g_free(creation_time_rfc2822);
     }
     if (header_data.modification_time) {
-        fprintf(output, "; modification-date=%s",
-                header_data.modification_time);
+        gchar *modification_time_rfc2822;
+        modification_time_rfc2822 =
+            chupa_utils_format_rfc2822(header_data.modification_time);
+        fprintf(output, "; modification-date=%s", modification_time_rfc2822);
+        g_free(modification_time_rfc2822);
     }
     fprintf(output, "\n\n");
 }

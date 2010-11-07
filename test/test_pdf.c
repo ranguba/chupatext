@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4; coding: utf-8 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -57,8 +58,11 @@ void
 test_pdf_info(void)
 {
     ChupaMetadata *metadata;
+    GTimeVal *creation_time;
 
     metadata = chupa_test_metadata_fixture("sample.pdf");
-    cut_assert_match("^20[0-9][0-9]-[01][0-9]-[0-3][0-9]",
-                     chupa_metadata_get_string(metadata, "creation-time", NULL));
+    creation_time = chupa_metadata_get_creation_time(metadata);
+    cut_assert_not_null(creation_time);
+    cut_assert_equal_int(1283282984, creation_time->tv_sec);
+    cut_assert_equal_int(0, creation_time->tv_usec);
 }

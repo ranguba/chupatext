@@ -63,16 +63,6 @@ struct _ChupaPDFDecomposerClass
 
 static GType chupa_type_pdf_decomposer = 0;
 
-/* use XML Schema format string for the time being */
-static void
-metadata_set_time(ChupaMetadata *meta, const gchar *name, time_t value)
-{
-    char buf[40];
-    struct tm time;
-    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", gmtime_r(&value, &time));
-    chupa_metadata_set_string(meta, name, buf);
-}
-
 static gboolean
 feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
@@ -87,7 +77,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     ChupaMetadata *input_metadata, *output_metadata;
     ChupaData *pdf_text = NULL;
     gchar *title, *author, *metadata;
-    gint creation, modtime;
+    gint creation_time, modification_time;
     int n, i;
 
     input_metadata = chupa_data_get_metadata(data);
@@ -110,24 +100,28 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     g_object_get(doc,
                  "title", &title,
                  "author", &author,
-                 "creation-date", &creation,
-                 "mod-date", &modtime,
+                 "creation-date", &creation_time,
+                 "mod-date", &modification_time,
                  "metadata", &metadata,
                  NULL);
     if (title) {
-        chupa_metadata_set_string(output_metadata, "title", title);
+        chupa_metadata_set_title(output_metadata, title);
         g_free(title);
     }
     if (author) {
-        chupa_metadata_set_string(output_metadata, "author", author);
+        chupa_metadata_set_author(output_metadata, author);
         g_free(author);
     }
     if (!chupa_metadata_get_meta_ignore_time(input_metadata)) {
-        if (creation != -1 && creation != 0) {
-            metadata_set_time(output_metadata, "creation-time", creation);
+        GTimeVal time;
+        time.tv_usec = 0;
+        if (creation_time > 0) {
+            time.tv_sec = creation_time;
+            chupa_metadata_set_creation_time(output_metadata, &time);
         }
-        if (modtime != -1 && modtime != 0) {
-            metadata_set_time(output_metadata, "modification-time", modtime);
+        if (modification_time > 0) {
+            time.tv_sec = modification_time;
+            chupa_metadata_set_modification_time(output_metadata, &time);
         }
     }
     if (metadata) {

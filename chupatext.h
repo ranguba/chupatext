@@ -27,5 +27,6 @@
 #include <chupatext/chupa_logger.h>
 #include <chupatext/chupa_feeder.h>
 #include <chupatext/chupa_decomposer.h>
+#include <chupatext/chupa_utils.h>
 
 #endif  /* CHUPATEXT_H */

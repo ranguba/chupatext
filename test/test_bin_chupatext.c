@@ -265,7 +265,7 @@ test_pdf_multi_pages(void)
                         "Original-Content-Disposition: inline;"
                         " filename=sample_multi_pages.pdf;"
                         " size=6145;"
-                        " creation-date=2010-09-27T04:09:17Z\n"
+                        " creation-date=Mon, 27 Sep 2010 04:09:17 +0000\n"
                         "\n"
                         "page1\n\f"
                         "2 ページ目\n\f"
