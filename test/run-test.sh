@@ -88,6 +88,12 @@ export CHUPA_RUBY_LIBRARY_DIR=$CHUPATEXT_RUBYLIB:$ruby_src_dir/lib
 export CHUPA_DECOMPOSERS_DIR=$TOP_BUILD_DIR/modules/.libs
 export CHUPA_DESCRIPTIONS_DIR=$TOP_SRC_DIR/data/descriptions
 
+export CHUPA_HOME=$test_dir/.chupatext
+powerpoint_decomposer="$ruby_src_dir/lib/chupa/decomposers/powerpoint.rb"
+if test "$CHUPA_HOME" -ot "$powerpoint_decomposer"; then
+    rm -rf "$CHUPA_HOME"
+fi
+
 no_test=1
 
 cutter_result=0

@@ -20,31 +20,18 @@
 
 #include "chupa_test_util.h"
 
-static const gchar *temp_dir;
-static const gchar *old_chupa_home;
-
 void test_decompose_ppt(void);
 void test_decompose_ppt_ja(void);
 
 void
 setup(void)
 {
-    const gchar *chupa_home;
-
     chupa_test_setup();
-    temp_dir = cut_build_path(cut_get_test_directory(), "temp", NULL);
-    chupa_home = cut_build_path(temp_dir, "chupa_home", NULL);
-    old_chupa_home = g_getenv("CHUPA_HOME");
-    g_setenv("CHUPA_HOME", chupa_home, TRUE);
-    cut_make_directory(chupa_home,
-                       NULL);
 }
 
 void
 teardown(void)
 {
-    cut_remove_path(temp_dir, NULL);
-    g_setenv("CHUPA_HOME", old_chupa_home, TRUE);
     chupa_test_teardown();
 }
 
