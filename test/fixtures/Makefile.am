@@ -14,5 +14,4 @@ EXTRA_DIST =					\
 	sample_ja.doc				\
 	sample_ja.ppt				\
 	sample_multi_pages.pdf			\
-	sample_multi_pages.svg			\
 	sample_utf8.html
