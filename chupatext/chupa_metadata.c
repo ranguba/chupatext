@@ -37,6 +37,7 @@ typedef struct _ChupaMetadataFieldPrivate
         gint     integer;
         gsize    size;
         gpointer pointer;
+        gboolean boolean;
     } value;
     GDestroyNotify free_function;
     GString *string;
@@ -177,6 +178,20 @@ field_new_size (ChupaMetadata *metadata, const gchar *name, gsize value)
     return field;
 }
 
+static ChupaMetadataField *
+field_new_boolean (ChupaMetadata *metadata, const gchar *name, gboolean value)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataFieldPrivate *priv;
+
+    field = field_new(metadata, name, G_TYPE_BOOLEAN);
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    priv->value.boolean = value;
+    priv->free_function = NULL;
+
+    return field;
+}
+
 const gchar *
 chupa_metadata_field_name(ChupaMetadataField *field)
 {
@@ -241,6 +256,19 @@ chupa_metadata_field_value_size(ChupaMetadataField *field)
     }
 }
 
+gboolean
+chupa_metadata_field_value_boolean(ChupaMetadataField *field)
+{
+    ChupaMetadataFieldPrivate *priv;
+
+    priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
+    if (priv->type == G_TYPE_BOOLEAN) {
+        return priv->value.boolean;
+    } else {
+        return FALSE;
+    }
+}
+
 const gchar *
 chupa_metadata_field_value_as_string(ChupaMetadataField *field)
 {
@@ -257,6 +285,10 @@ chupa_metadata_field_value_as_string(ChupaMetadataField *field)
         break;
     case G_TYPE_STRING:
         g_string_append(priv->value_string, priv->value.pointer);
+        break;
+    case G_TYPE_BOOLEAN:
+        g_string_append(priv->value_string,
+                        priv->value.boolean ? "true" : "false");
         break;
     default:
         if (priv->type == CHUPA_TYPE_SIZE) {
@@ -526,13 +558,13 @@ chupa_metadata_get_time_val (ChupaMetadata *metadata, const gchar *key, GError *
 }
 
 void
-chupa_metadata_set_size (ChupaMetadata *metadata, const gchar *key, gsize size)
+chupa_metadata_set_size (ChupaMetadata *metadata, const gchar *key, gsize value)
 {
     ChupaMetadataField *field;
     ChupaMetadataPrivate *priv;
 
     priv = CHUPA_METADATA_GET_PRIVATE(metadata);
-    field = field_new_size(metadata, key, size);
+    field = field_new_size(metadata, key, value);
     g_hash_table_insert(priv->fields, g_strdup(key), field);
 }
 
@@ -547,6 +579,32 @@ chupa_metadata_get_size (ChupaMetadata *metadata, const gchar *key, GError **err
     }
 
     return chupa_metadata_field_value_size(field);
+}
+
+void
+chupa_metadata_set_boolean (ChupaMetadata *metadata,
+                            const gchar *key, gboolean value)
+{
+    ChupaMetadataField *field;
+    ChupaMetadataPrivate *priv;
+
+    priv = CHUPA_METADATA_GET_PRIVATE(metadata);
+    field = field_new_boolean(metadata, key, value);
+    g_hash_table_insert(priv->fields, g_strdup(key), field);
+}
+
+gboolean
+chupa_metadata_get_boolean (ChupaMetadata *metadata,
+                            const gchar *key, GError **error)
+{
+    ChupaMetadataField *field;
+
+    field = field_lookup(metadata, key, error);
+    if (!field) {
+        return FALSE;
+    }
+
+    return chupa_metadata_field_value_boolean(field);
 }
 
 #define DEFINE_ACCESSOR(name, key_name, type, type_name)                \
@@ -568,6 +626,8 @@ chupa_metadata_get_ ## name (ChupaMetadata *metadata)                   \
     DEFINE_ACCESSOR(name, key_name, gsize, size)
 #define DEFINE_STRING_ACCESSOR(name, key_name)                  \
     DEFINE_ACCESSOR(name, key_name, const gchar *, string)
+#define DEFINE_BOOLEAN_ACCESSOR(name, key_name)         \
+    DEFINE_ACCESSOR(name, key_name, gboolean, boolean)
 
 DEFINE_SIZE_ACCESSOR(content_length, CONTENT_LENGTH)
 DEFINE_SIZE_ACCESSOR(original_content_length, ORIGINAL_CONTENT_LENGTH)
@@ -577,6 +637,7 @@ DEFINE_STRING_ACCESSOR(mime_type, MIME_TYPE)
 DEFINE_STRING_ACCESSOR(original_mime_type, ORIGINAL_MIME_TYPE)
 DEFINE_STRING_ACCESSOR(encoding, ENCODING)
 DEFINE_STRING_ACCESSOR(original_encoding, ORIGINAL_ENCODING)
+DEFINE_BOOLEAN_ACCESSOR(meta_ignore_time, META_IGNORE_TIME)
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

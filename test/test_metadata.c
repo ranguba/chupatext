@@ -33,9 +33,12 @@ void test_int_error (void);
 void test_time_val (void);
 void test_size (void);
 void test_size_error (void);
+void test_boolean (void);
+void test_boolean_error (void);
 void test_content_length (void);
 void test_encoding (void);
 void test_original_encoding (void);
+void test_meta_ignore_time (void);
 
 static ChupaMetadata *metadata, *metadata2;
 static GString *result;
@@ -222,6 +225,29 @@ test_size_error (void)
 }
 
 void
+test_boolean (void)
+{
+    metadata = chupa_metadata_new();
+    chupa_metadata_set_boolean(metadata, "hungry-p", TRUE);
+    cut_assert_true(chupa_metadata_get_boolean(metadata, "hungry-p", NULL));
+}
+
+void
+test_boolean_error (void)
+{
+    const gchar *key = "hungry-p";
+
+    metadata = chupa_metadata_new();
+    expected_error = g_error_new(CHUPA_METADATA_ERROR,
+                                 CHUPA_METADATA_ERROR_NOT_EXIST,
+                                 "requested key doesn't exist in metadata: <%s>",
+                                 key);
+
+    cut_assert_false(chupa_metadata_get_boolean(metadata, key, &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
 test_content_length (void)
 {
     metadata = chupa_metadata_new();
@@ -247,6 +273,15 @@ test_original_encoding (void)
     chupa_metadata_set_original_encoding(metadata, "UTF-8");
     cut_assert_equal_string("UTF-8",
                             chupa_metadata_get_original_encoding(metadata));
+}
+
+void
+test_meta_ignore_time (void)
+{
+    metadata = chupa_metadata_new();
+    cut_assert_false(chupa_metadata_get_meta_ignore_time(metadata));
+    chupa_metadata_set_meta_ignore_time(metadata, TRUE);
+    cut_assert_true(chupa_metadata_get_meta_ignore_time(metadata));
 }
 
 /*

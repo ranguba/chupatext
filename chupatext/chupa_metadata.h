@@ -46,6 +46,7 @@ G_BEGIN_DECLS
 #define CHUPA_METADATA_NAME_AUTHOR                "author"
 #define CHUPA_METADATA_NAME_MODIFICATION_TIME     "modification-time"
 #define CHUPA_METADATA_NAME_CREATION_TIME         "creation-time"
+#define CHUPA_METADATA_NAME_META_IGNORE_TIME      "meta-ignore-time"
 
 typedef struct _ChupaMetadataField ChupaMetadataField;
 typedef struct _ChupaMetadataFieldClass ChupaMetadataFieldClass;
@@ -112,14 +113,20 @@ gint           chupa_metadata_get_int         (ChupaMetadata *metadata,
                                                GError       **error);
 void           chupa_metadata_set_time_val    (ChupaMetadata *metadata,
                                                const gchar   *key,
-                                               GTimeVal      *time_val);
+                                               GTimeVal      *value);
 GTimeVal      *chupa_metadata_get_time_val    (ChupaMetadata *metadata,
                                                const gchar   *key,
                                                GError       **error);
 void           chupa_metadata_set_size        (ChupaMetadata *metadata,
                                                const gchar   *key,
-                                               gsize          size);
+                                               gsize          value);
 gsize          chupa_metadata_get_size        (ChupaMetadata *metadata,
+                                               const gchar   *key,
+                                               GError       **error);
+void           chupa_metadata_set_boolean     (ChupaMetadata *metadata,
+                                               const gchar   *key,
+                                               gboolean       value);
+gboolean       chupa_metadata_get_boolean     (ChupaMetadata *metadata,
                                                const gchar   *key,
                                                GError       **error);
 
@@ -157,6 +164,11 @@ void           chupa_metadata_set_original_encoding
                                                const gchar   *encoding);
 const gchar   *chupa_metadata_get_original_encoding
                                               (ChupaMetadata *metadata);
+void           chupa_metadata_set_meta_ignore_time
+                                              (ChupaMetadata *metadata,
+                                               gboolean       ignore);
+gboolean       chupa_metadata_get_meta_ignore_time
+                                              (ChupaMetadata *metadata);
 
 #define CHUPA_TYPE_METADATA_FIELD            chupa_metadata_field_get_type()
 #define CHUPA_METADATA_FIELD(obj)                               \
@@ -192,6 +204,7 @@ const gchar   *chupa_metadata_field_value_string    (ChupaMetadataField *field);
 gint           chupa_metadata_field_value_int       (ChupaMetadataField *field);
 GTimeVal      *chupa_metadata_field_value_time_val  (ChupaMetadataField *field);
 gsize          chupa_metadata_field_value_size      (ChupaMetadataField *field);
+gboolean       chupa_metadata_field_value_boolean   (ChupaMetadataField *field);
 const gchar   *chupa_metadata_field_value_as_string (ChupaMetadataField *field);
 const gchar   *chupa_metadata_field_to_string       (ChupaMetadataField *field);
 
