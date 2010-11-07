@@ -125,16 +125,18 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
 dnl **************************************************************
 dnl Check for Packages
 dnl **************************************************************
-PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes])
+PKG_CHECK_MODULES(GSF, libgsf-1, [have_gsf=yes], [have_gsf=no])
 AM_CONDITIONAL([HAVE_GSF], [test "$have_gsf" = "yes"])
-PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0, [have_gio_unix=yes])
+PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0,
+                  [have_gio_unix=yes], [have_gio_unix=no])
 AM_CONDITIONAL([HAVE_GIO_UNIX], [test "$have_gio_unix" = "yes"])
-PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib, [have_poppler=yes])
+PKG_CHECK_MODULES(POPPLER_GLIB, poppler-glib,
+                  [have_poppler=yes], [have_poppler=no])
 AM_CONDITIONAL([HAVE_POPPLER_GLIB], [test "$have_poppler" = "yes"])
-PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes])
+PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [have_wv=no])
 AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
-PKG_CHECK_MODULES(GTK, gtk+-2.0, [have_gtk=yes])
-PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes])
+PKG_CHECK_MODULES(GTK, gtk+-2.0, [have_gtk=yes], [have_gtk=no])
+PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [have_goffice=no])
 AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
 
 dnl **************************************************************
