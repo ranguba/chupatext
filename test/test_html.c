@@ -83,7 +83,7 @@ test_decompose_html_charset_none(void)
     metadata = chupa_test_metadata_fixture("sample.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string(NULL,
-                            chupa_metadata_get_string(metadata, "charset", NULL));
+                            chupa_metadata_get_original_encoding(metadata));
 }
 
 void
@@ -94,7 +94,7 @@ test_decompose_html_charset_utf8(void)
     metadata = chupa_test_metadata_fixture("sample_utf8.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("utf-8",
-                            chupa_metadata_get_string(metadata, "charset", NULL));
+                            chupa_metadata_get_original_encoding(metadata));
 }
 
 void
@@ -105,7 +105,7 @@ test_decompose_html_charset_euc_jp(void)
     metadata = chupa_test_metadata_fixture("sample_euc_jp.html");
     cut_assert_not_null(metadata);
     cut_assert_equal_string("euc-jp",
-                            chupa_metadata_get_string(metadata, "charset", NULL));
+                            chupa_metadata_get_original_encoding(metadata));
 }
 
 void
