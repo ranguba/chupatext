@@ -22,6 +22,7 @@ libchuparuby_la_SOURCES =			\
 	data.c					\
 	decomposer.c				\
 	g_memory_input_stream.c			\
+	utils.c					\
 	chupa_ruby.h
 libchuparuby_la_LIBADD =				\
 	$(RUBY_LDFLAGS)					\
