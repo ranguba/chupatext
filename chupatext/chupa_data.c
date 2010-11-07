@@ -247,7 +247,7 @@ chupa_data_class_init(ChupaDataClass *klass)
 
     spec = g_param_spec_object("stream",
                                "Stream",
-                               "Stream",
+                               "Stream of the input",
                                G_TYPE_INPUT_STREAM,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                G_PARAM_STATIC_STRINGS);
