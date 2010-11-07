@@ -62,8 +62,22 @@ static gboolean
 chupa_text_decomposer_feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                            ChupaData *data, GError **error)
 {
-    chupa_feeder_accepted(feeder, data);
-    chupa_data_finished(data, NULL);
+    ChupaData *text_data;
+    ChupaMetadata *metadata, *input_metadta;
+
+    metadata = chupa_metadata_new();
+    input_metadta = chupa_data_get_metadata(data);
+    chupa_metadata_merge_original_metadata(metadata, input_metadta);
+    chupa_metadata_set_content_length(
+        metadata,
+        chupa_metadata_get_content_length(input_metadta));
+    text_data = chupa_data_new(chupa_data_get_stream(data),
+                               metadata);
+    g_object_unref(metadata);
+    chupa_feeder_accepted(feeder, text_data);
+    chupa_data_finished(text_data, NULL);
+    g_object_unref(text_data);
+
     return TRUE;
 }
 

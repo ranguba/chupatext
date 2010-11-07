@@ -22,6 +22,7 @@
 #include <gcutter.h>
 #include "chupa_test_util.h"
 
+void test_text(void);
 void test_html(void);
 void test_word(void);
 void test_excel(void);
@@ -80,6 +81,24 @@ run(const gchar *fixture_file)
     full_path = cut_take_string(cut_build_fixture_data_path(fixture_file, NULL));
     chupatext = gcut_process_new(CHUPATEXT_COMMAND, full_path, NULL);
     return run_process(chupatext);
+}
+
+void
+test_text(void)
+{
+    cut_assert_equal_string("URI: sample.txt\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 7\n"
+                            "Content-Length: 7\n"
+                            "Original-Filename: sample.txt\n"
+                            "Original-Content-Type: text/plain\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample.txt;"
+                            " size=7\n"
+                            "\n"
+                            "sample\n"
+                            "\n",
+                            run("sample.txt"));
 }
 
 void
