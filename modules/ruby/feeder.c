@@ -32,18 +32,6 @@ feed(VALUE self, VALUE input)
     gboolean success;
 
     feeder = SELF(self);
-    if (!rb_obj_is_kind_of(input, rb_cGLibObject)) {
-        GFile *file;
-        ChupaData *data;
-
-        file = g_file_new_for_commandline_arg(RVAL2CSTR(input));
-        data = chupa_data_new_from_file(file, NULL, &error);
-        if (error) {
-            RAISE_GERROR(error);
-        }
-        input = GOBJ2RVAL(data);
-        g_object_unref(data);
-    }
     success = chupa_feeder_feed(feeder, RVAL2GOBJ(input), &error);
     if (error) {
         RAISE_GERROR(error);
