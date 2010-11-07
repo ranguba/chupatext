@@ -122,11 +122,13 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
         chupa_metadata_set_string(output_metadata, "author", author);
         g_free(author);
     }
-    if (creation != -1 && creation != 0) {
-        metadata_set_time(output_metadata, "creation-time", creation);
-    }
-    if (modtime != -1 && modtime != 0) {
-        metadata_set_time(output_metadata, "modification-time", modtime);
+    if (!chupa_metadata_get_meta_ignore_time(input_metadata)) {
+        if (creation != -1 && creation != 0) {
+            metadata_set_time(output_metadata, "creation-time", creation);
+        }
+        if (modtime != -1 && modtime != 0) {
+            metadata_set_time(output_metadata, "modification-time", modtime);
+        }
     }
     if (metadata) {
         chupa_metadata_set_string(output_metadata, "metadata", metadata);
