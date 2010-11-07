@@ -68,7 +68,9 @@ struct char_proc_arg {
     GMemoryInputStream *dest;
     ChupaFeeder *feeder;
     ChupaData *text;
-    const char *encoding;
+    ChupaMetadata *metadata;
+    gsize content_length;
+    const gchar *encoding;
 };
 
 static int
@@ -85,7 +87,7 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         else {
             arg->encoding = "UTF-8";
         }
-        chupa_metadata_set_string(meta, "charset", arg->encoding);
+        chupa_metadata_set_encoding(meta, arg->encoding);
     }
 
     /* take care of any oddities in Microsoft's character "encoding" */
@@ -148,8 +150,10 @@ char_proc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
         GMemoryInputStream *stream;
         stream = G_MEMORY_INPUT_STREAM(arg->dest);
         g_memory_input_stream_add_data(stream, s->str, s->len, g_free);
+        arg->content_length += s->len;
         g_string_free(s, FALSE);
         arg->buffer = NULL;
+        chupa_metadata_set_content_length(arg->metadata, arg->content_length);
         if (arg->feeder) {
             chupa_feeder_accepted(arg->feeder, arg->text);
         }
@@ -171,10 +175,12 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     arg.dest = G_MEMORY_INPUT_STREAM(g_memory_input_stream_new());
     arg.feeder = feeder;
     metadata = chupa_metadata_new();
-    chupa_metadata_set_string(metadata, "filename",
-                              chupa_data_get_filename(data));
+    chupa_metadata_merge_original_metadata(metadata,
+                                           chupa_data_get_metadata(data));
     arg.text = chupa_data_new(G_INPUT_STREAM(arg.dest), metadata);
+    arg.metadata = metadata;
     g_object_unref(metadata);
+    arg.content_length = 0;
     arg.encoding = NULL;
 
     input = chupa_data_input_new(data);
@@ -193,11 +199,12 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     if (arg.buffer) {
         GString *s = arg.buffer;
         g_memory_input_stream_add_data(arg.dest, s->str, s->len, g_free);
+        arg.content_length += s->len;
+        chupa_metadata_set_content_length(metadata, arg.content_length);
         g_string_free(s, FALSE);
         arg.buffer = NULL;
         if (!arg.encoding) {
-            ChupaMetadata *meta = chupa_data_get_metadata(arg.text);
-            chupa_metadata_set_string(meta, "charset", "US-ASCII");
+            chupa_metadata_set_encoding(metadata, "US-ASCII");
         }
         if (arg.feeder) {
             chupa_feeder_accepted(feeder, arg.text);

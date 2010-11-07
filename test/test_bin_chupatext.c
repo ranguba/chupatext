@@ -23,6 +23,7 @@
 #include "chupa_test_util.h"
 
 void test_html(void);
+void test_word(void);
 void test_excel(void);
 void test_pdf_multi_pages(void);
 
@@ -47,16 +48,24 @@ static const gchar *
 run_process(GCutProcess *process)
 {
     GError *error = NULL;
+    gint status;
+    GString *error_string;
+
+    error_string = gcut_process_get_error_string(process);
 
     gcut_process_set_forced_termination_wait_time(process, 8000);
     gcut_process_run(process, &error);
     gcut_assert_error(error,
                       cut_message("error message: <%s>",
-                                  gcut_process_get_error_string(process)->str));
-    gcut_process_wait(process, 6000, &error);
+                                  error_string->str));
+    status = gcut_process_wait(process, 6000, &error);
     gcut_assert_error(error,
                       cut_message("error message: <%s>",
-                                  gcut_process_get_error_string(process)->str));
+                                  error_string->str));
+    cut_assert_equal_int(0, status,
+                         cut_message("chupatext exists abnormally: %d: <%s>",
+                                     status,
+                                     error_string->str));
     return gcut_process_get_output_string(process)->str;
 }
 
@@ -88,6 +97,23 @@ test_html(void)
                             "\n"
                             "This is a sample.",
                             run("sample.html"));
+}
+
+void
+test_word(void)
+{
+    cut_assert_equal_string("URI: sample.doc\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 9216\n"
+                            "Content-Length: 8\n"
+                            "Original-Filename: sample.doc\n"
+                            "Original-Content-Type: application/msword\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample.doc;"
+                            " size=9216\n"
+                            "\n"
+                            "Sample\n\n",
+                            run("sample.doc"));
 }
 
 void
@@ -123,7 +149,7 @@ test_pdf_multi_pages(void)
                             "\n"
                             "page1\n\f"
                             "2 ページ目\n\f"
-                            "page3",
+                            "page3\n",
                             run("sample_multi_pages.pdf"));
 }
 
