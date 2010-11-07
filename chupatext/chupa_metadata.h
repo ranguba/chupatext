@@ -35,7 +35,7 @@ G_BEGIN_DECLS
 #define CHUPA_METADATA_NAME_CONTENT_DISPOSITION   "content-disposition"
 #define CHUPA_METADATA_NAME_FILENAME              "filename"
 #define CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE    "original-mime-type"
-#define CHUPA_METADATA_NAME_ORIGINAL_ENCODING     "encoding"
+#define CHUPA_METADATA_NAME_ORIGINAL_ENCODING     "original-encoding"
 #define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH \
     "original-content-length"
 #define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_DISPOSITION \
