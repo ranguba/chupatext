@@ -72,6 +72,7 @@ chupa_public_headers =				\
 	chupa_memory_input_stream.h		\
 	chupa_logger.h				\
 	chupa_utils.h				\
+	chupa_types.h				\
 	chupa_version.h
 
 chupatext_includedir = $(pkgincludedir)/chupatext
