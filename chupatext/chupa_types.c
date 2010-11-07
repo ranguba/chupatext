@@ -24,10 +24,6 @@
 
 #include "chupa_types.h"
 
-GType chupa_type_size;
-GType chupa_type_time_val;
-GType chupa_type_param_time_val;
-
 static void
 value_init_size (GValue *value)
 {
@@ -86,40 +82,44 @@ value_lcopy_size (const GValue *value,
     return NULL;
 }
 
-
-static void
-size_type_init (void)
+GType
+chupa_size_get_type (void)
 {
-    GTypeInfo info = {
-        0,			/* class_size */
-        NULL,			/* base_init */
-        NULL,			/* base_destroy */
-        NULL,			/* class_init */
-        NULL,			/* class_destroy */
-        NULL,			/* class_data */
-        0,			/* instance_size */
-        0,			/* n_preallocs */
-        NULL,			/* instance_init */
-        NULL,			/* value_table */
-    };
-    const GTypeFundamentalInfo finfo = { G_TYPE_FLAG_DERIVABLE, };
-    const GTypeValueTable value_table = {
-        value_init_size,	/* value_init */
-        NULL,			/* value_free */
-        value_copy_size,	/* value_copy */
-        NULL,			/* value_peek_pointer */
-        "l",			/* collect_format */
-        value_collect_size,	/* collect_value */
-        "p",			/* lcopy_format */
-        value_lcopy_size,	/* lcopy_value */
-    };
-    info.value_table = &value_table;
-    chupa_type_size =
-        g_type_register_fundamental(g_type_fundamental_next(),
-                                    g_intern_static_string("gsize"),
-                                    &info,
-                                    &finfo,
-                                    0);
+    static GType type = 0;
+
+    if (type == 0) {
+        GTypeInfo info = {
+            0,			/* class_size */
+            NULL,		/* base_init */
+            NULL,		/* base_destroy */
+            NULL,		/* class_init */
+            NULL,		/* class_destroy */
+            NULL,		/* class_data */
+            0,			/* instance_size */
+            0,			/* n_preallocs */
+            NULL,		/* instance_init */
+            NULL,		/* value_table */
+        };
+        const GTypeFundamentalInfo finfo = { G_TYPE_FLAG_DERIVABLE, };
+        const GTypeValueTable value_table = {
+            value_init_size,	/* value_init */
+            NULL,		/* value_free */
+            value_copy_size,	/* value_copy */
+            NULL,		/* value_peek_pointer */
+            "l",		/* collect_format */
+            value_collect_size,	/* collect_value */
+            "p",		/* lcopy_format */
+            value_lcopy_size,	/* lcopy_value */
+        };
+        info.value_table = &value_table;
+        type = g_type_register_fundamental(g_type_fundamental_next(),
+                                           g_intern_static_string("gsize"),
+                                           &info,
+                                           &finfo,
+                                           0);
+    }
+
+    return type;
 }
 
 static void
@@ -191,39 +191,44 @@ value_lcopy_time_val (const GValue *value,
     return NULL;
 }
 
-static void
-time_val_type_init (void)
+GType
+chupa_time_val_get_type (void)
 {
-    GTypeInfo info = {
-        0,			/* class_size */
-        NULL,			/* base_init */
-        NULL,			/* base_destroy */
-        NULL,			/* class_init */
-        NULL,			/* class_destroy */
-        NULL,			/* class_data */
-        0,			/* instance_size */
-        0,			/* n_preallocs */
-        NULL,			/* instance_init */
-        NULL,			/* value_table */
-    };
-    const GTypeFundamentalInfo finfo = { G_TYPE_FLAG_DERIVABLE, };
-    const GTypeValueTable value_table = {
-        value_init_time_val,	/* value_init */
-        value_free_time_val,	/* value_free */
-        value_copy_time_val,	/* value_copy */
-        value_peek_time_val,	/* value_peek_pointer */
-        "p",			/* collect_format */
-        value_collect_time_val,	/* collect_value */
-        "p",			/* lcopy_format */
-        value_lcopy_time_val,	/* lcopy_value */
-    };
-    info.value_table = &value_table;
-    chupa_type_time_val =
-        g_type_register_fundamental(g_type_fundamental_next(),
-                                    g_intern_static_string("GTimeVal"),
-                                    &info,
-                                    &finfo,
-                                    0);
+    static GType type = 0;
+
+    if (type == 0) {
+        GTypeInfo info = {
+            0,			/* class_size */
+            NULL,			/* base_init */
+            NULL,			/* base_destroy */
+            NULL,			/* class_init */
+            NULL,			/* class_destroy */
+            NULL,			/* class_data */
+            0,			/* instance_size */
+            0,			/* n_preallocs */
+            NULL,			/* instance_init */
+            NULL,			/* value_table */
+        };
+        const GTypeFundamentalInfo finfo = { G_TYPE_FLAG_DERIVABLE, };
+        const GTypeValueTable value_table = {
+            value_init_time_val,	/* value_init */
+            value_free_time_val,	/* value_free */
+            value_copy_time_val,	/* value_copy */
+            value_peek_time_val,	/* value_peek_pointer */
+            "p",			/* collect_format */
+            value_collect_time_val,	/* collect_value */
+            "p",			/* lcopy_format */
+            value_lcopy_time_val,	/* lcopy_value */
+        };
+        info.value_table = &value_table;
+        type = g_type_register_fundamental(g_type_fundamental_next(),
+                                           g_intern_static_string("GTimeVal"),
+                                           &info,
+                                           &finfo,
+                                           0);
+    }
+
+    return type;
 }
 
 GTimeVal *
@@ -304,23 +309,29 @@ param_time_val_values_cmp (GParamSpec   *pspec,
     }
 }
 
-static void
-param_time_val_type_init (void)
+GType
+chupa_param_time_val_get_type (void)
 {
-    GParamSpecTypeInfo pspec_info = {
-        sizeof(ChupaParamSpecTimeVal),	/* instance_size */
-        16,				/* n_preallocs */
-        param_time_val_init,		/* instance_init */
-        0,				/* value_type */
-        param_time_val_finalize,	/* finalize */
-        param_time_val_set_default,	/* value_set_default */
-        param_time_val_validate,	/* value_validate */
-        param_time_val_values_cmp,	/* values_cmp */
-    };
-    pspec_info.value_type = CHUPA_TYPE_TIME_VAL;
-    chupa_type_param_time_val =
-        g_param_type_register_static(g_intern_static_string("GParamTimeVal"),
-                                     &pspec_info);
+    static GType type = 0;
+
+    if (type == 0) {
+        GParamSpecTypeInfo pspec_info = {
+            sizeof(ChupaParamSpecTimeVal),	/* instance_size */
+            16,					/* n_preallocs */
+            param_time_val_init,		/* instance_init */
+            0,					/* value_type */
+            param_time_val_finalize,		/* finalize */
+            param_time_val_set_default,		/* value_set_default */
+            param_time_val_validate,		/* value_validate */
+            param_time_val_values_cmp,		/* values_cmp */
+        };
+        pspec_info.value_type = CHUPA_TYPE_TIME_VAL;
+        type =
+            g_param_type_register_static(g_intern_static_string("GParamTimeVal"),
+                                         &pspec_info);
+    }
+
+    return type;
 }
 
 GTimeVal *
@@ -358,9 +369,6 @@ chupa_param_spec_time_val (const gchar *name,
 void
 chupa_types_init (void)
 {
-    size_type_init();
-    time_val_type_init();
-    param_time_val_type_init();
 }
 
 void

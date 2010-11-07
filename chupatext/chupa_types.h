@@ -35,13 +35,13 @@ struct _ChupaParamSpecTimeVal
   GParamSpec    parent_instance;
 };
 
-#define	    CHUPA_TYPE_SIZE                (chupa_type_size)
-GType       chupa_type_size;
+#define	    CHUPA_TYPE_SIZE                (chupa_size_get_type())
+GType       chupa_size_get_type            (void) G_GNUC_CONST;
 
 #define     CHUPA_VALUE_HOLDS_TIME_VAL(value) \
     (G_TYPE_CHECK_VALUE_TYPE((value), CHUPA_TYPE_TIME_VAL))
-#define	    CHUPA_TYPE_TIME_VAL            (chupa_type_time_val)
-GType       chupa_type_time_val;
+#define	    CHUPA_TYPE_TIME_VAL            (chupa_time_val_get_type())
+GType       chupa_time_val_get_type        (void) G_GNUC_CONST;
 
 GTimeVal   *chupa_value_get_time_val       (const GValue *value);
 void        chupa_value_set_time_val       (GValue       *value,
@@ -51,8 +51,8 @@ void        chupa_value_set_time_val       (GValue       *value,
     (G_TYPE_CHECK_INSTANCE_CAST((pspec),                        \
                                 CHUPA_TYPE_PARAM_TIME_VAL,      \
                                 ChupaParamSpecTimeVal))
-#define	    CHUPA_TYPE_PARAM_TIME_VAL      (chupa_type_param_time_val)
-GType       chupa_type_param_time_val;
+#define	    CHUPA_TYPE_PARAM_TIME_VAL      (chupa_param_time_val_get_type())
+GType       chupa_param_time_val_get_type  (void) G_GNUC_CONST;
 
 GTimeVal   *chupa_time_val_dup             (GTimeVal *time_value);
 
