@@ -151,11 +151,11 @@ output_plain(ChupaData *data, GError *error, gpointer user_data)
                 fprintf(out, "; modification-date=%s",
                         header_data.modification_time);
             }
-            fprintf(out, "\n");
-            putc('\n', out);
+            fprintf(out, "\n\n");
         }
         fwrite(buf, 1, size, out);
     }
+    fprintf(out, "\n");
 }
 
 static void

@@ -95,7 +95,8 @@ test_html(void)
                             " filename=sample.html;"
                             " size=120\n"
                             "\n"
-                            "This is a sample.",
+                            "This is a sample."
+                            "\n",
                             run("sample.html"));
 }
 
@@ -112,7 +113,8 @@ test_word(void)
                             " filename=sample.doc;"
                             " size=9216\n"
                             "\n"
-                            "Sample\n\n",
+                            "Sample\n\n"
+                            "\n",
                             run("sample.doc"));
 }
 
@@ -129,7 +131,8 @@ test_excel(void)
                             " filename=sample.xls;"
                             " size=5632\n"
                             "\n"
-                            "sample\n1\n2\n3\n4\n5\n6\n7\n",
+                            "sample\n1\n2\n3\n4\n5\n6\n7\n"
+                            "\n",
                             run("sample.xls"));
 }
 
@@ -149,7 +152,8 @@ test_pdf_multi_pages(void)
                             "\n"
                             "page1\n\f"
                             "2 ページ目\n\f"
-                            "page3\n",
+                            "page3\n"
+                            "\n",
                             run("sample_multi_pages.pdf"));
 }
 
