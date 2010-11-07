@@ -28,6 +28,8 @@
 #include <chupatext/chupa_data_input.h>
 #include <goffice/goffice.h>
 #include <gsf/gsf-output-memory.h>
+#include <gsf/gsf-doc-meta-data.h>
+#include <gsf/gsf-timestamp.h>
 #include "excel/workbook-view.h"
 #include "excel/libgnumeric.h"
 #include "excel/gnumeric-gconf.h"
@@ -266,6 +268,82 @@ chupa_excel_encrypted_file_p(ChupaDecomposer *decomposer, GsfInput *source)
     return !chupa_excel_plain_file_p(source);
 }
 
+static gboolean
+get_time_value(const gchar *name, const GValue *value, GTimeVal *time_value)
+{
+    gboolean success;
+    GType value_type;
+
+    value_type = G_VALUE_TYPE(value);
+    if (value_type == GSF_TIMESTAMP_TYPE) {
+        GsfTimestamp *time_stamp;
+        time_stamp = g_value_get_boxed(value);
+        time_value->tv_sec = time_stamp->timet;
+        time_value->tv_usec = 0;
+        success = TRUE;
+    } else if (value_type == G_TYPE_STRING) {
+        const gchar *time_string;
+        GTimeVal time_value;
+        time_string = g_value_get_string(value);
+        success = g_time_val_from_iso8601(time_string, &time_value);
+        if (!success) {
+            chupa_warning("[excel][metdata][invalid][%s][time] <%s>",
+                          name, time_string);
+        }
+    } else {
+        chupa_warning("[excel][metdata][unsupported][%s][%s]",
+                      name, g_type_name(value_type));
+        success = FALSE;
+    }
+    return success;
+}
+
+static void
+cb_metadata_foreach(gpointer key, gpointer value, gpointer user_data)
+{
+    const gchar *name = key;
+    GsfDocProp *property = value;
+    ChupaMetadata *metadata = user_data;
+    const GValue *property_value;
+    GType value_type;
+
+    property_value = gsf_doc_prop_get_val(property);
+    value_type = G_VALUE_TYPE(property_value);
+
+#define EQUAL_NAME(property_name) \
+    (chupa_utils_string_equal(name, property_name))
+
+    if (EQUAL_NAME("meta:creation-date")) {
+        GTimeVal time_value;
+        if (get_time_value(name, property_value, &time_value)) {
+            chupa_metadata_set_creation_time(metadata, &time_value);
+        }
+    } else if (EQUAL_NAME("dc:creator")) {
+        chupa_metadata_set_author(metadata, g_value_get_string(property_value));
+    } else if (EQUAL_NAME("dc:date")) {
+        GTimeVal time_value;
+        if (get_time_value(name, property_value, &time_value)) {
+            chupa_metadata_set_modification_time(metadata, &time_value);
+        }
+    } else {
+        chupa_info("[excel][metdata][unsupported][%s][%s]",
+                   name, g_type_name(value_type));
+    }
+
+#undef EQUAL_NAME
+}
+
+static void
+collect_metadata(ChupaMetadata *metadata, WorkbookView *view)
+{
+    GODoc *document;
+    GsfDocMetaData *work_book_metadata;
+
+    document = wb_view_get_doc(view);
+    work_book_metadata = go_doc_get_meta_data(document);
+    gsf_doc_meta_data_foreach(work_book_metadata, cb_metadata_foreach,
+                              metadata);
+}
 
 static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
@@ -334,7 +412,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                     "failed to create file saver: <%s>",
                     filename,
                     export_id);
-        g_object_unref(view);
+        g_object_unref(wb_view_get_workbook(view));
         return FALSE;
     }
 
@@ -350,22 +428,25 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     }
 
     wbv_save_to_output(view, saver, output, io_context);
-    g_object_unref(wb_view_get_workbook(view));
     if (go_io_error_occurred(io_context)) {
         go_io_error_display(io_context);
+        g_object_unref(wb_view_get_workbook(view));
         g_object_unref(io_context);
         g_object_unref(output);
         return FALSE;
     }
+
+    metadata = chupa_metadata_new();
+    chupa_metadata_merge_original_metadata(metadata,
+                                           chupa_data_get_metadata(data));
+    collect_metadata(metadata, view);
+    g_object_unref(wb_view_get_workbook(view));
     g_object_unref(io_context);
 
     input = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(output));
     g_object_unref(output);
 
-    metadata = chupa_metadata_new();
     chupa_metadata_set_content_length(metadata, gsf_output_size(output));
-    chupa_metadata_merge_original_metadata(metadata,
-                                           chupa_data_get_metadata(data));
     next_data = chupa_data_new(input, metadata);
     g_object_unref(metadata);
     g_object_unref(input);
