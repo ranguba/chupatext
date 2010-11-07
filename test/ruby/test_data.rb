@@ -19,12 +19,12 @@ class DataTest < Test::Unit::TestCase
   def setup
     text_file = Tempfile.new(["data-test", ".txt"])
     text_file.puts("Hello!")
-    @data = Chupa::Data.decompose(text_file.path)
+    @data = Chupa::Data.new(text_file.path)
   end
 
   def test_text?
     assert_true(@data.text?)
-    @data.metadata["mime-type"] = "text/html"
+    @data.metadata.mime_type = "text/html"
     assert_false(@data.text?)
   end
 end
