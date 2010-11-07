@@ -83,7 +83,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     gchar buffer[16*1024];
     const gsize bufsize = sizeof(buffer);
     GString *str = g_string_sized_new(sizeof(buffer));
-    GInputStream *inp = chupa_data_get_stream(data);
+    GInputStream *input = chupa_data_get_stream(data);
     ChupaMetadata *input_metadata, *output_metadata;
     ChupaData *pdf_text = NULL;
     gchar *title, *author, *metadata;
@@ -91,7 +91,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     int n, i;
 
     input_metadata = chupa_data_get_metadata(data);
-    while ((count = g_input_stream_read(inp, buffer, bufsize, NULL, error)) > 0) {
+    while ((count = g_input_stream_read(input, buffer, bufsize, NULL, error)) > 0) {
         g_string_append_len(str, buffer, count);
         if (count < bufsize) break;
     }
@@ -154,11 +154,11 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
         } else {
             const gchar *filename;
             filename = chupa_data_get_filename(data);
-            inp = g_memory_input_stream_new_from_data(text, -1, g_free);
+            input = g_memory_input_stream_new_from_data(text, -1, g_free);
             chupa_metadata_set_content_length(output_metadata, content_length);
-            pdf_text = chupa_data_new(inp, output_metadata);
+            pdf_text = chupa_data_new(input, output_metadata);
             chupa_feeder_accepted(feeder, pdf_text);
-            mem = (GMemoryInputStream *)inp;
+            mem = (GMemoryInputStream *)input;
         }
         g_object_unref(page);
     }
