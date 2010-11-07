@@ -1,4 +1,4 @@
-chupatext/archive_decomposer.c
+chupatext/chupa_archive_decomposer.c
 chupatext/chupa_data.c
 chupatext/chupa_data_input.c
 chupatext/chupa_decomposer.c
@@ -14,6 +14,7 @@ chupatext/chupa_marshalers.c
 chupatext/chupa_memory_input_stream.c
 chupatext/chupa_metadata.c
 chupatext/chupa_module.c
+chupatext/chupa_types.c
 chupatext/chupa_utils.c
 chupatext/chupa_version.c
 chupatext/chupatext.c
@@ -27,6 +28,8 @@ modules/ruby/feeder.c
 modules/ruby/g_memory_input_stream.c
 modules/ruby/init.c
 modules/ruby/metadata.c
+modules/ruby/types.c
+modules/ruby/utils.c
 modules/tar.c
 modules/text.c
 modules/word.c
