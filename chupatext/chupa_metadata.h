@@ -32,14 +32,11 @@ G_BEGIN_DECLS
 #define CHUPA_METADATA_NAME_MIME_TYPE             "mime-type"
 #define CHUPA_METADATA_NAME_ENCODING              "encoding"
 #define CHUPA_METADATA_NAME_CONTENT_LENGTH        "content-length"
-#define CHUPA_METADATA_NAME_CONTENT_DISPOSITION   "content-disposition"
 #define CHUPA_METADATA_NAME_FILENAME              "filename"
 #define CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE    "original-mime-type"
 #define CHUPA_METADATA_NAME_ORIGINAL_ENCODING     "original-encoding"
 #define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH \
     "original-content-length"
-#define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_DISPOSITION \
-    "original-content-disposition"
 #define CHUPA_METADATA_NAME_ORIGINAL_FILENAME     "original-filename"
 
 #define CHUPA_METADATA_NAME_TITLE                 "title"
@@ -169,6 +166,12 @@ void           chupa_metadata_set_meta_ignore_time
                                                gboolean       ignore);
 gboolean       chupa_metadata_get_meta_ignore_time
                                               (ChupaMetadata *metadata);
+void           chupa_metadata_set_title       (ChupaMetadata *metadata,
+                                               const gchar   *title);
+const gchar   *chupa_metadata_get_title       (ChupaMetadata *metadata);
+void           chupa_metadata_set_author      (ChupaMetadata *metadata,
+                                               const gchar   *author);
+const gchar   *chupa_metadata_get_author      (ChupaMetadata *metadata);
 
 #define CHUPA_TYPE_METADATA_FIELD            chupa_metadata_field_get_type()
 #define CHUPA_METADATA_FIELD(obj)                               \

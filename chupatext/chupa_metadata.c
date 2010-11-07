@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "chupa_metadata.h"
+#include "chupa_types.h"
 
 #define CHUPA_METADATA_FIELD_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
@@ -330,18 +331,158 @@ struct _ChupaMetadataPrivate
     GHashTable *fields;
 };
 
+enum {
+    PROP_0,
+    PROP_MIME_TYPE,
+    PROP_ENCODING,
+    PROP_CONTENT_LENGTH,
+    PROP_FILENAME,
+    PROP_ORIGINAL_MIME_TYPE,
+    PROP_ORIGINAL_ENCODING,
+    PROP_ORIGINAL_CONTENT_LENGTH,
+    PROP_ORIGINAL_FILENAME,
+    PROP_TITLE,
+    PROP_AUTHOR,
+    PROP_MODIFICATION_TIME,
+    PROP_CREATION_TIME,
+    PROP_META_IGNORE_TIME,
+    PROP_LAST
+};
+
 G_DEFINE_TYPE(ChupaMetadata, chupa_metadata, G_TYPE_OBJECT);
 
 static void dispose        (GObject         *object);
+static void set_property   (GObject         *object,
+                            guint            prop_id,
+                            const GValue    *value,
+                            GParamSpec      *pspec);
+static void get_property   (GObject         *object,
+                            guint            prop_id,
+                            GValue          *value,
+                            GParamSpec      *pspec);
+
+#if GLIB_SIZEOF_LONG == GLIB_SIZEOF_SIZE_T
+#  define g_param_spec_size g_param_spec_ulong
+#  define g_value_set_size g_value_set_ulong
+#  define g_value_get_size g_value_get_ulong
+#else
+#  define g_param_spec_size g_param_spec_uint64
+#  define g_value_set_size g_value_set_uint64
+#  define g_value_get_size g_value_get_uint64
+#endif
 
 static void
 chupa_metadata_class_init (ChupaMetadataClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
+
+    spec = g_param_spec_string("mime-type",
+                               "MIME type",
+                               "MIME type of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_MIME_TYPE, spec);
+
+    spec = g_param_spec_string("encoding",
+                               "Encoding",
+                               "Encoding of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_ENCODING, spec);
+
+    spec = g_param_spec_size("content-length",
+                             "Content length",
+                             "Content length of the associated data",
+                             0,
+                             G_MAXSIZE,
+                             0,
+                             G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_CONTENT_LENGTH, spec);
+
+    spec = g_param_spec_string("filename",
+                               "Filename",
+                               "Filename of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_FILENAME, spec);
+
+    spec = g_param_spec_string("original-mime-type",
+                               "Original MIME type",
+                               "Original MIME type of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_ORIGINAL_MIME_TYPE,
+                                    spec);
+
+    spec = g_param_spec_string("original-encoding",
+                               "Original encoding",
+                               "Original encoding of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_ORIGINAL_ENCODING, spec);
+
+    spec = g_param_spec_size("orignal-content-length",
+                             "Original content length",
+                             "Original content length of the associated data",
+                             0,
+                             G_MAXSIZE,
+                             0,
+                             G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_ORIGINAL_CONTENT_LENGTH,
+                                    spec);
+
+    spec = g_param_spec_string("original-filename",
+                               "Original filename",
+                               "Original filename of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_ORIGINAL_FILENAME, spec);
+
+    spec = g_param_spec_string("title",
+                               "Title",
+                               "Tile of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_TITLE, spec);
+
+    spec = g_param_spec_string("author",
+                               "Author",
+                               "Author of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_AUTHOR, spec);
+
+/*
+    spec = g_param_spec_time("modification-time",
+                             "Modification time",
+                             "Modification time of the associated data",
+                             0,
+                             G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_MODIFICATION_TIME, spec);
+
+    spec = g_param_spec_time("creation-time",
+                             "Creation time",
+                             "Creation time of the associated data",
+                             0,
+                             G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_CREATION_TIME, spec);
+*/
+
+    spec = g_param_spec_boolean("meta-ignore-time",
+                                "Meta: ignore time",
+                                "Meta: whether ignore time values "
+                                "of the associated data",
+                                FALSE,
+                                G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_META_IGNORE_TIME, spec);
+
 
     g_type_class_add_private(gobject_class, sizeof(ChupaMetadataPrivate));
 }
@@ -370,6 +511,130 @@ dispose (GObject *object)
     }
 
     G_OBJECT_CLASS(chupa_metadata_parent_class)->dispose(object);
+}
+
+static void
+set_property(GObject *object,
+             guint prop_id,
+             const GValue *value,
+             GParamSpec *pspec)
+{
+    ChupaMetadata *metadata;
+
+    metadata = CHUPA_METADATA(object);
+    switch (prop_id) {
+    case PROP_MIME_TYPE:
+        chupa_metadata_set_mime_type(metadata, g_value_get_string(value));
+        break;
+    case PROP_ENCODING:
+        chupa_metadata_set_encoding(metadata, g_value_get_string(value));
+        break;
+    case PROP_CONTENT_LENGTH:
+        chupa_metadata_set_content_length(metadata, g_value_get_size(value));
+        break;
+    case PROP_FILENAME:
+        chupa_metadata_set_filename(metadata, g_value_get_string(value));
+        break;
+    case PROP_ORIGINAL_MIME_TYPE:
+        chupa_metadata_set_original_mime_type(metadata,
+                                              g_value_get_string(value));
+        break;
+    case PROP_ORIGINAL_ENCODING:
+        chupa_metadata_set_original_encoding(metadata,
+                                             g_value_get_string(value));
+        break;
+    case PROP_ORIGINAL_CONTENT_LENGTH:
+        chupa_metadata_set_original_content_length(metadata,
+                                                   g_value_get_size(value));
+        break;
+    case PROP_ORIGINAL_FILENAME:
+        chupa_metadata_set_original_filename(metadata,
+                                             g_value_get_string(value));
+        break;
+    case PROP_TITLE:
+        chupa_metadata_set_title(metadata, g_value_get_string(value));
+        break;
+    case PROP_AUTHOR:
+        chupa_metadata_set_author(metadata, g_value_get_string(value));
+        break;
+/*
+    case PROP_MODIFICATION_TIME:
+        chupa_metadata_set_modification_time(metadata, g_value_get_time(value));
+        break;
+    case PROP_CREATION_TIME:
+        chupa_metadata_set_creation_time(metadata, g_value_get_time(value));
+        break;
+*/
+    case PROP_META_IGNORE_TIME:
+        chupa_metadata_set_meta_ignore_time(metadata,
+                                            g_value_get_boolean(value));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property(GObject *object,
+             guint prop_id,
+             GValue *value,
+             GParamSpec *pspec)
+{
+    ChupaMetadata *metadata;
+
+    metadata = CHUPA_METADATA(object);
+    switch (prop_id) {
+    case PROP_MIME_TYPE:
+        g_value_set_string(value, chupa_metadata_get_mime_type(metadata));
+        break;
+    case PROP_ENCODING:
+        g_value_set_string(value, chupa_metadata_get_encoding(metadata));
+        break;
+    case PROP_CONTENT_LENGTH:
+        g_value_set_size(value, chupa_metadata_get_content_length(metadata));
+        break;
+    case PROP_FILENAME:
+        g_value_set_string(value, chupa_metadata_get_filename(metadata));
+        break;
+    case PROP_ORIGINAL_MIME_TYPE:
+        g_value_set_string(value,
+                           chupa_metadata_get_original_mime_type(metadata));
+        break;
+    case PROP_ORIGINAL_ENCODING:
+        g_value_set_string(value,
+                           chupa_metadata_get_original_encoding(metadata));
+        break;
+    case PROP_ORIGINAL_CONTENT_LENGTH:
+        g_value_set_size(value,
+                         chupa_metadata_get_original_content_length(metadata));
+        break;
+    case PROP_ORIGINAL_FILENAME:
+        g_value_set_string(value,
+                           chupa_metadata_get_original_filename(metadata));
+        break;
+    case PROP_TITLE:
+        g_value_set_string(value, chupa_metadata_get_title(metadata));
+        break;
+    case PROP_AUTHOR:
+        g_value_set_string(value, chupa_metadata_get_author(metadata));
+        break;
+/*
+    case PROP_MODIFICATION_TIME:
+        g_value_set_time(value, chupa_metadata_get_modification_time(metadata));
+        break;
+    case PROP_CREATION_TIME:
+        g_value_set_time(value, chupa_metadata_get_creation_time(metadata));
+        break;
+*/
+    case PROP_META_IGNORE_TIME:
+        g_value_set_boolean(value,
+                            chupa_metadata_get_meta_ignore_time(metadata));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
 }
 
 GQuark
@@ -637,6 +902,8 @@ DEFINE_STRING_ACCESSOR(mime_type, MIME_TYPE)
 DEFINE_STRING_ACCESSOR(original_mime_type, ORIGINAL_MIME_TYPE)
 DEFINE_STRING_ACCESSOR(encoding, ENCODING)
 DEFINE_STRING_ACCESSOR(original_encoding, ORIGINAL_ENCODING)
+DEFINE_STRING_ACCESSOR(title, TITLE)
+DEFINE_STRING_ACCESSOR(author, AUTHOR)
 DEFINE_BOOLEAN_ACCESSOR(meta_ignore_time, META_IGNORE_TIME)
 
 /*
