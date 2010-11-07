@@ -1,4 +1,5 @@
 # Copyright (C) 2010  Yuto HAYAMIZU <y.hayamizu@gmail.com>
+# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -75,7 +76,8 @@ EOS
 
       def initialize(options={})
         super(options[:command] || "ooffice")
-        @home_dir = Pathname.new(options[:home_dir] || "~/.chupa").expand_path
+        home_dir = options[:home_dir] || "~/.chupatext"
+        @home_dir = Pathname.new(home_dir).expand_path
       end
 
       def prepare
@@ -141,11 +143,11 @@ EOS
       end
 
       def convertor
-        [unoconv,
-         open_office("ooffice"),
+        [open_office("ooffice"),
          open_office("soffice"),
          open_office("/opt/libreoffice.org3/program/soffice"),
-         open_office("/opt/openoffice.org3/program/soffice")].find do |command|
+         open_office("/opt/openoffice.org3/program/soffice"),
+         unoconv].find do |command|
           command.exist?
         end
       end
