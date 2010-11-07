@@ -30,6 +30,7 @@
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-doc-meta-data.h>
 #include <gsf/gsf-timestamp.h>
+#include <gsf/gsf-msole-utils.h>
 #include "excel/workbook-view.h"
 #include "excel/libgnumeric.h"
 #include "excel/gnumeric-gconf.h"
@@ -283,9 +284,8 @@ get_time_value(const gchar *name, const GValue *value, GTimeVal *time_value)
         success = TRUE;
     } else if (value_type == G_TYPE_STRING) {
         const gchar *time_string;
-        GTimeVal time_value;
         time_string = g_value_get_string(value);
-        success = g_time_val_from_iso8601(time_string, &time_value);
+        success = g_time_val_from_iso8601(time_string, time_value);
         if (!success) {
             chupa_warning("[excel][metdata][invalid][%s][time] <%s>",
                           name, time_string);
@@ -296,6 +296,25 @@ get_time_value(const gchar *name, const GValue *value, GTimeVal *time_value)
         success = FALSE;
     }
     return success;
+}
+
+static gchar *
+code_page_to_encoding(gint code_page)
+{
+    switch (code_page) {
+    case 1200:
+        return g_strdup("UTF-16LE");
+    case 1201:
+        return g_strdup("UTF-16BE");
+    case -535:
+    case 65001:
+        return g_strdup("UTF-8");
+    case 0x8001:
+        code_page = 1252;
+        /* fallthrough */
+    default:
+        return g_strdup_printf("CP%d", code_page);
+    }
 }
 
 static void
@@ -324,6 +343,15 @@ cb_metadata_foreach(gpointer key, gpointer value, gpointer user_data)
         GTimeVal time_value;
         if (get_time_value(name, property_value, &time_value)) {
             chupa_metadata_set_modification_time(metadata, &time_value);
+        }
+    } else if (EQUAL_NAME("msole:codepage")) {
+        if (!chupa_metadata_get_original_encoding(metadata)) {
+            gint code_page;
+            gchar *encoding;
+            code_page = g_value_get_int(property_value);
+            encoding = code_page_to_encoding(code_page);
+            chupa_metadata_set_original_encoding(metadata, encoding);
+            g_free(encoding);
         }
     } else {
         chupa_info("[excel][metdata][unsupported][%s][%s]",

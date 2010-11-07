@@ -300,7 +300,7 @@ main(int argc, char **argv)
     g_option_context_set_help_enabled(ctx, TRUE);
     g_option_context_add_main_entries(ctx, opts, NULL);
     if (!g_option_context_parse(ctx, &argc, &argv, &err)) {
-        g_print("Failed to initialize: %s\n", err->message);
+        g_printerr("Failed to initialize: %s\n", err->message);
         g_error_free(err);
         return EXIT_FAILURE;
     }
