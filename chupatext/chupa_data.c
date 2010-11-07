@@ -303,13 +303,22 @@ chupa_data_new_from_file(GFile *file, ChupaMetadata *metadata, GError **error)
         g_object_unref(info);
     }
 
-    info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_NAME, 0,
+    info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME, 0,
                              NULL, NULL);
     if (info) {
         chupa_metadata_set_string(metadata,
                                   meta_filename,
-                                  g_file_info_get_name(info));
+                                  g_file_info_get_display_name(info));
         g_object_unref(info);
+    }
+
+    if (!chupa_metadata_get_path(metadata)) {
+        gchar *path;
+        path = g_file_get_path(file);
+        if (path) {
+            chupa_metadata_set_path(metadata, path);
+            g_free(path);
+        }
     }
 
     data = chupa_data_new(stream, metadata);

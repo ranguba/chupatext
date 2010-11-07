@@ -33,6 +33,7 @@ G_BEGIN_DECLS
 #define CHUPA_METADATA_NAME_ENCODING              "encoding"
 #define CHUPA_METADATA_NAME_CONTENT_LENGTH        "content-length"
 #define CHUPA_METADATA_NAME_FILENAME              "filename"
+#define CHUPA_METADATA_NAME_PATH                  "path"
 #define CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE    "original-mime-type"
 #define CHUPA_METADATA_NAME_ORIGINAL_ENCODING     "original-encoding"
 #define CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH \
@@ -137,6 +138,9 @@ void           chupa_metadata_set_original_content_length
                                                gsize          length);
 gsize          chupa_metadata_get_original_content_length
                                               (ChupaMetadata *metadata);
+void           chupa_metadata_set_path        (ChupaMetadata *metadata,
+                                               const gchar   *path);
+const gchar   *chupa_metadata_get_path        (ChupaMetadata *metadata);
 void           chupa_metadata_set_filename    (ChupaMetadata *metadata,
                                                const gchar   *filename);
 const gchar   *chupa_metadata_get_filename    (ChupaMetadata *metadata);

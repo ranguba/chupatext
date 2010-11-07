@@ -33,7 +33,6 @@ typedef struct _writer_funcs {
 
 struct output_info {
     FILE *out;
-    const char *prefix;
     const writer_funcs *writer;
 };
 
@@ -60,7 +59,7 @@ output_plain_header(ChupaMetadataField *field, gpointer user_data)
     name = chupa_metadata_field_name(field);
 #define EQUAL_NAME(key)                                         \
     chupa_utils_string_equal(name, CHUPA_METADATA_NAME_ ## key)
-    if (EQUAL_NAME(MIME_TYPE) || EQUAL_NAME(ENCODING)) {
+    if (EQUAL_NAME(PATH) || EQUAL_NAME(MIME_TYPE) || EQUAL_NAME(ENCODING)) {
         return;
     } else if (EQUAL_NAME(ORIGINAL_MIME_TYPE)) {
         data->original_mime_type = chupa_metadata_field_value_string(field);
@@ -98,64 +97,88 @@ output_plain_header(ChupaMetadataField *field, gpointer user_data)
 }
 
 static void
+output_uri_header(ChupaMetadata *metadata, FILE *output)
+{
+    const gchar *path;
+    gchar *uri;
+    GError *conversion_error = NULL;
+
+    path = chupa_metadata_get_path(metadata);
+    if (!path) {
+        fprintf(output, "URI: (none)\n");
+        return;
+    }
+
+    uri = g_filename_to_uri(path, NULL, &conversion_error);
+    if (conversion_error) {
+        g_printerr("failed to convert path to URI: <%s>: <%s>(%d): <%s>",
+                   path,
+                   g_quark_to_string(conversion_error->domain),
+                   conversion_error->code,
+                   conversion_error->message);
+        g_error_free(conversion_error);
+    } else {
+        fprintf(output, "URI: %s\n", uri);
+        g_free(uri);
+    }
+}
+
+static void
+output_headers(ChupaData *data, FILE *output)
+{
+    OutputHeaderData header_data;
+    ChupaMetadata *metadata;
+
+    memset(&header_data, 0, sizeof(header_data));
+    header_data.output = output;
+
+    metadata = chupa_data_get_metadata(data);
+    output_uri_header(metadata, output);
+    fprintf(output, "Content-Type: text/plain; charset=UTF-8\n");
+    chupa_metadata_foreach(metadata, output_plain_header, &header_data);
+    if (header_data.original_mime_type) {
+        fprintf(output, "Original-Content-Type: %s",
+                header_data.original_mime_type);
+        if (header_data.original_encoding) {
+            fprintf(output, "; charset=%s", header_data.original_encoding);
+        }
+        fprintf(output, "\n");
+    }
+    fprintf(output, "Original-Content-Disposition: inline");
+    if (header_data.original_filename) {
+        fprintf(output, "; filename=%s", header_data.original_filename);
+    }
+    if (header_data.original_content_length > 0) {
+        fprintf(output, "; size=%zd", header_data.original_content_length);
+    }
+    if (header_data.creation_time) {
+        fprintf(output, "; creation-date=%s", header_data.creation_time);
+    }
+    if (header_data.modification_time) {
+        fprintf(output, "; modification-date=%s",
+                header_data.modification_time);
+    }
+    fprintf(output, "\n\n");
+}
+
+static void
 output_plain(ChupaData *data, GError *error, gpointer user_data)
 {
     GInputStream *inst = chupa_data_get_stream(data);
     struct output_info *info = user_data;
-    FILE *out = info->out;
-    const gchar *filename;
-    ChupaMetadata *metadata = chupa_data_get_metadata(data);
-    char *path = NULL;
-    char buf[4096];
+    FILE *output = info->out;
+    gchar buf[4096];
     gssize size;
     gboolean header_written = FALSE;
 
-    filename = chupa_metadata_get_original_filename(metadata);
     while ((size = g_input_stream_read(inst, buf, sizeof(buf), NULL, NULL)) > 0) {
         if (!header_written) {
-            OutputHeaderData header_data;
-            memset(&header_data, 0, sizeof(header_data));
-            header_data.output = out;
+            output_headers(data, output);
             header_written = TRUE;
-            if (info->prefix) {
-                path = g_build_filename(info->prefix, filename, NULL);
-            }
-            fprintf(out, "URI: %s\n",
-                    path ? path : filename ? filename : "(noname)");
-            if (path) {
-                g_free(path);
-            }
-            fprintf(out, "Content-Type: text/plain; charset=UTF-8\n");
-            if (metadata) {
-                chupa_metadata_foreach(metadata, output_plain_header, &header_data);
-            }
-            if (header_data.original_mime_type) {
-                fprintf(out, "Original-Content-Type: %s",
-                        header_data.original_mime_type);
-                if (header_data.original_encoding) {
-                    fprintf(out, "; charset=%s", header_data.original_encoding);
-                }
-                fprintf(out, "\n");
-            }
-            fprintf(out, "Original-Content-Disposition: inline");
-            if (header_data.original_filename) {
-                fprintf(out, "; filename=%s", header_data.original_filename);
-            }
-            if (header_data.original_content_length > 0) {
-                fprintf(out, "; size=%zd", header_data.original_content_length);
-            }
-            if (header_data.creation_time) {
-                fprintf(out, "; creation-date=%s", header_data.creation_time);
-            }
-            if (header_data.modification_time) {
-                fprintf(out, "; modification-date=%s",
-                        header_data.modification_time);
-            }
-            fprintf(out, "\n\n");
         }
-        fwrite(buf, 1, size, out);
+        fwrite(buf, 1, size, output);
     }
-    fprintf(out, "\n");
+    fprintf(output, "\n");
 }
 
 static void
@@ -203,18 +226,11 @@ output_json(ChupaData *data, GError *error, gpointer udata)
     FILE *out = uinfo->out;
     const char *name = chupa_data_get_filename(data);
     const char *charset = chupa_data_get_charset(data);
-    char *path = NULL;
     char buf[4096];
     gssize size;
 
     fputs("{\n\"_key\":\"", out);
-    if (uinfo->prefix) {
-        path = g_build_filename(uinfo->prefix, name, NULL);
-    }
     quote(name, out);
-    if (path) {
-        g_free(path);
-    }
     if (charset) {
         fputs("\",\n\"charset\":\"", out);
         quote(charset, out);
@@ -261,10 +277,6 @@ main(int argc, char **argv)
             "ignore errors while extracting", NULL
         },
         {
-            "prefix", '\0', 0, G_OPTION_ARG_STRING, NULL,
-            "prefix for names in output", "PATH"
-        },
-        {
             "version", 'v', 0, G_OPTION_ARG_NONE, NULL,
             "show version", NULL
         },
@@ -273,10 +285,8 @@ main(int argc, char **argv)
     i = 0;
     /* opts[i++].arg_data = &json; */
     opts[i++].arg_data = &ignore_errors;
-    opts[i++].arg_data = &uinfo.prefix;
     opts[i++].arg_data = &version;
 
-    uinfo.prefix = NULL;
     g_type_init();
     ctx = g_option_context_new("FILE...");
     g_option_context_set_description(ctx, "A text and metadata extractor.");

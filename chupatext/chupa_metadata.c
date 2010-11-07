@@ -337,6 +337,7 @@ enum {
     PROP_ENCODING,
     PROP_CONTENT_LENGTH,
     PROP_FILENAME,
+    PROP_PATH,
     PROP_ORIGINAL_MIME_TYPE,
     PROP_ORIGINAL_ENCODING,
     PROP_ORIGINAL_CONTENT_LENGTH,
@@ -412,6 +413,13 @@ chupa_metadata_class_init (ChupaMetadataClass *klass)
                                NULL,
                                G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
     g_object_class_install_property(gobject_class, PROP_FILENAME, spec);
+
+    spec = g_param_spec_string("path",
+                               "Path",
+                               "Path of the associated data",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_object_class_install_property(gobject_class, PROP_PATH, spec);
 
     spec = g_param_spec_string("original-mime-type",
                                "Original MIME type",
@@ -535,6 +543,9 @@ set_property(GObject *object,
     case PROP_FILENAME:
         chupa_metadata_set_filename(metadata, g_value_get_string(value));
         break;
+    case PROP_PATH:
+        chupa_metadata_set_path(metadata, g_value_get_string(value));
+        break;
     case PROP_ORIGINAL_MIME_TYPE:
         chupa_metadata_set_original_mime_type(metadata,
                                               g_value_get_string(value));
@@ -597,6 +608,9 @@ get_property(GObject *object,
     case PROP_FILENAME:
         g_value_set_string(value, chupa_metadata_get_filename(metadata));
         break;
+    case PROP_PATH:
+        g_value_set_string(value, chupa_metadata_get_path(metadata));
+        break;
     case PROP_ORIGINAL_MIME_TYPE:
         g_value_set_string(value,
                            chupa_metadata_get_original_mime_type(metadata));
@@ -656,6 +670,9 @@ chupa_metadata_merge_original_metadata (ChupaMetadata *metadata,
 {
     const gchar *original_filename, *original_mime_type;
     gsize original_content_length;
+
+    if (!chupa_metadata_get_path(metadata))
+        chupa_metadata_set_path(metadata, chupa_metadata_get_path(original));
 
     original_filename = chupa_metadata_get_original_filename(original);
     if (!original_filename)
@@ -896,6 +913,7 @@ chupa_metadata_get_ ## name (ChupaMetadata *metadata)                   \
 
 DEFINE_SIZE_ACCESSOR(content_length, CONTENT_LENGTH)
 DEFINE_SIZE_ACCESSOR(original_content_length, ORIGINAL_CONTENT_LENGTH)
+DEFINE_STRING_ACCESSOR(path, PATH)
 DEFINE_STRING_ACCESSOR(filename, FILENAME)
 DEFINE_STRING_ACCESSOR(original_filename, ORIGINAL_FILENAME)
 DEFINE_STRING_ACCESSOR(mime_type, MIME_TYPE)

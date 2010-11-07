@@ -75,145 +75,204 @@ run_process(GCutProcess *process)
 #define CHUPATEXT_COMMAND "./chupatext/chupatext"
 
 static const gchar *
-run(const gchar *fixture_file)
+fixture_path(const gchar *fixture_file)
 {
-    const gchar *full_path;
+    return cut_take_string(cut_build_fixture_data_path(fixture_file, NULL));
+}
 
-    full_path = cut_take_string(cut_build_fixture_data_path(fixture_file, NULL));
-    chupatext = gcut_process_new(CHUPATEXT_COMMAND, full_path, NULL);
+static const gchar *
+run(const gchar *path)
+{
+    chupatext = gcut_process_new(CHUPATEXT_COMMAND, path, NULL);
     return run_process(chupatext);
 }
 
 void
 test_text(void)
 {
-    cut_assert_equal_string("URI: sample.txt\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 7\n"
-                            "Content-Length: 7\n"
-                            "Original-Filename: sample.txt\n"
-                            "Original-Content-Type: text/plain\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample.txt;"
-                            " size=7\n"
-                            "\n"
-                            "sample\n"
-                            "\n",
-                            run("sample.txt"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample.txt");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Original-Content-Length: 7\n"
+                        "Content-Length: 7\n"
+                        "Original-Filename: sample.txt\n"
+                        "Original-Content-Type: text/plain\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample.txt;"
+                        " size=7\n"
+                        "\n"
+                        "sample\n"
+                        "\n",
+                        uri),
+        run(path));
 }
 
 void
 test_gzip(void)
 {
-    cut_assert_equal_string("URI: sample.txt.gz\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 38\n"
-                            "Content-Length: 7\n"
-                            "Original-Filename: sample.txt.gz\n"
-                            "Original-Content-Type: application/x-gzip\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample.txt.gz;"
-                            " size=38\n"
-                            "\n"
-                            "sample\n"
-                            "\n",
-                            run("sample.txt.gz"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample.txt.gz");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Original-Content-Length: 38\n"
+                        "Content-Length: 7\n"
+                        "Original-Filename: sample.txt.gz\n"
+                        "Original-Content-Type: application/x-gzip\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample.txt.gz;"
+                        " size=38\n"
+                        "\n"
+                        "sample\n"
+                        "\n",
+                        uri),
+        run(path));
 }
 
 void
 test_html(void)
 {
-    cut_assert_equal_string("URI: sample.html\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 120\n"
-                            "Title: Sample HTML File\n"
-                            "Content-Length: 17\n"
-                            "Original-Filename: sample.html\n"
-                            "Original-Content-Type: text/html\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample.html;"
-                            " size=120\n"
-                            "\n"
-                            "This is a sample."
-                            "\n",
-                            run("sample.html"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample.html");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Title: Sample HTML File\n"
+                        "Original-Filename: sample.html\n"
+                        "Original-Content-Length: 120\n"
+                        "Content-Length: 17\n"
+                        "Original-Content-Type: text/html\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample.html;"
+                        " size=120\n"
+                        "\n"
+                        "This is a sample."
+                        "\n",
+                        uri),
+        run(path));
 }
 
 void
 test_word(void)
 {
-    cut_assert_equal_string("URI: sample.doc\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 9216\n"
-                            "Content-Length: 8\n"
-                            "Original-Filename: sample.doc\n"
-                            "Original-Content-Type: application/msword\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample.doc;"
-                            " size=9216\n"
-                            "\n"
-                            "Sample\n\n"
-                            "\n",
-                            run("sample.doc"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample.doc");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Content-Length: 8\n"
+                        "Original-Content-Length: 9216\n"
+                        "Original-Filename: sample.doc\n"
+                        "Original-Content-Type: application/msword\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample.doc;"
+                        " size=9216\n"
+                        "\n"
+                        "Sample\n\n"
+                        "\n",
+                        uri),
+        run(path));
 }
 
 void
 test_excel(void)
 {
-    cut_assert_equal_string("URI: sample.xls\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 5632\n"
-                            "Content-Length: 21\n"
-                            "Original-Filename: sample.xls\n"
-                            "Original-Content-Type: application/vnd.ms-excel\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample.xls;"
-                            " size=5632\n"
-                            "\n"
-                            "sample\n1\n2\n3\n4\n5\n6\n7\n"
-                            "\n",
-                            run("sample.xls"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample.xls");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Original-Content-Length: 5632\n"
+                        "Content-Length: 21\n"
+                        "Original-Filename: sample.xls\n"
+                        "Original-Content-Type: application/vnd.ms-excel\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample.xls;"
+                        " size=5632\n"
+                        "\n"
+                        "sample\n1\n2\n3\n4\n5\n6\n7\n"
+                        "\n",
+                        uri),
+        run(path));
 }
 
 void
 test_powerpoint(void)
 {
-    cut_assert_equal_string("URI: sample.ppt\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 72704\n"
-                            "Author: Nobuyoshi Nakada\n"
-                            "Content-Length: 13\n"
-                            "Original-Filename: sample.ppt\n"
-                            "Original-Content-Type: application/vnd.ms-powerpoint\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample.ppt;"
-                            " size=72704\n"
-                            "\n"
-                            "Sample Title\n"
-                            "\n",
-                            run("sample.ppt"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample.ppt");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Original-Content-Length: 72704\n"
+                        "Content-Length: 13\n"
+                        "Author: Nobuyoshi Nakada\n"
+                        "Original-Filename: sample.ppt\n"
+                        "Original-Content-Type: application/vnd.ms-powerpoint\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample.ppt;"
+                        " size=72704\n"
+                        "\n"
+                        "Sample Title\n"
+                        "\n",
+                        uri),
+        run(path));
 }
 
 void
 test_pdf_multi_pages(void)
 {
-    cut_assert_equal_string("URI: sample_multi_pages.pdf\n"
-                            "Content-Type: text/plain; charset=UTF-8\n"
-                            "Original-Content-Length: 6145\n"
-                            "Creation-Time: 2010-09-27T04:09:17Z\n"
-                            "Content-Length: 29\n"
-                            "Original-Filename: sample_multi_pages.pdf\n"
-                            "Original-Content-Type: application/pdf\n"
-                            "Original-Content-Disposition: inline;"
-                            " filename=sample_multi_pages.pdf;"
-                            " size=6145;"
-                            " creation-date=2010-09-27T04:09:17Z\n"
-                            "\n"
-                            "page1\n\f"
-                            "2 ページ目\n\f"
-                            "page3\n"
-                            "\n",
-                            run("sample_multi_pages.pdf"));
+    const gchar *path, *uri;
+    GError *error = NULL;
+
+    path = fixture_path("sample_multi_pages.pdf");
+    uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
+    gcut_assert_error(error);
+    cut_assert_equal_string(
+        cut_take_printf("URI: %s\n"
+                        "Content-Type: text/plain; charset=UTF-8\n"
+                        "Content-Length: 29\n"
+                        "Original-Content-Length: 6145\n"
+                        "Creation-Time: 2010-09-27T04:09:17Z\n"
+                        "Original-Filename: sample_multi_pages.pdf\n"
+                        "Original-Content-Type: application/pdf\n"
+                        "Original-Content-Disposition: inline;"
+                        " filename=sample_multi_pages.pdf;"
+                        " size=6145;"
+                        " creation-date=2010-09-27T04:09:17Z\n"
+                        "\n"
+                        "page1\n\f"
+                        "2 ページ目\n\f"
+                        "page3\n"
+                        "\n",
+                        uri),
+        run(path));
 }
 
 /*
