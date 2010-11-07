@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -130,7 +131,18 @@ chupa_metadata_each(VALUE self)
 
     metadata = SELF(self);
     chupa_metadata_foreach(metadata, chupa_metadata_each_yield, NULL);
-    return self;
+    return Qnil;
+}
+
+static VALUE
+merge_original_metadata(VALUE self, VALUE original)
+{
+    ChupaMetadata *metadata, *original_metadata;
+
+    metadata = SELF(self);
+    original_metadata = SELF(original);
+    chupa_metadata_merge_original_metadata(metadata, original_metadata);
+    return Qnil;
 }
 
 VALUE
@@ -145,6 +157,8 @@ chupa_ruby_metadata_init(VALUE mChupa)
     rb_define_method(cMetadata, "keys", chupa_metadata_keys, 0);
     rb_define_method(cMetadata, "values", chupa_metadata_values, 0);
     rb_define_method(cMetadata, "each", chupa_metadata_each, 0);
+    rb_define_method(cMetadata, "merge_original_metadata",
+                     merge_original_metadata, 1);
     rb_include_module(cMetadata, rb_mEnumerable);
     return cMetadata;
 }
