@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Yuto HAYAMIZU <y.hayamizu@gmail.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,13 +26,41 @@
 
 G_BEGIN_DECLS
 
-#define	  CHUPA_TYPE_SIZE          (chupa_size_get_type())
-GType     chupa_size_get_type      (void) G_GNUC_CONST;
+void       chupa_types_init                (void);
+void       chupa_types_quit                (void);
 
-#define	  CHUPA_TYPE_TIME_VAL      (chupa_time_val_get_type())
-GType     chupa_time_val_get_type  (void) G_GNUC_CONST;
+typedef struct _ChupaParamSpecTimeVal      ChupaParamSpecTimeVal;
+struct _ChupaParamSpecTimeVal
+{
+  GParamSpec    parent_instance;
+};
 
-GTimeVal *chupa_time_val_dup       (GTimeVal *time_value);
+#define	    CHUPA_TYPE_SIZE                (chupa_type_size)
+GType       chupa_type_size;
+
+#define     CHUPA_VALUE_HOLDS_TIME_VAL(value) \
+    (G_TYPE_CHECK_VALUE_TYPE((value), CHUPA_TYPE_TIME_VAL))
+#define	    CHUPA_TYPE_TIME_VAL            (chupa_type_time_val)
+GType       chupa_type_time_val;
+
+GTimeVal   *chupa_value_get_time_val       (const GValue *value);
+void        chupa_value_set_time_val       (GValue       *value,
+                                            GTimeVal     *time_value);
+
+#define     CHUPA_PARAM_SPEC_TIME_VAL(pspec)                    \
+    (G_TYPE_CHECK_INSTANCE_CAST((pspec),                        \
+                                CHUPA_TYPE_PARAM_TIME_VAL,      \
+                                ChupaParamSpecTimeVal))
+#define	    CHUPA_TYPE_PARAM_TIME_VAL      (chupa_type_param_time_val)
+GType       chupa_type_param_time_val;
+
+GTimeVal   *chupa_time_val_dup             (GTimeVal *time_value);
+
+GParamSpec *chupa_param_spec_time_val      (const gchar *name,
+                                            const gchar *nick,
+                                            const gchar *blurb,
+                                            GParamFlags  flags);
+
 
 G_END_DECLS
 
