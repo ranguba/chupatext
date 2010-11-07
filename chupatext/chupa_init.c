@@ -65,13 +65,19 @@ delegate_glib_log_handlers (void)
 }
 
 void
+chupa_reinit_log_handler(void)
+{
+    remove_glib_log_handlers();
+    delegate_glib_log_handlers();
+}
+
+void
 chupa_init(gpointer address)
 {
     base_address = address;
 
     if (initialized) {
-        remove_glib_log_handlers();
-        delegate_glib_log_handlers();
+        chupa_reinit_log_handler();
         return;
     }
 

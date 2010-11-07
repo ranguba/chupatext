@@ -26,9 +26,10 @@
 
 G_BEGIN_DECLS
 
-void          chupa_init             (gpointer address);
-void          chupa_quit             (void);
-gpointer      chupa_get_base_address (void);
+void          chupa_init               (gpointer address);
+void          chupa_reinit_log_handler (void);
+void          chupa_quit               (void);
+gpointer      chupa_get_base_address   (void);
 
 G_END_DECLS
 

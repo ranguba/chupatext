@@ -27,6 +27,8 @@ chupa_ruby_init(void)
 
     rb_require("chupa/pre_init");
 
+    chupa_reinit_log_handler();
+
     mGLib = rb_define_module("GLib");
     chupa_ruby_g_memory_input_stream_init(mGLib);
 
