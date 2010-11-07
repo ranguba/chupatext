@@ -77,7 +77,7 @@ static gboolean
 feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
     PopplerDocument *doc;
-    GMemoryInputStream *mem = NULL;
+    GMemoryInputStream *memory_input = NULL;
     gssize count;
     gsize content_length = 0;
     gchar buffer[16*1024];
@@ -146,10 +146,10 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
         text = poppler_page_get_text(page, POPPLER_SELECTION_GLYPH, &rectangle);
 #endif
         content_length += strlen(text);
-        if (mem) {
-            g_memory_input_stream_add_data(mem, "\f", 1, NULL);
+        if (memory_input) {
+            g_memory_input_stream_add_data(memory_input, "\f", 1, NULL);
             content_length++;
-            g_memory_input_stream_add_data(mem, text, -1, g_free);
+            g_memory_input_stream_add_data(memory_input, text, -1, g_free);
             chupa_metadata_set_content_length(output_metadata, content_length);
         } else {
             const gchar *filename;
@@ -158,7 +158,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
             chupa_metadata_set_content_length(output_metadata, content_length);
             pdf_text = chupa_data_new(input, output_metadata);
             chupa_feeder_accepted(feeder, pdf_text);
-            mem = (GMemoryInputStream *)input;
+            memory_input = (GMemoryInputStream *)input;
         }
         g_object_unref(page);
     }
@@ -166,7 +166,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     g_object_unref(doc);
     g_string_free(str, TRUE);
     chupa_data_finished(pdf_text, NULL);
-    g_object_unref(mem);
+    g_object_unref(memory_input);
     g_object_unref(pdf_text);
     return TRUE;
 }
