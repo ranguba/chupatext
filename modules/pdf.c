@@ -19,6 +19,8 @@
  *  MA  02110-1301  USA
  */
 
+#include <string.h>
+
 #include <chupatext/chupa_decomposer_module.h>
 
 #include <glib.h>
@@ -77,6 +79,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
     PopplerDocument *doc;
     GMemoryInputStream *mem = NULL;
     gssize count;
+    gsize content_length = 0;
     gchar buffer[16*1024];
     const gsize bufsize = sizeof(buffer);
     GString *str = g_string_sized_new(sizeof(buffer));
@@ -137,16 +140,20 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
         text = poppler_page_get_text(page);
 #else
         PopplerRectangle rectangle = {0, 0, 0, 0};
-        poppler_page_get_size (page, &rectangle.x2, &rectangle.y2);
+        poppler_page_get_size(page, &rectangle.x2, &rectangle.y2);
         text = poppler_page_get_text(page, POPPLER_SELECTION_GLYPH, &rectangle);
 #endif
+        content_length += strlen(text);
         if (mem) {
             g_memory_input_stream_add_data(mem, "\f", 1, NULL);
+            content_length++;
             g_memory_input_stream_add_data(mem, text, -1, g_free);
+            chupa_metadata_set_content_length(output_metadata, content_length);
         } else {
             const gchar *filename;
             filename = chupa_data_get_filename(data);
             inp = g_memory_input_stream_new_from_data(text, -1, g_free);
+            chupa_metadata_set_content_length(output_metadata, content_length);
             pdf_text = chupa_data_new(inp, output_metadata);
             chupa_feeder_accepted(feeder, pdf_text);
             mem = (GMemoryInputStream *)inp;
