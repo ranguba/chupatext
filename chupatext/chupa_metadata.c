@@ -549,118 +549,34 @@ chupa_metadata_get_size (ChupaMetadata *metadata, const gchar *key, GError **err
     return chupa_metadata_field_value_size(field);
 }
 
-void
-chupa_metadata_set_content_length (ChupaMetadata *metadata, gsize length)
-{
-    chupa_metadata_set_size(metadata, CHUPA_METADATA_NAME_CONTENT_LENGTH,
-                            length);
+#define DEFINE_ACCESSOR(name, key_name, type, type_name)                \
+void                                                                    \
+chupa_metadata_set_ ## name (ChupaMetadata *metadata, type name)        \
+{                                                                       \
+    const gchar *key = CHUPA_METADATA_NAME_ ## key_name;                \
+    chupa_metadata_set_ ## type_name(metadata, key, name);              \
+}                                                                       \
+                                                                        \
+type                                                                    \
+chupa_metadata_get_ ## name (ChupaMetadata *metadata)                   \
+{                                                                       \
+    const gchar *key = CHUPA_METADATA_NAME_ ## key_name;                \
+    return chupa_metadata_get_ ## type_name(metadata, key, NULL);       \
 }
 
-gsize
-chupa_metadata_get_content_length (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_size(metadata, CHUPA_METADATA_NAME_CONTENT_LENGTH,
-                                   NULL);
-}
+#define DEFINE_SIZE_ACCESSOR(name, key_name)            \
+    DEFINE_ACCESSOR(name, key_name, gsize, size)
+#define DEFINE_STRING_ACCESSOR(name, key_name)                  \
+    DEFINE_ACCESSOR(name, key_name, const gchar *, string)
 
-void
-chupa_metadata_set_original_content_length (ChupaMetadata *metadata,
-                                            gsize length)
-{
-    chupa_metadata_set_size(metadata,
-                            CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH,
-                            length);
-}
-
-gsize
-chupa_metadata_get_original_content_length (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_size(metadata,
-                                   CHUPA_METADATA_NAME_ORIGINAL_CONTENT_LENGTH,
-                                   NULL);
-}
-
-void
-chupa_metadata_set_filename (ChupaMetadata *metadata, const gchar *filename)
-{
-    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_FILENAME, filename);
-}
-
-const gchar *
-chupa_metadata_get_filename (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_string(metadata, CHUPA_METADATA_NAME_FILENAME,
-                                     NULL);
-}
-
-void
-chupa_metadata_set_original_filename (ChupaMetadata *metadata,
-                                      const gchar *filename)
-{
-    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_ORIGINAL_FILENAME,
-                              filename);
-}
-
-const gchar *
-chupa_metadata_get_original_filename (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_string(metadata,
-                                     CHUPA_METADATA_NAME_ORIGINAL_FILENAME,
-                                     NULL);
-}
-
-void
-chupa_metadata_set_mime_type (ChupaMetadata *metadata, const gchar *mime_type)
-{
-    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_MIME_TYPE,
-                              mime_type);
-}
-
-const gchar *
-chupa_metadata_get_mime_type (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_string(metadata, CHUPA_METADATA_NAME_MIME_TYPE,
-                                     NULL);
-}
-
-void
-chupa_metadata_set_original_mime_type (ChupaMetadata *metadata,
-                                       const gchar *mime_type)
-{
-    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE,
-                              mime_type);
-}
-
-const gchar *
-chupa_metadata_get_original_mime_type (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_string(metadata,
-                                     CHUPA_METADATA_NAME_ORIGINAL_MIME_TYPE,
-                                     NULL);
-}
-
-const gchar *
-chupa_metadata_get_encoding (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_string(metadata, CHUPA_METADATA_NAME_ENCODING,
-                                     NULL);
-}
-
-void
-chupa_metadata_set_original_encoding (ChupaMetadata *metadata,
-                                      const gchar *encoding)
-{
-    chupa_metadata_set_string(metadata, CHUPA_METADATA_NAME_ORIGINAL_ENCODING,
-                              encoding);
-}
-
-const gchar *
-chupa_metadata_get_original_encoding (ChupaMetadata *metadata)
-{
-    return chupa_metadata_get_string(metadata,
-                                     CHUPA_METADATA_NAME_ORIGINAL_ENCODING,
-                                     NULL);
-}
+DEFINE_SIZE_ACCESSOR(content_length, CONTENT_LENGTH)
+DEFINE_SIZE_ACCESSOR(original_content_length, ORIGINAL_CONTENT_LENGTH)
+DEFINE_STRING_ACCESSOR(filename, FILENAME)
+DEFINE_STRING_ACCESSOR(original_filename, ORIGINAL_FILENAME)
+DEFINE_STRING_ACCESSOR(mime_type, MIME_TYPE)
+DEFINE_STRING_ACCESSOR(original_mime_type, ORIGINAL_MIME_TYPE)
+DEFINE_STRING_ACCESSOR(encoding, ENCODING)
+DEFINE_STRING_ACCESSOR(original_encoding, ORIGINAL_ENCODING)
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

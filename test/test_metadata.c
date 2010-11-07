@@ -34,6 +34,8 @@ void test_time_val (void);
 void test_size (void);
 void test_size_error (void);
 void test_content_length (void);
+void test_encoding (void);
+void test_original_encoding (void);
 
 static ChupaMetadata *metadata, *metadata2;
 static GString *result;
@@ -225,6 +227,26 @@ test_content_length (void)
     metadata = chupa_metadata_new();
     chupa_metadata_set_content_length(metadata, 29);
     cut_assert_equal_int(29, chupa_metadata_get_content_length(metadata));
+}
+
+void
+test_encoding (void)
+{
+    metadata = chupa_metadata_new();
+    cut_assert_equal_string(NULL, chupa_metadata_get_encoding(metadata));
+    chupa_metadata_set_encoding(metadata, "UTF-8");
+    cut_assert_equal_string("UTF-8", chupa_metadata_get_encoding(metadata));
+}
+
+void
+test_original_encoding (void)
+{
+    metadata = chupa_metadata_new();
+    cut_assert_equal_string(NULL,
+                            chupa_metadata_get_original_encoding(metadata));
+    chupa_metadata_set_original_encoding(metadata, "UTF-8");
+    cut_assert_equal_string("UTF-8",
+                            chupa_metadata_get_original_encoding(metadata));
 }
 
 /*
