@@ -31,6 +31,7 @@ chupa_ruby_init(void)
     chupa_ruby_g_memory_input_stream_init(mGLib);
 
     mChupa = rb_define_module("Chupa");
+    chupa_ruby_types_init(mChupa);
     chupa_ruby_metadata_init(mChupa);
     chupa_ruby_data_init(mChupa);
     chupa_ruby_feeder_init(mChupa);

@@ -21,8 +21,15 @@ class MetadataTest < Test::Unit::TestCase
   end
 
   def test_accessor
-    assert_nil(@metadata["mime-type"])
-    @metadata["mime-type"] = "text/plain"
-    assert_equal("text/plain", @metadata["mime-type"])
+    assert_nil(@metadata.mime_type)
+    @metadata.mime_type = "text/plain"
+    assert_equal("text/plain", @metadata.mime_type)
+  end
+
+  def test_accessor_time
+    assert_nil(@metadata.creation_time)
+    creation_time = Time.parse("2010-11-07T19:44:31+09:00")
+    @metadata.creation_time = creation_time
+    assert_equal(creation_time, @metadata.creation_time)
   end
 end
