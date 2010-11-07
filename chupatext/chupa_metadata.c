@@ -152,14 +152,10 @@ field_new_time_val (ChupaMetadata *metadata, const gchar *name, GTimeVal *value)
 {
     ChupaMetadataField *field;
     ChupaMetadataFieldPrivate *priv;
-    GTimeVal *dupped_value;
 
-    dupped_value = g_new0(GTimeVal, 1);
-    memcpy(dupped_value, value, sizeof(GTimeVal));
-    /* FIXME: use CHUPA_TYPE_TIME_VAL */
-    field = field_new(metadata, name, G_TYPE_POINTER);
+    field = field_new(metadata, name, CHUPA_TYPE_TIME_VAL);
     priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
-    priv->value.pointer = dupped_value;
+    priv->value.pointer = chupa_time_val_dup(value);
     priv->free_function = g_free;
 
     return field;
@@ -237,7 +233,7 @@ chupa_metadata_field_value_time_val(ChupaMetadataField *field)
     ChupaMetadataFieldPrivate *priv;
 
     priv = CHUPA_METADATA_FIELD_GET_PRIVATE(field);
-    if (priv->type == G_TYPE_POINTER) {
+    if (priv->type == CHUPA_TYPE_TIME_VAL) {
         return priv->value.pointer;
     } else {
         return NULL;
@@ -294,6 +290,11 @@ chupa_metadata_field_value_as_string(ChupaMetadataField *field)
     default:
         if (priv->type == CHUPA_TYPE_SIZE) {
             g_string_append_printf(priv->value_string, "%zd", priv->value.size);
+        } else if (priv->type == CHUPA_TYPE_TIME_VAL) {
+            gchar *iso_8601;
+            iso_8601 = g_time_val_to_iso8601(priv->value.pointer);
+            g_string_append(priv->value_string, iso_8601);
+            g_free(iso_8601);
         } else {
             g_string_append(priv->value_string, "(unsupported)");
         }

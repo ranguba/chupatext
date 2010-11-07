@@ -25,8 +25,13 @@
 
 G_BEGIN_DECLS
 
-#define	CHUPA_TYPE_SIZE      (chupa_size_get_type())
-GType   chupa_size_get_type  (void) G_GNUC_CONST;
+#define	  CHUPA_TYPE_SIZE          (chupa_size_get_type())
+GType     chupa_size_get_type      (void) G_GNUC_CONST;
+
+#define	  CHUPA_TYPE_TIME_VAL      (chupa_time_val_get_type())
+GType     chupa_time_val_get_type  (void) G_GNUC_CONST;
+
+GTimeVal *chupa_time_val_dup       (GTimeVal *time_value);
 
 G_END_DECLS
 

@@ -31,6 +31,7 @@ void test_string_error (void);
 void test_int (void);
 void test_int_error (void);
 void test_time_val (void);
+void test_time_val_error (void);
 void test_size (void);
 void test_size_error (void);
 void test_boolean (void);
@@ -198,6 +199,22 @@ test_time_val (void)
     cut_assert_not_null(actual_time_val);
     cut_assert_equal_int(expected_time_val.tv_sec, actual_time_val->tv_sec);
     cut_assert_equal_int(expected_time_val.tv_usec, actual_time_val->tv_usec);
+}
+
+void
+test_time_val_error (void)
+{
+    const gchar *key;
+
+    key = "last-modified-time";
+    metadata = chupa_metadata_new();
+    expected_error = g_error_new(CHUPA_METADATA_ERROR,
+                                 CHUPA_METADATA_ERROR_NOT_EXIST,
+                                 "requested key doesn't exist in metadata: <%s>",
+                                 key);
+
+    cut_assert_null(chupa_metadata_get_time_val(metadata, key, &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
