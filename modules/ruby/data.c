@@ -23,6 +23,42 @@
 #define SELF(self) (CHUPA_DATA(RVAL2GOBJ(self)))
 
 static VALUE
+data_initialize(int argc, VALUE *argv, VALUE self)
+{
+    ChupaData *data;
+    ChupaMetadata *metadata = NULL;
+    GFile *file = NULL;
+    GInputStream *input_stream;
+    VALUE rb_input_stream_or_path, rb_metadata;
+    GError *error = NULL;
+
+    rb_scan_args(argc, argv, "11", &rb_input_stream_or_path, &rb_metadata);
+    if (rb_obj_is_kind_of(rb_input_stream_or_path, rb_cString)) {
+        const gchar *path;
+        path = RVAL2CSTR(rb_input_stream_or_path);
+        file = g_file_new_for_commandline_arg(path);
+    } else {
+        input_stream = RVAL2GOBJ(rb_input_stream_or_path);
+    }
+    if (!NIL_P(rb_metadata)) {
+        metadata = RVAL2GOBJ(rb_metadata);
+    }
+
+    if (file) {
+        data = chupa_data_new_from_file(file, metadata, &error);
+        g_object_unref(file);
+        if (error) {
+            RAISE_GERROR(error);
+        }
+    } else {
+        data = chupa_data_new(input_stream, metadata);
+    }
+    G_INITIALIZE(self, data);
+
+    return Qnil;
+}
+
+static VALUE
 data_read(int argc, VALUE *argv, VALUE self)
 {
     ChupaData *data;
@@ -78,6 +114,26 @@ data_get_metadata(VALUE self)
 }
 
 static VALUE
+data_finished(int argc, VALUE *argv, VALUE self)
+{
+    ChupaData *data;
+    VALUE rb_exception;
+    GError *error = NULL;
+
+    data = SELF(self);
+    rb_scan_args(argc, argv, "01", &rb_exception);
+    if (!NIL_P(rb_exception))
+        chupa_ruby_exception_to_g_error(rb_exception, &error,
+                                        CHUPA_DECOMPOSER_ERROR,
+                                        CHUPA_DECOMPOSER_ERROR_FEED,
+                                        "failed to decompose");
+    chupa_data_finished(data, error);
+    if (error)
+        g_error_free(error);
+    return Qnil;
+}
+
+static VALUE
 data_is_text(VALUE self)
 {
     return CBOOL2RVAL(chupa_data_is_text(SELF(self)));
@@ -102,8 +158,12 @@ chupa_ruby_data_init(VALUE mChupa)
 
     cData = G_DEF_CLASS(CHUPA_TYPE_DATA, "Data", mChupa);
 
+    rb_define_method(cData, "initialize", data_initialize, -1);
+
     rb_define_method(cData, "read", data_read, -1);
     rb_define_method(cData, "metadata", data_get_metadata, 0);
+
+    rb_define_method(cData, "finished", data_finished, -1);
 
     rb_define_method(cData, "text?", data_is_text, 0);
     rb_define_method(cData, "finished?", data_is_finished, 0);
