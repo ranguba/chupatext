@@ -328,6 +328,9 @@ chupa_time_val_dup (GTimeVal *time_value)
 {
     GTimeVal *new_time_value;
 
+    if (!time_value)
+        return NULL;
+
     new_time_value = g_new0(GTimeVal, 1);
     new_time_value->tv_sec = time_value->tv_sec;
     new_time_value->tv_usec = time_value->tv_usec;
