@@ -2,6 +2,11 @@
 
 = NEWS --- The history of ChupaText
 
+== [release-0-5-0] 0.5.0: 2010-11-07
+
+  * Organized chupatext command output.
+  * Supported LibreOffice.
+
 == [release-0-4-0] 0.4.0: 2010-10-31
 
   * Initial release.
