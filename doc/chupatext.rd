@@ -92,21 +92,8 @@ Here are optional fileds:
 : -h, --help
    chupatext shows help message and exits.
 
-# : -j, --json
-#    chupatext outputs text and metadata extraction result as
-#    JSON format.
-
-#    chupatext outputs a hash object for a file but bracket
-#    that surrounds all hashs isn't included.
-
 : -i, --ignore-errors
    chupatext ignores all errors occurred in extraction.
-
-: --prefix=PATH
-   This specifies a prefix that is added before file name in output.
-
-   This is useful for outputing file name specified by
-   relative path as absolute path or URI.
 
 : -v, --version
    chupatext shows its version number and exits.
