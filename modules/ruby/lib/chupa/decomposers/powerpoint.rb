@@ -166,8 +166,9 @@ EOS
       ppt.close
 
       convertor.convert(ppt, pdf)
+      metadata.meta_ignore_time = true
       data = Chupa::Data.new(pdf.path, metadata)
-      delegate(data.decompose(@feeder))
+      delegate(data)
     end
   end
 end

@@ -17,13 +17,5 @@
 
 module Chupa
   class Data
-    def decompose(feeder)
-      decomposed_data = nil
-      feeder.signal_connect("accepted") do |_feeder, _data|
-        decomposed_data = _data
-      end
-      feeder.feed(self)
-      decomosed_data
-    end
   end
 end

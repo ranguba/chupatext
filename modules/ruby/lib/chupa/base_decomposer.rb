@@ -45,12 +45,8 @@ module Chupa
     end
 
     def feed
-      begin
-        decompose
-        finished
-      rescue Exception
-        finished($!)
-      end
+      decompose
+      finished
     end
 
     private
@@ -63,10 +59,13 @@ module Chupa
       end
     end
 
-    def finished(error=nil)
-      return unless @accepted
-      return if @finished
-      output.finished(error)
+    def need_finished?
+      @accepted and !@finished
+    end
+
+    def finished
+      return unless need_finished?
+      output.finished
       @finished = true
     end
 

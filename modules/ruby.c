@@ -137,6 +137,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     ChupaRubyDecomposer *ruby_decomposer;
     VALUE rb_decomposer;
     VALUE decomposer_new_argv[2];
+    GError *local_error = NULL;
 
     CONST_ID(id_new, "new");
     CONST_ID(id_feed, "feed");
@@ -147,8 +148,16 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                                        id_new,
                                        2,
                                        decomposer_new_argv,
-                                       error);
-    chupa_ruby_funcall(rb_decomposer, id_feed, 0, NULL, error);
+                                       &local_error);
+    if (local_error) {
+        g_propagate_error(error, local_error);
+        return FALSE;
+    }
+    chupa_ruby_funcall(rb_decomposer, id_feed, 0, NULL, &local_error);
+    if (local_error) {
+        g_propagate_error(error, local_error);
+        return FALSE;
+    }
 
     return TRUE;
 }

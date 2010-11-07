@@ -25,6 +25,7 @@
 void test_html(void);
 void test_word(void);
 void test_excel(void);
+void test_powerpoint(void);
 void test_pdf_multi_pages(void);
 
 static GCutProcess *chupatext;
@@ -87,8 +88,8 @@ test_html(void)
     cut_assert_equal_string("URI: sample.html\n"
                             "Content-Type: text/plain; charset=UTF-8\n"
                             "Original-Content-Length: 120\n"
-                            "Content-Length: 17\n"
                             "Title: Sample HTML File\n"
+                            "Content-Length: 17\n"
                             "Original-Filename: sample.html\n"
                             "Original-Content-Type: text/html\n"
                             "Original-Content-Disposition: inline;"
@@ -137,12 +138,32 @@ test_excel(void)
 }
 
 void
+test_powerpoint(void)
+{
+    cut_assert_equal_string("URI: sample.ppt\n"
+                            "Content-Type: text/plain; charset=UTF-8\n"
+                            "Original-Content-Length: 72704\n"
+                            "Author: Nobuyoshi Nakada\n"
+                            "Content-Length: 13\n"
+                            "Original-Filename: sample.ppt\n"
+                            "Original-Content-Type: application/vnd.ms-powerpoint\n"
+                            "Original-Content-Disposition: inline;"
+                            " filename=sample.ppt;"
+                            " size=72704\n"
+                            "\n"
+                            "Sample Title\n"
+                            "\n",
+                            run("sample.ppt"));
+}
+
+void
 test_pdf_multi_pages(void)
 {
     cut_assert_equal_string("URI: sample_multi_pages.pdf\n"
                             "Content-Type: text/plain; charset=UTF-8\n"
                             "Original-Content-Length: 6145\n"
                             "Creation-Time: 2010-09-27T04:09:17Z\n"
+                            "Content-Length: 29\n"
                             "Original-Filename: sample_multi_pages.pdf\n"
                             "Original-Content-Type: application/pdf\n"
                             "Original-Content-Disposition: inline;"
