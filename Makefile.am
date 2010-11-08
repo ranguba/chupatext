@@ -28,11 +28,19 @@ EXTRA_DIST =					\
 
 GIT = git
 
+dist: regenerate-version.txt
+
+regenerate-version.txt:
+	rm -f $(top_srcdir)/version.txt
+	$(MAKE) $(top_srcdir)/version.txt
+
 $(top_srcdir)/version.txt:
 	(description=$$($(GIT) describe --tags --match='[0-9][.0-9]*');		\
-	 n_commits=$$(echo $${description} | cut -d- -f2);			\
+	 if echo $${description} | grep -- - > /dev/null 2>&1 ; then		\
+	   n_commits=$$(echo $${description} | cut -d- -f2);			\
+	   commit_id=$$(echo $${description} | cut -d- -f3);			\
+	 fi;									\
 	 echo "CHUPA_N_COMMITS=$${n_commits:-0}";				\
-	 commit_id=$$(echo $${description} | cut -d- -f3);			\
 	 echo "CHUPA_COMMIT_ID=$${commit_id}";					\
 	 date=$$($(GIT) log --max-count=1 --format=%cd --date=short | tr -d -);	\
 	 echo "CHUPA_RELEASE_DATE=$${date:-0}") > $@.new
