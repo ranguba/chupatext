@@ -1,1 +1,1 @@
-SUBDIRS = chupa
+SUBDIRS = chupatext

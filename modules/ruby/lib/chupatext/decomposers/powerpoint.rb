@@ -18,7 +18,7 @@
 
 require 'tempfile'
 require 'digest/md5'
-require 'chupa/external_command'
+require 'chupatext/external_command'
 
 module Chupa
   class PowerPoint < BaseDecomposer

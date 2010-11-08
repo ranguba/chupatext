@@ -25,7 +25,7 @@ chupa_ruby_init(void)
 {
     VALUE mGLib, mChupa;
 
-    rb_require("chupa/pre_init");
+    rb_require("chupatext/pre_init");
 
     chupa_reinit_log_handler();
 
@@ -39,5 +39,5 @@ chupa_ruby_init(void)
     chupa_ruby_feeder_init(mChupa);
     chupa_ruby_decomposer_init(mChupa);
 
-    rb_require("chupa/post_init");
+    rb_require("chupatext/post_init");
 }

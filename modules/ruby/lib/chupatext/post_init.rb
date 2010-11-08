@@ -15,6 +15,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-require 'chupa/base_decomposer'
-require 'chupa/loader'
-require 'chupa/data'
+require 'chupatext/base_decomposer'
+require 'chupatext/loader'
+require 'chupatext/data'

@@ -282,10 +282,10 @@ AC_SUBST(decomposersdir)
 ruby_libdir='$(pkglibdir)/ruby'
 AC_SUBST(ruby_libdir)
 
-ruby_lib_chupadir='$(ruby_libdir)/chupa'
-AC_SUBST(ruby_lib_chupadir)
+ruby_lib_chupatextdir='$(ruby_libdir)/chupatext'
+AC_SUBST(ruby_lib_chupatextdir)
 
-ruby_decomposersdir='$(ruby_lib_chupadir)/decomposers'
+ruby_decomposersdir='$(ruby_lib_chupatextdir)/decomposers'
 AC_SUBST(ruby_decomposersdir)
 
 descriptionsdir='$(sysconfdir)/$(PACKAGE)/descriptions'
@@ -317,8 +317,8 @@ AC_CONFIG_FILES([Makefile
 		 modules/excel/Makefile
 		 modules/ruby/Makefile
 		 modules/ruby/lib/Makefile
-		 modules/ruby/lib/chupa/Makefile
-		 modules/ruby/lib/chupa/decomposers/Makefile
+		 modules/ruby/lib/chupatext/Makefile
+		 modules/ruby/lib/chupatext/decomposers/Makefile
 		 license/Makefile
 		 misc/Makefile
 		 doc/Makefile
