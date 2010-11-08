@@ -624,14 +624,13 @@ create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_ty
                         NULL);
 }
 
-G_MODULE_EXPORT GList *
-CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
+static gboolean
+gnumeric_init(GTypeModule *type_module, GList **registered_types, GError **error)
 {
-    GList *registered_types = NULL;
     GOErrorInfo	*plugin_errors = NULL;
     const gchar *argv[1];
 
-    command_context_register_type(type_module, &registered_types);
+    command_context_register_type(type_module, registered_types);
 
     argv[0] = g_get_prgname();
     gnm_pre_parse_init(1, argv);
@@ -645,10 +644,29 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
                     "failed to initialize GOffice plugins : %s",
                     go_error_info_peek_message(plugin_errors));
         go_error_info_free(plugin_errors);
+        return FALSE;
+    } else {
+        return TRUE;
     }
+}
 
-    decomposer_register_type(type_module, &registered_types);
-    factory_register_type(type_module, &registered_types);
+static void
+gnumeric_quit(void)
+{
+    g_object_unref(command_context);
+    gnm_shutdown();
+    gnm_pre_parse_shutdown();
+}
+
+G_MODULE_EXPORT GList *
+CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
+{
+    GList *registered_types = NULL;
+
+    if (gnumeric_init(type_module, &registered_types, error)) {
+        decomposer_register_type(type_module, &registered_types);
+        factory_register_type(type_module, &registered_types);
+    }
 
     return registered_types;
 }
@@ -656,9 +674,7 @@ CHUPA_DECOMPOSER_INIT(GTypeModule *type_module, GError **error)
 G_MODULE_EXPORT gboolean
 CHUPA_DECOMPOSER_QUIT(void)
 {
-    g_object_unref(command_context);
-    gnm_shutdown();
-    gnm_pre_parse_shutdown();
+    gnumeric_quit();
 
     return FALSE;
 }
