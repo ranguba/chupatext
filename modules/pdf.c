@@ -63,6 +63,39 @@ struct _ChupaPDFDecomposerClass
 
 static GType chupa_type_pdf_decomposer = 0;
 
+static void
+show_all_layers_recursive(PopplerLayersIter *iter)
+{
+    do {
+        PopplerLayer *layer;
+        PopplerLayersIter *child;
+
+        layer = poppler_layers_iter_get_layer(iter);
+        if (layer) {
+            if (!poppler_layer_is_visible(layer))
+                poppler_layer_show(layer);
+            g_object_unref(layer);
+        }
+        child = poppler_layers_iter_get_child(iter);
+        if (child) {
+            show_all_layers_recursive(child);
+            poppler_layers_iter_free(child);
+        }
+    } while (poppler_layers_iter_next(iter));
+}
+
+static void
+show_all_layers(PopplerDocument *document)
+{
+    PopplerLayersIter *iter;
+
+    iter = poppler_layers_iter_new(document);
+    if (iter) {
+        show_all_layers_recursive(iter);
+        poppler_layers_iter_free(iter);
+    }
+}
+
 static gboolean
 feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
 {
@@ -128,6 +161,7 @@ feed(ChupaDecomposer *dec, ChupaFeeder *feeder, ChupaData *data, GError **error)
         chupa_metadata_set_string(output_metadata, "metadata", metadata);
         g_free(metadata);
     }
+    show_all_layers(doc);
     n = poppler_document_get_n_pages(doc);
     for (i = 0; i < n; ++i) {
         PopplerPage *page = poppler_document_get_page(doc, i);
