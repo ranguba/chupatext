@@ -18,6 +18,7 @@
 
 require 'tempfile'
 require 'digest/md5'
+require 'pathname'
 require 'chupatext/external_command'
 
 module Chupa
@@ -33,6 +34,48 @@ module Chupa
       def convert(input, output)
         run("--stdout", input.path,
             {:spawn_option => {:out => output.fileno}})
+      end
+    end
+
+    class LibreOffice < ExternalCommand
+      def initialize(options={})
+        super(options[:command] || "lbireoffice")
+        home_dir = options[:home_dir] || "~/.chupatext"
+        @home_dir = Pathname.new(home_dir).expand_path
+      end
+
+      def prepare
+      end
+
+      def convert(input, output)
+        output_directory = File.dirname(output.path)
+        pipe_read, pipe_write = IO.pipe
+        run("-headless",
+            "-convert-to", "pdf",
+            "-outdir", output_directory,
+            input.path,
+            {
+              :env => {"HOME" => @home_dir.to_s},
+              :spawn_option => {:out => pipe_write, :err => [:child, :out]},
+            })
+        pipe_write.close
+        libre_office_start_time = Time.now
+        while `ps aux`.include?(input.path)
+          if Time.now - libre_office_start_time > 30
+            output = pipe_read.read
+            kill
+            message = "Timeout: PowerPoint file conversion: #{libre_office_output}"
+            raise DecomposeError.new(message)
+          end
+          sleep(0.5)
+        end
+        FileUtils.mv(input.path.gsub(/\.[a-z]+\z/i, ".pdf"),
+                     output.path)
+      end
+
+      private
+      def kill
+        system("killall soffice.bin")
       end
     end
 
@@ -68,7 +111,10 @@ args1(1).Value = &quot;writer_pdf_Export&quot;
 dispatcher.executeDispatch(document, &quot;.uno:ExportDirectToPDF&quot;, &quot;&quot;, 0, args1())
 
 document.close(true)
+end sub
 
+sub Terminate()
+StarDesktop.Terminate()
 end sub
 </script:module>
 EOS
@@ -105,12 +151,17 @@ EOS
       def convert(input, output)
         FileUtils.rm(output.path)
         run(input.path,
-            "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")")
+            "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")",
+            "macro:///Standard.Export.Terminate()")
         ooffice_start_time = Time.now
         while `ps aux`.include?(output.path)
           if Time.now - ooffice_start_time > 30
-            system("killall soffice.bin")
+            kill
             raise DecomposeError.new("Timeout: PowerPoint file conversion")
+          end
+          if File.exist?(output.path)
+            kill
+            return
           end
           sleep(0.5)
         end
@@ -123,6 +174,10 @@ EOS
       private
       def run(*arguments)
         super("-headless", *arguments, {:env => {"HOME" => @home_dir.to_s}})
+      end
+
+      def kill
+        system("killall soffice.bin")
       end
 
       def guess_base_directory
@@ -139,14 +194,20 @@ EOS
                        :home_dir => ENV['CHUPA_HOME'])
       end
 
+      def libre_office(command=nil)
+        LibreOffice.new(:command => command,
+                        :home_dir => ENV['CHUPA_HOME'])
+      end
+
       def unoconv
         UnoConv.new
       end
 
       def convertor
-        [open_office("ooffice"),
+        [libre_office("libreoffice"),
+         libre_office("/opt/libreoffice.org3/program/soffice"),
+         open_office("ooffice"),
          open_office("soffice"),
-         open_office("/opt/libreoffice.org3/program/soffice"),
          open_office("/opt/openoffice.org3/program/soffice"),
          unoconv].find do |command|
           command.exist?
@@ -154,18 +215,22 @@ EOS
       end
     end
 
-    mime_types "application/vnd.ms-powerpoint" unless convertor.nil?
+    unless convertor.nil?
+      mime_types "application/vnd.ms-powerpoint"
+      mime_types "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    end
 
     def decompose
       convertor = self.class.convertor
       convertor.prepare
 
-      pdf = Tempfile.new(["chupadata-pdf", ".pdf"])
-      ppt = Tempfile.new(["chupadata-ppt", ".ppt"])
-      ppt.write(@input.read)
-      ppt.close
+      extension = Pathname(@input.metadata.filename).extname
+      pdf = Tempfile.new(["chupadata-powerpoint", ".pdf"])
+      powerpoint = Tempfile.new(["chupadata-powerpoint", extension])
+      powerpoint.write(@input.read)
+      powerpoint.close
 
-      convertor.convert(ppt, pdf)
+      convertor.convert(powerpoint, pdf)
       metadata.meta_ignore_time = true
       data = Chupa::Data.new(pdf.path, metadata)
       delegate(data)
