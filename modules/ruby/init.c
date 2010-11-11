@@ -33,6 +33,15 @@ chupa_ruby_init(void)
     chupa_ruby_g_memory_input_stream_init(mGLib);
 
     mChupa = rb_define_module("Chupa");
+
+    rb_define_const(mChupa, "VERSION",
+                    rb_ary_new3(3,
+                                INT2FIX(CHUPA_VERSION_MAJOR),
+                                INT2FIX(CHUPA_VERSION_MINOR),
+                                INT2FIX(CHUPA_VERSION_MICRO)));
+    rb_define_const(mChupa, "VERSION_DESCRIPTION",
+                    CSTR2RVAL(CHUPA_VERSION_DESCRIPTION));
+
     chupa_ruby_types_init(mChupa);
     chupa_ruby_metadata_init(mChupa);
     chupa_ruby_data_init(mChupa);
