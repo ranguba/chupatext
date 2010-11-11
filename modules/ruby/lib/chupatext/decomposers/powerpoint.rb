@@ -39,7 +39,7 @@ module Chupa
 
     class LibreOffice < ExternalCommand
       def initialize(options={})
-        super(options[:command] || "lbireoffice")
+        super(options[:command] || "libreoffice")
         home_dir = options[:home_dir] || "~/.chupatext"
         @home_dir = Pathname.new(home_dir).expand_path
       end
