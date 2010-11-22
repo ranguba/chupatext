@@ -137,7 +137,8 @@ PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [have_wv=no])
 AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
 PKG_CHECK_MODULES(GTK, gtk+-2.0, [have_gtk=yes], [have_gtk=no])
 PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [have_goffice=no])
-AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
+AC_CHECK_LIB([spreadsheet], [go_data_cache_get_type], [have_gnumeric=yes], [have_gnumeric=no])
+AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes" && test "$have_gnumeric" = "yes"])
 
 dnl **************************************************************
 dnl Check for Ruby
@@ -341,6 +342,7 @@ echo "  Poppler                          : $have_poppler"
 echo "  wvWare                           : $have_wv"
 echo "  GTK+                             : $have_gtk"
 echo "  GOffice                          : $have_goffice"
+echo "  Gnumeric                         : $have_gnumeric"
 echo "  Ruby                             : $ruby_available ($RUBY)"
 echo
 echo " Paths:"
