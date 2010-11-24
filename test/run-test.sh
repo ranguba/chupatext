@@ -115,7 +115,7 @@ if test "$NO_RUBY" != "yes" -a -n "$RUBY"; then
     if test x"$RUBY_DEBUG" = x"yes"; then
       RUBY_WRAPPER="${LIBTOOL} --mode=execute gdb --args"
     fi
-    $RUBY_WRAPPER $RUBY "$TEST_DIR/run-test.rb" $RUBY_TEST_ARGS "$@"
+    $RUBY_WRAPPER $RUBY "$test_dir/run-test.rb" $RUBY_TEST_ARGS "$@"
     ruby_result=$?
     no_test=0
 fi
