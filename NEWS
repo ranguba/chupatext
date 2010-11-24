@@ -2,6 +2,10 @@
 
 = NEWS --- The history of ChupaText
 
+== [release-0-6-0] 0.6.0: 2010-11-24
+
+  * Supported text extraction in hidden layer.
+
 == [release-0-5-0] 0.5.0: 2010-11-07
 
   * Organized chupatext command output.
