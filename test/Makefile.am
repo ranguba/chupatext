@@ -6,8 +6,10 @@ TESTS = run-test.sh
 TESTS_ENVIRONMENT =				\
 	NO_MAKE=yes				\
 	CUTTER="$(CUTTER)"			\
+	RUBY="$(RUBY)"				\
 	TOP_BUILD_DIR="$(top_builddir)"		\
-	TOP_SRC_DIR="$(top_srcdir)"
+	TOP_SRC_DIR="$(top_srcdir)"		\
+	TEST_DIR="$(testdir)"
 
 noinst_LTLIBRARIES =				\
 	suite_chupatext_test.la			\
