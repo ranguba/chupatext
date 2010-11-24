@@ -1,4 +1,4 @@
-ACLOCAL_AMFLAGS = -I m4 $ACLOCAL_OPTIONS
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = build data chupatext modules test license po misc doc apt
 
