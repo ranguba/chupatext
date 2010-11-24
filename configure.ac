@@ -259,7 +259,19 @@ dnl **************************************************************
 dnl Checks for RD2
 dnl **************************************************************
 
-AC_PATH_PROG(RD2, rd2, rd2-not-found)
+AC_ARG_WITH([rd2],
+            AS_HELP_STRING([--with-rd2=PATH],
+                           [rd2 path (default: auto-detect)]),
+            [RD2="$withval"])
+if test "$RD2" = "no"; then
+  RD2=rd2-not-found
+elif test "$RD2" = ""; then
+  AC_PATH_PROG(RD2, rd2, rd2-not-found)
+else
+  AC_CHECK_FILE([$RD2],
+                [],
+                [AC_PATH_PROG(RD2, $RD2, rd2-not-found)])
+fi
 AM_CONDITIONAL([HAVE_RD2], [test "$RD2" != "rd2-not-found"])
 
 dnl **************************************************************
