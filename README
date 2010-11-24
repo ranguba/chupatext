@@ -33,17 +33,18 @@ ChupaText is a text extraction utility. It can extracts text
 and metadata from PDF and office documents. You can use it
 vie library, command line and Web service.
 
-== Dependency libraries
+== Dependency libraries and softwares
 
-Must:
+Required:
   * GLib >= 2.24
+  * libgsf
 
 Optional:
-  * libgsf
   * Poppler
   * wv
-  * OpenOffice.org
-  * unoconv
+  * libgoffice
+  * Gnumeric
+  * LibreOffice, OpenOffice.org or unoconv
   * ruby >= 1.9.2
 
 == Get
