@@ -25,14 +25,14 @@ noinst_LTLIBRARIES =				\
 	test_utils.la				\
 	$(EMPTY)
 
-if HAVE_POPPLER_GLIB
+if SUPPORT_PDF
 noinst_LTLIBRARIES += test_pdf.la
 endif
 
-if HAVE_WV
+if SUPPORT_WORD
 noinst_LTLIBRARIES += test_word.la
 endif
-if HAVE_GOFFICE
+if SUPPORT_EXCEL
 noinst_LTLIBRARIES += test_excel.la
 endif
 

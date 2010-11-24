@@ -17,15 +17,20 @@ decomposers_LTLIBRARIES =
 
 decomposers_LTLIBRARIES += text.la
 decomposers_LTLIBRARIES += tar.la
+
+if SUPPORT_GZIP
 decomposers_LTLIBRARIES += gzip.la
+endif
+if SUPPORT_ZIP
 decomposers_LTLIBRARIES += zip.la
-if HAVE_POPPLER_GLIB
+endif
+if SUPPORT_PDF
 decomposers_LTLIBRARIES += pdf.la
 endif
-if HAVE_WV
+if SUPPORT_WORD
 decomposers_LTLIBRARIES += word.la
 endif
-if HAVE_GOFFICE
+if SUPPORT_EXCEL
 decomposers_LTLIBRARIES += excel.la
 endif
 

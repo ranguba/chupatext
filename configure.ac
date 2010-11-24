@@ -137,8 +137,10 @@ PKG_CHECK_MODULES(WV, wv-1.0, [have_wv=yes], [have_wv=no])
 AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
 PKG_CHECK_MODULES(GTK, gtk+-2.0, [have_gtk=yes], [have_gtk=no])
 PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [have_goffice=no])
-AC_CHECK_LIB([spreadsheet], [go_data_cache_get_type], [have_gnumeric=yes], [have_gnumeric=no])
-AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes" && test "$have_gnumeric" = "yes"])
+AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
+AC_CHECK_LIB([spreadsheet], [go_data_cache_get_type],
+             [have_gnumeric=yes], [have_gnumeric=no])
+AM_CONDITIONAL([HAVE_GNUMERIC], [test "$have_gnumeric" = "yes"])
 
 dnl **************************************************************
 dnl Check for Ruby
@@ -225,6 +227,33 @@ if test "$ruby_available" = "yes"; then
 fi
 
 AM_CONDITIONAL([HAVE_RUBY], [test "$ruby_available" = "yes"])
+
+dnl **************************************************************
+dnl Check for supported formats
+dnl **************************************************************
+if test "$ruby_available" = "yes"; then
+  supported_by_ruby_decomposer="dynamic"
+else
+  supported_by_ruby_decomposer="no"
+fi
+support_text="yes"
+support_word="$have_wv"
+AM_CONDITIONAL([SUPPORT_WORD], [test "$support_word" = "yes"])
+if test "$have_goffice" = "yes" -a "$have_gnumeric" = "yes"; then
+   support_excel=yes
+else
+   support_excel=no
+fi
+AM_CONDITIONAL([SUPPORT_EXCEL], [test "$support_excel" = "yes"])
+support_power_point="$supported_by_ruby_decomposer"
+support_pdf="$have_poppler"
+AM_CONDITIONAL([SUPPORT_PDF], [test "$support_pdf" = "yes"])
+support_html="$supported_by_ruby_decomposer"
+support_xml="$supported_by_ruby_decomposer"
+support_gzip="$have_gsf"
+AM_CONDITIONAL([SUPPORT_GZIP], [test "$support_gzip" = "yes"])
+support_zip="$have_gsf"
+AM_CONDITIONAL([SUPPORT_ZIP], [test "$support_zip" = "yes"])
 
 dnl **************************************************************
 dnl Checks for RD2
@@ -344,6 +373,17 @@ echo "  GTK+                             : $have_gtk"
 echo "  GOffice                          : $have_goffice"
 echo "  Gnumeric                         : $have_gnumeric"
 echo "  Ruby                             : $ruby_available ($RUBY)"
+echo
+echo " Supported formats:"
+echo "  Plain text                       : $support_text"
+echo "  Word                             : $support_word"
+echo "  Excel                            : $support_excel"
+echo "  PowerPoint                       : $support_power_point"
+echo "  PDF                              : $support_pdf"
+echo "  HTML                             : $support_html"
+echo "  XML                              : $support_xml"
+echo "  gzip                             : $support_gzip"
+echo "  ZIP                              : $support_zip"
 echo
 echo " Paths:"
 echo "  modules directory                : $modulesdir"
