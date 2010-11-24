@@ -110,7 +110,7 @@ m4_ifdef([AM_PATH_GLIB_2_0], [
 AC_MSG_CHECKING(for glib availablity)
 AC_MSG_RESULT($ac_glib_available)
 if test "$ac_glib_available" != "yes"; then
-    AC_MSG_ERROR([no glib available])
+  AC_MSG_ERROR([no glib available])
 fi
 
 dnl **************************************************************
