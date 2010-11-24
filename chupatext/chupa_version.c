@@ -27,6 +27,24 @@ chupa_version(void)
     return CHUPA_VERSION;
 }
 
+gint
+chupa_version_major(void)
+{
+    return CHUPA_VERSION_MAJOR;
+}
+
+gint
+chupa_version_minor(void)
+{
+    return CHUPA_VERSION_MINOR;
+}
+
+gint
+chupa_version_micro(void)
+{
+    return CHUPA_VERSION_MICRO;
+}
+
 const gchar *
 chupa_version_string(void)
 {

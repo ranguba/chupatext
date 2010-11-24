@@ -36,10 +36,18 @@ chupa_ruby_init(void)
 
     rb_define_const(mChupa, "VERSION",
                     rb_ary_new3(3,
+                                INT2FIX(chupa_version_major()),
+                                INT2FIX(chupa_version_minor()),
+                                INT2FIX(chupa_version_micro())));
+    rb_define_const(mChupa, "VERSION_DESCRIPTION",
+                    CSTR2RVAL(chupa_version_description()));
+
+    rb_define_const(mChupa, "BUILD_VERSION",
+                    rb_ary_new3(3,
                                 INT2FIX(CHUPA_VERSION_MAJOR),
                                 INT2FIX(CHUPA_VERSION_MINOR),
                                 INT2FIX(CHUPA_VERSION_MICRO)));
-    rb_define_const(mChupa, "VERSION_DESCRIPTION",
+    rb_define_const(mChupa, "BUILD_VERSION_DESCRIPTION",
                     CSTR2RVAL(CHUPA_VERSION_DESCRIPTION));
 
     chupa_ruby_types_init(mChupa);

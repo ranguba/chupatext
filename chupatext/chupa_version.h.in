@@ -127,6 +127,9 @@ G_BEGIN_DECLS
       CHUPA_VERSION_MICRO >= (micro)))
 
 gint         chupa_version             (void);
+gint         chupa_version_major       (void);
+gint         chupa_version_minor       (void);
+gint         chupa_version_micro       (void);
 const gchar *chupa_version_string      (void);
 gint         chupa_n_commits           (void);
 gint         chupa_release_date        (void);
