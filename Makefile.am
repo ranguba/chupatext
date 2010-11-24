@@ -72,6 +72,25 @@ upload-doc:
 tag:
 	git tag -a ${VERSION} -m "release ${VERSION}!!!"
 
+update-latest-release:
+	@if test -z "$(OLD_RELEASE)"; then	\
+	  echo "\$$(OLD_RELEASE) is missing";	\
+	  exit 1;				\
+	fi
+	@if test -z "$(OLD_RELEASE_DATE)"; then		\
+	  echo "\$$(OLD_RELEASE_DATE) is missing";	\
+	  exit 1;					\
+	fi
+	@if test -z "$(NEW_RELEASE_DATE)"; then		\
+	  echo "\$$(NEW_RELEASE_DATE) is missing";	\
+	  exit 1;					\
+	fi
+	cd $(top_srcdir) &&					\
+	  misc/update-latest-release.rb				\
+	  $(PACKAGE) $(OLD_RELEASE) $(OLD_RELEASE_DATE)		\
+	  $(VERSION) $(NEW_RELEASE_DATE)			\
+	  debian/changelog
+
 release: dist
 	rubyforge add_release $(RUBYFORGE_PROJECT_NAME) $(PACKAGE) \
 	  $(VERSION) $(PACKAGE)-$(VERSION).tar.gz
