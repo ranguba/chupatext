@@ -12,10 +12,4 @@ run()
 cutter_svn_repository=https://cutter.svn.sourceforge.net/svnroot/cutter
 run svn export --force $cutter_svn_repository/cutter/trunk/misc
 
-run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
-run ${LIBTOOLIZE:-libtoolize} --copy --force
-run ${INTLTOOLIZE:-intltoolize} --force --copy
-#run ${GTKDOCIZE:-gtkdocize} --copy
-run ${AUTOHEADER:-autoheader}
-run ${AUTOMAKE:-automake} --add-missing --foreign --copy
-run ${AUTOCONF:-autoconf}
+run ${AUTORECONF:-autoreconf} --install --force
