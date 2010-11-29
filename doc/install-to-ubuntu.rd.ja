@@ -24,7 +24,7 @@ Lucid Lynxの場合は以下のapt lineを書いた
   deb http://groonga.rubyforge.org/ubuntu/ lucid main
   deb-src http://groonga.rubyforge.org/ubuntu/ lucid main
 
-Maverickの場合は以下のapt lineを書いた
+Maverick Meerkatの場合は以下のapt lineを書いた
 /etc/apt/sources.list.d/chupatext.listを作成してください。
 
 /etc/apt/sources.list.d/chupatext.list:

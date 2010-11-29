@@ -16,14 +16,14 @@ Lynx/Maverick Meerkat i386/amd64. If you need a package for another
 environment, you can request on ((<mailing
 list|URL:https://lists.sourceforge.net/lists/listinfo/chupatext-users-en>)).
 
-Here are apt lines for for Lucid. We put them into
+Here are apt lines for for Lucid Lynx. We put them into
 /etc/apt/sources.list.d/chupatext.list.
 
 /etc/apt/sources.list.d/chupatext.list:
   deb http://groonga.rubyforge.org/ubuntu/ lucid main
   deb-src http://groonga.rubyforge.org/ubuntu/ lucid main
 
-Here are apt lines for for Maverick. We put them into
+Here are apt lines for for Maverick Reerkat. We put them into
 /etc/apt/sources.list.d/chupatext.list.
 
 /etc/apt/sources.list.d/chupatext.list:
