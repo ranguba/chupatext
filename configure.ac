@@ -138,8 +138,11 @@ AM_CONDITIONAL([HAVE_WV], [test "$have_wv" = "yes"])
 PKG_CHECK_MODULES(GTK, gtk+-2.0, [have_gtk=yes], [have_gtk=no])
 PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8, [have_goffice=yes], [have_goffice=no])
 AM_CONDITIONAL([HAVE_GOFFICE], [test "$have_goffice" = "yes"])
+LIBS_SAVE="$LIBS"
+LIBS="$LIBS $GOFFICE_LIBS"
 AC_CHECK_LIB([spreadsheet], [go_data_cache_get_type],
              [have_gnumeric=yes], [have_gnumeric=no])
+LIBS="$LIBS_SAVE"
 AM_CONDITIONAL([HAVE_GNUMERIC], [test "$have_gnumeric" = "yes"])
 
 dnl **************************************************************
