@@ -204,13 +204,30 @@ EOS
       end
 
       def convertor
-        [libre_office("libreoffice"),
-         libre_office("/opt/libreoffice.org3/program/soffice"),
-         open_office("ooffice"),
-         open_office("soffice"),
-         open_office("/opt/openoffice.org3/program/soffice"),
-         unoconv].find do |command|
-          command.exist?
+        converters = libre_office_converters + open_office_converters
+        converters << unoconv
+        converters.find do |converter|
+          converter.exist?
+        end
+      end
+
+      private
+      def libre_office_converters
+        libre_office_paths = [ENV["LIBREOFFICE"],
+                              "libreoffice",
+                              "/opt/libreoffice.org3/program/soffice"]
+        libre_office_paths.compact.collect do |path|
+          libre_office(path)
+        end
+      end
+
+      def open_office_converters
+        open_office_paths = [ENV["OOFFICE"],
+                             "ooffice",
+                             "soffice",
+                             "/opt/openoffice.org3/program/soffice"]
+        open_office_paths.compact.collect do |path|
+          open_office(path)
         end
       end
     end
