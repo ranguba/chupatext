@@ -70,3 +70,4 @@ strace.out
 /doc/reference/install-to-*
 /doc/reference/*.bak
 /doc/reference/tmp/
+/acinclude.m4
