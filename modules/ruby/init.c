@@ -51,6 +51,7 @@ chupa_ruby_init(void)
                     CSTR2RVAL(CHUPA_VERSION_DESCRIPTION));
 
     chupa_ruby_types_init(mChupa);
+    chupa_ruby_logger_init(mChupa);
     chupa_ruby_metadata_init(mChupa);
     chupa_ruby_data_init(mChupa);
     chupa_ruby_feeder_init(mChupa);

@@ -28,5 +28,6 @@
 #include <chupatext/chupa_feeder.h>
 #include <chupatext/chupa_decomposer.h>
 #include <chupatext/chupa_utils.h>
+#include <chupatext/chupa_enum_types.h>
 
 #endif  /* CHUPATEXT_H */

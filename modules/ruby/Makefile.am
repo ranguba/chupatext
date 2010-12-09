@@ -24,6 +24,7 @@ libchuparuby_la_SOURCES =			\
 	g_memory_input_stream.c			\
 	utils.c					\
 	types.c					\
+	logger.c				\
 	chupa_ruby.h
 libchuparuby_la_LIBADD =				\
 	$(RUBY_LDFLAGS)					\
