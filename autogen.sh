@@ -11,8 +11,11 @@ run()
 
 cutter_svn_repository=https://cutter.svn.sourceforge.net/svnroot/cutter
 run svn export --force $cutter_svn_repository/cutter/trunk/misc
-
 mkdir -p m4
-run intltoolize --copy --force
-run aclocal --output acinclude.m4 ${ACLOCAL_ARGS}
-run ${AUTORECONF:-autoreconf} --install --force
+run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
+run ${LIBTOOLIZE:-libtoolize} --copy --force
+run ${INTLTOOLIZE:-intltoolize} --force --copy
+#run ${GTKDOCIZE:-gtkdocize} --copy
+run ${AUTOHEADER:-autoheader}
+run ${AUTOMAKE:-automake} --add-missing --foreign --copy
+run ${AUTOCONF:-autoconf}
