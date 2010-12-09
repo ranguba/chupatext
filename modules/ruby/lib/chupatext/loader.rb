@@ -30,20 +30,20 @@ module Chupa
         chupa_decomposer_directory = path + "chupatext" + "decomposers"
         next unless chupa_decomposer_directory.exist?
         Pathname.glob((chupa_decomposer_directory + "*.rb").to_s).each do |file|
-          require file.relative_path_from(path).to_s.gsub(/\.rb\Z/, '')
+          decomposer_file = file.relative_path_from(path).to_s.gsub(/\.rb\Z/, '')
+          begin
+            require(decomposer_file)
+          rescue LoadError
+            Logger.error($!)
+          end
         end
       end
-    rescue Exception
-      puts "#{$!.class}:#{$!.message}"
-      puts $@
-      raise
     end
 
     def decomposer(mime_type)
       BaseDecomposer.decomposers[mime_type]
     rescue Exception
-      puts "#{$!.class}:#{$!.message}"
-      puts $@
+      Logger.error($!)
       raise
     end
 
