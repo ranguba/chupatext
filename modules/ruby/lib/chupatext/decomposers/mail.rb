@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-require 'rmail'
+require 'mail'
 require 'nkf'
 
 class Chupa::Mail < Chupa::BaseDecomposer
@@ -23,18 +23,11 @@ class Chupa::Mail < Chupa::BaseDecomposer
 
   def decompose
     data = @input.read
-    message = RMail::Parser.read(data)
+    message = Mail.read_from_string(data)
 
-    metadata.title = NKF.nkf("-w80", message.header.subject)
-    from = message.header.from.collect(&:format).join(", ")
-    metadata.author = NKF.nkf("-w80", from)
-    if message.body.is_a? Array
-      # FIXME: do not handle multipart for now
-      body = message.body[0]
-    else
-      body = message.body
-    end
-    body = NKF.nkf("-w80", body)
+    metadata.title = NKF.nkf("-w80", message.header["subject"].value)
+    metadata.author = NKF.nkf("-w80", message.header["from"].value)
+    body = NKF.nkf("-w80", message.body.raw_source)
     metadata.content_length = body.bytesize
     text(body)
   end
