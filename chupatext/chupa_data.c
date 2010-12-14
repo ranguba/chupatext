@@ -161,6 +161,11 @@ dispose(GObject *object)
         priv->metadata = NULL;
     }
 
+    if (priv->stream) {
+        g_object_unref(priv->stream);
+        priv->stream = NULL;
+    }
+
     if (priv->error) {
         g_error_free(priv->error);
         priv->error = NULL;
