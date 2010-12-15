@@ -103,11 +103,11 @@ read_head_data(GInputStream *stream, guchar *buffer, gsize buffer_size,
     return TRUE;
 }
 
-static const gchar *
+static gchar *
 guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
 {
     gchar *content_type = NULL;
-    const gchar *mime_type = NULL;
+    gchar *mime_type = NULL;
     guchar data[1024];
     gsize data_length;
 
@@ -140,7 +140,7 @@ static void
 constructed(GObject *object)
 {
     ChupaDataPrivate *priv;
-    const gchar *mime_type;
+    gchar *mime_type;
     const gchar *filename = NULL;
 
     priv = CHUPA_DATA_GET_PRIVATE(object);
@@ -152,6 +152,7 @@ constructed(GObject *object)
     filename = chupa_metadata_get_string(priv->metadata, meta_filename, NULL);
     mime_type = guess_mime_type(filename, priv->stream, NULL);
     chupa_metadata_set_string(priv->metadata, "mime-type", mime_type);
+    g_free(mime_type);
 }
 
 static void
