@@ -106,7 +106,8 @@ read_head_data(GInputStream *stream, guchar *buffer, gsize buffer_size,
 static const gchar *
 guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
 {
-    const char *content_type = NULL;
+    gchar *content_type = NULL;
+    const gchar *mime_type = NULL;
     guchar data[1024];
     gsize data_length;
 
@@ -116,7 +117,11 @@ guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
     if (!content_type)
         content_type = g_content_type_guess(name, NULL, 0, uncertain);
 
-    return g_content_type_get_mime_type(content_type);
+    mime_type = g_content_type_get_mime_type(content_type);
+
+    g_free(content_type);
+
+    return mime_type;
 }
 
 static void
