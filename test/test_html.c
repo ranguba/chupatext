@@ -28,6 +28,8 @@ void test_body_euc_jp_without_content_type(void);
 void test_title_ascii(void);
 void test_title_utf8(void);
 void test_title_euc_jp(void);
+void test_title_utf8_without_content_type(void);
+void test_title_euc_jp_without_content_type(void);
 void test_charset_none(void);
 void test_charset_utf8(void);
 void test_charset_euc_jp(void);
@@ -99,6 +101,20 @@ test_title_euc_jp(void)
 {
     cut_assert_equal_string("サンプルHTMLファイル",
                             title("euc_jp.html"));
+}
+
+void
+test_title_utf8_without_content_type(void)
+{
+    cut_assert_equal_string("サンプルHTMLファイル",
+                            title("utf8_without_content_type.html"));
+}
+
+void
+test_title_euc_jp_without_content_type(void)
+{
+    cut_assert_equal_string("サンプルHTMLファイル",
+                            title("euc_jp_without_content_type.html"));
 }
 
 void
