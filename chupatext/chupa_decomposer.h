@@ -59,6 +59,8 @@ struct _ChupaDecomposerClass
 };
 
 typedef enum {
+    CHUPA_DECOMPOSER_ERROR_NONE,
+    CHUPA_DECOMPOSER_ERROR_UNKNOWN,
     CHUPA_DECOMPOSER_ERROR_INIT,
     CHUPA_DECOMPOSER_ERROR_FEED
 } ChupaDecomposerError;
