@@ -30,10 +30,10 @@
 #include <rbgobject.h>
 
 #ifdef RUBY_API_VERSION_CODE
-#define RUBY_CHECK_VERSION(major, minor, teeny) \
+#  define RUBY_CHECK_VERSION(major, minor, teeny) \
     (major * 10000 + minor * 100 + teeny) >= RUBY_API_VERSION_CODE
 #else
-#define RUBY_CHECK_VERSION(major, minor, teeny)	0
+#  define RUBY_CHECK_VERSION(major, minor, teeny)	0
 #endif
 
 void     chupa_ruby_init                       (void);
