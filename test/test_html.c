@@ -51,12 +51,8 @@ test_body_ascii(void)
 void
 test_title_ascii(void)
 {
-    ChupaMetadata *metadata;
-
-    metadata = chupa_test_metadata_fixture("ascii_only.html");
-    cut_assert_not_null(metadata);
     cut_assert_equal_string("Sample HTML File",
-                            chupa_metadata_get_string(metadata, "title", NULL));
+                            title("ascii_only.html"));
 }
 
 void

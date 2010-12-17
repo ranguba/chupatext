@@ -134,3 +134,13 @@ chupa_test_metadata_fixture(const gchar *fixture)
     data = chupa_test_decomposer_from_fixture(fixture);
     return chupa_test_decompose_metadata(data);
 }
+
+const gchar *
+chupa_test_get_title_fixture(const gchar *path)
+{
+    ChupaMetadata *metadata;
+
+    metadata = chupa_test_metadata_fixture(path);
+    cut_assert_not_null(metadata);
+    return chupa_metadata_get_title(metadata);
+}
