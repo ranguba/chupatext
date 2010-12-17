@@ -152,7 +152,6 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaData *data, GError **error)
     } else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
         result = chupa_decomposer_feed(dec, feeder, data, error);
         g_object_unref(dec);
-        result = TRUE;
     } else {
         g_set_error(error,
                     CHUPA_FEEDER_ERROR,
