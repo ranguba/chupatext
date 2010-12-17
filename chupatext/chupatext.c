@@ -111,11 +111,9 @@ output_uri_header(ChupaMetadata *metadata, FILE *output)
 
     uri = g_filename_to_uri(path, NULL, &conversion_error);
     if (conversion_error) {
-        g_printerr("failed to convert path to URI: <%s>: <%s>(%d): <%s>",
-                   path,
-                   g_quark_to_string(conversion_error->domain),
-                   conversion_error->code,
-                   conversion_error->message);
+        chupa_log_g_error(conversion_error,
+                          "[path][convert][URI][fail]: <%s>",
+                          path);
         g_error_free(conversion_error);
     } else {
         fprintf(output, "URI: %s\n", uri);
@@ -266,7 +264,7 @@ main(int argc, char **argv)
     int i;
     int rc = EXIT_SUCCESS;
     ChupaFeeder *feeder;
-    GError *err = NULL;
+    GError *error = NULL;
     gboolean json = FALSE;
     gboolean ignore_errors = FALSE;
     gboolean version = FALSE;
@@ -299,9 +297,9 @@ main(int argc, char **argv)
     g_option_context_set_description(ctx, "A text and metadata extractor.");
     g_option_context_set_help_enabled(ctx, TRUE);
     g_option_context_add_main_entries(ctx, opts, NULL);
-    if (!g_option_context_parse(ctx, &argc, &argv, &err)) {
-        g_printerr("Failed to initialize: %s\n", err->message);
-        g_error_free(err);
+    if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
+        chupa_log_g_error(error, "[initialize][fail]");
+        g_error_free(error);
         return EXIT_FAILURE;
     }
     if (version) {
@@ -319,19 +317,24 @@ main(int argc, char **argv)
     for (i = 0; i < argc; ++i) {
         GFile *file;
         ChupaData *data;
+        error = NULL;
         file = g_file_new_for_commandline_arg(argv[i]);
-        data = chupa_data_new_from_file(file, NULL, &err);
+        data = chupa_data_new_from_file(file, NULL, &error);
         g_object_unref(file);
-        if (!data || !chupa_feeder_feed(feeder, data, &err)) {
-            g_printerr("%s: %s\n", argv[0], err->message);
-            g_error_free(err);
-            err = NULL;
-            if (!data || !ignore_errors) {
-                rc = EXIT_FAILURE;
-                break;
-            }
+        if (!data) {
+            chupa_log_g_error(error, "[data][new][error]: <%s>", argv[i]);
+            g_error_free(error);
+            continue;
+        }
+        if (!chupa_feeder_feed(feeder, data, &error)) {
+            chupa_log_g_error(error, "[feed][error]: <%s>", argv[i]);
+            g_error_free(error);
         }
         g_object_unref(data);
+        if (error && !ignore_errors) {
+            rc = EXIT_FAILURE;
+            break;
+        }
     }
     g_object_unref(feeder);
     chupa_quit();
