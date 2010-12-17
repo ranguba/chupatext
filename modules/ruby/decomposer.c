@@ -20,12 +20,16 @@
 
 #include "chupa_ruby.h"
 
+CHUPA_RUBY_DEF_EXCEPTION_METHODS(Decomposer, DECOMPOSER);
+
 VALUE
-chupa_ruby_decomposer_init(VALUE cChupa, VALUE eChupaError)
+chupa_ruby_decomposer_init(VALUE mChupa, VALUE eChupaError)
 {
     VALUE cDecomposer;
 
-    cDecomposer = G_DEF_CLASS(CHUPA_TYPE_DECOMPOSER, "Decomposer", cChupa);
+    cDecomposer = G_DEF_CLASS(CHUPA_TYPE_DECOMPOSER, "Decomposer", mChupa);
+
+    CHUPA_RUBY_DEF_EXCEPTION_CLASS(Decomposer, DECOMPOSER);
 
     return cDecomposer;
 }
