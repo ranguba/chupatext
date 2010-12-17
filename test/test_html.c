@@ -21,9 +21,11 @@
 #include "chupa_test_util.h"
 
 void test_body_ascii(void);
-void test_title_ascii(void);
 void test_body_utf8(void);
 void test_body_euc_jp(void);
+void test_title_ascii(void);
+void test_title_utf8(void);
+void test_title_euc_jp(void);
 void test_charset_none(void);
 void test_charset_utf8(void);
 void test_charset_euc_jp(void);
@@ -49,13 +51,6 @@ test_body_ascii(void)
 }
 
 void
-test_title_ascii(void)
-{
-    cut_assert_equal_string("Sample HTML File",
-                            title("ascii_only.html"));
-}
-
-void
 test_body_utf8(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
@@ -67,6 +62,27 @@ test_body_euc_jp(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
                             decompose("euc_jp.html"));
+}
+
+void
+test_title_ascii(void)
+{
+    cut_assert_equal_string("Sample HTML File",
+                            title("ascii_only.html"));
+}
+
+void
+test_title_utf8(void)
+{
+    cut_assert_equal_string("サンプルHTMLファイル",
+                            title("utf8.html"));
+}
+
+void
+test_title_euc_jp(void)
+{
+    cut_assert_equal_string("サンプルHTMLファイル",
+                            title("euc_jp.html"));
 }
 
 void
