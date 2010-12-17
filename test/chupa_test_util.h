@@ -27,12 +27,15 @@
 #include <gcutter.h>
 #include <cutter/cut-run-context.h>
 
+#define decompose(path)            chupa_test_decompose_fixture(path)
+#define decompose_data(data, size) chupa_test_decompose_data(data, size)
+
 void           chupa_test_setup                   (const gchar *type);
 void           chupa_test_teardown                (void);
 const gchar   *chupa_test_decompose_fixture       (const gchar *fixture);
-const gchar   *chupa_test_decompose_data          (const gchar *text,
+const gchar   *chupa_test_decompose_data          (const gchar *data,
                                                    gsize        size);
-ChupaData     *chupa_test_decomposer_from_data    (const gchar *text,
+ChupaData     *chupa_test_decomposer_from_data    (const gchar *data,
                                                    gsize        size);
 ChupaData     *chupa_test_decomposer_from_fixture (const gchar *fixture);
 const gchar   *chupa_test_decompose_all           (ChupaData   *text_input);

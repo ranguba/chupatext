@@ -41,13 +41,11 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_fixture chupa_test_decompose_fixture
-
 void
 test_decompose_html(void)
 {
     cut_assert_equal_string("This is a sample.",
-                            decompose_fixture("sample.html"));
+                            decompose("sample.html"));
 }
 
 void
@@ -65,14 +63,14 @@ void
 test_decompose_html_utf8(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
-                            decompose_fixture("sample_utf8.html"));
+                            decompose("sample_utf8.html"));
 }
 
 void
 test_decompose_html_euc_jp(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
-                            decompose_fixture("sample_euc_jp.html"));
+                            decompose("sample_euc_jp.html"));
 }
 
 void

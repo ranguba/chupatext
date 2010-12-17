@@ -34,10 +34,8 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_tar chupa_test_decompose_fixture
-
 void
 test_decompose_tar(void)
 {
-    cut_assert_equal_string("sample\n", decompose_tar("sample.tar"));
+    cut_assert_equal_string("sample\n", decompose("sample.tar"));
 }

@@ -37,12 +37,10 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_pdf chupa_test_decompose_fixture
-
 void
 test_decompose_pdf(void)
 {
-    cut_assert_equal_string("sample\n", decompose_pdf("sample.pdf"));
+    cut_assert_equal_string("sample\n", decompose("sample.pdf"));
 }
 
 void
@@ -51,7 +49,7 @@ test_decompose_pdf_multi_pages(void)
     cut_assert_equal_string("page1\n\f"
                             "2 ページ目\n\f"
                             "page3\n",
-                            decompose_pdf("sample_multi_pages.pdf"));
+                            decompose("sample_multi_pages.pdf"));
 }
 
 void

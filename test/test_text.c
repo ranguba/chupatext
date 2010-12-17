@@ -37,13 +37,11 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_text chupa_test_decompose_data
-
 void
 test_decompose_text_plain (void)
 {
     static const char plain_text[] = "plain text\n";
 
     cut_assert_equal_string(plain_text,
-                            decompose_text(plain_text, sizeof(plain_text) - 1));
+                            decompose_data(plain_text, sizeof(plain_text) - 1));
 }

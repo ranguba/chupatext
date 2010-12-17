@@ -35,23 +35,23 @@ chupa_test_teardown(void)
 #define TAKE_STRING(str) cut_take_string(str)
 
 const gchar *
-chupa_test_decompose_data(const gchar *text, gsize size)
+chupa_test_decompose_data(const gchar *data, gsize size)
 {
-    ChupaData *data;
+    ChupaData *chupa_data;
 
-    data = chupa_test_decomposer_from_data(text, size);
-    return chupa_test_decompose_all(data);
+    chupa_data = chupa_test_decomposer_from_data(data, size);
+    return chupa_test_decompose_all(chupa_data);
 }
 
 ChupaData *
-chupa_test_decomposer_from_data(const gchar *text, gsize size)
+chupa_test_decomposer_from_data(const gchar *data, gsize size)
 {
-    ChupaData *data;
+    ChupaData *chupa_data;
     GInputStream *memory;
 
-    TAKE_OBJECT(memory = g_memory_input_stream_new_from_data(text, size, NULL));
-    TAKE_OBJECT(data = chupa_data_new(memory, NULL));
-    return data;
+    TAKE_OBJECT(memory = g_memory_input_stream_new_from_data(data, size, NULL));
+    TAKE_OBJECT(chupa_data = chupa_data_new(memory, NULL));
+    return chupa_data;
 }
 
 const gchar *

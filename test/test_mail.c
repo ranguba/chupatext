@@ -35,13 +35,11 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_fixture chupa_test_decompose_fixture
-
 void
 test_decompose_mail(void)
 {
     cut_assert_equal_string("This is a test mail.",
-                            decompose_fixture("sample.eml"));
+                            decompose("sample.eml"));
 }
 
 void

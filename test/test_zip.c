@@ -34,10 +34,8 @@ teardown(void)
     chupa_test_teardown();
 }
 
-#define decompose_zip chupa_test_decompose_fixture
-
 void
 test_decompose_zip(void)
 {
-    cut_assert_equal_string("sample\n", decompose_zip("sample.zip"));
+    cut_assert_equal_string("sample\n", decompose("sample.zip"));
 }

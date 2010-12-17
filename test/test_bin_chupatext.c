@@ -74,11 +74,8 @@ run_process(GCutProcess *process)
 
 #define CHUPATEXT_COMMAND "./chupatext/chupatext"
 
-static const gchar *
-fixture_path(const gchar *fixture_file)
-{
-    return cut_take_string(cut_build_fixture_data_path(fixture_file, NULL));
-}
+#define fixture_path(...) \
+    cut_take_string(cut_build_fixture_data_path(__VA_ARGS__, NULL));
 
 static const gchar *
 run(const gchar *path)
@@ -145,7 +142,7 @@ test_html(void)
     const gchar *path, *uri;
     GError *error = NULL;
 
-    path = fixture_path("sample.html");
+    path = fixture_path("html", "sample.html");
     uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
     gcut_assert_error(error);
     cut_assert_equal_string(
