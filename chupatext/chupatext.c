@@ -323,7 +323,7 @@ main(int argc, char **argv)
         data = chupa_data_new_from_file(file, NULL, &err);
         g_object_unref(file);
         if (!data || !chupa_feeder_feed(feeder, data, &err)) {
-            fprintf(stderr, "%s: %s\n", argv[0], err->message);
+            g_printerr("%s: %s\n", argv[0], err->message);
             g_error_free(err);
             err = NULL;
             if (!data || !ignore_errors) {
