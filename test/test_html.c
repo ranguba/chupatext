@@ -31,9 +31,12 @@ void test_title_euc_jp(void);
 void test_title_utf8_without_content_type(void);
 void test_title_euc_jp_without_content_type(void);
 void test_title_koi8_r_between_xml_encoding_and_content_type(void);
-void test_charset_none(void);
-void test_charset_utf8(void);
-void test_charset_euc_jp(void);
+void test_original_encoding_none(void);
+void test_original_encoding_utf8(void);
+void test_original_encoding_euc_jp(void);
+void test_original_encoding_utf8_without_content_type(void);
+void test_original_encoding_euc_jp_without_content_type(void);
+void test_original_encoding_koi8_r_between_xml_encoding_and_content_type(void);
 
 void
 setup(void)
@@ -126,34 +129,44 @@ test_title_koi8_r_between_xml_encoding_and_content_type(void)
 }
 
 void
-test_charset_none(void)
+test_original_encoding_none(void)
 {
-    ChupaMetadata *metadata;
-
-    metadata = chupa_test_metadata_fixture("ascii_only.html");
-    cut_assert_not_null(metadata);
     cut_assert_equal_string(NULL,
-                            chupa_metadata_get_original_encoding(metadata));
+                            original_encoding("ascii_only.html"));
 }
 
 void
-test_charset_utf8(void)
+test_original_encoding_utf8(void)
 {
-    ChupaMetadata *metadata;
-
-    metadata = chupa_test_metadata_fixture("utf8.html");
-    cut_assert_not_null(metadata);
     cut_assert_equal_string("utf-8",
-                            chupa_metadata_get_original_encoding(metadata));
+                            original_encoding("utf8.html"));
 }
 
 void
-test_charset_euc_jp(void)
+test_original_encoding_euc_jp(void)
 {
-    ChupaMetadata *metadata;
-
-    metadata = chupa_test_metadata_fixture("euc_jp.html");
-    cut_assert_not_null(metadata);
     cut_assert_equal_string("euc-jp",
-                            chupa_metadata_get_original_encoding(metadata));
+                            original_encoding("euc_jp.html"));
+}
+
+void
+test_original_encoding_utf8_without_content_type(void)
+{
+    cut_assert_equal_string("utf-8",
+                            original_encoding("utf8_without_content_type.html"));
+}
+
+void
+test_original_encoding_euc_jp_without_content_type(void)
+{
+    cut_assert_equal_string(
+        "euc-jp",
+        original_encoding("euc_jp_without_content_type.html"));
+}
+
+void
+test_original_encoding_koi8_r_between_xml_encoding_and_content_type(void)
+{
+    cut_assert_equal_string("koi8-r",
+                            original_encoding("gnu_philosophy.ru.html"));
 }

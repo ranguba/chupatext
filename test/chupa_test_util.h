@@ -30,6 +30,7 @@
 #define decompose(path)            chupa_test_decompose_fixture(path)
 #define decompose_data(data, size) chupa_test_decompose_data(data, size)
 #define title(path)                chupa_test_get_title_fixture(path)
+#define original_encoding(path)    chupa_test_get_original_encoding_fixture(path)
 
 void           chupa_test_setup                   (const gchar *type);
 void           chupa_test_teardown                (void);
@@ -44,5 +45,7 @@ ChupaMetadata *chupa_test_decompose_metadata      (ChupaData   *text_input);
 ChupaMetadata *chupa_test_metadata_fixture        (const gchar *fixture);
 
 const gchar   *chupa_test_get_title_fixture       (const gchar *fixture);
+const gchar   *chupa_test_get_original_encoding_fixture
+                                                  (const gchar *fixture);
 
 #endif

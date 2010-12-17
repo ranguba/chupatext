@@ -144,3 +144,13 @@ chupa_test_get_title_fixture(const gchar *path)
     cut_assert_not_null(metadata);
     return chupa_metadata_get_title(metadata);
 }
+
+const gchar *
+chupa_test_get_original_encoding_fixture(const gchar *path)
+{
+    ChupaMetadata *metadata;
+
+    metadata = chupa_test_metadata_fixture(path);
+    cut_assert_not_null(metadata);
+    return chupa_metadata_get_original_encoding(metadata);
+}
