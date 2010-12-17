@@ -30,10 +30,10 @@ void test_title_utf8(void);
 void test_title_euc_jp(void);
 void test_title_utf8_without_content_type(void);
 void test_title_euc_jp_without_content_type(void);
+void test_title_koi8_r_between_xml_encoding_and_content_type(void);
 void test_charset_none(void);
 void test_charset_utf8(void);
 void test_charset_euc_jp(void);
-void test_non_ascii_text_before_charset(void);
 
 void
 setup(void)
@@ -118,6 +118,14 @@ test_title_euc_jp_without_content_type(void)
 }
 
 void
+test_title_koi8_r_between_xml_encoding_and_content_type(void)
+{
+    cut_assert_equal_string("Философия Проекта GNU - "
+                            "Фонд Свободного ПО (FSF)",
+                            title("gnu_philosophy.ru.html"));
+}
+
+void
 test_charset_none(void)
 {
     ChupaMetadata *metadata;
@@ -148,16 +156,4 @@ test_charset_euc_jp(void)
     cut_assert_not_null(metadata);
     cut_assert_equal_string("euc-jp",
                             chupa_metadata_get_original_encoding(metadata));
-}
-
-void
-test_non_ascii_text_before_charset(void)
-{
-    ChupaMetadata *metadata;
-
-    metadata = chupa_test_metadata_fixture("gnu_philosophy.ru.html");
-    cut_assert_not_null(metadata);
-    cut_assert_equal_string("Философия Проекта GNU - "
-                            "Фонд Свободного ПО (FSF)",
-                            chupa_metadata_get_string(metadata, "title", NULL));
 }
