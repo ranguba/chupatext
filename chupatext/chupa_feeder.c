@@ -19,9 +19,14 @@
  *  MA  02110-1301  USA
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "chupa_feeder.h"
 #include "chupa_decomposer.h"
 #include "chupa_dispatcher.h"
+#include "chupa_logger.h"
 
 #define CHUPA_FEEDER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -150,6 +155,8 @@ chupa_feeder_feed(ChupaFeeder *feeder, ChupaData *data, GError **error)
                     "can't determin mime-type");
         result = FALSE;
     } else if ((dec = chupa_dispatcher_dispatch(priv->dispatcher, mime_type))) {
+        chupa_info("[feeder][dispatch][%s][%s]",
+                   mime_type, G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(dec)));
         result = chupa_decomposer_feed(dec, feeder, data, error);
         g_object_unref(dec);
     } else {
