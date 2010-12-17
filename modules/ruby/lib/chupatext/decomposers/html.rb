@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
+require 'nkf'
 require 'nokogiri'
 
 class Chupa::HTML < Chupa::BaseDecomposer
@@ -26,9 +27,8 @@ class Chupa::HTML < Chupa::BaseDecomposer
     if title = (doc % "head/title")
       metadata.title = title.text
     end
-    if encoding = doc.encoding
-      metadata.original_encoding = encoding.downcase
-    end
+    encoding = doc.encoding
+    metadata.original_encoding = encoding.downcase if encoding
     metadata.encoding = "utf-8"
     if body = (doc % "body")
       body = body.text.gsub(/^\s+|\s+$/, '')
@@ -44,6 +44,27 @@ class Chupa::HTML < Chupa::BaseDecomposer
     case data
     when /\A<\?xml.+?encoding=(['"])([a-zA-Z0-9_-]+)\1/
       $2
+    when /\A<head\s.+?http-equiv=(['"])content-type\1\s.+?\/?>/im
+      nil
+    else
+      guess_encoding_nkf(data)
+    end
+  end
+
+  def guess_encoding_nkf(data)
+    case NKF.guess(data)
+    when NKF::EUC
+      "EUC-JP"
+    when NKF::JIS
+      "ISO-2022-JP"
+    when NKF::SJIS
+      "Shift_JIS"
+    when NKF::UTF8
+      "UTF-8"
+    when NKF::UTF16
+      "UTF-16"
+    when NKF::UTF32
+      "UTF-32"
     else
       nil
     end
