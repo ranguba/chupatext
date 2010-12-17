@@ -142,19 +142,19 @@ test_html(void)
     const gchar *path, *uri;
     GError *error = NULL;
 
-    path = fixture_path("html", "sample.html");
+    path = fixture_path("html", "ascii_only.html");
     uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
     gcut_assert_error(error);
     cut_assert_equal_string(
         cut_take_printf("URI: %s\n"
                         "Content-Type: text/plain; charset=UTF-8\n"
                         "Title: Sample HTML File\n"
-                        "Original-Filename: sample.html\n"
+                        "Original-Filename: ascii_only.html\n"
                         "Original-Content-Length: 120\n"
                         "Content-Length: 17\n"
                         "Original-Content-Type: text/html\n"
                         "Original-Content-Disposition: inline;"
-                        " filename=sample.html;"
+                        " filename=ascii_only.html;"
                         " size=120\n"
                         "\n"
                         "This is a sample."
