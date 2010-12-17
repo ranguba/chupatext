@@ -312,7 +312,13 @@ factory_init_protect(VALUE arg)
 static void
 factory_init(ChupaRubyDecomposerFactory *factory)
 {
-    chupa_ruby_protect(factory_init_protect, (VALUE)factory, NULL);
+    GError *error = NULL;
+
+    chupa_ruby_protect(factory_init_protect, (VALUE)factory, &error);
+    if (error) {
+        chupa_log_g_error(error, "[decomposer][factory][init][ruby][error]");
+        g_error_free(error);
+    }
 }
 
 static void
