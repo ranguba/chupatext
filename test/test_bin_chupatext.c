@@ -36,7 +36,7 @@ void
 setup (void)
 {
     chupatext = NULL;
-    chupa_test_setup();
+    chupa_test_setup(NULL);
 }
 
 void

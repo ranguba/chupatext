@@ -27,7 +27,7 @@
 #include <gcutter.h>
 #include <cutter/cut-run-context.h>
 
-void           chupa_test_setup                   (void);
+void           chupa_test_setup                   (const gchar *type);
 void           chupa_test_teardown                (void);
 const gchar   *chupa_test_decompose_fixture       (const gchar *fixture);
 const gchar   *chupa_test_decompose_data          (const gchar *text,

@@ -28,7 +28,7 @@ void test_decompose_text_plain (void);
 void
 setup(void)
 {
-    chupa_test_setup();
+    chupa_test_setup(NULL);
 }
 
 void

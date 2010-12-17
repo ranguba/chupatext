@@ -26,7 +26,7 @@ void test_decompose_ppt_ja(void);
 void
 setup(void)
 {
-    chupa_test_setup();
+    chupa_test_setup(NULL);
 }
 
 void

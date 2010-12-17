@@ -32,7 +32,7 @@ void test_non_ascii_text_before_charset(void);
 void
 setup(void)
 {
-    chupa_test_setup();
+    chupa_test_setup("html");
 }
 
 void

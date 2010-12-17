@@ -357,6 +357,7 @@ AC_CONFIG_FILES([Makefile
 		 chupatext/chupa_version.h
 		 test/Makefile
 		 test/fixtures/Makefile
+		 test/fixtures/html/Makefile
 		 test/ruby/Makefile
 		 modules/Makefile
 		 modules/excel/Makefile

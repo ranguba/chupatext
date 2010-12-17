@@ -25,7 +25,7 @@ void test_decompose_zip(void);
 void
 setup(void)
 {
-    chupa_test_setup();
+    chupa_test_setup(NULL);
 }
 
 void

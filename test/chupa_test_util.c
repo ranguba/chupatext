@@ -21,9 +21,9 @@
 #include "chupa_test_util.h"
 
 void
-chupa_test_setup(void)
+chupa_test_setup(const gchar *type)
 {
-    cut_set_fixture_data_dir(cut_get_source_directory(), "fixtures", NULL);
+    cut_set_fixture_data_dir(cut_get_source_directory(), "fixtures", type, NULL);
 }
 
 void
