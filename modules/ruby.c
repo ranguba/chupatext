@@ -93,15 +93,12 @@ invoke_rb_funcall2(VALUE data)
 }
 
 static VALUE
-chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, int *statep, GError **error)
+chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, GError **error)
 {
     VALUE result, exception;
     int state = 0;
 
     result = rb_protect(func, arg, &state);
-    if (statep) {
-        *statep = state;
-    }
     if (state && !NIL_P(exception = rb_errinfo())) {
 	InspectExceptionData data;
 
@@ -126,7 +123,7 @@ chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **error
     call_args.name = mid;
     call_args.argc = argc;
     call_args.argv = argv;
-    return chupa_ruby_protect(invoke_rb_funcall2, (VALUE)&call_args, NULL, error);
+    return chupa_ruby_protect(invoke_rb_funcall2, (VALUE)&call_args, error);
 }
 
 static gboolean
@@ -315,7 +312,7 @@ factory_init_protect(VALUE arg)
 static void
 factory_init(ChupaRubyDecomposerFactory *factory)
 {
-    chupa_ruby_protect(factory_init_protect, (VALUE)factory, NULL, NULL);
+    chupa_ruby_protect(factory_init_protect, (VALUE)factory, NULL);
 }
 
 static void
