@@ -152,7 +152,7 @@ data_is_succeeded(VALUE self)
 }
 
 VALUE
-chupa_ruby_data_init(VALUE mChupa)
+chupa_ruby_data_init(VALUE mChupa, VALUE eChupaError)
 {
     VALUE cData;
 

@@ -51,10 +51,44 @@ accepted(VALUE self, VALUE data)
     return Qnil;
 }
 
-VALUE
-chupa_ruby_feeder_init(VALUE mChupa)
+static VALUE
+error_s_exception(int argc, VALUE *argv, VALUE klass)
 {
-    VALUE cFeeder;
+    VALUE message;
+
+    rb_scan_args(argc, argv, "01", &message);
+    return rb_funcall(klass, rb_intern("new"),
+                      2, rb_str_new2("unknown"), message);
+}
+
+static VALUE
+error_initialize(int argc, VALUE *argv, VALUE self)
+{
+    VALUE code, message;
+
+    rb_scan_args(argc, argv, "02", &code, &message);
+    if (argc == 1) {
+        message = code;
+        code = Qnil;
+    }
+
+    rb_iv_set(self, "@domain", CSTR2RVAL(g_quark_to_string(CHUPA_FEEDER_ERROR)));
+    if (!NIL_P(code)) {
+        ChupaFeederError error_code;
+        error_code = RVAL2GENUM(code, CHUPA_TYPE_FEEDER_ERROR);
+        code = GENUM2RVAL(error_code, CHUPA_TYPE_FEEDER_ERROR);
+    }
+    rb_iv_set(self, "@code", code);
+
+    rb_call_super(1, &message);
+
+    return Qnil;
+}
+
+VALUE
+chupa_ruby_feeder_init(VALUE mChupa, VALUE eChupaError)
+{
+    VALUE cFeeder, eFeederError;
 
     rb_cGLibObject = rb_const_get(rb_const_get(rb_cObject, rb_intern("GLib")),
                                   rb_intern("Object"));
@@ -63,6 +97,14 @@ chupa_ruby_feeder_init(VALUE mChupa)
 
     rb_define_method(cFeeder, "feed", feed, 1);
     rb_define_method(cFeeder, "accepted", accepted, 1);
+
+    eFeederError = G_DEF_ERROR(CHUPA_FEEDER_ERROR, "FeederError", mChupa,
+                               eChupaError, Qnil);
+
+    rb_define_singleton_method(eFeederError, "exception", error_s_exception, -1);
+    rb_define_method(eFeederError, "initialize", error_initialize, -1);
+
+    G_DEF_CLASS(CHUPA_TYPE_FEEDER_ERROR, "FeederErrorCode", mChupa);
 
     return cFeeder;
 }

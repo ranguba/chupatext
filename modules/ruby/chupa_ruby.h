@@ -38,12 +38,18 @@
 
 void     chupa_ruby_init                       (void);
 VALUE    chupa_ruby_g_memory_input_stream_init (VALUE mGLib);
-VALUE    chupa_ruby_types_init                 (VALUE mChupa);
-VALUE    chupa_ruby_logger_init                (VALUE mChupa);
-VALUE    chupa_ruby_feeder_init                (VALUE mChupa);
-VALUE    chupa_ruby_data_init                  (VALUE mChupa);
-VALUE    chupa_ruby_decomposer_init            (VALUE mChupa);
-VALUE    chupa_ruby_metadata_init              (VALUE mChupa);
+VALUE    chupa_ruby_types_init                 (VALUE mChupa,
+                                                VALUE eChupaError);
+VALUE    chupa_ruby_logger_init                (VALUE mChupa,
+                                                VALUE eChupaError);
+VALUE    chupa_ruby_feeder_init                (VALUE mChupa,
+                                                VALUE eChupaError);
+VALUE    chupa_ruby_data_init                  (VALUE mChupa,
+                                                VALUE eChupaError);
+VALUE    chupa_ruby_decomposer_init            (VALUE mChupa,
+                                                VALUE eChupaError);
+VALUE    chupa_ruby_metadata_init              (VALUE mChupa,
+                                                VALUE eChupaError);
 
 VALUE    chupa_ruby_metadata_new               (ChupaMetadata *metadata,
                                                 gboolean       readonly);

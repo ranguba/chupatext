@@ -21,7 +21,7 @@
 #include "chupa_ruby.h"
 
 VALUE
-chupa_ruby_decomposer_init(VALUE cChupa)
+chupa_ruby_decomposer_init(VALUE cChupa, VALUE eChupaError)
 {
     VALUE cDecomposer;
 

@@ -23,7 +23,7 @@
 void
 chupa_ruby_init(void)
 {
-    VALUE mGLib, mChupa;
+    VALUE mGLib, mChupa, eChupaError;
 
     rb_require("chupatext/pre_init");
 
@@ -33,6 +33,7 @@ chupa_ruby_init(void)
     chupa_ruby_g_memory_input_stream_init(mGLib);
 
     mChupa = rb_define_module("Chupa");
+    eChupaError = rb_define_class_under(mChupa, "Error", rb_eStandardError);
 
     rb_define_const(mChupa, "VERSION",
                     rb_ary_new3(3,
@@ -50,12 +51,12 @@ chupa_ruby_init(void)
     rb_define_const(mChupa, "BUILD_VERSION_DESCRIPTION",
                     CSTR2RVAL(CHUPA_VERSION_DESCRIPTION));
 
-    chupa_ruby_types_init(mChupa);
-    chupa_ruby_logger_init(mChupa);
-    chupa_ruby_metadata_init(mChupa);
-    chupa_ruby_data_init(mChupa);
-    chupa_ruby_feeder_init(mChupa);
-    chupa_ruby_decomposer_init(mChupa);
+    chupa_ruby_types_init(mChupa, eChupaError);
+    chupa_ruby_logger_init(mChupa, eChupaError);
+    chupa_ruby_metadata_init(mChupa, eChupaError);
+    chupa_ruby_data_init(mChupa, eChupaError);
+    chupa_ruby_feeder_init(mChupa, eChupaError);
+    chupa_ruby_decomposer_init(mChupa, eChupaError);
 
     rb_require("chupatext/post_init");
 }

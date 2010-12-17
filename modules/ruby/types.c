@@ -48,7 +48,7 @@ ruby_value_to_g_time_val(VALUE time, GValue *value)
 }
 
 VALUE
-chupa_ruby_types_init(VALUE mChupa)
+chupa_ruby_types_init(VALUE mChupa, VALUE eChupaError)
 {
     rbgobj_register_g2r_func(CHUPA_TYPE_TIME_VAL, ruby_value_from_g_time_val);
     rbgobj_register_r2g_func(CHUPA_TYPE_TIME_VAL, ruby_value_to_g_time_val);

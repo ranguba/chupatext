@@ -53,7 +53,7 @@ log_full(VALUE self, VALUE domain, VALUE level, VALUE file, VALUE line,
 }
 
 VALUE
-chupa_ruby_logger_init(VALUE mChupa)
+chupa_ruby_logger_init(VALUE mChupa, VALUE eChupaError)
 {
     VALUE cChupaLogger;
     VALUE cChupaLogLevelFlags;
