@@ -23,11 +23,18 @@
 static VALUE
 gerror_s_exception(int argc, VALUE *argv, VALUE klass)
 {
-    VALUE message;
+    ID id_code;
+    VALUE code, message;
 
     rb_scan_args(argc, argv, "01", &message);
-    return rb_funcall(klass, rb_intern("new"),
-                      2, rb_str_new2("unknown"), message);
+
+    CONST_ID(id_code, "code");
+    if (rb_respond_to(klass, id_code)) {
+        code = rb_funcall(klass, id_code, 0);
+    } else {
+        code = rb_str_new2("unknown");
+    }
+    return rb_funcall(klass, rb_intern("new"), 2, code, message);
 }
 
 static VALUE
@@ -45,6 +52,15 @@ gerror_initialize(int argc, VALUE *argv, VALUE self)
     CONST_ID(id_domain, "domain");
     rb_iv_set(self, "@domain", rb_funcall(self, id_domain, 0));
 
+    if (NIL_P(code)) {
+        ID id_code;
+        VALUE klass;
+        CONST_ID(id_code, "code");
+        klass = rb_obj_class(self);
+        if (rb_respond_to(klass, id_code)) {
+            code = rb_funcall(klass, id_code, 0);
+        }
+    }
     CONST_ID(id_normalize_code, "normalize_code");
     rb_iv_set(self, "@code", rb_funcall(self, id_normalize_code, 1, code));
 

@@ -16,10 +16,31 @@
 # MA  02110-1301  USA
 
 module Chupa
-  class DecomposeError < StandardError
-  end
-
   class BaseDecomposer
+    class FeedError < Chupa::DecomposerError
+      class << self
+        def code
+          "feed"
+        end
+      end
+    end
+
+    class DecomposeError < Chupa::DecomposerError
+      class << self
+        def code
+          "decompose"
+        end
+      end
+    end
+
+    class EncryptedError < Chupa::DecomposerError
+      class << self
+        def code
+          "encrypted"
+        end
+      end
+    end
+
     class << self
       def decomposers
         @@decomposers
