@@ -157,7 +157,7 @@ metadata_merge_original_metadata(VALUE self, VALUE original)
 }
 
 VALUE
-chupa_ruby_metadata_init(VALUE mChupa, VALUE eChupaError)
+chupa_ruby_metadata_init(VALUE mChupa, VALUE eChupaGError)
 {
     VALUE cMetadata;
 

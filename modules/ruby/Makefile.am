@@ -21,6 +21,7 @@ libchuparuby_la_SOURCES =			\
 	feeder.c				\
 	data.c					\
 	decomposer.c				\
+	error.c					\
 	g_memory_input_stream.c			\
 	utils.c					\
 	types.c					\

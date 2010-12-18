@@ -38,38 +38,20 @@
 
 #define CHUPA_RUBY_DEF_EXCEPTION_METHODS(Type, TYPE)                    \
 static VALUE                                                            \
-error_s_exception(int argc, VALUE *argv, VALUE klass)                   \
+error_domain(VALUE self)                                                \
 {                                                                       \
-    VALUE message;                                                      \
-                                                                        \
-    rb_scan_args(argc, argv, "01", &message);                           \
-    return rb_funcall(klass, rb_intern("new"),                          \
-                      2, rb_str_new2("unknown"), message);              \
+    return CSTR2RVAL(g_quark_to_string(CHUPA_ ## TYPE ## _ERROR));      \
 }                                                                       \
                                                                         \
 static VALUE                                                            \
-error_initialize(int argc, VALUE *argv, VALUE self)                     \
+error_normalize_code(VALUE self, VALUE code)                            \
 {                                                                       \
-    VALUE code, message;                                                \
-                                                                        \
-    rb_scan_args(argc, argv, "02", &code, &message);                    \
-    if (argc == 1) {                                                    \
-        message = code;                                                 \
-        code = Qnil;                                                    \
-    }                                                                   \
-                                                                        \
-    rb_iv_set(self, "@domain",                                          \
-              CSTR2RVAL(g_quark_to_string(CHUPA_ ## TYPE ## _ERROR)));  \
     if (!NIL_P(code)) {                                                 \
         Chupa ## Type ## Error error_code;                              \
         error_code = RVAL2GENUM(code, CHUPA_TYPE_ ## TYPE ## _ERROR);   \
         code = GENUM2RVAL(error_code, CHUPA_TYPE_ ## TYPE ## _ERROR);   \
     }                                                                   \
-    rb_iv_set(self, "@code", code);                                     \
-                                                                        \
-    rb_call_super(1, &message);                                         \
-                                                                        \
-    return Qnil;                                                        \
+    return code;                                                        \
 }
 
 #define CHUPA_RUBY_DEF_EXCEPTION_CLASS(Type, TYPE)                      \
@@ -77,12 +59,12 @@ do {                                                                    \
     VALUE e ## Type ## Error;                                           \
     e ## Type ## Error = G_DEF_ERROR(CHUPA_ ## TYPE ## _ERROR,          \
                                      #Type "Error",                     \
-                                     mChupa, eChupaError, Qnil);        \
+                                     mChupa, eChupaGError, Qnil);       \
                                                                         \
-    rb_define_singleton_method(e ## Type ## Error, "exception",         \
-                               error_s_exception, -1);                  \
-    rb_define_method(e ## Type ## Error, "initialize",                  \
-                     error_initialize, -1);                             \
+    rb_define_method(e ## Type ## Error, "domain",                      \
+                     error_domain, 0);                                  \
+    rb_define_private_method(e ## Type ## Error, "normalize_code",      \
+                             error_normalize_code, 1);                  \
                                                                         \
     G_DEF_CLASS(CHUPA_TYPE_ ## TYPE ## _ERROR,                          \
                 #Type "ErrorCode", mChupa);                             \
@@ -90,18 +72,19 @@ do {                                                                    \
 
 void     chupa_ruby_init                       (void);
 VALUE    chupa_ruby_g_memory_input_stream_init (VALUE mGLib);
+VALUE    chupa_ruby_error_init                 (VALUE mChupa);
 VALUE    chupa_ruby_types_init                 (VALUE mChupa,
-                                                VALUE eChupaError);
+                                                VALUE eChupaGError);
 VALUE    chupa_ruby_logger_init                (VALUE mChupa,
-                                                VALUE eChupaError);
+                                                VALUE eChupaGError);
 VALUE    chupa_ruby_feeder_init                (VALUE mChupa,
-                                                VALUE eChupaError);
+                                                VALUE eChupaGError);
 VALUE    chupa_ruby_data_init                  (VALUE mChupa,
-                                                VALUE eChupaError);
+                                                VALUE eChupaGError);
 VALUE    chupa_ruby_decomposer_init            (VALUE mChupa,
-                                                VALUE eChupaError);
+                                                VALUE eChupaGError);
 VALUE    chupa_ruby_metadata_init              (VALUE mChupa,
-                                                VALUE eChupaError);
+                                                VALUE eChupaGError);
 
 VALUE    chupa_ruby_metadata_new               (ChupaMetadata *metadata,
                                                 gboolean       readonly);

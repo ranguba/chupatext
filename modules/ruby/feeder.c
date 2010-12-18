@@ -54,7 +54,7 @@ accepted(VALUE self, VALUE data)
 CHUPA_RUBY_DEF_EXCEPTION_METHODS(Feeder, FEEDER);
 
 VALUE
-chupa_ruby_feeder_init(VALUE mChupa, VALUE eChupaError)
+chupa_ruby_feeder_init(VALUE mChupa, VALUE eChupaGError)
 {
     VALUE cFeeder;
 

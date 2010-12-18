@@ -23,7 +23,7 @@
 CHUPA_RUBY_DEF_EXCEPTION_METHODS(Decomposer, DECOMPOSER);
 
 VALUE
-chupa_ruby_decomposer_init(VALUE mChupa, VALUE eChupaError)
+chupa_ruby_decomposer_init(VALUE mChupa, VALUE eChupaGError)
 {
     VALUE cDecomposer;
 
