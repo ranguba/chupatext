@@ -242,8 +242,10 @@ EOS
       convertor.prepare
 
       extension = Pathname(@input.metadata.filename).extname
-      pdf = Tempfile.new(["chupadata-powerpoint", ".pdf"])
-      powerpoint = Tempfile.new(["chupadata-powerpoint", extension])
+      pdf = Tempfile.new(["chupadata-powerpoint", ".pdf"],
+                         :encoding => "ASCII-8BIT")
+      powerpoint = Tempfile.new(["chupadata-powerpoint", extension],
+                                :encoding => "ASCII-8BIT")
       powerpoint.write(@input.read)
       powerpoint.close
 
