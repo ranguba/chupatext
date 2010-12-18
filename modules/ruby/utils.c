@@ -53,12 +53,63 @@ chupa_ruby_exception_to_g_error(VALUE exception, GError **error,
         return;
 
     inspected = g_string_new(NULL);
-    va_start(args, format);
-    g_string_vprintf(inspected, format, args);
-    va_end(args);
-    g_string_append(inspected, ": <");
+    if (format) {
+        va_start(args, format);
+        g_string_vprintf(inspected, format, args);
+        va_end(args);
+        g_string_append(inspected, ": ");
+    }
+    g_string_append(inspected, "<");
     chupa_ruby_exception_inspect(exception, inspected);
     g_string_append(inspected, ">");
     g_set_error_literal(error, domain, code, inspected->str);
     g_string_free(inspected, TRUE);
+}
+
+gboolean
+chupa_ruby_exception_to_g_error_info(VALUE exception, GQuark *domain, gint *code,
+                                     gchar **code_name)
+{
+    ID id_at_code, id_at_domain, id_to_i;
+    VALUE rb_error_code = Qnil, rb_error_domain = Qnil;
+
+    if (NIL_P(exception))
+        return FALSE;
+
+    CONST_ID(id_at_code, "@code");
+    CONST_ID(id_at_domain, "@domain");
+
+    if (!RTEST(rb_ivar_defined(exception, id_at_code)))
+        return FALSE;
+
+    if (!RTEST(rb_ivar_defined(exception, id_at_domain)))
+        return FALSE;
+
+    rb_error_code = rb_ivar_get(exception, id_at_code);
+    rb_error_domain = rb_ivar_get(exception, id_at_domain);
+
+    if (NIL_P(rb_error_code) || NIL_P(rb_error_domain))
+        return FALSE;
+
+    *domain = g_quark_from_string(StringValueCStr(rb_error_domain));
+
+    if (code_name) {
+        ID id_nick, id_to_s;
+        VALUE rb_code_name;
+
+        CONST_ID(id_nick, "nick");
+        CONST_ID(id_to_s, "to_s");
+        if (rb_respond_to(rb_error_code, id_nick)) {
+            rb_code_name = rb_funcall(rb_error_code, id_nick, 0);
+        } else {
+            rb_code_name = rb_funcall(rb_error_code, id_to_s, 0);
+        }
+        *code_name = g_strdup(StringValueCStr(rb_code_name));
+    }
+
+    CONST_ID(id_to_i, "to_i");
+    rb_error_code = rb_funcall(rb_error_code, id_to_i, 0);
+    *code = NUM2INT(rb_error_code);
+
+    return TRUE;
 }

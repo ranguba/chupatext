@@ -81,35 +81,74 @@ typedef struct {
     ID name;
     int argc;
     VALUE *argv;
-} funcall_arguments;
+} FuncallArguments;
 
 static VALUE
 invoke_rb_funcall2(VALUE data)
 {
-    funcall_arguments *arguments = (funcall_arguments *)data;
+    FuncallArguments *arguments = (FuncallArguments *)data;
 
     return rb_funcall2(arguments->receiver, arguments->name,
                        arguments->argc, arguments->argv);
+}
+
+typedef struct {
+    VALUE exception;
+    GQuark domain;
+    gint code;
+    gchar **code_name;
+} ExceptionToGErrorInfo;
+
+static VALUE
+get_g_error_info(VALUE data)
+{
+    ExceptionToGErrorInfo *info = (ExceptionToGErrorInfo *)data;
+    gboolean success;
+
+    success = chupa_ruby_exception_to_g_error_info(info->exception,
+                                                   &(info->domain),
+                                                   &(info->code),
+                                                   info->code_name);
+    return CBOOL2RVAL(success);
 }
 
 static VALUE
 chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, GError **error)
 {
     VALUE result, exception;
+    InspectExceptionData data;
     int state = 0;
+    ExceptionToGErrorInfo info;
+    gchar *code_name;
 
     result = rb_protect(func, arg, &state);
-    if (state && !NIL_P(exception = rb_errinfo())) {
-	InspectExceptionData data;
+    if (state == 0)
+        return result;
 
-	data.exception = exception;
-        data.inspected = g_string_new(NULL);
-        rb_protect(inspect_exception, (VALUE)&data, &state);
+    exception = rb_errinfo();
+    if (NIL_P(exception))
+        return result;
+
+    data.exception = exception;
+    data.inspected = g_string_new(NULL);
+    rb_protect(inspect_exception, (VALUE)&data, NULL);
+
+    info.exception = exception;
+    info.code_name = &code_name;
+    if (RTEST(rb_protect(get_g_error_info, (VALUE)&info, &state)) &&
+        state == 0) {
         g_set_error(error,
-                    CHUPA_FEEDER_ERROR, CHUPA_FEEDER_ERROR_UNKNOWN,
-                    "unknown error is occurred: <%s>", data.inspected->str);
-        g_string_free(data.inspected, TRUE);
+                    info.domain, info.code,
+                    "[decomposer][error][%s]: <%s>",
+                    code_name, data.inspected->str);
+        g_free(code_name);
+    } else {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_UNKNOWN,
+                    "[decomposer][error][unknown]: <%s>", data.inspected->str);
     }
+
+    g_string_free(data.inspected, TRUE);
 
     return result;
 }
@@ -117,7 +156,7 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, GError **error)
 static VALUE
 chupa_ruby_funcall(VALUE receiver, ID mid, int argc, VALUE *argv, GError **error)
 {
-    funcall_arguments call_args;
+    FuncallArguments call_args;
 
     call_args.receiver = receiver;
     call_args.name = mid;

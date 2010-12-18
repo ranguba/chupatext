@@ -116,5 +116,9 @@ void     chupa_ruby_exception_to_g_error       (VALUE          exception,
                                                 gint           code,
                                                 const gchar   *format,
                                                 ...) G_GNUC_PRINTF(5, 6);
+gboolean chupa_ruby_exception_to_g_error_info  (VALUE          exception,
+                                                GQuark        *domain,
+                                                gint          *code,
+                                                gchar        **code_name);
 
 #endif
