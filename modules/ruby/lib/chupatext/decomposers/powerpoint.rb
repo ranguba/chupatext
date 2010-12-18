@@ -64,8 +64,7 @@ module Chupa
           if Time.now - libre_office_start_time > 30
             output = pipe_read.read
             kill
-            message = "Timeout: PowerPoint file conversion: #{libre_office_output}"
-            raise DecomposeError.new(message)
+            raise DecomposeError.new("#{tag}: #{output}")
           end
           sleep(0.5)
         end
@@ -134,7 +133,7 @@ EOS
         if base_directory.nil?
           random_id = "#{Time.now}#{Object.new.object_id}"
           unique_key = Digest::MD5.hexdigest(random_id)
-          run(unique_key)
+          run(unique_key, run_options)
           while (ps_str = `ps aux`).include?(unique_key)
             sleep(0.5)
           end
@@ -150,14 +149,22 @@ EOS
 
       def convert(input, output)
         FileUtils.rm(output.path)
+        pipe_read, pipe_write = IO.pipe
+        additional_run_options = {
+          :spawn_option => {:out => pipe_write, :err => [:child, :out]},
+        }
         run(input.path,
             "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")",
-            "macro:///Standard.Export.Terminate()")
+            "macro:///Standard.Export.Terminate()",
+            run_options.merge(additional_run_options))
+        pipe_write.close
         ooffice_start_time = Time.now
         while `ps aux`.include?(output.path)
           if Time.now - ooffice_start_time > 30
+            output = pipe_read.read
             kill
-            raise DecomposeError.new("Timeout: PowerPoint file conversion")
+            tag = "[powerpoint][openoffice.org][convert][timeout]"
+            raise DecomposeError.new("#{tag}: #{output}")
           end
           if File.exist?(output.path)
             kill
@@ -173,7 +180,11 @@ EOS
 
       private
       def run(*arguments)
-        super("-headless", *arguments, {:env => {"HOME" => @home_dir.to_s}})
+        super("-headless", *arguments)
+      end
+
+      def run_options
+        {:env => {"HOME" => @home_dir.to_s}}
       end
 
       def kill

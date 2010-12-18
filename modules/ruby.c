@@ -139,13 +139,13 @@ chupa_ruby_protect(VALUE (*func)(VALUE), VALUE arg, GError **error)
         state == 0) {
         g_set_error(error,
                     info.domain, info.code,
-                    "[decomposer][error][%s]: <%s>",
+                    "[decomposer][ruby][error][%s]%s",
                     code_name, data.inspected->str);
         g_free(code_name);
     } else {
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_UNKNOWN,
-                    "[decomposer][error][unknown]: <%s>", data.inspected->str);
+                    "[decomposer][ruby][error][unknown]: <%s>", data.inspected->str);
     }
 
     g_string_free(data.inspected, TRUE);
