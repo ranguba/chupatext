@@ -1,7 +1,7 @@
 AC_PREREQ(2.59)
 
 m4_define([chupa_version_major], [0])
-m4_define([chupa_version_minor], [7])
+m4_define([chupa_version_minor], [8])
 m4_define([chupa_version_micro], [0])
 m4_define([chupa_version_full],
           [chupa_version_major.chupa_version_minor.chupa_version_micro])
