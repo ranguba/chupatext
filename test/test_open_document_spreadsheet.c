@@ -85,7 +85,7 @@ test_1_2_flat(void)
                             "      2\n"
                             "Sheet\n"
                             "        ページ 2\n",
-                            decompose("1.2.ods"));
+                            decompose("1.2_flat.ods"));
 }
 
 void
@@ -104,5 +104,5 @@ test_1_2_ja_flat(void)
                             "Sheet\n"
                             "シート   2\n"
                             "        ページ 2\n",
-                            decompose("1.2_ja.ods"));
+                            decompose("1.2_ja_flat.ods"));
 }

@@ -28,6 +28,7 @@ noinst_LTLIBRARIES =				\
 	test_mail.la				\
 	test_open_document_text.la		\
 	test_open_document_spreadsheet.la	\
+	test_open_document_presentation.la	\
 	$(EMPTY)
 
 if SUPPORT_PDF
@@ -91,6 +92,7 @@ test_html_la_SOURCES = test_html.c
 test_mail_la_SOURCES = test_mail.c
 test_open_document_text_la_SOURCES = test_open_document_text.c
 test_open_document_spreadsheet_la_SOURCES = test_open_document_spreadsheet.c
+test_open_document_presentation_la_SOURCES = test_open_document_presentation.c
 test_bin_chupatext_la_SOURCES = test_bin_chupatext.c
 test_utils_la_SOURCES = test_utils.c
 

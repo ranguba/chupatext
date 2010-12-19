@@ -4,7 +4,8 @@ SUBDIRS =					\
 	open_document_text			\
 	excel					\
 	open_document_spreadsheet		\
-	powerpoint
+	powerpoint				\
+	open_document_presentation
 EXTRA_DIST =					\
 	sample.pdf				\
 	sample.tar.gz				\

@@ -260,6 +260,8 @@ EOS
       mime_types "application/vnd.ms-powerpoint"
       mime_types "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 
+      mime_types "application/vnd.oasis.opendocument.presentation"
+      mime_types "application/vnd.oasis.opendocument.presentation-flat-xml"
     end
 
     def decompose
