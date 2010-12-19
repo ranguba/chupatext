@@ -251,7 +251,7 @@ printerr_to_log_delegator (const gchar *string)
     }
 }
 
-static const char excel_magic[8] = "\320\317\021\340\241\261\032\341";
+static const gchar excel_magic[8] = "\320\317\021\340\241\261\032\341";
 
 static gboolean
 chupa_excel_plain_file_p(GsfInput *source)
