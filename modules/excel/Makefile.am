@@ -1,6 +1,5 @@
 EXTRA_DIST =					\
 	colrow.h				\
-	document.h				\
 	gnm-plugin.h				\
 	gnumeric-gconf.h			\
 	gnumeric.h				\
