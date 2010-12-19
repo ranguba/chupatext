@@ -2,6 +2,33 @@
 
 = お知らせ --- ChupaTextの歴史
 
+== [release-0-7-0] 0.7.0: 2010-12-19
+
+=== 改良
+
+  * LibreOffice/OpenOffice.orgのパスを環境変数でカスタマイズ
+    できるようにした。
+  * メール（message/rfc822）対応。 [Yuto Hayamizu]
+  * HTMLのエンコーディング検出を強化。
+  * 暗号化ファイルの検出に対応。
+  * OpenDocument Textのサポート。
+  * OpenDocument Spreadsheetのサポート。
+  * OpenDocument Presentationのサポート。
+  * Excelの複数シートに対応。
+
+=== 変更
+
+  * Excelの出力をCSVからTSVに変更。
+
+=== 修正
+
+  * メモリリーク修正。 [Yuto Hayamizu]
+  * エラー処理を強化。
+
+=== 感謝
+
+  * Yuto Hayamizu
+
 == [release-0-6-0] 0.6.0: 2010-11-24
 
   * 非表示のレイヤーのテキスト抽出をサポート。

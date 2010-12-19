@@ -2,6 +2,32 @@
 
 = NEWS --- The history of ChupaText
 
+== [release-0-7-0] 0.7.0: 2010-12-19
+
+=== Improvements
+
+  * Made LibreOffice/OpenOffice.org path customizable.
+  * Supported mail (message/rfc822) format. [Yuto Hayamizu]
+  * Improved HTML encoding detection.
+  * Supported encrypted file detection.
+  * Supported OpenDocument Text.
+  * Supported OpenDocument Spreadsheet.
+  * Supported OpenDocument Presentation.
+  * Supported multi sheets in Excel.
+
+=== Changes
+
+  * Changed output format for Excel to TSV from CSV.
+
+=== Fixes
+
+  * Fixed memory leaks. [Yuto Hayamizu]
+  * Improved error handling.
+
+=== Thanks
+
+  * Yuto Hayamizu
+
 == [release-0-6-0] 0.6.0: 2010-11-24
 
   * Supported text extraction in hidden layer.
