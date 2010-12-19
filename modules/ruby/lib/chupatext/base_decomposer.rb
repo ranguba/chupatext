@@ -50,6 +50,7 @@ module Chupa
       def mime_types(*types)
         types.each do |type|
           @@decomposers[type] = self
+          Logger.info("[decomposer][ruby][register][#{type}]: <#{self}>")
         end
       end
     end
