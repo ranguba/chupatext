@@ -20,15 +20,17 @@
 
 #include "chupa_test_util.h"
 
-void test_decompose_msword(void);
-void test_decompose_msword_ja(void);
-void test_decompose_msword_ja97(void);
-void test_decompose_msword_ja95(void);
+void test_95(void);
+void test_95_ja(void);
+void test_xp(void);
+void test_xp_ja(void);
+void test_2007(void);
+void test_2007_ja(void);
 
 void
 setup(void)
 {
-    chupa_test_setup(NULL);
+    chupa_test_setup("word");
 }
 
 void
@@ -38,28 +40,44 @@ teardown(void)
 }
 
 void
-test_decompose_msword(void)
+test_95(void)
 {
-    cut_assert_equal_string("Sample\n\n", decompose("sample.doc"));
+    cut_assert_equal_string("Sample of Word 95", decompose("95.doc"));
 }
 
 void
-test_decompose_msword_ja(void)
+test_95_ja(void)
 {
-    cut_assert_equal_string("Sample\nあいうえお\n",
-                            decompose("sample_ja.doc"));
+    cut_omit("Word 95 file with Japanese content is needed.");
+    cut_assert_equal_string("Sample of Word 95\n"
+                            "Word 95の日本語サンプル\n",
+                            decompose("95_ja.doc"));
 }
 
 void
-test_decompose_msword_ja97(void)
+test_xp(void)
 {
-    cut_assert_equal_string("Sample of Word97\n日本語サンプルWord97\n",
-                            decompose("ja97.doc"));
+    cut_assert_equal_string("Sample of Word XP", decompose("xp.doc"));
 }
 
 void
-test_decompose_msword_ja95(void)
+test_xp_ja(void)
 {
-    cut_assert_equal_string("Sample of Word95\n日本語サンプルWord95\n",
-                            decompose("ja95.doc"));
+    cut_assert_equal_string("Sample of Word XP\n"
+                            "Word XP の日本語サンプル\n",
+                            decompose("xp_ja.doc"));
+}
+
+void
+test_2007(void)
+{
+    cut_assert_equal_string("Sample of Word 2007", decompose("2007.docx"));
+}
+
+void
+test_2007_ja(void)
+{
+    cut_assert_equal_string("Sample of Word 2007\n"
+                            "Word 2007 の日本語サンプル\n",
+                            decompose("2007_ja.docx"));
 }

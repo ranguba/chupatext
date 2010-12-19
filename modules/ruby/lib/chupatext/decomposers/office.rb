@@ -22,7 +22,7 @@ require 'pathname'
 require 'chupatext/external_command'
 
 module Chupa
-  class PowerPoint < BaseDecomposer
+  class Office < BaseDecomposer
     class UnoConv < ExternalCommand
       def initialize
         super("unoconv")
@@ -245,8 +245,12 @@ EOS
     end
 
     unless convertor.nil?
+      mime_types "application/msword"
+      mime_types "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
       mime_types "application/vnd.ms-powerpoint"
       mime_types "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
     end
 
     def decompose
@@ -254,9 +258,9 @@ EOS
       convertor.prepare
 
       extension = Pathname(@input.metadata.filename).extname
-      pdf = Tempfile.new(["chupadata-powerpoint", ".pdf"],
+      pdf = Tempfile.new(["chupadata-office", ".pdf"],
                          :encoding => "ASCII-8BIT")
-      powerpoint = Tempfile.new(["chupadata-powerpoint", extension],
+      powerpoint = Tempfile.new(["chupadata-office", extension],
                                 :encoding => "ASCII-8BIT")
       powerpoint.write(@input.read)
       powerpoint.close
