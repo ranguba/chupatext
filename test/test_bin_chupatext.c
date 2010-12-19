@@ -169,22 +169,21 @@ test_word(void)
     const gchar *path, *uri;
     GError *error = NULL;
 
-    path = fixture_path("sample.doc");
+    path = fixture_path("word", "xp.doc");
     uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
     gcut_assert_error(error);
     cut_assert_equal_string(
         cut_take_printf("URI: %s\n"
                         "Content-Type: text/plain; charset=UTF-8\n"
-                        "Content-Length: 8\n"
                         "Original-Content-Length: 9216\n"
-                        "Original-Filename: sample.doc\n"
+                        "Content-Length: 17\n"
+                        "Original-Filename: xp.doc\n"
                         "Original-Content-Type: application/msword\n"
                         "Original-Content-Disposition: inline;"
-                        " filename=sample.doc;"
+                        " filename=xp.doc;"
                         " size=9216\n"
                         "\n"
-                        "Sample\n\n"
-                        "\n",
+                        "Sample of Word XP\n",
                         uri),
         run(path));
 }
@@ -195,27 +194,28 @@ test_excel(void)
     const gchar *path, *uri;
     GError *error = NULL;
 
-    path = fixture_path("sample.xls");
+    path = fixture_path("excel", "xp.xls");
     uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
     gcut_assert_error(error);
     cut_assert_equal_string(
         cut_take_printf("URI: %s\n"
                         "Content-Type: text/plain; charset=UTF-8\n"
-                        "Original-Filename: sample.xls\n"
-                        "Original-Content-Length: 5632\n"
-                        "Author: Nobuyoshi Nakada\n"
-                        "Content-Length: 21\n"
-                        "Creation-Time: 2010-09-06T10:36:28Z\n"
-                        "Modification-Time: 2010-09-24T08:15:26Z\n"
+                        "Original-Filename: xp.xls\n"
+                        "Original-Content-Length: 6656\n"
+                        "Content-Length: 27\n"
+                        "Creation-Time: 2010-12-19T06:15:35Z\n"
+                        "Modification-Time: 2010-12-19T06:19:05Z\n"
                         "Original-Content-Type: application/vnd.ms-excel;"
                         " charset=UTF-8\n"
                         "Original-Content-Disposition: inline;"
-                        " filename=sample.xls;"
-                        " size=5632;"
-                        " creation-date=Mon, 06 Sep 2010 10:36:28 +0000;"
-                        " modification-date=Fri, 24 Sep 2010 08:15:26 +0000\n"
+                        " filename=xp.xls;"
+                        " size=6656;"
+                        " creation-date=Sun, 19 Dec 2010 06:15:35 +0000;"
+                        " modification-date=Sun, 19 Dec 2010 06:19:05 +0000\n"
                         "\n"
-                        "sample\n1\n2\n3\n4\n5\n6\n7\n"
+                        "Sample\tof\n"
+                        "Excel\tXP\n"
+                        "Sheet\t2\n"
                         "\n",
                         uri),
         run(path));
@@ -233,8 +233,8 @@ test_powerpoint(void)
     cut_assert_equal_string(
         cut_take_printf("URI: %s\n"
                         "Content-Type: text/plain; charset=UTF-8\n"
-                        "Original-Content-Length: 72704\n"
                         "Content-Length: 13\n"
+                        "Original-Content-Length: 72704\n"
                         "Author: Nobuyoshi Nakada\n"
                         "Original-Filename: sample.ppt\n"
                         "Original-Content-Type: application/vnd.ms-powerpoint\n"
