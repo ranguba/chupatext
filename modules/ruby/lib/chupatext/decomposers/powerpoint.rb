@@ -64,7 +64,7 @@ module Chupa
           if Time.now - libre_office_start_time > 30
             output = pipe_read.read
             kill
-            tag = "[powerpoint][libreoffice][convert][timeout]"
+            tag = "[libreoffice][convert][timeout]"
             raise DecomposeError.new("#{tag}: #{output}")
           end
           sleep(0.5)
@@ -164,7 +164,7 @@ EOS
           if Time.now - ooffice_start_time > 30
             output = pipe_read.read
             kill
-            tag = "[powerpoint][openoffice.org][convert][timeout]"
+            tag = "[openoffice.org][convert][timeout]"
             raise DecomposeError.new("#{tag}: #{output}")
           end
           if File.exist?(output.path)
