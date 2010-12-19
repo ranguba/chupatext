@@ -48,7 +48,8 @@ struct _ChupaDecomposerFactoryClass
 
     GObject     *(*create)              (ChupaDecomposerFactory *factory,
                                          const gchar            *label,
-                                         const gchar            *mime_type);
+                                         const gchar            *mime_type,
+                                         GError                **error);
     GList       *(*get_mime_types)      (ChupaDecomposerFactory *factory);
 };
 
@@ -75,7 +76,8 @@ ChupaDecomposerFactory *
 
 GObject     *chupa_decomposer_factory_create      (ChupaDecomposerFactory *factory,
                                                    const gchar            *label,
-                                                   const gchar            *mime_type);
+                                                   const gchar            *mime_type,
+                                                   GError                **error);
 
 GList       *chupa_decomposer_factory_get_mime_types
                                                   (ChupaDecomposerFactory *factory);

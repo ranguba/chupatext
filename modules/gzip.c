@@ -31,21 +31,21 @@
 #define CHUPA_TYPE_GZIP_DECOMPOSER               \
     chupa_type_gzip_decomposer
 #define CHUPA_GZIP_DECOMPOSER(obj)                               \
-    (G_TYPE_CHECK_INSTANCE_CAST((obj),                          \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj),                           \
                                 CHUPA_TYPE_GZIP_DECOMPOSER,      \
                                 ChupaGzipDecomposer))
 #define CHUPA_GZIP_DECOMPOSER_CLASS(klass)               \
-    (G_TYPE_CHECK_CLASS_CAST((klass),                   \
+    (G_TYPE_CHECK_CLASS_CAST((klass),                    \
                              CHUPA_TYPE_GZIP_DECOMPOSER, \
                              ChupaGzipDecomposerClass))
 #define CHUPA_IS_GZIP_DECOMPOSER(obj)                            \
-    (G_TYPE_CHECK_INSTANCE_TYPE((obj),                          \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj),                           \
                                 CHUPA_TYPE_GZIP_DECOMPOSER))
 #define CHUPA_IS_GZIP_DECOMPOSER_CLASS(klass)                    \
-    (G_TYPE_CHECK_CLASS_TYPE((klass),                           \
+    (G_TYPE_CHECK_CLASS_TYPE((klass),                            \
                              CHUPA_TYPE_GZIP_DECOMPOSER))
 #define CHUPA_GZIP_DECOMPOSER_GET_CLASS(obj)                     \
-    (G_TYPE_INSTANCE_GET_CLASS((obj),                           \
+    (G_TYPE_INSTANCE_GET_CLASS((obj),                            \
                                CHUPA_TYPE_GZIP_DECOMPOSER,       \
                                ChupaGzipDecomposerClass)
 
@@ -142,23 +142,23 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
 /* ChupaGzipDecomposerFactory */
 #define CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY       \
     (chupa_type_gzip_decomposer_factory)
-#define CHUPA_GZIP_DECOMPOSER_FACTORY(obj)                               \
+#define CHUPA_GZIP_DECOMPOSER_FACTORY(obj)                              \
     (G_TYPE_CHECK_INSTANCE_CAST((obj),                                  \
-                                CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY,      \
+                                CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY,     \
                                 ChupaGzipDecomposerFactory))
 #define CHUPA_GZIP_DECOMPOSER_FACTORY_CLASS(klass)               \
-    (G_TYPE_CHECK_CLASS_CAST((klass),                           \
+    (G_TYPE_CHECK_CLASS_CAST((klass),                            \
                              CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY, \
                              ChupaGzipDecomposerFactoryClass))
-#define CHUPA_IS_GZIP_DECOMPOSER_FACTORY(obj)                            \
+#define CHUPA_IS_GZIP_DECOMPOSER_FACTORY(obj)                           \
     (G_TYPE_CHECK_INSTANCE_TYPE((obj),                                  \
                                 CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY))
-#define CHUPA_IS_GZIP_DECOMPOSER_FACTORY_CLASS(klass)                    \
+#define CHUPA_IS_GZIP_DECOMPOSER_FACTORY_CLASS(klass)                   \
     (G_TYPE_CHECK_CLASS_TYPE((klass),                                   \
                              CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY))
-#define CHUPA_GZIP_DECOMPOSER_FACTORY_GET_CLASS(obj)                     \
+#define CHUPA_GZIP_DECOMPOSER_FACTORY_GET_CLASS(obj)                    \
     (G_TYPE_INSTANCE_GET_CLASS((obj),                                   \
-                               CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY,       \
+                               CHUPA_TYPE_GZIP_DECOMPOSER_FACTORY,      \
                                ChupaGzipDecomposerFactoryClass))
 
 typedef struct _ChupaGzipDecomposerFactory ChupaGzipDecomposerFactory;
@@ -180,7 +180,8 @@ static ChupaDecomposerFactoryClass *factory_parent_class;
 static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
 static GObject   *create           (ChupaDecomposerFactory *factory,
                                     const gchar            *label,
-                                    const gchar            *mime_type);
+                                    const gchar            *mime_type,
+                                    GError                **error);
 
 static void
 factory_class_init(ChupaDecomposerFactoryClass *klass)
@@ -235,7 +236,8 @@ get_mime_types(ChupaDecomposerFactory *factory)
 }
 
 static GObject *
-create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_type)
+create(ChupaDecomposerFactory *factory, const gchar *label,
+       const gchar *mime_type, GError **error)
 {
     return g_object_new(CHUPA_TYPE_GZIP_DECOMPOSER,
                         "mime-type", mime_type,

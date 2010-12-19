@@ -143,7 +143,8 @@ static ChupaDecomposerFactoryClass *factory_parent_class;
 static GList     *get_mime_types   (ChupaDecomposerFactory *factory);
 static GObject   *create           (ChupaDecomposerFactory *factory,
                                     const gchar            *label,
-                                    const gchar            *mime_type);
+                                    const gchar            *mime_type,
+                                    GError                **error);
 
 static void
 factory_class_init(ChupaDecomposerFactoryClass *klass)
@@ -197,7 +198,8 @@ get_mime_types(ChupaDecomposerFactory *factory)
 }
 
 static GObject *
-create(ChupaDecomposerFactory *factory, const gchar *label, const gchar *mime_type)
+create(ChupaDecomposerFactory *factory, const gchar *label,
+       const gchar *mime_type, GError **error)
 {
     return g_object_new(CHUPA_TYPE_TAR_DECOMPOSER,
                         "mime-type", mime_type,

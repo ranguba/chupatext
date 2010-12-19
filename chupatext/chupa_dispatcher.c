@@ -143,20 +143,24 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     }
 
     if (factory) {
+        GError *error = NULL;
         chupa_info("[dispatcher][%s][factory][found][%s]: <%s>:<%s>",
                    mime_type, label,
                    G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(factory)),
                    real_mime_type);
         decomposer = chupa_decomposer_factory_create(factory, label,
-                                                     real_mime_type);
+                                                     real_mime_type, &error);
         if (decomposer) {
-            chupa_info("[dispatcher][%s][decomposer][create][%s]: <%s>:<%s>",
+            chupa_info("[dispatcher][%s][decomposer][create][%s]: <%s>(%s)",
                        mime_type, label,
                        G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(decomposer)),
                        real_mime_type);
         } else {
-            chupa_warning("[dispatcher][%s][decomposer][create][fail][%s]: <%s>",
-                          mime_type, label, real_mime_type);
+            chupa_log_g_error(error,
+                              "[dispatcher][%s][decomposer][create][fail][%s]"
+                              ": (%s)",
+                              mime_type, label, real_mime_type);
+            g_error_free(error);
         }
     }
 
