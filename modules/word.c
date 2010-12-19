@@ -188,7 +188,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_FEEDER_ERROR,
                     CHUPA_FEEDER_ERROR_INVALID_INPUT,
-                    "wvInitParser_gsf failed: %d",
+                    "[decomposer][word][error]: wvInitParser_gsf() failed: %d",
                     ret);
         return FALSE;
     }
