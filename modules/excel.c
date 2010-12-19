@@ -86,7 +86,7 @@ command_context_new(void)
 static void
 command_context_error_error(GOCmdContext *context, GError *error)
 {
-    chupa_log_g_error(error, "[excel][error]");
+    chupa_log_g_error(error, "[decomposer][excel][error]");
 }
 
 static void
@@ -102,10 +102,12 @@ command_context_report_goffice_error_info(GOErrorInfo *error, gint depth)
         severity = go_error_info_peek_severity(error);
         switch (severity) {
         case GO_WARNING:
-            chupa_warning("%*s[excel][warning]: %s", depth, "", message);
+            chupa_warning("%*s[decomposer][excel][warning]: %s",
+                          depth, "", message);
             break;
         default:
-            chupa_error("%*s[excel][error]: %s", depth, "", message);
+            chupa_error("%*s[decomposer][excel][error]: %s",
+                        depth, "", message);
             break;
         }
         depth++;
@@ -354,7 +356,7 @@ cb_metadata_foreach(gpointer key, gpointer value, gpointer user_data)
             g_free(encoding);
         }
     } else {
-        chupa_info("[excel][metdata][unsupported][%s][%s]",
+        chupa_info("[decomposer][excel][metdata][unsupported][%s][%s]",
                    name, g_type_name(value_type));
     }
 
@@ -396,7 +398,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR,
                     CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[excel][feed][%s][unsupported]: "
+                    "[decomposer][excel][feed][%s][unsupported]: "
                     "encrypted Excel file isn't supported",
                     filename);
         g_object_unref(source);
@@ -407,7 +409,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR,
                     CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[excel][feed][%s][error]: failed to seek input to head",
+                    "[decomposer][excel][feed][%s][error]"
+                    ": failed to seek input to head",
                     filename);
         g_object_unref(source);
         return FALSE;
@@ -425,7 +428,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR,
                     CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[excel][feed][%s][error]: failed to create workbook",
+                    "[decomposer][excel][feed][%s][error]"
+                    ": failed to create workbook",
                     filename);
         g_object_unref(io_context);
         return FALSE;
@@ -436,7 +440,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR,
                     CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[excel][feed][%s][error]: "
+                    "[decomposer][excel][feed][%s][error]: "
                     "failed to create file saver: <%s>",
                     filename,
                     export_id);
@@ -449,7 +453,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR,
                     CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[excel][feed][%s][error]: failed to create output",
+                    "[decomposer][excel][feed][%s][error]"
+                    ": failed to create output",
                     filename);
         g_object_unref(view);
         return FALSE;
@@ -641,7 +646,8 @@ gnumeric_init(GTypeModule *type_module, GList **registered_types, GError **error
                                       &plugin_errors);
     if (plugin_errors) {
         g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
-                    "failed to initialize GOffice plugins : %s",
+                    "[decomposer][excel][init][error]"
+                    ": failed to initialize GOffice plugins: %s",
                     go_error_info_peek_message(plugin_errors));
         go_error_info_free(plugin_errors);
         return FALSE;
