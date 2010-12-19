@@ -28,6 +28,7 @@
 #include "chupa_dispatcher.h"
 #include "chupa_decomposer_factory.h"
 #include "chupa_decomposer_description.h"
+#include "chupa_logger.h"
 #include "chupa_utils.h"
 
 #define CHUPA_DISPATCHER_GET_PRIVATE(obj)                  \
@@ -142,8 +143,21 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
     }
 
     if (factory) {
+        chupa_info("[dispatcher][%s][factory][found][%s]: <%s>:<%s>",
+                   mime_type, label,
+                   G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(factory)),
+                   real_mime_type);
         decomposer = chupa_decomposer_factory_create(factory, label,
                                                      real_mime_type);
+        if (decomposer) {
+            chupa_info("[dispatcher][%s][decomposer][create][%s]: <%s>:<%s>",
+                       mime_type, label,
+                       G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(decomposer)),
+                       real_mime_type);
+        } else {
+            chupa_warning("[dispatcher][%s][decomposer][create][fail][%s]: <%s>",
+                          mime_type, label, real_mime_type);
+        }
     }
 
     if (normalized_type)
