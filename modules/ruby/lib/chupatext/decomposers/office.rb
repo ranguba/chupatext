@@ -248,6 +248,10 @@ EOS
       mime_types "application/msword"
       mime_types "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
+      mime_types "application/vnd.oasis.opendocument.text"
+      mime_types "application/vnd.oasis.opendocument.text-flat-xml"
+
+
       mime_types "application/vnd.ms-powerpoint"
       mime_types "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 
