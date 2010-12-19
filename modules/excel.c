@@ -289,11 +289,12 @@ get_time_value(const gchar *name, const GValue *value, GTimeVal *time_value)
         time_string = g_value_get_string(value);
         success = g_time_val_from_iso8601(time_string, time_value);
         if (!success) {
-            chupa_warning("[excel][metdata][invalid][%s][time] <%s>",
+            chupa_warning("[decomposer][excel][metadata][invalid][%s][time]"
+                          ": <%s>",
                           name, time_string);
         }
     } else {
-        chupa_warning("[excel][metdata][unsupported][%s][%s]",
+        chupa_warning("[decomposer][excel][metadata][unsupported][%s][%s]",
                       name, g_type_name(value_type));
         success = FALSE;
     }
