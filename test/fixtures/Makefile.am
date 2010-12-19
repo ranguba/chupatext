@@ -2,7 +2,8 @@ SUBDIRS =					\
 	html					\
 	word					\
 	open_document_text			\
-	excel
+	excel					\
+	open_document_spreadsheet
 EXTRA_DIST =					\
 	sample.pdf				\
 	sample.ppt				\

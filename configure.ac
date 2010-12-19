@@ -361,6 +361,7 @@ AC_CONFIG_FILES([Makefile
 		 test/fixtures/word/Makefile
 		 test/fixtures/open_document_text/Makefile
 		 test/fixtures/excel/Makefile
+		 test/fixtures/open_document_spreadsheet/Makefile
 		 test/ruby/Makefile
 		 modules/Makefile
 		 modules/excel/Makefile
