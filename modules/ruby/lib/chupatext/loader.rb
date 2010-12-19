@@ -42,9 +42,6 @@ module Chupa
 
     def decomposer(mime_type)
       BaseDecomposer.decomposers[mime_type]
-    rescue Exception
-      Logger.error($!)
-      raise
     end
 
     def mime_types

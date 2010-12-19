@@ -31,11 +31,11 @@ GType chupa_ruby_decomposer_get_type(void);
 #define CHUPA_RUBY_DECOMPOSER_CLASS(klass)    \
   G_TYPE_CHECK_CLASS_CAST(klass, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
 #define CHUPA_IS_RUBY_DECOMPOSER(obj)         \
-  G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_RUBY_DECOMPOSER)
-#define CHUPA_IS_RUBY_DECOMPOSER_CLASS(klass) \
-  G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
-#define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)  \
-  G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
+    G_TYPE_CHECK_INSTANCE_TYPE(obj, CHUPA_TYPE_RUBY_DECOMPOSER)
+#define CHUPA_IS_RUBY_DECOMPOSER_CLASS(klass)                   \
+    G_TYPE_CHECK_CLASS_TYPE(klass, CHUPA_TYPE_RUBY_DECOMPOSER)
+#define CHUPA_RUBY_DECOMPOSER_GET_CLASS(obj)                            \
+    G_TYPE_INSTANCE_GET_CLASS(obj, CHUPA_TYPE_RUBY_DECOMPOSER, ChupaRubyDecomposerClass)
 
 typedef struct _ChupaRubyDecomposer ChupaRubyDecomposer;
 typedef struct _ChupaRubyDecomposerClass ChupaRubyDecomposerClass;
@@ -44,7 +44,7 @@ struct _ChupaRubyDecomposer
 {
     ChupaDecomposer object;
 
-    VALUE decomposer;
+    VALUE decomposer_class;
 };
 
 struct _ChupaRubyDecomposerClass
@@ -180,7 +180,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     ruby_decomposer = CHUPA_RUBY_DECOMPOSER(decomposer);
     decomposer_new_argv[0] = GOBJ2RVAL(feeder);
     decomposer_new_argv[1] = GOBJ2RVAL(data);
-    rb_decomposer = chupa_ruby_funcall(ruby_decomposer->decomposer,
+    rb_decomposer = chupa_ruby_funcall(ruby_decomposer->decomposer_class,
                                        id_new,
                                        2,
                                        decomposer_new_argv,
@@ -201,7 +201,7 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
 static void
 decomposer_init(ChupaRubyDecomposer *decomposer)
 {
-    decomposer->decomposer = Qnil;
+    decomposer->decomposer_class = Qnil;
 }
 
 static void
@@ -210,9 +210,9 @@ decomposer_dispose(GObject *object)
     ChupaRubyDecomposer *decomposer;
 
     decomposer = CHUPA_RUBY_DECOMPOSER(object);
-    if (!NIL_P(decomposer->decomposer)) {
-        rb_gc_unregister_address(&(decomposer->decomposer));
-        decomposer->decomposer = Qnil;
+    if (!NIL_P(decomposer->decomposer_class)) {
+        rb_gc_unregister_address(&(decomposer->decomposer_class));
+        decomposer->decomposer_class = Qnil;
     }
 
     G_OBJECT_CLASS(decomposer_parent_class)->dispose(object);
@@ -259,15 +259,39 @@ decomposer_register_type(GTypeModule *type_module, GList **registered_types)
     *registered_types = g_list_prepend(*registered_types, g_strdup(type_name));
 }
 
-static void
-load_decomposer(ChupaRubyDecomposer *decomposer, VALUE loader)
+static gboolean
+load_decomposer_class(ChupaRubyDecomposer *decomposer, VALUE loader,
+                      GError **error)
 {
+    ID id_decomposer;
     const gchar *mime_type;
+    VALUE argv[1];
 
     mime_type = chupa_decomposer_get_mime_type(CHUPA_DECOMPOSER(decomposer));
-    decomposer->decomposer = rb_funcall(loader, rb_intern("decomposer"),
-                                        1, CSTR2RVAL(mime_type));
-    rb_gc_register_address(&(decomposer->decomposer));
+    argv[0] = CSTR2RVAL(mime_type);
+    CONST_ID(id_decomposer, "decomposer");
+    decomposer->decomposer_class = chupa_ruby_funcall(loader, id_decomposer,
+                                                      1, argv, error);
+    if (NIL_P(decomposer->decomposer_class)) {
+        if (error && *error) {
+            chupa_log_g_error(*error,
+                              "[decomposer][factory][load][error][%s]",
+                              mime_type);
+        } else {
+            GError *local_error = NULL;
+            g_set_error(&local_error,
+                        CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_CREATE,
+                        "[decomposer][factory][load][error][%s]"
+                        ": decomposer not found",
+                        mime_type);
+            chupa_error("%s", local_error->message);
+            g_propagate_error(error, local_error);
+        }
+        return FALSE;
+    } else {
+        rb_gc_register_address(&(decomposer->decomposer_class));
+        return TRUE;
+    }
 }
 
 
@@ -424,12 +448,21 @@ create(ChupaDecomposerFactory *factory, const gchar *label,
        const gchar *mime_type, GError **error)
 {
     GObject *object;
+    GError *local_error = NULL;
 
     object = g_object_new(CHUPA_TYPE_RUBY_DECOMPOSER,
                           "mime-type", mime_type,
                           NULL);
-    load_decomposer(CHUPA_RUBY_DECOMPOSER(object),
-                    CHUPA_RUBY_DECOMPOSER_FACTORY(factory)->loader);
+    if (!load_decomposer_class(CHUPA_RUBY_DECOMPOSER(object),
+                               CHUPA_RUBY_DECOMPOSER_FACTORY(factory)->loader,
+                               &local_error)) {
+        chupa_log_g_error(local_error,
+                          "[decomposer][factory][ruby][create][error][%s][%s]",
+                          label, mime_type);
+        g_propagate_error(error, local_error);
+        g_object_unref(object);
+        object = NULL;
+    }
     return object;
 }
 
@@ -552,7 +585,9 @@ init_ruby_interpreter(GError **error)
             g_string_append(data.inspected, ": ");
             rb_protect(inspect_exception, (VALUE)&data, &state);
         }
-        g_set_error(error, CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR, CHUPA_DECOMPOSER_ERROR_INIT,
+                    "[decomposer][ruby][init][error]: "
                     "failed to initialize Ruby intepreter%s",
                     data.inspected->str);
         g_string_free(data.inspected, TRUE);
