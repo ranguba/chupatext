@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,13 +21,15 @@
 
 #include "chupa_test_util.h"
 
-void test_decompose_ppt(void);
-void test_decompose_ppt_ja(void);
+void test_xp(void);
+void test_xp_ja(void);
+void test_2007(void);
+void test_2007_ja(void);
 
 void
 setup(void)
 {
-    chupa_test_setup(NULL);
+    chupa_test_setup("powerpoint");
 }
 
 void
@@ -36,15 +39,53 @@ teardown(void)
 }
 
 void
-test_decompose_ppt(void)
+test_xp(void)
 {
-    cut_assert_equal_string("Sample Title\n",
-                            decompose("sample.ppt"));
+    cut_assert_equal_string("  Sample\n"
+                            "PowerPoint XP\n"
+                            "\f"
+                            "    Page\n"
+                            "  2\n"
+                            "\n",
+                            decompose("xp.ppt"));
 }
 
 void
-test_decompose_ppt_ja(void)
+test_xp_ja(void)
 {
-    cut_assert_equal_string("Sample Title\nこんにちゅぱ\n",
-                            decompose("sample_ja.ppt"));
+    cut_assert_equal_string("Sample/サンプル\n"
+                            "  PowerPoint XP\n"
+                            "\f"
+                            "        Page\n"
+                            "  2\n"
+                            "\n"
+                            "  2ページ目\n"
+                            "\n",
+                            decompose("xp_ja.ppt"));
+}
+
+void
+test_2007(void)
+{
+    cut_assert_equal_string("   Sample\n"
+                            "PowerPoint 2007\n"
+                            "\f"
+                            "   Page\n"
+                            " 2\n"
+                            "\n",
+                            decompose("2007.pptx"));
+}
+
+void
+test_2007_ja(void)
+{
+    cut_assert_equal_string("Sample/サンプル\n"
+                            "PowerPoint 2007\n"
+                            "\f"
+                            "       Page\n"
+                            " 2\n"
+                            "\n"
+                            " 2ページ目\n"
+                            "\n",
+                            decompose("2007_ja.pptx"));
 }

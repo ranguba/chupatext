@@ -227,22 +227,26 @@ test_powerpoint(void)
     const gchar *path, *uri;
     GError *error = NULL;
 
-    path = fixture_path("sample.ppt");
+    path = fixture_path("powerpoint", "xp.ppt");
     uri = cut_take_string(g_filename_to_uri(path, NULL, &error));
     gcut_assert_error(error);
     cut_assert_equal_string(
         cut_take_printf("URI: %s\n"
                         "Content-Type: text/plain; charset=UTF-8\n"
-                        "Content-Length: 13\n"
-                        "Original-Content-Length: 72704\n"
-                        "Author: Nobuyoshi Nakada\n"
-                        "Original-Filename: sample.ppt\n"
+                        "Original-Content-Length: 73216\n"
+                        "Content-Length: 41\n"
+                        "Original-Filename: xp.ppt\n"
                         "Original-Content-Type: application/vnd.ms-powerpoint\n"
                         "Original-Content-Disposition: inline;"
-                        " filename=sample.ppt;"
-                        " size=72704\n"
+                        " filename=xp.ppt;"
+                        " size=73216\n"
                         "\n"
-                        "Sample Title\n"
+                        "  Sample\n"
+                        "PowerPoint XP\n"
+                        "\f"
+                        "    Page\n"
+                        "  2\n"
+                        "\n"
                         "\n",
                         uri),
         run(path));
