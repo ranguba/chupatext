@@ -157,7 +157,7 @@ chupa_dispatcher_dispatch(ChupaDispatcher *dispatcher, const gchar *mime_type)
                        real_mime_type);
         } else {
             chupa_log_g_error(error,
-                              "[dispatcher][%s][decomposer][create][fail][%s]"
+                              "[dispatcher][%s][decomposer][create][error][%s]"
                               ": (%s)",
                               mime_type, label, real_mime_type);
             g_error_free(error);
