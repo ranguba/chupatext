@@ -1,6 +1,8 @@
 EXTRA_DIST =					\
 	gnu_philosophy.ru.html			\
 	index.html				\
-	sample.html				\
-	sample_euc_jp.html			\
-	sample_utf8.html
+	ascii_only.html				\
+	euc_jp.html				\
+	euc_jp_without_content_type.html	\
+	utf8.html				\
+	utf8_without_content_type.html
