@@ -75,34 +75,34 @@ test_1_2_ja(void)
 void
 test_1_2_flat(void)
 {
-    cut_assert_equal_string("                           Sheet1\n"
+    cut_assert_equal_string("                                 Sheet1\n"
                             "Sample    of\n"
-                            "          Spreadsheet 1.2\n"
+                            "          Spreadsheet 1.2 (flat)\n"
                             "OpenDocument\n"
-                            "                          ページ 1\n"
+                            "                               ページ 1\n"
                             "\f"
                             "         Sheet2\n"
                             "      2\n"
                             "Sheet\n"
                             "        ページ 2\n",
-                            decompose("1.2_flat.ods"));
+                            decompose("1.2.fods"));
 }
 
 void
 test_1_2_ja_flat(void)
 {
-    cut_assert_equal_string("                           Sheet1\n"
+    cut_assert_equal_string("                                 Sheet1\n"
                             "Sample    of\n"
-                            "                      1.2\n"
+                            "                      1.2 (flat)\n"
                             "OpenDocument\n"
                             "          Spreadsheet\n"
                             "日本語       サンプル\n"
-                            "                          ページ 1\n"
+                            "                               ページ 1\n"
                             "\f"
                             "         Sheet2\n"
                             "      2\n"
                             "Sheet\n"
                             "シート   2\n"
                             "        ページ 2\n",
-                            decompose("1.2_ja_flat.ods"));
+                            decompose("1.2_ja.fods"));
 }
