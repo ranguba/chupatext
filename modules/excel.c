@@ -32,6 +32,8 @@
 #include <gsf/gsf-timestamp.h>
 #include <gsf/gsf-msole-utils.h>
 #include "excel/workbook-view.h"
+#include "excel/workbook.h"
+#include "excel/sheet.h"
 #include "excel/libgnumeric.h"
 #include "excel/gnumeric-gconf.h"
 #include "excel/gnm-plugin.h"
@@ -236,19 +238,77 @@ struct _ChupaExcelDecomposerClass
 static GOCmdContext *command_context;
 static GType chupa_type_excel_decomposer = 0;
 
-static const char export_id[] = "Gnumeric_stf:stf_csv";
-
 static void
 printerr_to_log_delegator (const gchar *string)
 {
+    const gchar tag[] = "[decomposer][excel][warning]";
     gint length;
 
     length = strlen(string);
     if (string[length - 1] == '\n') {
-        chupa_warning("%.*s", length - 1, string);
+        chupa_warning("%s: %.*s", tag, length - 1, string);
     } else {
-        chupa_warning("%s", string);
+        chupa_warning("%s: %s", tag, string);
     }
+}
+
+static GOFileSaver *
+find_file_saver(const gchar *filename, WorkbookView *view, Workbook *workbook,
+                GODoc *document, GError **error)
+{
+    GOFileSaver *saver = NULL;
+    const gchar saver_id[] = "Gnumeric_stf:stf_assistant";
+    GString *saver_options;
+    gint i, n_sheets;
+    GError *local_error = NULL;
+
+    saver = go_file_saver_for_id(saver_id);
+    if (!saver) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[decomposer][excel][feed][error][saver][create][%s]"
+                    ": file saver doesn't found: <%s>",
+                    filename, saver_id);
+        return NULL;
+    }
+
+    saver_options = g_string_new("eol=unix separator='\t'");
+    n_sheets = workbook_sheet_count(workbook);
+    for (i = 0; i < n_sheets; i++) {
+        Sheet *sheet;
+        GnmRange total_range;
+
+        sheet = workbook_sheet_by_index(workbook, i);
+        total_range = sheet_get_extent(sheet, TRUE);
+        if (sheet_is_region_empty(sheet, &total_range)) {
+            chupa_debug("[decomposer][excel][feed][saver][sheet][ignore][%s]"
+                        ": ignore empty sheet: <%s>(%d)",
+                        filename, sheet->name_quoted, i);
+            continue;
+        }
+        g_string_append_printf(saver_options,
+                               " sheet=\"%s\"", sheet->name_quoted);
+        chupa_debug("[decomposer][excel][feed][saver][sheet][use][%s]: <%s>(%d)",
+                    filename, sheet->name_quoted, i);
+    }
+    if (go_file_saver_set_export_options(saver, document,
+                                         saver_options->str, &local_error)) {
+        g_set_error(error,
+                    CHUPA_DECOMPOSER_ERROR,
+                    CHUPA_DECOMPOSER_ERROR_FEED,
+                    "[decomposer][excel][feed][error][saver][option][%s]"
+                    ": <%s>(%s): <%s>(%s:%d)",
+                    filename, saver_id, saver_options->str,
+                    local_error->message,
+                    g_quark_to_string(local_error->domain),
+                    local_error->code);
+        g_error_free(local_error);
+        saver = NULL;
+    }
+    g_string_free(saver_options, TRUE);
+
+    return saver;
 }
 
 static gboolean
@@ -345,12 +405,10 @@ cb_metadata_foreach(gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-collect_metadata(ChupaMetadata *metadata, WorkbookView *view)
+collect_metadata(ChupaMetadata *metadata, GODoc *document)
 {
-    GODoc *document;
     GsfDocMetaData *work_book_metadata;
 
-    document = wb_view_get_doc(view);
     work_book_metadata = go_doc_get_meta_data(document);
     gsf_doc_meta_data_foreach(work_book_metadata, cb_metadata_foreach,
                               metadata);
@@ -360,10 +418,12 @@ static gboolean
 feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
      ChupaData *data, GError **error)
 {
-    GOFileSaver *saver = NULL;
+    GOFileSaver *saver;
     GOFileOpener *opener = NULL;
     GOIOContext *io_context;
     WorkbookView *view = NULL;
+    Workbook *workbook;
+    GODoc *document;
     GsfInput *source;
     GsfOutput *output;
     GInputStream *input;
@@ -387,23 +447,19 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
         g_set_error(error,
                     CHUPA_DECOMPOSER_ERROR,
                     CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[decomposer][excel][feed][%s][error]"
+                    "[decomposer][excel][feed][error][%s]"
                     ": failed to create workbook",
                     filename);
         g_object_unref(io_context);
         return FALSE;
     }
+    workbook = wb_view_get_workbook(view);
+    document = wb_view_get_doc(view);
 
-    saver = go_file_saver_for_id(export_id);
+    saver = find_file_saver(filename, view, workbook, document, error);
     if (!saver) {
-        g_set_error(error,
-                    CHUPA_DECOMPOSER_ERROR,
-                    CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[decomposer][excel][feed][%s][error]: "
-                    "failed to create file saver: <%s>",
-                    filename,
-                    export_id);
-        g_object_unref(wb_view_get_workbook(view));
+        g_object_unref(workbook);
+        g_object_unref(io_context);
         return FALSE;
     }
 
@@ -415,14 +471,15 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
                     "[decomposer][excel][feed][%s][error]"
                     ": failed to create output",
                     filename);
-        g_object_unref(view);
+        g_object_unref(workbook);
+        g_object_unref(io_context);
         return FALSE;
     }
 
     wbv_save_to_output(view, saver, output, io_context);
     if (go_io_error_occurred(io_context)) {
         go_io_error_display(io_context);
-        g_object_unref(wb_view_get_workbook(view));
+        g_object_unref(workbook);
         g_object_unref(io_context);
         g_object_unref(output);
         return FALSE;
@@ -431,8 +488,8 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     metadata = chupa_metadata_new();
     chupa_metadata_merge_original_metadata(metadata,
                                            chupa_data_get_metadata(data));
-    collect_metadata(metadata, view);
-    g_object_unref(wb_view_get_workbook(view));
+    collect_metadata(metadata, document);
+    g_object_unref(workbook);
     g_object_unref(io_context);
 
     input = chupa_memory_input_stream_new(GSF_OUTPUT_MEMORY(output));
