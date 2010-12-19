@@ -20,6 +20,12 @@
  *  MA  02110-1301  USA
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#include <string.h>
+
 #include "chupa_logger.h"
 #include "chupa_data.h"
 #include "chupa_gsf_input_stream.h"
@@ -103,6 +109,19 @@ read_head_data(GInputStream *stream, guchar *buffer, gsize buffer_size,
     return TRUE;
 }
 
+const gchar encrypted_magic[] = "SCDSA002";
+const gchar encrypted_mime_type[] = "application/x-chupatext-encrypted";
+
+static gboolean
+encrypted_data_p(const guchar *data, gsize data_length)
+{
+    gsize magic_length;
+
+    magic_length = sizeof(encrypted_magic);
+    return (data_length >= magic_length &&
+            memcmp(data, encrypted_magic, magic_length) == 0);
+}
+
 static gchar *
 guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
 {
@@ -110,6 +129,7 @@ guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
     gchar *mime_type = NULL;
     guchar data[1024];
     gsize data_length;
+    gboolean text_p;
 
     if (read_head_data(stream, data, sizeof(data), &data_length))
         content_type = g_content_type_guess(name, data, data_length, uncertain);
@@ -120,6 +140,14 @@ guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
     mime_type = g_content_type_get_mime_type(content_type);
 
     g_free(content_type);
+
+    text_p = (mime_type && g_str_has_prefix(mime_type, "text/"));
+    if (!text_p && data_length > 0 && encrypted_data_p(data, data_length)) {
+        g_free(mime_type);
+        if (uncertain)
+            *uncertain = FALSE;
+        return g_strdup(encrypted_mime_type);
+    }
 
     return mime_type;
 }
@@ -151,7 +179,7 @@ constructed(GObject *object)
     }
     filename = chupa_metadata_get_string(priv->metadata, meta_filename, NULL);
     mime_type = guess_mime_type(filename, priv->stream, NULL);
-    chupa_metadata_set_string(priv->metadata, "mime-type", mime_type);
+    chupa_metadata_set_mime_type(priv->metadata, mime_type);
     g_free(mime_type);
 }
 

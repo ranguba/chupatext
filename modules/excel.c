@@ -251,26 +251,6 @@ printerr_to_log_delegator (const gchar *string)
     }
 }
 
-static const gchar excel_magic[8] = "\320\317\021\340\241\261\032\341";
-
-static gboolean
-chupa_excel_plain_file_p(GsfInput *source)
-{
-    guint8 header[sizeof(excel_magic)];
-    if (!gsf_input_read(source, sizeof(header), header)) return FALSE;
-    return memcmp(header, excel_magic, sizeof(header)) == 0;
-}
-
-static gboolean
-chupa_excel_encrypted_file_p(ChupaDecomposer *decomposer, GsfInput *source)
-{
-    if (!chupa_utils_string_equal(chupa_decomposer_get_mime_type(decomposer),
-                                  EXCEL_MIME_TYPE))
-        return FALSE;
-
-    return !chupa_excel_plain_file_p(source);
-}
-
 static gboolean
 get_time_value(const gchar *name, const GValue *value, GTimeVal *time_value)
 {
@@ -395,28 +375,6 @@ feed(ChupaDecomposer *decomposer, ChupaFeeder *feeder,
     filename = chupa_data_get_filename(data);
 
     source = chupa_data_input_new(data);
-    if (chupa_excel_encrypted_file_p(decomposer, source)) {
-        g_set_error(error,
-                    CHUPA_DECOMPOSER_ERROR,
-                    CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[decomposer][excel][feed][%s][unsupported]: "
-                    "encrypted Excel file isn't supported",
-                    filename);
-        g_object_unref(source);
-        return FALSE;
-    }
-
-    if (gsf_input_seek(source, 0, G_SEEK_SET)) {
-        g_set_error(error,
-                    CHUPA_DECOMPOSER_ERROR,
-                    CHUPA_DECOMPOSER_ERROR_FEED,
-                    "[decomposer][excel][feed][%s][error]"
-                    ": failed to seek input to head",
-                    filename);
-        g_object_unref(source);
-        return FALSE;
-    }
-
     io_context = go_io_context_new(command_context);
     old_print_error_func = g_set_printerr_handler(printerr_to_log_delegator);
     view = wb_view_new_from_input(source, filename, opener, io_context, NULL);
