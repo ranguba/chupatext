@@ -18,7 +18,7 @@
 require 'mail'
 require 'nkf'
 
-class Chupa::Mail < Chupa::BaseDecomposer
+class Chupa::MailDecomposer < Chupa::BaseDecomposer
   mime_types "message/rfc822"
 
   def decompose

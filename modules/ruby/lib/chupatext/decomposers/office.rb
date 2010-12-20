@@ -22,7 +22,7 @@ require 'pathname'
 require 'chupatext/external_command'
 
 module Chupa
-  class Office < BaseDecomposer
+  class OfficeDecomposer < BaseDecomposer
     class UnoConv < ExternalCommand
       def initialize
         super("unoconv")

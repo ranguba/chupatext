@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-class Chupa::Encrypted < Chupa::BaseDecomposer
+class Chupa::EncryptedDecomposer < Chupa::BaseDecomposer
   mime_types "application/x-chupatext-encrypted"
 
   def decompose

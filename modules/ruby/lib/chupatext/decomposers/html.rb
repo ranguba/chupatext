@@ -18,7 +18,7 @@
 require 'nkf'
 require 'nokogiri'
 
-class Chupa::HTML < Chupa::BaseDecomposer
+class Chupa::HTMLDecomposer < Chupa::BaseDecomposer
   mime_types "text/html"
 
   def decompose
