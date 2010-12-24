@@ -287,8 +287,7 @@ find_file_saver(const gchar *filename, WorkbookView *view, Workbook *workbook,
                         filename, sheet->name_quoted, i);
             continue;
         }
-        g_string_append_printf(saver_options,
-                               " sheet=\"%s\"", sheet->name_quoted);
+        g_string_append_printf(saver_options, " sheet=%s", sheet->name_quoted);
         chupa_debug("[decomposer][excel][feed][saver][sheet][use][%s]: <%s>(%d)",
                     filename, sheet->name_quoted, i);
     }
