@@ -56,7 +56,7 @@ test_1_2(void)
 void
 test_1_2_ja(void)
 {
-    cut_assert_equal_string("                           Sheet1\n"
+    cut_assert_equal_string("                          シート1\n"
                             "Sample    of\n"
                             "                      1.2\n"
                             "OpenDocument\n"
@@ -64,7 +64,7 @@ test_1_2_ja(void)
                             "日本語       サンプル\n"
                             "                          ページ 1\n"
                             "\f"
-                            "         Sheet2\n"
+                            "        シート2\n"
                             "      2\n"
                             "Sheet\n"
                             "シート   2\n"
@@ -91,7 +91,7 @@ test_1_2_flat(void)
 void
 test_1_2_ja_flat(void)
 {
-    cut_assert_equal_string("                                 Sheet1\n"
+    cut_assert_equal_string("                               シート1\n"
                             "Sample    of\n"
                             "                      1.2 (flat)\n"
                             "OpenDocument\n"
@@ -99,7 +99,7 @@ test_1_2_ja_flat(void)
                             "日本語       サンプル\n"
                             "                               ページ 1\n"
                             "\f"
-                            "         Sheet2\n"
+                            "        シート2\n"
                             "      2\n"
                             "Sheet\n"
                             "シート   2\n"
