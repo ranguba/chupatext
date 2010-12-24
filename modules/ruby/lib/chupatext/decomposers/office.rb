@@ -251,7 +251,7 @@ EOS
       mime_types "application/vnd.oasis.opendocument.text"
       mime_types "application/vnd.oasis.opendocument.text-flat-xml"
 
-      mime_types "application/msexcel"
+      mime_types "application/vnd.ms-excel"
       mime_types "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
       mime_types "application/vnd.oasis.opendocument.spreadsheet"
