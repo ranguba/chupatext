@@ -65,7 +65,7 @@ module Chupa
             output = pipe_read.read
             kill
             tag = "[libreoffice][convert][timeout]"
-            raise DecomposeError.new("#{tag}: #{output}")
+            raise BaseDecomposer::DecomposeError.new("#{tag}: #{output}")
           end
           sleep(0.5)
         end
@@ -165,7 +165,7 @@ EOS
             output = pipe_read.read
             kill
             tag = "[openoffice.org][convert][timeout]"
-            raise DecomposeError.new("#{tag}: #{output}")
+            raise BaseDecomposer::DecomposeError.new("#{tag}: #{output}")
           end
           if File.exist?(output.path)
             kill
