@@ -673,10 +673,25 @@ gnumeric_init(GTypeModule *type_module, GList **registered_types, GError **error
     }
 }
 
+static gboolean
+gnumeric_shutdown_p(void)
+{
+    const gchar *shutdown_env;
+
+    shutdown_env = g_getenv("CHUPA_EXCEL_GNUMERIC_SHUTDOWN");
+    if (!shutdown_env)
+        return TRUE;
+    return !chupa_utils_string_equal(shutdown_env, "no");
+}
+
 static void
 gnumeric_quit(void)
 {
     g_object_unref(command_context);
+    if (!gnumeric_shutdown_p()) {
+        chupa_debug("[decomposer][excel][quit][gnumeric][shutdown][skip]");
+        return;
+    }
     gnm_shutdown();
     gnm_pre_parse_shutdown();
 }
