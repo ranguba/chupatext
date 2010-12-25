@@ -32,7 +32,7 @@ module Chupa
       pid = spawn((option[:env] || {}),
                   @command.to_s,
                   *args,
-                  (option[:spawn_option] || {}).merge(default_spawn_options))
+                  (option[:spawn_options] || {}).merge(default_spawn_options))
       pid, status = Process.waitpid2(pid)
       status.success?
     end

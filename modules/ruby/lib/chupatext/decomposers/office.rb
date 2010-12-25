@@ -33,7 +33,7 @@ module Chupa
 
       def convert(input, output)
         run("--stdout", input.path,
-            {:spawn_option => {:out => output.fileno}})
+            {:spawn_options => {:out => output.fileno}})
       end
     end
 
@@ -56,7 +56,10 @@ module Chupa
             input.path,
             {
               :env => {"HOME" => @home_dir.to_s},
-              :spawn_option => {:out => pipe_write, :err => [:child, :out]},
+              :spawn_options => {
+                :out => pipe_write,
+                :err => [:child, :out],
+              },
             })
         pipe_write.close
         libre_office_start_time = Time.now
@@ -152,7 +155,7 @@ EOS
         FileUtils.rm(output.path)
         pipe_read, pipe_write = IO.pipe
         additional_run_options = {
-          :spawn_option => {:out => pipe_write, :err => [:child, :out]},
+          :spawn_options => {:out => pipe_write, :err => [:child, :out]},
         }
         run(input.path,
             "macro:///Standard.Export.WritePDF(\"file://#{output.path}\")",
