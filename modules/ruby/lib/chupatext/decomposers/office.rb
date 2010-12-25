@@ -68,16 +68,22 @@ module Chupa
             output = pipe_read.read
             kill
             tag = "[libreoffice][convert][timeout]"
-            raise BaseDecomposer::DecomposeError.new("#{tag}: #{output}")
+            raise BaseDecomposer::DecomposeError.new("#{tag}: <#{output}>")
           end
           sleep(0.5)
         end
-        FileUtils.mv(input.path.gsub(/\.[a-z]+\z/i, ".pdf"),
-                     output.path)
+        pdf_path = input.path.gsub(/\.[a-z]+\z/i, ".pdf")
+        unless File.exist?(pdf_path)
+          output = pipe_read.read
+          tag = "[libreoffice][convert][exited][abnormally]"
+          raise BaseDecomposer::DecomposeError.new("#{tag}: <#{output}>")
+        end
+        FileUtils.mv(pdf_path, output.path)
       end
 
       private
       def kill
+        Logger.warning("[decomposer][ruby][libreoffice][kill-all]")
         system("killall soffice.bin")
       end
     end
