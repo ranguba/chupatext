@@ -110,12 +110,12 @@ module Chupa
           number = value
         end
         begin
-          number = Integer(number)
+          number = Float(number)
         rescue ArgumentError
           log_invalid_value(key, value, "size")
           return nil
         end
-        number * scale
+        (number * scale).to_i
       end
 
       def log_hard_limit_over_value(key, value, hard_limit)
