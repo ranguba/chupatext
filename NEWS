@@ -2,6 +2,21 @@
 
 = NEWS --- The history of ChupaText
 
+== [release-0-8-0] 0.8.0: 2010-12-26
+
+=== Improvements
+
+  * Supported Excel sheet name in Japanese.
+  * Supported external command resource limitation customize
+    by environment variable.
+  * Loged more information on error.
+  * Supported skipping Gnumeric shutdown process by
+    environment variable CHUPA_EXCEL_GNUMERIC_SHUTDOWN=no.
+
+=== Fixes
+
+  * Fixed wrong Excel's MIME Type.
+
 == [release-0-7-0] 0.7.0: 2010-12-19
 
 === Improvements
