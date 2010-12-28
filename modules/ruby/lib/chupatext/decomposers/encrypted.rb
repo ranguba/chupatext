@@ -16,6 +16,7 @@
 # MA  02110-1301  USA
 
 class Chupa::EncryptedDecomposer < Chupa::BaseDecomposer
+  mime_types "application/x-document-security-encrypted"
   mime_types "application/x-chupatext-encrypted"
 
   def decompose

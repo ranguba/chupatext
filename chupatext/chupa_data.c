@@ -109,17 +109,32 @@ read_head_data(GInputStream *stream, guchar *buffer, gsize buffer_size,
     return TRUE;
 }
 
-const gchar encrypted_magic[] = "SCDSA002";
-const gchar encrypted_mime_type[] = "application/x-chupatext-encrypted";
+const gchar document_security_encrypted_magic[] = "SCDSA002";
+const gchar document_security_encrypted_mime_type[] =
+    "application/x-chupatext-encrypted";
+const gchar unknown_encrypted_mime_type[] = "application/x-chupatext-encrypted";
 
 static gboolean
-encrypted_data_p(const guchar *data, gsize data_length)
+document_security_encrypted_data_p(const guchar *data, gsize data_length)
 {
     gsize magic_length;
 
-    magic_length = sizeof(encrypted_magic);
+    magic_length = sizeof(document_security_encrypted_magic);
     return (data_length >= magic_length &&
-            memcmp(data, encrypted_magic, magic_length) == 0);
+            memcmp(data, document_security_encrypted_magic, magic_length) == 0);
+}
+
+static gchar *
+guess_encrypted_mime_type(const gchar *name, GInputStream *stream,
+                          guchar *data, gsize data_length, gboolean *uncertain)
+{
+    if (document_security_encrypted_data_p(data, data_length)) {
+        if (uncertain)
+            *uncertain = FALSE;
+        return g_strdup(document_security_encrypted_mime_type);
+    }
+
+    return NULL;
 }
 
 static gchar *
@@ -142,11 +157,15 @@ guess_mime_type(const char *name, GInputStream *stream, gboolean *uncertain)
     g_free(content_type);
 
     text_p = (mime_type && g_str_has_prefix(mime_type, "text/"));
-    if (!text_p && data_length > 0 && encrypted_data_p(data, data_length)) {
-        g_free(mime_type);
-        if (uncertain)
-            *uncertain = FALSE;
-        return g_strdup(encrypted_mime_type);
+    if (!text_p && data_length > 0) {
+        gchar *encrypted_mime_type;
+        encrypted_mime_type = guess_encrypted_mime_type(name, stream,
+                                                        data, data_length,
+                                                        uncertain);
+        if (encrypted_mime_type) {
+            g_free(mime_type);
+            mime_type = encrypted_mime_type;
+        }
     }
 
     return mime_type;
