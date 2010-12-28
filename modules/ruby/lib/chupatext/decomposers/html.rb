@@ -44,10 +44,27 @@ class Chupa::HTMLDecomposer < Chupa::BaseDecomposer
     case data
     when /\A<\?xml.+?encoding=(['"])([a-zA-Z0-9_-]+)\1/
       $2
-    when /\A<head\s.+?http-equiv=(['"])content-type\1\s.+?\/?>/im
-      nil
+    when /<meta\s.*?
+           http-equiv=(['"])content-type\1\s+
+           content=(['"])(.+?)\2/imx # "
+      content_type = $3
+      mime_type, parameters = content_type.split(/;\s*/, 2)
+      encoding = nil
+      if parameters and /\bcharset=([a-zA-Z0-9_-]+)/i =~ parameters
+        encoding = normalize_charset($1)
+      end
+      encoding
     else
       guess_encoding_nkf(data)
+    end
+  end
+
+  def normalize_charset(charset)
+    case charset
+    when /\Ax-sjis\z/i
+      "Shift_JIS"
+    else
+      charset
     end
   end
 

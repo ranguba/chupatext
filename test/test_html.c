@@ -23,8 +23,10 @@
 void test_body_ascii(void);
 void test_body_utf8(void);
 void test_body_euc_jp(void);
+void test_body_x_sjis(void);
 void test_body_utf8_without_content_type(void);
 void test_body_euc_jp_without_content_type(void);
+void test_body_x_sjis_without_content_type(void);
 void test_title_ascii(void);
 void test_title_utf8(void);
 void test_title_euc_jp(void);
@@ -72,6 +74,13 @@ test_body_euc_jp(void)
 }
 
 void
+test_body_x_sjis(void)
+{
+    cut_assert_equal_string("This is a sample.\nサンプル",
+                            decompose("x_sjis.html"));
+}
+
+void
 test_body_utf8_without_content_type(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
@@ -83,6 +92,13 @@ test_body_euc_jp_without_content_type(void)
 {
     cut_assert_equal_string("This is a sample.\nサンプル",
                             decompose("euc_jp_without_content_type.html"));
+}
+
+void
+test_body_x_sjis_without_content_type(void)
+{
+    cut_assert_equal_string("This is a sample.\nサンプル",
+                            decompose("x_sjis_without_content_type.html"));
 }
 
 void
