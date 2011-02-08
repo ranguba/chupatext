@@ -2,6 +2,12 @@
 
 = NEWS --- The history of ChupaText
 
+== [release-0-9-0] 0.9.0: 2011-02-09
+
+=== Improvements
+
+  * Supported HTML that has x-sjis charset.
+
 == [release-0-8-0] 0.8.0: 2010-12-26
 
 === Improvements
