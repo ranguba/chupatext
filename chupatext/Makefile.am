@@ -23,7 +23,10 @@ lib_LTLIBRARIES = libchupatext.la
 bin_PROGRAMS = chupatext
 
 chupatext_SOURCES = chupatext.c
-chupatext_LDADD = libchupatext.la
+chupatext_LDADD =				\
+	libchupatext.la				\
+	$(GSF_LIBS)				\
+	$(GIO_UNIX_LIBS)
 
 libchupatext_la_SOURCES =			\
 	chupa_enum_types.c			\
