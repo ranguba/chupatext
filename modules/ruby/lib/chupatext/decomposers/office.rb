@@ -51,6 +51,7 @@ module Chupa
         output_directory = File.dirname(output.path)
         pipe_read, pipe_write = IO.pipe
         run("-headless",
+            "-nologo",
             "-convert-to", "pdf",
             "-outdir", output_directory,
             input.path,
@@ -63,15 +64,6 @@ module Chupa
             })
         pipe_write.close
         libre_office_start_time = Time.now
-        while `ps aux`.include?(input.path)
-          if Time.now - libre_office_start_time > 30
-            output = pipe_read.read
-            kill
-            tag = "[libreoffice][convert][timeout]"
-            raise BaseDecomposer::DecomposeError.new("#{tag}: <#{output}>")
-          end
-          sleep(0.5)
-        end
         pdf_path = input.path.gsub(/\.[a-z]+\z/i, ".pdf")
         unless File.exist?(pdf_path)
           output = pipe_read.read
@@ -79,12 +71,6 @@ module Chupa
           raise BaseDecomposer::DecomposeError.new("#{tag}: <#{output}>")
         end
         FileUtils.mv(pdf_path, output.path)
-      end
-
-      private
-      def kill
-        Logger.warning("[decomposer][ruby][libreoffice][kill-all]")
-        system("killall soffice.bin")
       end
     end
 
@@ -144,9 +130,6 @@ EOS
           random_id = "#{Time.now}#{Object.new.object_id}"
           unique_key = Digest::MD5.hexdigest(random_id)
           run(unique_key, run_options)
-          while (ps_str = `ps aux`).include?(unique_key)
-            sleep(0.5)
-          end
           base_directory = guess_base_directory
         end
         script_directory = @home_dir + base_directory + "3/user/basic/Standard"
@@ -168,20 +151,6 @@ EOS
             "macro:///Standard.Export.Terminate()",
             run_options.merge(additional_run_options))
         pipe_write.close
-        ooffice_start_time = Time.now
-        while `ps aux`.include?(output.path)
-          if Time.now - ooffice_start_time > 30
-            output = pipe_read.read
-            kill
-            tag = "[openoffice.org][convert][timeout]"
-            raise BaseDecomposer::DecomposeError.new("#{tag}: #{output}")
-          end
-          if File.exist?(output.path)
-            kill
-            return
-          end
-          sleep(0.5)
-        end
       end
 
       def home_dir
@@ -190,15 +159,11 @@ EOS
 
       private
       def run(*arguments)
-        super("-headless", *arguments)
+        super("-headless", "-nologo", *arguments)
       end
 
       def run_options
         {:env => {"HOME" => @home_dir.to_s}}
-      end
-
-      def kill
-        system("killall soffice.bin")
       end
 
       def guess_base_directory
