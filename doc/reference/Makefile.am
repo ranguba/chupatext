@@ -163,7 +163,7 @@ install-to-others.xml: $(top_srcdir)/doc/install-to-others.rd $(RD2REFENTRY_LIB)
 install-to-others.xml.ja: $(top_srcdir)/doc/install-to-others.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-others.rd.ja > install-to-others.xml.ja
 
-upload: docs
+prepare-upload: docs
 	rm -rf tmp/
 	mkdir -p tmp/
 	cp -rp html/ tmp/reference
@@ -178,4 +178,6 @@ upload: docs
 	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --language=ja tmp/reference/ja/*.html
+
+upload: prepare-upload
 	rsync -avz --delete tmp/reference/ $(RSYNC_PATH)/$(PACKAGE)/
