@@ -466,7 +466,9 @@ create(ChupaDecomposerFactory *factory, const gchar *label,
     return object;
 }
 
-#if RUBY_CHECK_VERSION(1, 9, 2)
+#if RUBY_CHECK_VERSION(1, 9, 3)
+/* do nothing */
+#elif RUBY_CHECK_VERSION(1, 9, 2)
 /* prototype was missing in 1.9.2 */
 int ruby_executable_node(void *n, int *status);
 #else

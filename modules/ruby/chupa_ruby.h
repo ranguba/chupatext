@@ -25,6 +25,8 @@
 #include <chupatext.h>
 
 #include <ruby.h>
+
+#include <ruby/version.h>
 #include <ruby/encoding.h>
 
 #include <rbgobject.h>
