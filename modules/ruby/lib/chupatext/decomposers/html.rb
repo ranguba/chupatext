@@ -62,28 +62,15 @@ class Chupa::HTMLDecomposer < Chupa::BaseDecomposer
   def normalize_charset(charset)
     case charset
     when /\Ax-sjis\z/i
-      "Shift_JIS"
+      normalize_charset("Shift_JIS")
+    when /\Ashift[_-]jis\z/i
+      "Windows-31J"
     else
       charset
     end
   end
 
   def guess_encoding_nkf(data)
-    case NKF.guess(data)
-    when NKF::EUC
-      "EUC-JP"
-    when NKF::JIS
-      "ISO-2022-JP"
-    when NKF::SJIS
-      "Shift_JIS"
-    when NKF::UTF8
-      "UTF-8"
-    when NKF::UTF16
-      "UTF-16"
-    when NKF::UTF32
-      "UTF-32"
-    else
-      nil
-    end
+    NKF.guess(data).name
   end
 end
