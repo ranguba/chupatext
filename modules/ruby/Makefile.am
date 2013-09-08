@@ -13,7 +13,9 @@ AM_CFLAGS =					\
 	$(RUBY_GLIB2_CFLAGS)
 ARCH_FLAG = $(RUBY_ARCH_FLAG)
 
+if HAVE_RUBY
 noinst_LTLIBRARIES = libchuparuby.la
+endif
 
 libchuparuby_la_SOURCES =			\
 	init.c					\
