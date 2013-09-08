@@ -205,7 +205,7 @@ AC_SUBST(rubyarch)
 if test "$ruby_available" = "yes"; then
   AC_MSG_CHECKING([for Ruby/GLib2 CFLAGS])
   RUBY_GLIB2_CFLAGS=$($RUBY -e '
-    ruby_glib2_gem = Gem.cache.find_name("glib2").first
+    ruby_glib2_gem = Gem::Specification.find_by_name("glib2")
     if ruby_glib2_gem.nil?
       begin
         require "glib2"
