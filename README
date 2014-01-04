@@ -1,5 +1,9 @@
 # -*- rd -*-
 
+ChupaText had been re-implemented by Ruby. This code is no longer
+changed. See https://github.com/ranguba/chupa-text/ about new
+implementation.
+
 = README --- An introduction of ChupaText, a text extraction utility
 
 == Name
